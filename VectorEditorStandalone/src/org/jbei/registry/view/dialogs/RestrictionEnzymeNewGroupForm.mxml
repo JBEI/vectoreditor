@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractDialogForm xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
+			import mx.collections.ArrayCollection;
+			
+			// Public Methods
+			public override function validate():void
+			{
+				isValid = false;
+				if( nameStringValidator.validate().type == ValidationResultEvent.VALID) {
+					if(RestrictionEnzymeGroupManager.instance.groupByName(nameTextInput.text) != null) {
+						Alert.show("Duplicate group name. Group with this name already exist!");
+					} else if(nameTextInput.text.toLowerCase() == "common" || nameTextInput.text.toLowerCase() == "rebase") {
+						Alert.show("'Common' and 'REBASE' are reserved system group names!");
+					} else {
+						var reGroup:RestrictionEnzymeGroup = dataObject as RestrictionEnzymeGroup;
+						
+						reGroup.name = nameTextInput.text;
+						
+						isValid = true;
+					}
+				}
+			}
+			
+			// Event Handlers
+			private function onCreationComplete():void
+			{
+				nameTextInput.setFocus();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="nameStringValidator" source="{ nameTextInput }" required="true" property="text" />
+	
+	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">
+		<mx:FormItem label="Name:" direction="horizontal"><mx:TextInput id="nameTextInput" /></mx:FormItem>
+	</mx:Form>
+</AbstractDialogForm>

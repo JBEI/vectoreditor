@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractDialogForm 
+	width="100%" 
+	height="100%" 
+	minWidth="300"
+	minHeight="200"
+	xmlns="org.jbei.ui.dialogs.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import org.jbei.registry.model.UserPreferencesProxy;
+			import org.jbei.registry.model.vo.UserPreferences;
+			import org.jbei.ApplicationFacade;
+			
+			private var changed:Boolean = false;
+			
+			[Bindable]
+			private var userPreferences:UserPreferences;
+			
+			// Public Methods
+			public override function validate():void
+			{
+				if(!changed) {
+					isValid = true;
+					
+					return;
+				}
+				
+				if(bpPerRowNumberValidator.validate().type == ValidationResultEvent.INVALID || sequenceFontSizeNumberValidator.validate().type == ValidationResultEvent.INVALID || orfMinimumLengthNumberValidator.validate().type == ValidationResultEvent.INVALID) {
+					isValid = false;
+				} else {
+					isValid = true;
+					
+					userPreferences.bpPerRow = bpPerRowNumericStepper.value;
+					userPreferences.orfMinimumLength = orfMinimumLengthNumericStepper.value;
+					userPreferences.sequenceFontSize = sequenceFontSizeNumericStepper.value;
+						
+					var userPreferencesProxy:UserPreferencesProxy = ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy;
+					userPreferencesProxy.saveUserPreferences("This IS USER TOKEN!", userPreferences);
+				}
+			}
+			
+			private function onCreationComplete(event:Event):void
+			{
+				userPreferences = (ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy).userPreferences;
+				
+				bpPerRowNumericStepper.setFocus();
+			}
+			
+			private function onChange(event:Event):void
+			{
+				changed = true;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:NumberValidator 
+		id="bpPerRowNumberValidator" 
+		source="{ bpPerRowNumericStepper }" 
+		required="true" 
+		minValue="10" 
+		maxValue="100" 
+		property="value" 
+		domain="int"/>
+	<mx:NumberValidator 
+		id="sequenceFontSizeNumberValidator" 
+		source="{ sequenceFontSizeNumericStepper }" 
+		required="true" minValue="10" 
+		maxValue="18" 
+		property="value" 
+		domain="int"/>
+	<mx:NumberValidator 
+		id="orfMinimumLengthNumberValidator" 
+		source="{ orfMinimumLengthNumericStepper }" 
+		required="true" 
+		minValue="-1" 
+		maxValue="500" 
+		property="value" 
+		domain="int"/>
+	
+	<mx:TabNavigator 
+		borderStyle="solid"
+		width="100%"
+		height="100%">
+		
+		<mx:VBox 
+			label="General" 
+            width="100%"
+            height="100%">
+            
+			<mx:Form 
+				id="mainForm" 
+				paddingBottom="5" 
+				paddingTop="5" 
+				paddingLeft="5" 
+				paddingRight="5">
+				
+				<mx:FormItem label="BP Per Row:" direction="horizontal">
+				    <mx:NumericStepper 
+				    	id="bpPerRowNumericStepper" 
+				    	stepSize="10" 
+				    	minimum="10" 
+				    	maximum="100" 
+				    	width="60"
+				    	value="{ userPreferences.bpPerRow }"
+				    	change="onChange(event)" />
+			    </mx:FormItem>
+				<mx:FormItem label="Sequence Font Size:" direction="horizontal">
+				    <mx:NumericStepper 
+				    	id="sequenceFontSizeNumericStepper" 
+				    	stepSize="1" 
+				    	minimum="10" 
+				    	maximum="18"
+				    	width="60" 
+				    	value="{ userPreferences.sequenceFontSize }"
+				    	change="onChange(event)" />
+			    </mx:FormItem>
+				<mx:FormItem label="ORF Minimum Length:" direction="horizontal">
+				    <mx:NumericStepper 
+				    	id="orfMinimumLengthNumericStepper" 
+				    	stepSize="50" 
+				    	minimum="-1" 
+				    	maximum="500"
+				    	width="60" 
+				    	value="{ userPreferences.orfMinimumLength }"
+				    	change="onChange(event)" />
+			    </mx:FormItem>
+			</mx:Form>
+        </mx:VBox>
+	</mx:TabNavigator>
+	
+</AbstractDialogForm>

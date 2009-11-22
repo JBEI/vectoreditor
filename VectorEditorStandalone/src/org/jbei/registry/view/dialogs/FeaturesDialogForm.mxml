@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractDialogForm xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.utils.StringUtil;
+			
+			import org.jbei.ApplicationFacade;
+			import org.jbei.bio.data.Feature;
+			import org.jbei.ui.dialogs.ModalDialogEvent;
+			import org.jbei.ui.dialogs.ModalDialog;
+			
+			[Bindable]
+			private var filteredFeatures:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var query:String;
+			
+			private var features:ArrayCollection;
+			
+			private function onCreationComplete():void
+			{
+				if(! ApplicationFacade.getInstance().featuredSequence) return;
+				
+				features = ApplicationFacade.getInstance().featuredSequence.features;
+				
+				searchTextInput.setFocus();
+				
+				updateFeaturesList();
+			}
+			
+			private function onSearchTextInputChange(event:Event):void
+			{
+				query = searchTextInput.text;
+				
+				updateFeaturesList();
+			}
+			
+			private function onFeaturesListChange(event:Event):void
+			{
+				updateButtons();
+			}
+			
+			private function onNewFeatureButtonClick(event:MouseEvent):void
+			{
+				var featureDialog:ModalDialog = new ModalDialog(this, FeatureDialogForm, null);
+				featureDialog.title = "Create New Feature";
+				featureDialog.open();
+				
+				featureDialog.addEventListener(ModalDialogEvent.SUBMIT, onFeatureDialogSubmit);
+			}
+			
+			private function onEditFeatureButtonClick(event:MouseEvent):void
+			{
+				if(filteredFeatures.length == 0 && featuresList.selectedItems.length == 0) return;
+				
+				var featureDialog:ModalDialog = new ModalDialog(this, FeatureDialogForm, featuresList.selectedItem.feature as Feature);
+				featureDialog.title = "Edit Feature";
+				featureDialog.open();
+				
+				featureDialog.addEventListener(ModalDialogEvent.SUBMIT, onFeatureDialogSubmit);
+			}
+			
+			private function onRemoveFeatureButtonClick(event:MouseEvent):void
+			{
+				if(featuresList.selectedItems.length == 0) return;
+				
+				var featuresToRemove:Array = new Array();
+				for(var i:int = 0; i < featuresList.selectedItems.length; i++) {
+					featuresToRemove.push(featuresList.selectedItems[i].feature as Feature);
+				}
+				
+				ApplicationFacade.getInstance().featuredSequence.removeFeatures(featuresToRemove);
+				
+				updateFeaturesList();
+			}
+			
+			private function onSearchTextInputKeyDown(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.DOWN) {
+					featuresList.setFocus();
+					
+					if(filteredFeatures.length > 0 && featuresList.selectedIndex == -1) {
+						featuresList.selectedIndex = 0;
+					}
+					
+					updateButtons();
+				}
+			}
+			
+			private function updateFeaturesList():void
+			{
+				filteredFeatures.removeAll();
+				
+				for(var i:int = 0; i < features.length; i++) {
+					var feature:Feature = features[i] as Feature;
+					
+					var searchQuery:String = StringUtil.trim(query).toLowerCase();
+					
+					var itemLabel:String = ((feature.label == "") ? "<no name>" : feature.label) + " - " + feature.type;
+					
+					if(searchQuery == "") {
+						filteredFeatures.addItem({"label" : itemLabel, "feature" : feature});
+					} else {
+						if(feature.label.toLowerCase().search(searchQuery) >= 0 || feature.type.toLowerCase().search(searchQuery) >= 0) {
+							filteredFeatures.addItem({"label" : itemLabel, "feature" : feature});
+						}
+					}
+				}
+				
+				sortFeatures();
+				
+				updateButtons();
+			}
+			
+			private function sortFeatures():void
+			{
+				var sortField:SortField = new SortField();
+				sortField.name = "label";
+				
+                var sort:Sort = new Sort();
+                sort.fields = [sortField];
+                
+				filteredFeatures.sort = sort;
+				filteredFeatures.refresh();
+			}
+			
+			private function updateButtons():void
+			{
+				editFeatureButton.enabled = featuresList.selectedIndex >= 0 && featuresList.selectedItems.length == 1;
+				removeFeatureButton.enabled = featuresList.selectedIndex >= 0;
+			}
+			
+			private function onFocusIn(event:FocusEvent):void
+			{
+				if(searchTextInput.text == "Enter Name or Type") {
+					searchTextInput.text = "";
+					searchTextInput.setStyle("color", "#000000");
+				}
+			}
+			
+			private function onFocusOut(event:FocusEvent):void
+			{
+				if(searchTextInput.text == "") {
+					searchTextInput.text = "Enter Name or Type";
+					searchTextInput.setStyle("color", "#808080");
+				}
+			}
+			
+			private function onFeatureDialogSubmit(event:ModalDialogEvent):void
+			{
+				features = ApplicationFacade.getInstance().featuredSequence.features;
+				
+				updateFeaturesList();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:TextInput id="searchTextInput" change="onSearchTextInputChange(event)" keyDown="onSearchTextInputKeyDown(event)" focusIn="onFocusIn(event)" focusOut="onFocusOut(event)" />
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:List id="featuresList" dataProvider="{ filteredFeatures }" labelField="label" change="onFeaturesListChange(event)" allowMultipleSelection="true" height="100%" width="100%" />
+			<mx:VBox height="100%">
+				<mx:Button id="newFeatureButton" label="New" width="80" click="onNewFeatureButtonClick(event)" />
+				<mx:Button id="editFeatureButton" label="Edit" width="80" click="onEditFeatureButtonClick(event)" />
+				<mx:Button id="removeFeatureButton" label="Remove" width="80" click="onRemoveFeatureButtonClick(event)" />
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</AbstractDialogForm>

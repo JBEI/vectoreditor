@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractDialogForm creationComplete="onCreationComplete(event)" xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.model.UserRestrictionEnzymesProxy;
+			import org.jbei.registry.model.vo.UserRestrictionEnzymes;
+			import org.jbei.registry.model.vo.RestrictionEnzyme;
+			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
+			import org.jbei.ui.dialogs.ModalDialogEvent;
+			import org.jbei.ui.dialogs.ModalDialog;
+			import mx.controls.Alert;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.events.CollectionEvent;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			private var userGroups:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzymeGroup */
+			
+			[Bindable]
+			private var activeGroup:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzyme */
+			
+			[Bindable]
+			private var selectedGroup:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzyme */
+			
+			// Protected Methods
+			public override function validate():void
+			{
+				isValid = true;
+				
+				var userRestrictionEnzymeGroup:UserRestrictionEnzymes = new UserRestrictionEnzymes();
+				
+				userRestrictionEnzymeGroup.groups = RestrictionEnzymeGroupManager.instance.userGroups;
+				userRestrictionEnzymeGroup.activeGroup = RestrictionEnzymeGroupManager.instance.activeGroup;
+				
+				var userRestrictionEnzymesProxy:UserRestrictionEnzymesProxy = ApplicationFacade.getInstance().retrieveProxy(UserRestrictionEnzymesProxy.NAME) as UserRestrictionEnzymesProxy;
+				userRestrictionEnzymesProxy.saveUserRestrictionEnzymes("This IS USER TOKEN!", userRestrictionEnzymeGroup);
+			}
+			
+			// Event Handlers
+			private function onCreationComplete(event:Event):void
+			{
+				updateGroups();
+				
+				updateActiveGroupList();
+				
+				updateSelectedGroupEnzymesList();
+				
+				groupsComboBox.setFocus();
+			}
+			
+			private function onGroupsComboBoxChange(event:ListEvent):void
+			{
+				updateSelectedGroupEnzymesList();
+			}
+			
+			private function onAddEnzymesToActiveGroupButtonClick(event:MouseEvent):void
+			{
+				addSelectedEnzymes();
+			}
+			
+			private function onRemoveEnzymesFromActiveGroupButton(event:MouseEvent):void
+			{
+				removeSelectedEnzymes();
+			}
+			
+			private function onActiveGroupListKeyDown(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.DELETE) {
+					removeSelectedEnzymes();
+				}
+			}
+			
+			private function onSaveAsGroupButtonClick(event:MouseEvent):void
+			{
+				if(activeGroup.length == 0) {
+					Alert.show("Your Restriction Enzymes set is empty!");
+					return;
+				}
+				
+				var reGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("tmpGroup");
+				
+				var reNewGroupDialog:ModalDialog = new ModalDialog(this, RestrictionEnzymeNewGroupForm, reGroup);
+				reNewGroupDialog.title = "Create New Group";
+				reNewGroupDialog.open();
+				
+				reNewGroupDialog.addEventListener(ModalDialogEvent.SUBMIT, onRestrictionEnzymeNewGroupSubmit);
+			}
+			
+			private function onRemoveGroupButtonClick(event:MouseEvent):void
+			{
+				removeSelectedGroup();
+			}
+			
+			private function onLoadGroupButtonClick(event:MouseEvent):void
+			{
+				RestrictionEnzymeGroupManager.instance.activeGroup.removeAll();
+				
+				for(var i:int = 0; i < selectedGroup.length; i++) {
+					RestrictionEnzymeGroupManager.instance.activeGroup.addItem(selectedGroup[i]);
+				}
+				
+				updateActiveGroupList();
+			}
+			
+			private function onRestrictionEnzymeNewGroupSubmit(event:ModalDialogEvent):void
+			{
+				var newREGroup:RestrictionEnzymeGroup = event.data as RestrictionEnzymeGroup;
+				
+				for(var i:int = 0; i < activeGroup.length; i++) {
+					newREGroup.addRestrictionEnzyme(activeGroup.getItemAt(i) as RestrictionEnzyme);
+				}
+				
+				RestrictionEnzymeGroupManager.instance.userGroups.addItem(newREGroup);
+				
+				updateGroups();
+			}
+			
+			private function onSaveButtonClick(event:MouseEvent):void
+			{
+				var selectedGroup:RestrictionEnzymeGroup = groupsComboBox.selectedItem as RestrictionEnzymeGroup;
+				
+				if(selectedGroup.name == "Common" || selectedGroup.name == "REBASE") {
+					Alert.show("Can't save to system group!");
+					return;
+				}
+				
+				var currentGroup:RestrictionEnzymeGroup = RestrictionEnzymeGroupManager.instance.groupByName(selectedGroup.name);
+				currentGroup.enzymes.removeAll();
+				
+				for(var i:int = 0; i < activeGroup.length; i++) {
+					currentGroup.enzymes.addItem(activeGroup[i]);
+				}
+				
+				updateGroups();
+				updateSelectedGroupEnzymesList();
+			}
+			
+			// Private Methods
+			private function updateGroups():void
+			{
+				userGroups.removeAll();
+				
+				// Load system groups to combobox
+				for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.systemGroups.length; i++) {
+					userGroups.addItem(RestrictionEnzymeGroupManager.instance.systemGroups[i]);
+				}
+				
+				// Load user groups to combobox
+				for(var k:int = 0; k < RestrictionEnzymeGroupManager.instance.userGroups.length; k++) {
+					userGroups.addItem(RestrictionEnzymeGroupManager.instance.userGroups[k]);
+				}
+			}
+			
+			private function addSelectedEnzymes():void
+			{
+				if(currentREGroupList.selectedItems.length == 0) { return; }
+				
+				for(var i:int = 0; i < currentREGroupList.selectedItems.length; i++) {
+					addEnzymeToActiveGroup(currentREGroupList.selectedItems[i] as RestrictionEnzyme);
+				}
+				
+				updateActiveGroupList();
+			}
+			
+			private function removeSelectedEnzymes():void
+			{
+				if(activeGroupList.selectedItems.length == 0) { return; }
+				
+				var i:int = 0;
+				while(i < activeGroupList.selectedItems.length) {
+					removeEnzymeFromActiveGroup(activeGroupList.selectedItems[i] as RestrictionEnzyme)
+					i++;
+				}
+				
+				updateActiveGroupList();
+			}
+			
+			private function addEnzymeToActiveGroup(enzyme:RestrictionEnzyme):void 
+			{
+				if(RestrictionEnzymeGroupManager.instance.activeGroup.contains(enzyme)) { return; }
+				
+				RestrictionEnzymeGroupManager.instance.activeGroup.addItem(enzyme);
+			}
+			
+			private function removeEnzymeFromActiveGroup(enzyme:RestrictionEnzyme):void 
+			{
+				var index:int = RestrictionEnzymeGroupManager.instance.activeGroup.getItemIndex(enzyme);
+				
+				if(index >= 0) {
+					RestrictionEnzymeGroupManager.instance.activeGroup.removeItemAt(index);
+				}
+			}
+			
+			private function sortEnzymes(collection:ArrayCollection):void
+			{
+				var sortField:SortField = new SortField();
+				sortField.name = "name";
+				
+                var sort:Sort = new Sort();
+                sort.fields = [sortField];
+                
+				collection.sort = sort;
+				collection.refresh();
+			}
+			
+			private function removeSelectedGroup():void
+			{
+				var selectedGroup:RestrictionEnzymeGroup = groupsComboBox.selectedItem as RestrictionEnzymeGroup;
+				
+				if(selectedGroup.name == "Common" || selectedGroup.name == "REBASE") {
+					Alert.show("This is system group. Can't be removed!");
+					return;
+				}
+				
+				RestrictionEnzymeGroupManager.instance.removeGroup(selectedGroup);    
+				
+				updateGroups();
+				
+				groupsComboBox.selectedIndex = 0;
+				updateSelectedGroupEnzymesList();
+			}
+			
+			private function updateSelectedGroupEnzymesList():void
+			{
+				selectedGroup.removeAll();
+				
+				var reGroup:RestrictionEnzymeGroup = groupsComboBox.selectedItem as RestrictionEnzymeGroup;
+				
+				for(var i:int = 0; i < reGroup.enzymes.length; i++) {
+					selectedGroup.addItem(reGroup.enzymes[i]);
+				}
+				
+				sortEnzymes(selectedGroup);
+			}
+			
+			private function updateActiveGroupList():void
+			{
+				activeGroup.removeAll();
+				
+				for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
+					activeGroup.addItem(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
+				}
+				
+				sortEnzymes(activeGroup);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%">
+			<mx:ComboBox id="groupsComboBox" dataProvider="{ userGroups }" labelField="name" change="onGroupsComboBoxChange(event)"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox height="100%" width="100%">
+				<mx:Label text="Current Group:"/>
+				<mx:List id="currentREGroupList" dataProvider="{ selectedGroup }" height="100%" labelField="name" allowMultipleSelection="true" />
+			</mx:VBox>
+			<mx:VBox height="100%" verticalAlign="middle" horizontalAlign="center">
+				<mx:Button id="addEnzymesToUserGroupButton" label="&gt;" click="onAddEnzymesToActiveGroupButtonClick(event)"/>
+				<mx:Button id="removeEnzymesFromUserGroupButton" label="&lt;" click="onRemoveEnzymesFromActiveGroupButton(event)"/>
+				<mx:Button id="loadGroupButton" label="&gt;&gt;" click="onLoadGroupButtonClick(event)" />
+			</mx:VBox>
+			<mx:VBox height="100%" width="100%">
+				<mx:Label text="Active:"/>
+				<mx:List id="activeGroupList" dataProvider="{ activeGroup }" height="100%" allowMultipleSelection="true" labelField="name" keyDown="onActiveGroupListKeyDown(event)"/>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Spacer width="100%" />
+			<mx:Button id="removeGroupButton" label="Remove Group" click="onRemoveGroupButtonClick(event)" width="110"/>
+			<mx:Button id="saveAsGroupButton" label="Save As Group" click="onSaveAsGroupButtonClick(event)" width="110" />
+			<mx:Button id="saveButton" label="Save" click="onSaveButtonClick(event)" width="110" />
+		</mx:HBox>
+	</mx:VBox>
+</AbstractDialogForm>

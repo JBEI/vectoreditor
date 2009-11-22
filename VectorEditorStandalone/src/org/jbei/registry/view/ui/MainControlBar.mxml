@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			
+			import org.jbei.bio.data.Feature;
+			
+			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
+			import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
+			import org.jbei.ui.dialogs.ModalDialog;
+			import org.jbei.ui.dialogs.ModalDialogEvent;
+			
+			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
+			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
+			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
+			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
+			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
+			public static const SHOW_FEATURES_DIALOG:String = "ShowFeaturesDialog";
+			public static const COPY:String = "Copy";
+			public static const CUT:String = "Cut";
+			public static const PASTE:String = "Paste";
+			public static const UNDO:String = "Undo";
+			public static const REDO:String = "Redo";
+			
+			[Embed(source='../assets/icons/pie.png')]
+			[Bindable]
+			private var pieIcon:Class;
+			
+			[Embed(source='../assets/icons/rail.png')]
+			[Bindable]
+			private var railIcon:Class;
+			
+			[Embed(source='../assets/icons/undo.png')]
+			[Bindable]
+			private var undoIcon:Class;
+			
+			[Embed(source='../assets/icons/redo.png')]
+			[Bindable]
+			private var redoIcon:Class;
+			
+			[Embed(source='../assets/icons/undo_disabled.png')]
+			[Bindable]
+			private var undoDisabledIcon:Class;
+			
+			[Embed(source='../assets/icons/redo_disabled.png')]
+			[Bindable]
+			private var redoDisabledIcon:Class;
+			
+			[Embed(source='../assets/icons/copy.png')]
+			[Bindable]
+			private var copyIcon:Class;
+			
+			[Embed(source='../assets/icons/cut.png')]
+			[Bindable]
+			private var cutIcon:Class;
+			
+			[Embed(source='../assets/icons/paste.png')]
+			[Bindable]
+			private var pasteIcon:Class;
+			
+			[Embed(source='../assets/icons/copy_disabled.png')]
+			[Bindable]
+			private var copyDisabledIcon:Class;
+			
+			[Embed(source='../assets/icons/cut_disabled.png')]
+			[Bindable]
+			private var cutDisabledIcon:Class;
+			
+			// Public Methods
+			public function updateUndoButtonState(active:Boolean):void
+			{
+				if(active) {
+					undoButton.enabled = true;
+					undoButton.setStyle("icon", undoIcon);
+				} else {
+					undoButton.enabled = false;
+					undoButton.setStyle("icon", undoDisabledIcon);
+				}
+			}
+			
+			public function updateRedoButtonState(active:Boolean):void
+			{
+				if(active) {
+					redoButton.enabled = true;
+					redoButton.setStyle("icon", redoIcon);
+				} else {
+					redoButton.enabled = false;
+					redoButton.setStyle("icon", redoDisabledIcon);
+				}
+			}
+			
+			public function updateCopyAndCutButtonState(active:Boolean):void
+			{
+				if(active) {
+					copyButton.enabled = true;
+					copyButton.setStyle("icon", copyIcon);
+					cutButton.enabled = true;
+					cutButton.setStyle("icon", cutIcon);
+				} else {
+					copyButton.enabled = false;
+					copyButton.setStyle("icon", copyDisabledIcon);
+					cutButton.enabled = false;
+					cutButton.setStyle("icon", cutDisabledIcon);
+				}
+			}
+			
+			// Event Handlers
+			private function onChangeViewButtonClick(event:ItemClickEvent):void { }
+			
+			private function onShowRestrictionEnzymesManagerButton(event:MouseEvent):void
+			{
+				dispatchEvent(new Event(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG));
+			}
+			
+			private function onShowCreateFeatureDialogButton(event:MouseEvent):void
+			{
+				dispatchEvent(new Event(SHOW_CREATE_NEW_FEATURE_DIALOG));
+			}
+			
+			private function onShowFeaturesDialogButton(event:MouseEvent):void
+			{
+				dispatchEvent(new Event(SHOW_FEATURES_DIALOG));
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:ToggleButtonBar 
+		toggleOnClick="false" 
+		itemClick="onChangeViewButtonClick(event)" 
+		backgroundColor="#FFFFFF" 
+		buttonWidth="25" 
+		paddingLeft="0" 
+		paddingRight="0" 
+		buttonStyleName="haloSilver"
+		>
+		
+        <mx:dataProvider>
+         	<mx:Object toolTip="Circular View" icon="{ pieIcon }" />
+			<mx:Object toolTip="Linear View" icon="{ railIcon }" />
+        </mx:dataProvider>
+    </mx:ToggleButtonBar>
+    <mx:Spacer width="5" />
+    <mx:Button width="24" id="copyButton" icon="{ copyDisabledIcon }" enabled="false" toolTip="Copy" click="{ dispatchEvent(new Event(COPY)) }" />
+    <mx:Button width="24" id="cutButton" icon="{ cutDisabledIcon }" enabled="false" toolTip="Cut" click="{ dispatchEvent(new Event(CUT)) }" />
+    <mx:Button width="24" id="pasteButton" icon="{ pasteIcon }" enabled="true" toolTip="Paste" click="{ dispatchEvent(new Event(PASTE)) }" />
+    <mx:Spacer width="5" />
+    <mx:Button width="24" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" click="{ dispatchEvent(new Event(UNDO)) }" />
+    <mx:Button width="24" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" click="{ dispatchEvent(new Event(REDO)) }" />
+    <mx:Spacer width="5" />
+    <mx:Button width="24" id="showFeaturesButton" label="F" toolTip="Show Features" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
+    <mx:Button width="24" id="showCutSitesButton" label="C" toolTip="Show Cut Sites" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_CUTSITES_STATE_CHANGED));"/>
+    <mx:Button width="24" id="showORFsButton" label="O" toolTip="Show ORF" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_ORFS_STATE_CHANGED));"/>
+    <mx:Spacer width="5" />
+    <mx:Button width="24" id="showRestrictionEnzymesManagerDialogButton" label="RE" toolTip="Manage Restriction Enzymes" click="onShowRestrictionEnzymesManagerButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+    <mx:Button width="24" id="showCreateFeatureDialogButton" label="CF" toolTip="Create New Feature" click="onShowCreateFeatureDialogButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+    <mx:Button width="24" id="showFeaturesDialogButton" label="FF" toolTip="Features" click="onShowFeaturesDialogButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+</mx:ApplicationControlBar>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractDialogForm creationComplete="onCreationComplete()" xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.bio.sequence.DNASequence;
+			import org.jbei.registry.lib.RichSequence;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
+			import mx.collections.ArrayCollection;
+			
+			// Public Methods
+			public override function validate():void
+			{
+				if(sequenceTextArea.text == "") {
+					isValid = false;
+				} else {
+					var dnaSequence:DNASequence = dataObject as DNASequence;
+					
+					dnaSequence.insert(new DNASequence(sequenceTextArea.text), 0);
+					isValid = true;
+				}
+			}
+			
+			// Event Handlers
+			private function onCreationComplete():void
+			{
+				sequenceTextArea.setFocus();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">
+		<mx:FormItem label="Sequence:" direction="vertical"><mx:TextArea id="sequenceTextArea" width="300" height="100" /></mx:FormItem>
+	</mx:Form>
+</AbstractDialogForm>

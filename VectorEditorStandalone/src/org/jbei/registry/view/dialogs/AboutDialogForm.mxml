@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+	width="100%"
+	height="100%"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.utils.SystemUtils;
+			[Embed(source='../assets/icons/jbei-logo.gif')]
+			[Bindable]
+			private var logoImage:Class;
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" horizontalAlign="center">
+		<mx:Image source="{ logoImage }" horizontalAlign="center" />
+		<mx:Spacer />
+		<mx:Text width="400" selectable="false" htmlText="Version: { SystemUtils.applicationVersion() }" />
+	</mx:VBox>
+	
+</mx:Box>
