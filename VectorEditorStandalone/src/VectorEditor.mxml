@@ -9,8 +9,7 @@
 	applicationComplete="onApplicationComplete(event)"
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:ui="org.jbei.registry.view.ui.*"
-	xmlns:maps="org.jbei.registry.maps.*"
-	xmlns:mate="http://mate.asfusion.com/">
+	xmlns:maps="org.jbei.registry.maps.*">
 	
 	<mx:Script>
 		<![CDATA[
