@@ -82,7 +82,7 @@ package org.jbei.components.pieClasses
 			
 			g.clear();
 			
-			if(_position == -1 || contentHolder.featuredSequence.sequence.length == 0) { return; }
+			if(contentHolder.featuredSequence.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
 			
 			var angle:Number = 2 * _position * Math.PI / contentHolder.featuredSequence.sequence.length;
 			

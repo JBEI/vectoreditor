@@ -7,9 +7,9 @@
 	verticalScrollPolicy="off"
 	creationComplete="onCreationComplete(event)"
 	applicationComplete="onApplicationComplete(event)"
-	xmlns:mx="http://www.adobe.com/2006/mxml" 
-	xmlns:ui="org.jbei.registry.view.ui.*" 
-	xmlns:maps="org.jbei.registry.maps.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ui="org.jbei.registry.view.ui.*"
+	xmlns:maps="org.jbei.registry.maps.*"
 	xmlns:mate="http://mate.asfusion.com/">
 	
 	<mx:Script>
@@ -17,6 +17,7 @@
 			import mx.controls.Alert;
 			
 			import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
+			
 			import org.jbei.ApplicationFacade;
 			import org.jbei.registry.utils.SystemUtils;
 			import org.jbei.registry.view.ApplicationMediator;
@@ -127,6 +128,8 @@
 			<ui:MainControlBar id="mainControlBar" />
 			
 			<ui:MainPanel id="mainPanel" />
+			
+			<ui:FindPanel id="findPanel" width="100%" paddingBottom="2" paddingTop="2" visible="false" includeInLayout="false" />
 			
 			<ui:StatusBar id="statusBar" />
 		</mx:VBox>

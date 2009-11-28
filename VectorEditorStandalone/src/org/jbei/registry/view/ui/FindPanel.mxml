@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" paddingLeft="2" paddingTop="0" paddingBottom="0" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.utils.Finder;
+			public static const FIND:String = "Find";
+			public static const FIND_NEXT:String = "FindNext";
+			public static const HIGHLIGHT:String = "Hightlight";
+			public static const CLEAR_HIGHLIGHT:String = "ClearHightlight";
+			public static const HIDE_FIND_PANEL:String = "HideFindPanel";
+			
+			public var findExpression:String = "";
+			public var findType:String = Finder.TYPE_SEQUENCE_ONLY;
+			
+			[Embed(source='../assets/icons/close.png')]
+			[Bindable]
+			private var closeIcon:Class;
+			
+			// Public Methods
+			public function updateHighlight():void
+			{
+				if(!isVisible()) { return; }
+				
+				if(highlightAllButton.selected) {
+					highlight();
+				}
+			}
+			
+			public function show():void
+			{
+				if(isVisible()) { return; }
+				
+				clearControls();
+				
+				visible = true;
+				includeInLayout = true;
+				
+				findTextInput.setFocus();
+			}
+			
+			public function hide():void
+			{
+				if(!isVisible()) { return; }
+				
+				clearControls();
+				clearHighlight();
+				
+				visible = false;
+				includeInLayout = false;
+			}
+			
+			public function highlightFindBox(found:Boolean):void
+			{
+				if(found || findTextInput.text == "") {
+					highlightFindBoxDefault();
+				} else {
+					highlightFindBoxError()
+				}
+			}
+			
+			// Event Handlers
+			private function isVisible():Boolean
+			{
+				return visible;
+			}
+			
+			private function onFindTextInputChange(event:Event):void
+			{
+				findExpression = findTextInput.text;
+				
+				find();
+				
+				updateHighlight();
+			}
+			
+			private function onFindNextButtonClick(event:MouseEvent):void
+			{
+				findNext();
+			}
+			
+			private function onHighlightAllButtonChange(event:Event):void
+			{
+				if(highlightAllButton.selected) {
+					highlight();
+				} else {
+					clearHighlight();
+				}
+			}
+			
+			private function onXButtonClick(event:MouseEvent):void
+			{
+				dispatchEvent(new Event(HIDE_FIND_PANEL));
+			}
+			
+			private function onTypeComboBoxChange(event:Event):void
+			{
+				findType = (typeComboBox.value as String)
+				
+				find();
+				
+				if(highlightAllButton.selected) {
+					highlight();
+				}
+			}
+			
+			// Private Methods
+			private function clearControls():void
+			{
+				findTextInput.text = "";
+				highlightAllButton.selected = false;
+				highlightFindBoxDefault();
+			}
+			
+			private function highlight():void
+			{
+				dispatchEvent(new Event(HIGHLIGHT));
+			}
+			
+			private function clearHighlight():void
+			{
+				dispatchEvent(new Event(CLEAR_HIGHLIGHT));
+			}
+			
+			private function find():void
+			{
+				dispatchEvent(new Event(FIND));
+			}
+			
+			private function findNext():void
+			{
+				dispatchEvent(new Event(FIND_NEXT));
+			}
+			
+			private function highlightFindBoxError():void
+			{
+				findTextInput.setStyle("backgroundColor", 0xFF6666);
+				findTextInput.setStyle("color", 0xFFFFFF);
+			}
+			
+			private function highlightFindBoxDefault():void
+			{
+				findTextInput.setStyle("backgroundColor", 0xFFFFFF);
+				findTextInput.setStyle("color", 0x000000);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Button id="xButton" icon="{ closeIcon }" width="20" height="20" focusEnabled="false" click="onXButtonClick(event)" />
+	<mx:TextInput id="findTextInput" width="250" change="onFindTextInputChange(event)"/>
+	<mx:Button id="findNextButton" label="Find Next" click="onFindNextButtonClick(event)"/>
+	<mx:ComboBox id="typeComboBox" labelField="label" change="onTypeComboBoxChange(event)">
+		<mx:ArrayCollection>
+			<mx:Object label="Sequence Only" data="{ Finder.TYPE_SEQUENCE_ONLY }"/>
+			<mx:Object label="Reverse Complement Only" data="{ Finder.TYPE_REVERSE_COMPLEMENT_ONLY }"/>
+			<mx:Object label="Both" data="{ Finder.TYPE_BOTH }"/>
+		</mx:ArrayCollection>
+	</mx:ComboBox>
+	<mx:Button id="highlightAllButton" label="Highlight All" toggle="true" selected="false" change="onHighlightAllButtonChange(event)"/>
+</mx:HBox>

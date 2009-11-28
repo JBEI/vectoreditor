@@ -1,5 +1,6 @@
 package org.jbei.registry.control
 {
+	import org.jbei.registry.view.FindPanelMediator;
 	import org.jbei.registry.view.MainControlBarMediator;
 	import org.jbei.registry.view.MainMenuMediator;
 	import org.jbei.registry.view.MainPanelMediator;
@@ -18,6 +19,7 @@ package org.jbei.registry.control
 			facade.registerMediator(new MainMenuMediator(application.mainMenu));
 			facade.registerMediator(new MainPanelMediator(application.mainPanel));
 			facade.registerMediator(new StatusBarMediator(application.statusBar));
+			facade.registerMediator(new FindPanelMediator(application.findPanel));
 		}
 	}
 }

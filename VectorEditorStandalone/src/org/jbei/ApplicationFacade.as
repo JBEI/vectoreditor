@@ -3,12 +3,15 @@ package org.jbei
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.FeaturedSequenceMemento;
+	import org.jbei.lib.ORFMapper;
+	import org.jbei.lib.RestrictionEnzymeMapper;
 	import org.jbei.registry.control.ActionStack;
 	import org.jbei.registry.control.ActionStackEvent;
 	import org.jbei.registry.control.FetchEntryCommand;
 	import org.jbei.registry.control.FetchUserPreferencesCommand;
 	import org.jbei.registry.control.FetchUserRestrictionEnzymesCommand;
 	import org.jbei.registry.control.InitializationCommand;
+	import org.jbei.registry.model.vo.Entry;
 	import org.puremvc.as3.patterns.facade.Facade;
 
 	public class ApplicationFacade extends Facade
@@ -18,6 +21,7 @@ package org.jbei
 		public static const ACTION_STACK_CHANGED:String = "ActionStackChanged";
 		public static const SELECTION_CHANGED:String = "SelectionChanged";
 		public static const CARET_POSITION_CHANGED:String = "CaretPositionChanged";
+		public static const FEATURED_SEQUENCE_CHANGED:String = "FeaturedSequenceChanged";
 		
 		public static const FETCHING_DATA:String = "FetchingData";
 		public static const DATA_FETCHED:String = "DataFetched";
@@ -49,17 +53,32 @@ package org.jbei
 		public static const SHOW_FEATURE_LABELS:String = "ShowFeatureLabels";
 		public static const SHOW_CUT_SITE_LABELS:String = "ShowCutSiteLabels";
 		
+		public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
+		public static const HIDE_FIND_PANEL:String = "HideFindPanel";
+		public static const FIND:String = "Find";
+		public static const FIND_NEXT:String = "FindNext";
+		public static const HIGHLIGHT:String = "Highlight";
+		public static const CLEAR_HIGHLIGHT:String = "ClearHighlight";
+		public static const FIND_MATCH_FOUND:String = "FindMatchFound";
+		public static const FIND_MATCH_NOT_FOUND:String = "FindMatchNotFound";
+		
+		public static const GO_SUGGEST_FEATURE:String = "GoSuggestFeature";
+		public static const GO_REPORT_BUG:String = "GoReportBug";
+		public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
 		public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
+		public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
 		public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 		public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
 		public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
-		public static const SHOW_FEATURES_DIALOG:String = "ShowFeaturesDialog";
 		
 		private var _application:VectorEditor;
 		private var _actionStack:ActionStack;
 		private var _entryId:String;
 		private var _serverURL:String;
 		private var _featuredSequence:FeaturedSequence;
+		private var _entry:Entry;
+		private var _orfMapper:ORFMapper;
+		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		
 		// Properties
 		public function get application():VectorEditor
@@ -104,6 +123,36 @@ package org.jbei
 				
 				_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGING, onSequenceChanging);
 			}
+		}
+		
+		public function get entry():Entry
+		{
+			return _entry;
+		}
+		
+		public function set entry(value:Entry):void
+		{
+			_entry = value;
+		}
+		
+		public function get orfMapper():ORFMapper
+		{
+			return _orfMapper;
+		}
+		
+		public function set orfMapper(value:ORFMapper):void
+		{
+			_orfMapper = value;
+		}
+		
+		public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
+		{
+			return _restrictionEnzymeMapper;
+		}
+		
+		public function set restrictionEnzymeMapper(value:RestrictionEnzymeMapper):void
+		{
+			_restrictionEnzymeMapper = value;
 		}
 		
 		// Public Methods

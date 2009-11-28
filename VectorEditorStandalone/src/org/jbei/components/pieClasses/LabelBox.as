@@ -36,8 +36,8 @@ package org.jbei.components.pieClasses
 			_relatedAnnotation = relatedAnnotation;
 			
 			addEventListener(MouseEvent.CLICK, onClick);
-			addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			addEventListener(MouseEvent.ROLL_OVER, onRollOver);
+			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 		}
 		
 		// Properties
@@ -113,17 +113,17 @@ package org.jbei.components.pieClasses
 		// Private Methods
 		private function onClick(event:MouseEvent):void
 		{
-			contentHolder.select(_relatedAnnotation.start, _relatedAnnotation.end);
+			contentHolder.select(_relatedAnnotation.start, _relatedAnnotation.end + 1);
 		}
 		
-		private function onMouseOver(event:MouseEvent):void
+		private function onRollOver(event:MouseEvent):void
 		{
 			var localPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
 			
 		    tip = ToolTipManager.createToolTip(tipText(), localPoint.x, localPoint.y) as ToolTip;
     	}
 		
-		private function onMouseOut(event:MouseEvent):void
+		private function onRollOut(event:MouseEvent):void
 		{
 			ToolTipManager.destroyToolTip(tip);
 		}

@@ -1,11 +1,9 @@
 package org.jbei.registry.view
 {
-	import mx.controls.Menu;
-	
 	import org.jbei.ApplicationFacade;
 	import org.jbei.registry.view.ui.MainMenu;
-	import org.jbei.registry.view.ui.MenuItem;
-	import org.jbei.registry.view.ui.MenuItemEvent;
+	import org.jbei.registry.view.ui.menu.MenuItem;
+	import org.jbei.registry.view.ui.menu.MenuItemEvent;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -32,7 +30,10 @@ package org.jbei.registry.view
 			mainMenu.addEventListener(MainMenu.SHOW_CUT_SITE_LABELS_STATE_CHANGED, onShowCutSiteLabelsStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_SELECT_BY_RANGE_DIALOG, onShowSelectByRangeDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_PREFERENCES_DIALOG, onShowPreferencesDialog);
+			mainMenu.addEventListener(MainMenu.SHOW_GOTO_DIALOG, onShowGoToDialog);
+			mainMenu.addEventListener(MainMenu.SHOW_FIND_DIALOG, onShowFindDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_ABOUT_DIALOG, onShowAboutDialog);
+			mainMenu.addEventListener(MainMenu.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
 			mainMenu.addEventListener(MainMenu.COPY, onCopy);
 			mainMenu.addEventListener(MainMenu.CUT, onCut);
 			mainMenu.addEventListener(MainMenu.PASTE, onPaste);
@@ -41,12 +42,21 @@ package org.jbei.registry.view
 			mainMenu.addEventListener(MainMenu.REDO, onRedo);
 			mainMenu.addEventListener(MainMenu.SHOW_CREATE_NEW_FEATURE_DIALOG, onShowCreateNewFeatureDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
-			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_DIALOG, onShowFeaturesDialog);
+			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
+			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 		}
 		
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_FEATURES, ApplicationFacade.SHOW_CUTSITES, ApplicationFacade.SHOW_ORFS, ApplicationFacade.ACTION_STACK_CHANGED, ApplicationFacade.SELECTION_CHANGED];
+			return [ApplicationFacade.SHOW_FEATURES
+				, ApplicationFacade.SHOW_CUTSITES
+				, ApplicationFacade.SHOW_ORFS
+				, ApplicationFacade.SHOW_COMPLEMENTARY
+				, ApplicationFacade.SHOW_AA1
+				, ApplicationFacade.SHOW_AA3
+				, ApplicationFacade.ACTION_STACK_CHANGED
+				, ApplicationFacade.SELECTION_CHANGED
+				];
 		}
 		
 		public override function handleNotification(notification:INotification):void
@@ -65,16 +75,10 @@ package org.jbei.registry.view
 					mainMenu.menuItemByName("showComplementaryMenuItem").toggled = notification.getBody() as Boolean;
 					break;
 				case ApplicationFacade.SHOW_AA1:
-					mainMenu.menuItemByName("showAA1MenuItem").toggled = notification.getBody() as Boolean;
+					mainMenu.menuItemByName("showAA3MenuItem").toggled = false;
 					break;
 				case ApplicationFacade.SHOW_AA3:
-					mainMenu.menuItemByName("showSpacesMenuItem").toggled = notification.getBody() as Boolean;
-					break;
-				case ApplicationFacade.SHOW_AA3:
-					mainMenu.menuItemByName("showFeatureLabelsMenuItem").toggled = notification.getBody() as Boolean;
-					break;
-				case ApplicationFacade.SHOW_AA3:
-					mainMenu.menuItemByName("showCutSiteLabelsMenuItem").toggled = notification.getBody() as Boolean;
+					mainMenu.menuItemByName("showAA1MenuItem").toggled = false;
 					break;
 				case ApplicationFacade.ACTION_STACK_CHANGED:
 					mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.undoStackIsEmpty;
@@ -195,9 +199,29 @@ package org.jbei.registry.view
 			sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
-		private function onShowFeaturesDialog(event:MenuItemEvent):void
+		private function onShowGoToDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FEATURES_DIALOG);
+			sendNotification(ApplicationFacade.SHOW_GOTO_DIALOG);
+		}
+		
+		private function onShowFindDialog(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SHOW_FIND_PANEL);
+		}
+		
+		private function onGoReportBugWebLink(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.GO_REPORT_BUG);
+		}
+		
+		private function onGoSuggestFeatureWebLink(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.GO_SUGGEST_FEATURE);
+		}
+		
+		private function onShowPropertiesDialog(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
 		}
 	}
 }

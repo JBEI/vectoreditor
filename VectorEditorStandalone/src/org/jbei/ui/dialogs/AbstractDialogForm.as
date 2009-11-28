@@ -29,6 +29,11 @@ package org.jbei.ui.dialogs
 			return _dataObject;
 		}
 		
+		public function set dataObject(value:Object):void
+		{
+			_dataObject = value;
+		}
+		
 		// Public Methods
 		public function initialization(dataObject:Object):void
 		{

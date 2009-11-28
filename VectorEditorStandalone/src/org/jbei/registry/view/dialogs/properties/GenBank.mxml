@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="GenBank"
+	initialize="onInitialize(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.ApplicationFacade;
+			import org.jbei.lib.FeaturedSequence;
+			import org.jbei.utils.SystemUtils;
+			
+			private function onInitialize(event:Event):void
+			{
+				var featuredSequence:FeaturedSequence = ApplicationFacade.getInstance().featuredSequence;
+				
+				genbankTextArea.text = featuredSequence.toGenbank();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea
+		id="genbankTextArea"
+		width="100%"
+		height="100%"
+		fontFamily="{ SystemUtils.getSystemMonospaceFontFamily() }"
+		editable="false" />
+</mx:Box>

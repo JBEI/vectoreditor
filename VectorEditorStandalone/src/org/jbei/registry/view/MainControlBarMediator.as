@@ -25,12 +25,14 @@ package org.jbei.registry.view
 			controlBar.addEventListener(MainControlBar.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_CREATE_NEW_FEATURE_DIALOG, onShowCreateNewFeatureDialog);
 			controlBar.addEventListener(MainControlBar.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
+			controlBar.addEventListener(MainControlBar.SHOW_GOTO_DIALOG, onShowGoToDialog);
+			controlBar.addEventListener(MainControlBar.SHOW_FIND_PANEL, onShowFindPanel);
 			controlBar.addEventListener(MainControlBar.UNDO, onUndo);
 			controlBar.addEventListener(MainControlBar.REDO, onRedo);
 			controlBar.addEventListener(MainControlBar.COPY, onCopy);
 			controlBar.addEventListener(MainControlBar.CUT, onCut);
 			controlBar.addEventListener(MainControlBar.PASTE, onPaste);
-			controlBar.addEventListener(MainControlBar.SHOW_FEATURES_DIALOG, onShowFeaturesDialog);
+			controlBar.addEventListener(MainControlBar.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -92,11 +94,6 @@ package org.jbei.registry.view
 			sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
-		private function onShowFeaturesDialog(event:Event):void
-		{
-			sendNotification(ApplicationFacade.SHOW_FEATURES_DIALOG);
-		}
-		
 		private function onUndo(event:Event):void
 		{
 			sendNotification(ApplicationFacade.UNDO);
@@ -120,6 +117,21 @@ package org.jbei.registry.view
 		private function onPaste(event:Event):void
 		{
 			sendNotification(ApplicationFacade.PASTE);
+		}
+		
+		private function onShowGoToDialog(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SHOW_GOTO_DIALOG);
+		}
+		
+		private function onShowFindPanel(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SHOW_FIND_PANEL);
+		}
+		
+		private function onShowPropertiesDialog(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
 		}
 	}
 }

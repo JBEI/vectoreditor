@@ -26,7 +26,7 @@
 			[Bindable]
 			private var selectedGroup:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzyme */
 			
-			// Protected Methods
+			// Public Methods
 			public override function validate():void
 			{
 				isValid = true;

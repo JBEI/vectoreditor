@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="Entry"
+	creationComplete="onCreationComplete(event)"
+	paddingBottom="1"
+	paddingTop="1"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.Constants;
+			import org.jbei.registry.model.vo.Entry;
+			import org.jbei.registry.model.vo.PartNumber;
+			import org.jbei.registry.model.vo.Plasmid;
+			import org.jbei.utils.SystemUtils;
+			
+			// Event Handlers
+			private function onCreationComplete(event:Event):void
+			{
+				buildEntryInfo();
+			}
+			
+			// Private Methods
+			private function buildEntryInfo():void
+			{
+				var entry:Entry = ApplicationFacade.getInstance().entry;
+				
+				if(!entry) { return; }
+				
+				var entryInfo:String;
+				
+				if(entry.recordType == "plasmid") {
+					entryInfo = buildPlasmidInfo(entry as Plasmid);
+				} else if(entry.recordType == "part") {
+					//entryInfo = buildPartInfo();
+				} else if(entry.recordType == "strain") {
+					//entryInfo = buildStrainInfo();
+				} else {
+					return;
+				}
+				
+				entryInfoTextArea.htmlText = '<p>' + entryInfo + "</p>";
+			}
+			
+			private function buildPlasmidInfo(entry:Plasmid):String
+			{
+				var partNumbers:String = entry.partNumbers ? entry.partNumbers.toArray().join(", ") : "";
+				var names:String = entry.names ? entry.names.toArray().join(", ") : "";
+				var links:String = entry.links ? entry.links.toArray().join(", ") : "";
+				var selectionMarkers:String = entry.selectionMarkers ? entry.selectionMarkers.toArray().join(", ") : "";
+				
+				var entryInfo:String = (entry.partNumbers && entry.partNumbers.length >= 1) ? '<b>ID:</b>\t\t\t\t<font color="#0000FF"><u><a href="' + Constants.ENTRY_REGISTRY_URL + (entry.partNumbers[0] as PartNumber) + '/" target="_blank">' + partNumbers + '</a></u></font>' : "";
+				entryInfo += '<br /><b>Name:</b>\t\t\t\t' + names;
+				entryInfo += '<br /><b>Alias:</b>\t\t\t\t' + (entry.alias ? entry.alias : '');
+				entryInfo += '<br /><b>Type:</b>\t\t\t\t' + entry.recordType;
+				
+				entryInfo += '<br /><b>Owner:</b>\t\t\t\t';
+				
+				if(entry.owner && entry.owner != '') {
+					if(entry.ownerEmail && entry.ownerEmail != '') {
+						entryInfo += '<font color="#0000FF"><u><a href="mailto:' + entry.ownerEmail + '">' + entry.owner + '</a></u></font>';
+					} else {
+						entryInfo += entry.owner;
+					}
+				}
+				
+				entryInfo += '<br /><b>Creator:</b>\t\t\t';
+				
+				if(entry.creator && entry.creator != '') {
+					if(entry.creatorEmail && entry.creatorEmail != '') {
+						entryInfo += '<font color="#0000FF"><u><a href="mailto:' + entry.creatorEmail + '">' + entry.creator + '</a></u></font>';
+					} else {
+						entryInfo += entry.creator;
+					}
+				}
+				
+				entryInfo += '<br /><b>Selection Markers:</b>\t\t' + selectionMarkers;
+				
+				entryInfo += '<br /><b>Backbone:</b>\t\t\t' + (entry.backbone ? entry.backbone : '');
+				entryInfo += '<br /><b>Origin Of Replication:</b>\t' + (entry.originOfReplication ? entry.originOfReplication : '');
+				entryInfo += '<br /><b>Promoters:</b>\t\t\t' + (entry.promoters ? entry.promoters : '');
+				entryInfo += '<br /><b>Circular:</b>\t\t\t' + (entry.circular ? 'Yes' : 'No');
+				
+				entryInfo += '<br /><b>Links:</b>\t\t\t\t' + links;
+				entryInfo += '<br /><b>Keywords:</b>\t\t\t' + (entry.keywords ? entry.keywords : '');
+				entryInfo += '<br /><b>Status:</b>\t\t\t\t' + (entry.status ? entry.status : '');
+				entryInfo += '<br /><b>Summary:</b>\t\t\t' + (entry.shortDescription ? entry.shortDescription : '');
+				entryInfo += '<br /><b>Notes:</b>\t\t\t\t' + (entry.longDescription ? entry.longDescription : '');
+				entryInfo += '<br /><b>References:</b>\t\t\t' + (entry.references ? entry.references : '');
+				entryInfo += '<br /><b>Created:</b>\t\t\t' + (entry.creationTime ? entry.creationTime.toString() : '');
+				entryInfo += '<br /><b>Modified:</b>\t\t\t' + (entry.modificationTime ? entry.modificationTime.toString() : '');
+				
+				return entryInfo;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea 
+		id="entryInfoTextArea" 
+		editable="false"
+		width="100%"
+		height="100%"/>
+	
+</mx:Box>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialogs:AbstractDialogForm xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:dialogs="org.jbei.ui.dialogs.*" width="100%" height="100%" creationComplete="onCreationComplete()">
+<mx:Script>
+	<![CDATA[
+		import mx.events.ValidationResultEvent;
+		
+		import org.jbei.ApplicationFacade;
+		
+		[Bindable]
+		private var sequenceLength:int = ApplicationFacade.getInstance().featuredSequence.sequence.length;
+		
+		// Event Handlers
+		private function onCreationComplete():void
+		{
+			positionNumericStepper.setFocus();
+		}
+		
+		// Public Methods
+		public override function validate():void
+		{
+			if(sequenceLength == 0 || positionValidator.validate().type == ValidationResultEvent.INVALID) {
+				isValid = false;
+			} else {
+				dataObject = int(positionNumericStepper.value);
+				
+				isValid = true;
+			}
+		}
+	]]>
+</mx:Script>
+	<mx:NumberValidator id="positionValidator" source="{ positionNumericStepper }" required="true" minValue="0" maxValue="{ sequenceLength + 1}" property="value" domain="int"/>
+	
+	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">
+		<mx:FormItem label="Position:" direction="horizontal"><mx:NumericStepper id="positionNumericStepper" minimum="0" maximum="{ sequenceLength + 1}" stepSize="1" /></mx:FormItem>
+	</mx:Form>
+
+</dialogs:AbstractDialogForm>

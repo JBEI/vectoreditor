@@ -1,4 +1,4 @@
-package org.jbei.registry.view.ui
+package org.jbei.registry.view.ui.menu
 {
 	[Bindable]
 	public class MenuItem

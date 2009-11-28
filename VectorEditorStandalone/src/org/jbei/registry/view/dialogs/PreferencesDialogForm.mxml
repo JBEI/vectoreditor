@@ -43,6 +43,7 @@
 				}
 			}
 			
+			// Private Methods
 			private function onCreationComplete(event:Event):void
 			{
 				userPreferences = (ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy).userPreferences;

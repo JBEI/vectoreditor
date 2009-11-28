@@ -4,19 +4,14 @@
 		<![CDATA[
 			import mx.events.ItemClickEvent;
 			
-			import org.jbei.bio.data.Feature;
-			
-			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
-			import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
-			import org.jbei.ui.dialogs.ModalDialog;
-			import org.jbei.ui.dialogs.ModalDialogEvent;
-			
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
 			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
 			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
-			public static const SHOW_FEATURES_DIALOG:String = "ShowFeaturesDialog";
+			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
+			public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
+			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
 			public static const COPY:String = "Copy";
 			public static const CUT:String = "Cut";
 			public static const PASTE:String = "Paste";
@@ -67,6 +62,18 @@
 			[Bindable]
 			private var cutDisabledIcon:Class;
 			
+			[Embed(source='../assets/icons/goto.png')]
+			[Bindable]
+			private var gotoIcon:Class;
+			
+			[Embed(source='../assets/icons/find.png')]
+			[Bindable]
+			private var findIcon:Class;
+			
+			[Embed(source='../assets/icons/properties.png')]
+			[Bindable]
+			private var propertiesIcon:Class;
+			
 			// Public Methods
 			public function updateUndoButtonState(active:Boolean):void
 			{
@@ -107,21 +114,6 @@
 			
 			// Event Handlers
 			private function onChangeViewButtonClick(event:ItemClickEvent):void { }
-			
-			private function onShowRestrictionEnzymesManagerButton(event:MouseEvent):void
-			{
-				dispatchEvent(new Event(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG));
-			}
-			
-			private function onShowCreateFeatureDialogButton(event:MouseEvent):void
-			{
-				dispatchEvent(new Event(SHOW_CREATE_NEW_FEATURE_DIALOG));
-			}
-			
-			private function onShowFeaturesDialogButton(event:MouseEvent):void
-			{
-				dispatchEvent(new Event(SHOW_FEATURES_DIALOG));
-			}
 		]]>
 	</mx:Script>
 	
@@ -148,11 +140,15 @@
     <mx:Button width="24" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" click="{ dispatchEvent(new Event(UNDO)) }" />
     <mx:Button width="24" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" click="{ dispatchEvent(new Event(REDO)) }" />
     <mx:Spacer width="5" />
-    <mx:Button width="24" id="showFeaturesButton" label="F" toolTip="Show Features" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
+	<mx:Button width="24" id="showFindPanelButton" icon="{ findIcon }" toolTip="Find ..." click="dispatchEvent(new Event(SHOW_FIND_PANEL));"/>
+	<mx:Button width="24" id="showGoToDialogButton" icon="{ gotoIcon }" toolTip="Go To ..." click="dispatchEvent(new Event(SHOW_GOTO_DIALOG));"/>
+	<mx:Spacer width="5" />
+	<mx:Button width="24" id="showFeaturesButton" label="F" toolTip="Show Features" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
     <mx:Button width="24" id="showCutSitesButton" label="C" toolTip="Show Cut Sites" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_CUTSITES_STATE_CHANGED));"/>
     <mx:Button width="24" id="showORFsButton" label="O" toolTip="Show ORF" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_ORFS_STATE_CHANGED));"/>
     <mx:Spacer width="5" />
-    <mx:Button width="24" id="showRestrictionEnzymesManagerDialogButton" label="RE" toolTip="Manage Restriction Enzymes" click="onShowRestrictionEnzymesManagerButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
-    <mx:Button width="24" id="showCreateFeatureDialogButton" label="CF" toolTip="Create New Feature" click="onShowCreateFeatureDialogButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
-    <mx:Button width="24" id="showFeaturesDialogButton" label="FF" toolTip="Features" click="onShowFeaturesDialogButton(event)" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+    <mx:Button width="25" id="showRestrictionEnzymesManagerDialogButton" label="RE" toolTip="Manage Restriction Enzymes" click="dispatchEvent(new Event(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG));" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+    <mx:Button width="25" id="showCreateFeatureDialogButton" label="CF" toolTip="Create New Feature" click="dispatchEvent(new Event(SHOW_CREATE_NEW_FEATURE_DIALOG));" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+	<mx:Spacer width="5" />
+	<mx:Button width="24" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" click="dispatchEvent(new Event(SHOW_PROPERTIES_DIALOG));" />
 </mx:ApplicationControlBar>

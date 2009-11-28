@@ -44,6 +44,8 @@ package org.jbei.components.pieClasses
 		private var rail:Rail;
 		private var selectionLayer:SelectionLayer;
 		private var caret:Caret;
+		private var nameBox:NameBox;
+		private var highlightLayer:HighlightLayer;
 		
 		private var customContextMenu:ContextMenu;
 		private var editFeatureContextMenuItem:ContextMenuItem;
@@ -52,10 +54,11 @@ package org.jbei.components.pieClasses
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _highlights:Array /* of Segment */;
 		
-		private var railRadius:Number = 0;
 		private var _center:Point = new Point(0, 0);
 		private var _caretPosition:int;
+		private var _railRadius:Number = 0;
 		private var parentWidth:Number = 0;
 		private var parentHeight:Number = 0;
 		private var shiftKeyDown:Boolean = false;
@@ -84,10 +87,13 @@ package org.jbei.components.pieClasses
 		private var invalidSequence:Boolean = true;
 		private var startSelectionIndex:int;
 		private var endSelectionIndex:int;
+		private var selectionDirection:int = 0;
+		private var startSelectionAngle:Number;
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
+		private var highlightsChanged:Boolean = false;
 		private var featuresAlignmentChanged:Boolean = false;
 		private var orfsAlignmentChanged:Boolean = false;
 		private var needsMeasurement:Boolean = false;
@@ -152,6 +158,20 @@ package org.jbei.components.pieClasses
 			invalidateProperties();
 			
 			orfMapperChanged = true;
+		}
+		
+		public function get highlights():Array /* of Segment */
+		{
+			return _highlights;
+		}
+		
+		public function set highlights(value:Array /* of Segment */):void
+		{
+			_highlights = value;
+			
+			invalidateDisplayList();
+			
+			highlightsChanged = true;
 		}
 		
 		public function get showFeatures():Boolean
@@ -251,6 +271,11 @@ package org.jbei.components.pieClasses
 			return _center;
 		}
 		
+		public function get railRadius():Number
+		{
+			return _railRadius;
+		}
+		
 		public function get totalHeight():Number
 		{
 			return _totalHeight;
@@ -278,7 +303,7 @@ package org.jbei.components.pieClasses
 			this.parentHeight = parentHeight;
 			
         	_center = new Point(parentWidth / 2, parentHeight / 2);
-        	railRadius = PIE_RADIUS_PERCENTS * Math.min(parentWidth / 2, parentHeight / 2);
+        	_railRadius = PIE_RADIUS_PERCENTS * Math.min(parentWidth / 2, parentHeight / 2);
 			
 			needsMeasurement = true;
 			
@@ -291,7 +316,7 @@ package org.jbei.components.pieClasses
 			
 			if(!isValidIndex(startIndex) || !isValidIndex(endIndex)) {
 				deselect();
-			} else if(selectionLayer.start != startIndex || selectionLayer.end != endIndex) {
+			} else if((selectionLayer.start != startIndex || selectionLayer.end != endIndex) && startIndex != endIndex) {
 				doSelect(startIndex, endIndex);
 				
 				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
@@ -325,7 +350,7 @@ package org.jbei.components.pieClasses
 		
 		public function isValidIndex(index:int):Boolean
 		{
-			return index >= 0 && index < featuredSequence.sequence.length;
+			return index >= 0 && index <= featuredSequence.sequence.length;
 		}
 		
 	    // Protected Methods
@@ -336,7 +361,11 @@ package org.jbei.components.pieClasses
 			createContextMenu();
 			
 	        createRailBox();
-	        
+			
+			createNameBox();
+			
+			createHighlightLayer();
+			
 	        createSelectionLayer();
 	        
 	        createCaret();
@@ -457,6 +486,12 @@ package org.jbei.components.pieClasses
 		        rebuildORFsAlignment();
 	        }
 	        
+			if(highlightsChanged && !needsMeasurement) {
+				highlightsChanged = false;
+				
+				highlightLayer.update();
+			}
+			
 	        if(needsMeasurement) {
 	        	needsMeasurement = false;
 	        	
@@ -474,15 +509,30 @@ package org.jbei.components.pieClasses
 				renderORFs();
 		        
 		        // update children metrics
-		        rail.updateMetrics(railRadius, _center, RAIL_HEIGHT);
+		        rail.updateMetrics(_railRadius, _center, RAIL_HEIGHT);
 		        
-		        caret.updateMetrics(_center, railRadius + 10);
+		        caret.updateMetrics(_center, _railRadius + 10);
+				
+				nameBox.update(_center, _featuredSequence.name, _featuredSequence.sequence.length);
 		        
+				if(highlightsChanged) {
+					highlightsChanged = false;
+				}
+				
+				highlightLayer.update();
+				
 	        	drawBackground();
 		        drawConnections();
 		        
-		        selectionLayer.updateMetrics(railRadius + 10, _center);
+		        selectionLayer.updateMetrics(_railRadius + 10, _center);
+				
+				if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
+					selectionLayer.deselect();
+					doSelect(startSelectionIndex, endSelectionIndex);
+				}
 	        }
+			
+			validateCaret();
 		}
 		
 		// Private Methods
@@ -575,6 +625,16 @@ package org.jbei.components.pieClasses
 	        }
 	 	}
 	 	
+		private function createHighlightLayer():void
+		{
+			if(highlightLayer == null) {
+				highlightLayer = new HighlightLayer(this);
+				highlightLayer.includeInLayout = false;
+				
+				addChild(highlightLayer);
+			}
+		}
+		
 	 	private function createSelectionLayer():void
 	 	{
 	        if(!selectionLayer) {
@@ -584,6 +644,15 @@ package org.jbei.components.pieClasses
 	        }
 	 	}
 	 	
+		private function createNameBox():void
+		{
+			if(!nameBox) {
+				nameBox = new NameBox(this);
+				nameBox.includeInLayout = false;
+				addChild(nameBox);
+			}
+		}
+		
 	 	private function createCaret():void
 		{
 	        if(!caret) {
@@ -602,11 +671,13 @@ package org.jbei.components.pieClasses
 	    	}
 	    	
 	    	mouseIsDown = true;
+			selectionDirection = 0;
 	    	
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
 			startSelectionIndex = bpAtPoint(new Point(event.stageX, event.stageY));
+			startSelectionAngle = startSelectionIndex * 2 * Math.PI / _featuredSequence.sequence.length;
 			
 			clickPoint = new Point(event.stageX, event.stageY);
 			
@@ -618,10 +689,23 @@ package org.jbei.components.pieClasses
 	    	if((mouseIsDown && Point.distance(clickPoint, new Point(event.stageX, event.stageY)) > SELECTION_THRESHOLD)) {
 	    		endSelectionIndex = bpAtPoint(new Point(event.stageX, event.stageY));
 	    		
+				if(selectionDirection == 0) {
+					var endSelectionAngle:Number = endSelectionIndex * 2 * Math.PI / _featuredSequence.sequence.length;
+					
+					if(startSelectionAngle < Math.PI) {
+						selectionDirection = (endSelectionAngle >= startSelectionAngle && endSelectionAngle <= (startSelectionAngle + Math.PI)) ? 1 : -1;
+					} else {
+						selectionDirection = (endSelectionAngle <= startSelectionAngle && endSelectionAngle >= (startSelectionAngle - Math.PI)) ? -1 : 1;
+					}
+				}
+				
+				var start:int = (selectionDirection == -1) ? endSelectionIndex : startSelectionIndex;
+				var end:int = (selectionDirection == -1) ? startSelectionIndex : endSelectionIndex;
+				
 	    		selectionLayer.startSelecting();
-	    		selectionLayer.select(startSelectionIndex, endSelectionIndex);
+	    		selectionLayer.select(start, end);
 	    		
-				tryMoveCaretToPosition(endSelectionIndex + 1);
+				tryMoveCaretToPosition(end);
 	    	}
 	    }
 	    
@@ -672,7 +756,7 @@ package org.jbei.components.pieClasses
 		
 	    private function onSelectAll(event:Event):void
 	    {
-	    	select(0, _featuredSequence.sequence.length - 1);
+	    	select(0, _featuredSequence.sequence.length);
 	    }
 	    
 	    private function onCopy(event:Event):void
@@ -715,14 +799,8 @@ package org.jbei.components.pieClasses
 		private function onKeyUp(event:KeyboardEvent):void
 	    {
 			if(shiftKeyDown) {
-				if(_caretPosition < shiftDownCaretPosition) {
-					doSelect(_caretPosition, shiftDownCaretPosition - 1);
-					
-					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
-				} else if(_caretPosition > shiftDownCaretPosition) {
-					doSelect(_caretPosition - 1, shiftDownCaretPosition);
-					
-					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+				if(_caretPosition != shiftDownCaretPosition) {
+					select(shiftDownCaretPosition, _caretPosition);
 				} else {
 					deselect();
 				}
@@ -743,9 +821,9 @@ package org.jbei.components.pieClasses
 	    	}
 	    	
 	    	if(event.keyCode == Keyboard.LEFT) {
-	    		moveCaretLeft();
+    			tryMoveCaretToPosition(_caretPosition - 1);
 	    	} else if(event.keyCode == Keyboard.RIGHT) {
-	    		moveCaretRight();
+				tryMoveCaretToPosition(_caretPosition + 1);
 	    	}
 	    }
 	    
@@ -871,8 +949,8 @@ package org.jbei.components.pieClasses
 				var label1Center:int = annotationCenter(labelBox1.relatedAnnotation);
 				var angle1:Number = label1Center * 2 * Math.PI / _featuredSequence.sequence.length;
 				
-				var xPosition1:Number = _center.x + Math.sin(angle1) * (railRadius + 20);
-				var yPosition1:Number = _center.y - Math.cos(angle1) * (railRadius + 20);
+				var xPosition1:Number = _center.x + Math.sin(angle1) * (_railRadius + 20);
+				var yPosition1:Number = _center.y - Math.cos(angle1) * (_railRadius + 20);
 				
 				if(yPosition1 < lastLabelYPosition) {
 					lastLabelYPosition = yPosition1 - labelBox1.totalHeight;
@@ -905,8 +983,8 @@ package org.jbei.components.pieClasses
 				var label2Center:int = annotationCenter(labelBox2.relatedAnnotation);
 				var angle2:Number = label2Center * 2 * Math.PI / _featuredSequence.sequence.length - Math.PI / 2;
 				
-				var xPosition2:Number = _center.x + Math.cos(angle2) * (railRadius + 20);
-				var yPosition2:Number = _center.y + Math.sin(angle2) * (railRadius + 20);
+				var xPosition2:Number = _center.x + Math.cos(angle2) * (_railRadius + 20);
+				var yPosition2:Number = _center.y + Math.sin(angle2) * (_railRadius + 20);
 				
 				if(yPosition2 > lastLabelYPosition) {
 					lastLabelYPosition = yPosition2 + labelBox2.totalHeight;
@@ -939,8 +1017,8 @@ package org.jbei.components.pieClasses
 				var label3Center:int = annotationCenter(labelBox3.relatedAnnotation);
 				var angle3:Number = 2 * Math.PI - label3Center * 2 * Math.PI / _featuredSequence.sequence.length;
 				
-				var xPosition3:Number = _center.x - Math.sin(angle3) * (railRadius + 20) - labelBox3.totalWidth;
-				var yPosition3:Number = _center.y - Math.cos(angle3) * (railRadius + 20);
+				var xPosition3:Number = _center.x - Math.sin(angle3) * (_railRadius + 20) - labelBox3.totalWidth;
+				var yPosition3:Number = _center.y - Math.cos(angle3) * (_railRadius + 20);
 				
 				if(yPosition3 < lastLabelYPosition) {
 					lastLabelYPosition = yPosition3 - labelBox3.totalHeight;
@@ -973,8 +1051,8 @@ package org.jbei.components.pieClasses
 				var label4Center:int = annotationCenter(labelBox4.relatedAnnotation);
 				var angle4:Number = label4Center * 2 * Math.PI / _featuredSequence.sequence.length - Math.PI;
 				
-				var xPosition4:Number = _center.x - Math.sin(angle4) * (railRadius + 20) - labelBox4.totalWidth;
-				var yPosition4:Number = _center.y + Math.cos(angle4) * (railRadius + 20);
+				var xPosition4:Number = _center.x - Math.sin(angle4) * (_railRadius + 20) - labelBox4.totalWidth;
+				var yPosition4:Number = _center.y + Math.cos(angle4) * (_railRadius + 20);
 				
 				if(yPosition4 > lastLabelYPosition) {
 					lastLabelYPosition = yPosition4 + labelBox4.totalHeight;
@@ -1034,7 +1112,7 @@ package org.jbei.components.pieClasses
 				featureRenderer.visible = _showFeatures;
 				
 				if(_showFeatures) {
-					featureRenderer.update(_center, railRadius, featureAlignmentMap);
+					featureRenderer.update(_center, _railRadius, featureAlignmentMap);
 				}
 			}
 		}
@@ -1049,7 +1127,7 @@ package org.jbei.components.pieClasses
 				cutSiteRenderer.visible = _showCutSites;
 				
 				if(_showCutSites) {
-					cutSiteRenderer.update(_center, railRadius);
+					cutSiteRenderer.update(_center, _railRadius);
 				}
 			}
 		}
@@ -1064,7 +1142,7 @@ package org.jbei.components.pieClasses
 				orfRenderer.visible = _showORFs;
 				
 				if(_showORFs) {
-					orfRenderer.update(_center, railRadius, orfAlignmentMap);
+					orfRenderer.update(_center, _railRadius, orfAlignmentMap);
 				}
 			}
 		}
@@ -1341,6 +1419,10 @@ package org.jbei.components.pieClasses
 		
 		private function doSelect(start:int, end:int):void
 		{
+			if(start > 0 && end == 0) {
+				end == featuredSequence.sequence.length - 1;
+			}
+			
 			selectionLayer.select(start, end);
 		}
 		
@@ -1403,7 +1485,11 @@ package org.jbei.components.pieClasses
 		private function moveCaretToPosition(newPosition:int):void
 		{
 			if(newPosition != _caretPosition) {
-				doMoveCaretToPosition(newPosition);
+				if(! isValidIndex(newPosition)) {
+					throw new Error("Invalid caret position: " + String(newPosition));
+				}
+				
+				_caretPosition = newPosition;
 				
 				dispatchEvent(new CaretEvent(CaretEvent.CARET_POSITION_CHANGED, _caretPosition));
 			}
@@ -1411,36 +1497,9 @@ package org.jbei.components.pieClasses
 			caret.position = _caretPosition;
 		}
 		
-		private function doMoveCaretToPosition(newPosition:int):void
+		private function validateCaret():void
 		{
-			if(! isValidCaretPosition(newPosition)) {
-				throw new Error("Invalid caret position: " + String(newPosition));
-			}
-			
-			_caretPosition = newPosition;
-		}
-		
-		private function isValidCaretPosition(position:int):Boolean
-		{
-			return isValidIndex(position) || position == featuredSequence.sequence.length;
-		}
-		
-		private function moveCaretLeft():void
-		{
-			if(_caretPosition == 0) {
-				tryMoveCaretToPosition(featuredSequence.sequence.length - 1);
-			} else if(_caretPosition > -1 && _caretPosition < _featuredSequence.sequence.length) {
-				tryMoveCaretToPosition(_caretPosition - 1);
-			}
-		}
-		
-		private function moveCaretRight():void
-		{
-			if(_caretPosition == _featuredSequence.sequence.length - 1) {
-				tryMoveCaretToPosition(0);
-			} else if(_caretPosition > -1 && _caretPosition < _featuredSequence.sequence.length - 1) {
-				tryMoveCaretToPosition(_caretPosition + 1);
-			}
+			tryMoveCaretToPosition(_caretPosition);
 		}
 	}
 }

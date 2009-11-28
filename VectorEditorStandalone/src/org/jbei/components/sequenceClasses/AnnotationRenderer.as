@@ -30,8 +30,8 @@ package org.jbei.components.sequenceClasses
 			
 			tooltipLabel = "";
 			
-			addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			addEventListener(MouseEvent.ROLL_OVER, onRollOver);
+			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			addEventListener(MouseEvent.CLICK, onMouseClick);
 			
 			createToolTipLabel();
@@ -67,7 +67,7 @@ package org.jbei.components.sequenceClasses
 		}
 		
 		// Private Methods
-		private function onMouseOver(event:MouseEvent):void
+		private function onRollOver(event:MouseEvent):void
 		{
 			// Calculate tip position
 			var localPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
@@ -75,14 +75,14 @@ package org.jbei.components.sequenceClasses
 			tip = ToolTipManager.createToolTip(tooltipLabel, localPoint.x, localPoint.y) as ToolTip;
 		}
 		
-		private function onMouseOut(event:MouseEvent):void
+		private function onRollOut(event:MouseEvent):void
 		{
 			ToolTipManager.destroyToolTip(tip);
 		}
 		
 		private function onMouseClick(event:MouseEvent):void
 		{
-			contentHolder.select(annotation.start, annotation.end);
+			contentHolder.select(annotation.start, annotation.end + 1);
 		}
 	}
 }

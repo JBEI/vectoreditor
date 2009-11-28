@@ -81,7 +81,7 @@ package org.jbei.bio.data
 		{
 			var result:String = "";
 			
-			for(var i:uint = 0; i < length; i++) {
+			for(var i:int = 0; i < length; i++) {
 				if(showLineNumbers) {
 					if((i == 0) || i % bpPerLine == 0) {
 						result += String(i + 1) + "\t";

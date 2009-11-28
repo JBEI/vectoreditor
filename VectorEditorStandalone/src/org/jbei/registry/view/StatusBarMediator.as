@@ -1,6 +1,7 @@
 package org.jbei.registry.view
 {
 	import org.jbei.ApplicationFacade;
+	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.registry.view.ui.StatusBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -27,6 +28,7 @@ package org.jbei.registry.view
 				
 				, ApplicationFacade.FETCHING_DATA
 				, ApplicationFacade.DATA_FETCHED
+				, ApplicationFacade.FEATURED_SEQUENCE_CHANGED
 			];
 		}
 		
@@ -36,8 +38,20 @@ package org.jbei.registry.view
 				case ApplicationFacade.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
-					if(selectionPositions[0] > -1 && selectionPositions[1] > -1) {
-						statusBar.selectionPositionLabel.text = String(selectionPositions[0] + 1) + " : " + String(selectionPositions[1] + 1);
+					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().featuredSequence) { return; }
+					
+					var start:int = selectionPositions[0] as int;
+					var end:int = selectionPositions[1] as int;
+					
+					if(start > -1 && end > -1 && start != end) {
+						var selectionLength:int;
+						if (start < end) {
+							selectionLength = end - start;
+						} else {
+							selectionLength = end + ApplicationFacade.getInstance().featuredSequence.sequence.length - start;
+						}
+						
+						statusBar.selectionPositionLabel.text = String(start + 1) + " : " + String(end) + " (" + String(selectionLength) + ")";
 					} else {
 						statusBar.selectionPositionLabel.text = '- : -';
 					}
@@ -57,6 +71,14 @@ package org.jbei.registry.view
 					break;
 				case ApplicationFacade.DATA_FETCHED:
 					statusBar.statusLabel.text = "Done";
+					break;
+				case ApplicationFacade.FEATURED_SEQUENCE_CHANGED:
+					if(ApplicationFacade.getInstance().featuredSequence) {
+						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().featuredSequence.sequence.length);
+					} else {
+						statusBar.sequenceLengthLabel.text = "-";
+					}
+					
 					break;
 			}
 		}

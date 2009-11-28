@@ -103,10 +103,10 @@ package org.jbei.components.pieClasses
 		// Private Methods
 		private function drawSelectionPie(fromIndex:int, endIndex:int):void
 		{
-			if(contentHolder.featuredSequence.sequence.length == 0) { return; }
+			if(contentHolder.featuredSequence.sequence.length == 0 || (_start == fromIndex && _end == endIndex) || fromIndex == endIndex) { return; }
 			
 			var angle1:Number = fromIndex * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-			var angle2:Number = (endIndex + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			var angle2:Number = endIndex * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 			
 			var startPoint:Point = new Point(center.x + radius*Math.sin(angle1), center.y - radius*Math.cos(angle1));
 			var endPoint:Point = new Point(center.x + radius*Math.sin(angle2), center.y - radius*Math.cos(angle2));

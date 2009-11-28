@@ -43,5 +43,11 @@ package org.jbei.registry.model.vo
 		{
 			_entry = value;
 		}
+		
+		// Public Methods
+		public function toString():String
+		{
+			return _partNumber;
+		}
 	}
 }

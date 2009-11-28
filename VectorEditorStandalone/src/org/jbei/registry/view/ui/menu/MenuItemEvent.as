@@ -1,4 +1,4 @@
-package org.jbei.registry.view.ui
+package org.jbei.registry.view.ui.menu
 {
 	import flash.events.Event;
 

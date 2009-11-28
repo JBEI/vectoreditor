@@ -10,6 +10,7 @@ package org.jbei.lib
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.common.IMemento;
 	import org.jbei.common.IOriginator;
+	import org.jbei.utils.StringUtils;
 	
 	public class FeaturedSequence extends EventDispatcher implements IOriginator
 	{
@@ -96,14 +97,14 @@ package org.jbei.lib
 		{
 			var result:DNASequence = null;
 			
-			if(start < 0 || end < 0 || start > _sequence.length - 1 || end > _sequence.length - 1) {
+			if(start < 0 || end < 0 || start > _sequence.length || end > _sequence.length) {
 				return result;
 			}
 			
 			if(start > end) {
-				result = new DNASequence(_sequence.sequence.substring(start, _sequence.length) + _sequence.sequence.substring(0, end + 1), true);
+				result = new DNASequence(_sequence.sequence.substring(start, _sequence.length) + _sequence.sequence.substring(0, end), true);
 			} else {
-				result = _sequence.subSequence(start, end - start + 1);
+				result = _sequence.subSequence(start, end - start);
 			}
 			
 			return result;
@@ -184,7 +185,7 @@ package org.jbei.lib
 		
 		public function insertSequence(insertSequence:DNASequence, position:int, quiet:Boolean = false):void
 		{
-			if(position < 0 || position > sequence.length || insertSequence.length == 0) return;
+			if(position < 0 || position > sequence.length || insertSequence.length == 0) { return };
 			
 			if(!quiet && !_manualUpdateStarted) {
 				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
@@ -227,7 +228,7 @@ package org.jbei.lib
 		{
 			var sequenceLength:int = _sequence.length;
 			
-			if(endIndex < 0 || startIndex < 0 || startIndex > sequenceLength - 1 || endIndex > sequenceLength - 1) { return; }
+			if(endIndex < 0 || startIndex < 0 || startIndex > sequenceLength || endIndex > sequenceLength || startIndex == endIndex) { return; }
 			
 			if(!quiet && !_manualUpdateStarted) {
 				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
@@ -241,13 +242,13 @@ package org.jbei.lib
 				var feature:Feature = _features[i];
 				
 				if(feature.start <= feature.end) { // normal feature
-					if(startIndex <= endIndex) { // normal selection
+					if(startIndex < endIndex) { // normal selection
 						/* Selection before feature => feature shift left
 						* |-----SSSSSSSSSSSSSSSSSSSSSSSSS--------------------------------------------------------------------|
 						*                                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                 */
-						if(startIndex < feature.start && endIndex <  feature.start) {
-							feature.start -= (endIndex - startIndex + 1);
-							feature.end -= (endIndex - startIndex + 1);
+						if(startIndex < feature.start && (endIndex - 1) < feature.start) {
+							feature.start -= endIndex - startIndex;
+							feature.end -= endIndex - startIndex;
 							if (DEBUG_MODE) trace("case Fn,Sn 1");
 						}
 							/* Selection after feature => no action
@@ -259,30 +260,29 @@ package org.jbei.lib
 							/* Selection cover feature => remove feature
 							* |-----------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS-----------------------|
 							*                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-						else if(startIndex <= feature.start && endIndex >= feature.end) {
+						else if(startIndex <= feature.start && feature.end <= (endIndex - 1)) {
 							deletions.push(feature);
 							if (DEBUG_MODE) trace("case Fn,Sn 3");
 						}
 							/* Selection inside feature => resize feature
 							* |-------------------------------------SSSSSSSSSSSSSSSSSSSSSS---------------------------------------|
 							*                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-						else if((startIndex >= feature.start && endIndex < feature.end) || (startIndex > feature.start && endIndex <= feature.end)) {
-							feature.end -= (endIndex - startIndex + 1);
+						else if((startIndex >= feature.start && (endIndex - 1) < feature.end) || (startIndex > feature.start && (endIndex - 1) <= feature.end)) {
+							feature.end -= endIndex - startIndex;
 							if (DEBUG_MODE) trace("case Fn,Sn 4");
 						}
 							/* Selection left overlap feature => shift & resize feature
 							* |-----------------------------SSSSSSSSSSSSSSSSSSSSS------------------------------------------------|
 							*                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-						else if(startIndex <= feature.start && endIndex > feature.start) {
-							var overlapLength:int = endIndex - feature.start;
+						else if(startIndex < feature.start && feature.start <= (endIndex - 1)) {
 							feature.start = startIndex;
-							feature.end -= (endIndex - startIndex + 1);
+							feature.end -= endIndex - startIndex;
 							if (DEBUG_MODE) trace("case Fn,Sn 5");
 						}
 							/* Selection right overlap feature => shift & resize feature
 							* |-------------------------------------------------SSSSSSSSSSSSSSSSSSSSS----------------------------|
 							*                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-						else if(startIndex <= feature.end && endIndex > feature.end) {
+						else if(startIndex <= feature.end && (endIndex - 1) > feature.end) {
 							feature.end = startIndex - 1;
 							if (DEBUG_MODE) trace("case Fn,Sn 6");
 						} else {
@@ -292,33 +292,33 @@ package org.jbei.lib
 						/* Selection and feature no overlap => shift left
 						* |SSSSSSSSSSS-------------------------------------------------------------------------SSSSSSSSSSSSSS|
 						*                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-						if(startIndex > feature.end && endIndex < feature.start) {
-							feature.start -= endIndex + 1;
-							feature.end -= endIndex + 1;
+						if(startIndex > feature.end && (endIndex - 1) < feature.start) {
+							feature.start -= endIndex;
+							feature.end -= endIndex;
 							if (DEBUG_MODE) trace("case Fn,Sc 1");
 						}
 							/* Selection and feature left partial overlap => cut and shift
 							* |SSSSSSSSSSSSSSSSSSSS----------------------------------------------------------------SSSSSSSSSSSSSS|
 							*             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                                         */
-						else if(startIndex > feature.end && endIndex >= feature.start && endIndex < feature.end) {
+						else if(startIndex > feature.end && (endIndex - 1) >= feature.start && endIndex < feature.end) {
 							feature.start = 0;
-							feature.end -= endIndex + 1;
+							feature.end -= endIndex;
 							if (DEBUG_MODE) trace("case Fn,Sc 2");
 						}
 							/* Selection and feature right partial overlap => cut and shift
 							* |SSSSSSSSSSSSSSS--------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSS|
 							*                                                       |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|               */
-						else if(startIndex > feature.start && startIndex <= feature.end && endIndex < feature.start) {
-							feature.start -= endIndex + 1;
-							feature.end -= (feature.end - startIndex + 1) + (endIndex + 1);
+						else if(startIndex > feature.start && startIndex <= feature.end && (endIndex - 1) < feature.start) {
+							feature.start -= endIndex;
+							feature.end -= (feature.end - startIndex + 1) + endIndex;
 							if (DEBUG_MODE) trace("case Fn,Sc 3");
 						}
 							/* Double selection overlap => cut and shift
 							* |SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS-----------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
 							*                           |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                          */
-						else if(startIndex <= feature.end && endIndex >= feature.start) {
+						else if(startIndex <= feature.end && (endIndex - 1) >= feature.start) {
 							feature.start = 0;
-							feature.end -= (feature.end - startIndex + 1) + (endIndex + 1);
+							feature.end -= (feature.end - startIndex + 1) + endIndex;
 							if (DEBUG_MODE) trace("case Fn,Sc 3");
 						}
 							/* Complete left cover => remove feature
@@ -339,12 +339,12 @@ package org.jbei.lib
 						}
 					}
 				} else { // circular feature
-					if(startIndex <= endIndex) { // normal selection
+					if(startIndex < endIndex) { // normal selection
 						/* Selection between feature start and end
 						* |-------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------------------------------------|
 						*  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						if(startIndex > feature.end && endIndex <  feature.start) {
-							feature.start -= (endIndex - startIndex + 1);
+						if(startIndex > feature.end && (endIndex - 1) < feature.start) {
+							feature.start -= endIndex - startIndex;
 							if (DEBUG_MODE) trace("case Fc,Sn 1");
 						}
 							/* Selection inside feature start
@@ -356,16 +356,16 @@ package org.jbei.lib
 							/* Selection inside feature end
 							* |--SSSSSSSSSSSSSSSSSS------------------------------------------------------------------------------|
 							*  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(endIndex < feature.end) {
-							feature.start -= endIndex - startIndex + 1;
-							feature.end -= endIndex - startIndex + 1;
+						else if((endIndex - 1) < feature.end) {
+							feature.start -= endIndex - startIndex;
+							feature.end -= endIndex - startIndex;
 							if (DEBUG_MODE) trace("case Fc,Sn 3");
 						}
 							/* Selection in feature start
 							* |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
 							*  FFFFFFFFFFFFFFFFFFF|                                                        |FFFFFFFFFFFFFFFFFFFFF  */
-						else if(startIndex > feature.end && startIndex <= feature.start && endIndex >= feature.start) {
-							if(endIndex == sequence.length - 1) {
+						else if(startIndex > feature.end && startIndex <= feature.start && (endIndex - 1) >= feature.start) {
+							if(endIndex - 1 == sequence.length - 1) {
 								feature.start = 0;
 								if (DEBUG_MODE) trace("case Fc,Sn 4a");
 							} else {
@@ -376,13 +376,13 @@ package org.jbei.lib
 							/* Selection in feature end
 							* |--SSSSSSSSSSSSSSSSSSSSSSSSSSSSS-------------------------------------------------------------------|
 							*  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(startIndex <= feature.end && endIndex >= feature.end && endIndex < feature.start) {
-							if(startIndex == 0 && endIndex >= feature.end) {
-								feature.end = sequence.length - 1 - (endIndex - startIndex + 1);
-								feature.start -= (endIndex - startIndex + 1);
+						else if(startIndex <= feature.end && (endIndex - 1) >= feature.end && (endIndex - 1) < feature.start) {
+							if(startIndex == 0 && (endIndex - 1) >= feature.end) {
+								feature.end = sequence.length - 1 - (endIndex - startIndex);
+								feature.start -= endIndex - startIndex;
 								if (DEBUG_MODE) trace("case Fc,Sn 5a");
 							} else {
-								feature.start -= (endIndex - startIndex + 1);
+								feature.start -= endIndex - startIndex;
 								feature.end = startIndex - 1;
 								if (DEBUG_MODE) trace("case Fc,Sn 5b");
 							}
@@ -390,17 +390,17 @@ package org.jbei.lib
 							/* Double ends selection
 							* |------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS---------------------|
 							*  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(startIndex <= feature.end && feature.start <= endIndex) {
-							if(startIndex == 0 && endIndex == sequenceLength - 1) {
+						else if(startIndex <= feature.end && feature.start <= endIndex - 1) {
+							if(startIndex == 0 && endIndex == sequenceLength) {
 								deletions.push(feature);
-							} else if(endIndex == sequence.length - 1) {
+							} else if(endIndex == sequence.length) {
 								feature.start = 0;
 								feature.end = startIndex - 1;
 								
 								if (DEBUG_MODE) trace("case Fc,Sn 6a");
 							} else if(startIndex == 0) {
 								feature.start = 0;
-								feature.end = sequence.length - (endIndex + 1) - 1;
+								feature.end = sequence.length - endIndex - 1;
 								
 								if (DEBUG_MODE) trace("case Fc,Sn 6b");
 							} else {
@@ -416,34 +416,34 @@ package org.jbei.lib
 						/* Selection inside feature
 						* |SSSSSSSSSSSSSSSSS--------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS|
 						*  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						if(startIndex > feature.start && endIndex < feature.end) {
+						if(startIndex > feature.start && (endIndex - 1) < feature.end) {
 							if (DEBUG_MODE) trace("case Fc,Sc 1");
 							
-							feature.start -= endIndex + 1;
-							feature.end -= endIndex + 1;
+							feature.start -= endIndex;
+							feature.end -= endIndex;
 						}
 							/* Selection end overlap
 							* |SSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS|
 							*  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(endIndex >= feature.end && startIndex > feature.start && endIndex < feature.start) {
+						else if(endIndex - 1 >= feature.end && startIndex > feature.start && (endIndex - 1) < feature.start) {
 							if (DEBUG_MODE) trace("case Fc,Sc 2");
 							
-							feature.start -= endIndex + 1;
-							feature.end = startIndex - 1 - endIndex - 1;
+							feature.start -= endIndex;
+							feature.end = startIndex - 1 - endIndex;
 						}
 							/* Selection start overlap
 							* |SSSSSSSSSSSSSSSSS-----------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
 							*  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(startIndex <= feature.start && feature.end > endIndex && startIndex > feature.end) {
+						else if(startIndex <= feature.start && feature.end > (endIndex - 1) && startIndex > feature.end) {
 							if (DEBUG_MODE) trace("case Fc,Sc 3");
 							
 							feature.start = 0;
-							feature.end -= endIndex + 1;
+							feature.end -= endIndex;
 						}
 							/* Selection inside feature
 							* |SSSSSSSSSSSSSSSSSSSSSSS-----------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
 							*  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(endIndex >= feature.end && startIndex <= feature.start && endIndex < feature.start) {
+						else if(endIndex - 1 >= feature.end && startIndex <= feature.start && endIndex - 1 < feature.start) {
 							if (DEBUG_MODE) trace("case Fc,Sc 4");
 							
 							deletions.push(feature);
@@ -451,11 +451,11 @@ package org.jbei.lib
 							/* Selection double end right overlap
 							* |SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS----------------------------SSSSSSSSSSSSSSSSSSSSSSSSSS|
 							*  FFFFFFFFFFFFFFFFFFF|             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else if(endIndex >= feature.start) {
+						else if(endIndex - 1 >= feature.start) {
 							if (DEBUG_MODE) trace("case Fc,Sc 5");
 							
 							feature.start = 0;
-							feature.end = startIndex - (endIndex + 1) - 1;
+							feature.end = startIndex - endIndex - 1;
 						}
 							/* Selection double end left overlap
 							* |SSSSSSSSSSS---------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
@@ -464,7 +464,7 @@ package org.jbei.lib
 							if (DEBUG_MODE) trace("case Fc,Sc 6");
 							
 							feature.start = 0;
-							feature.end = startIndex - (endIndex + 1) - 1;
+							feature.end = startIndex - endIndex - 1;
 						}
 						else {
 							throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.sequence);
@@ -478,13 +478,13 @@ package org.jbei.lib
 			}
 			
 			if(startIndex > endIndex) {
-				_sequence.remove(0, endIndex + 1);
-				_oppositeSequence.remove(0, endIndex + 1);
+				_sequence.remove(0, endIndex);
+				_oppositeSequence.remove(0, endIndex);
 				
-				_sequence.remove(startIndex - endIndex - 1, sequenceLength - startIndex);
-				_oppositeSequence.remove(startIndex - endIndex - 1, sequenceLength - startIndex);
+				_sequence.remove(startIndex - endIndex, sequenceLength - startIndex);
+				_oppositeSequence.remove(startIndex - endIndex, sequenceLength - startIndex);
 			} else {
-				var removeSequenceLength:int = endIndex - startIndex + 1;
+				var removeSequenceLength:int = endIndex - startIndex;
 				
 				_sequence.remove(startIndex, removeSequenceLength);
 				_oppositeSequence.remove(startIndex, removeSequenceLength);
@@ -529,6 +529,138 @@ package org.jbei.lib
 		public override function toString():String
 		{
 			return _sequence.exportAsText(60, true, true);
+		}
+		
+		public function toGenbank():String
+		{
+			// TODO: Move this somewhere else
+			
+			var date:Date = new Date();
+			
+			var genbankString:String = "";
+			
+			genbankString += StringUtils.sprintf("LOCUS       %-21s%7d bp    DNA     %-9s    %s", name.substr(0, 11), sequence.length, (circular ? "circular" : "linear"), getGenbankDate());
+			genbankString += StringUtils.sprintf("\nCOMMENT     This is simplified autogenerated version of genbank file");
+			
+			if(!features || features.length == 0) { return genbankString; }
+			
+			genbankString += "\nFEATURES             Location/Qualifiers";
+			
+			for(var i:int = 0; i < features.length; i++) {
+				var feature:Feature = features[i] as Feature;
+				
+				if(feature.strand == -1) {
+					genbankString += StringUtils.sprintf("\n     %-16scomplement(%d..%d)", feature.type, feature.start + 1, feature.end);
+				} else {
+					genbankString += StringUtils.sprintf("\n     %-16s%d..%d", feature.type, feature.start + 1, feature.end);
+				}
+				
+				if(!feature.notes || feature.notes.length == 0) { continue; }
+				
+				for(var j:int = 0; j < feature.notes.length; j++) {
+					var featureNote:FeatureNote = feature.notes[j] as FeatureNote;
+					
+					genbankString += StringUtils.sprintf("\n                     /%s=\"%s\"", String(featureNote.name), String(featureNote.value));
+				}
+			}
+			
+			genbankString += StringUtils.sprintf("\nBASE COUNT%9d a %9d c %9d g %9d t ", countNucleotides("A"), countNucleotides("C"), countNucleotides("G"), countNucleotides("T"));
+			genbankString += "\nORIGIN";
+			
+			var rowIndex:int = 1;
+			var rowString:String = "";
+			var formattedRowString:String = "";
+			var currentString:String = sequence.sequence.toLowerCase();
+			for(var z:int = 0; z < currentString.length; z++) {
+				if((z == 0) || z % 60 == 0) {
+					rowIndex = z + 1;
+				}
+				
+				rowString += currentString.charAt(z);
+				
+				if((z + 1) % 60 == 0) {
+					formattedRowString += StringUtils.sprintf("\n  %7d %s ", rowIndex, rowString);
+					rowString = "";
+				} else if ((z + 1) % 10 == 0) {
+					rowString += " ";
+				}
+				
+				if(z == currentString.length - 1) {
+					formattedRowString += StringUtils.sprintf("\n  %7d %s ", rowIndex, rowString);
+				}
+			}
+			
+			genbankString += formattedRowString;
+			genbankString += "\n//";
+			
+			return genbankString;
+		}
+		
+		// Private Methods
+		private function getGenbankDate():String
+		{
+			var result:String;
+			
+			var date:Date = new Date();
+			
+			var month:String = "";
+			switch(date.month) {
+				case 0:
+					month = "JAN";
+					break;
+				case 1:
+					month = "FEB";
+					break;
+				case 2:
+					month = "MAR";
+					break;
+				case 3:
+					month = "APR";
+					break;
+				case 4:
+					month = "MAY";
+					break;
+				case 5:
+					month = "JUN";
+					break;
+				case 6:
+					month = "JUL";
+					break;
+				case 7:
+					month = "AUG";
+					break;
+				case 8:
+					month = "SEP";
+					break;
+				case 9:
+					month = "OCT";
+					break;
+				case 10:
+					month = "NOV";
+					break;
+				case 11:
+					month = "DEC";
+					break;
+				default:
+					return result;
+					break;
+			}
+			
+			return StringUtils.sprintf("%02d-%3s-%4d", date.date, month, date.fullYear);
+		}
+		
+		private function countNucleotides(nucleotide:String):int
+		{
+			var currentSequence:String = sequence.sequence;
+			var result:int = 0;
+			
+			for(var i:int = 0; i < currentSequence.length; i++) {
+				if(currentSequence.charAt(i) == nucleotide) {
+					result++;
+				}
+			}
+			
+			return result;
 		}
 	}
 }

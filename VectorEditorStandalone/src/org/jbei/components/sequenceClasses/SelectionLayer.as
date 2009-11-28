@@ -3,6 +3,7 @@ package org.jbei.components.sequenceClasses
 	import flash.display.Graphics;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	import flash.utils.Endian;
 	
 	import mx.core.UIComponent;
 	
@@ -30,8 +31,8 @@ package org.jbei.components.sequenceClasses
 			
 			this.contentHolder = contentHolder;
 			
-			addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			addEventListener(MouseEvent.ROLL_OVER, onRollOver);
+			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		}
 		
@@ -73,9 +74,8 @@ package org.jbei.components.sequenceClasses
 			// if sequence already selected, no point to redraw 
 			if(fromIndex == _start && toIndex == _end && _start != -1 && _end != -1) { return; }
 			
-			if(! contentHolder.isValidIndex(fromIndex) || ! contentHolder.isValidIndex(toIndex)) {
-				throw new Error("Invalid selection positions:  [" + String(fromIndex) + ", " + String(toIndex) + "]");
-			}
+			// nothing to select
+			if(fromIndex == toIndex) { return; }
 			
 			_selected = false;
 			
@@ -86,7 +86,7 @@ package org.jbei.components.sequenceClasses
 				
 				if(fromIndex > toIndex) {
 					drawSelection(0, toIndex);
-					drawSelection(fromIndex, contentHolder.featuredSequence.sequence.length - 1);
+					drawSelection(fromIndex, contentHolder.featuredSequence.sequence.length);
 				} else {
 					drawSelection(fromIndex, toIndex);
 				}
@@ -139,14 +139,14 @@ package org.jbei.components.sequenceClasses
 		}
 		
 		// Private Methods
-	    private function onMouseOver(event:MouseEvent):void
+	    private function onRollOver(event:MouseEvent):void
 	    {
 	    	if(!_selecting && selected) {
 	    		showHandles();
 	    	}
 	    }
 	    
-	    private function onMouseOut(event:MouseEvent):void
+	    private function onRollOut(event:MouseEvent):void
 	    {
 	    	if(!_selecting && selected) {
 	    		hideHandles();
@@ -191,14 +191,14 @@ package org.jbei.components.sequenceClasses
 	    private function showHandles():void
 	    {
 			var leftBpRectangle:Rectangle = contentHolder.bpMetricsByIndex(_start);
-			var startRow:Row = contentHolder.rowByCaret(_start);
+			var startRow:Row = contentHolder.rowByBpIndex(_start);
 			
 			leftHandle.x = leftBpRectangle.x - leftHandle.actualWidth / 2 + 1;
 			leftHandle.y = leftBpRectangle.y + startRow.sequenceMetrics.height / 2 - leftHandle.actualHeight / 2 + 2;
 			leftHandle.show();
 			
-			var rightBpRectangle:Rectangle = contentHolder.bpMetricsByIndex(_end);
-			var endRow:Row = contentHolder.rowByCaret(_end);
+			var rightBpRectangle:Rectangle = contentHolder.bpMetricsByIndex(_end - 1);
+			var endRow:Row = contentHolder.rowByBpIndex(_end - 1);
 			
 			rightHandle.x = rightBpRectangle.x + rightBpRectangle.width - rightHandle.actualWidth / 2 + 1;
 			rightHandle.y = rightBpRectangle.y + endRow.sequenceMetrics.height / 2 - rightHandle.actualHeight / 2 + 2;
@@ -213,34 +213,34 @@ package org.jbei.components.sequenceClasses
 	    
 	    private function drawSelection(fromIndex:int, toIndex:int):void
 	    {
-			var startRow:Row = contentHolder.rowByCaret(fromIndex);
-			var endRow:Row = contentHolder.rowByCaret(toIndex);
+			var startRow:Row = contentHolder.rowByBpIndex(fromIndex);
+			var endRow:Row = contentHolder.rowByBpIndex(toIndex - 1);
 			
 			if(startRow.index == endRow.index) {  // the same row
 				drawRowSelectionRect(fromIndex, toIndex);
 			} else if(startRow.index + 1 <= endRow.index) {  // more then one row
-				drawRowSelectionRect(fromIndex, startRow.rowData.end);
+				drawRowSelectionRect(fromIndex, startRow.rowData.end + 1);
 				
 				for(var i:int = startRow.index + 1; i < endRow.index; i++) {
 					var rowData:RowData = (contentHolder.rowMapper.rows[i] as Row).rowData;
 					
-					drawRowSelectionRect(rowData.start, rowData.end);
+					drawRowSelectionRect(rowData.start, rowData.end + 1);
 				}
 				
 				drawRowSelectionRect(endRow.rowData.start, toIndex);
 			}
 		}
 	    
-		private function drawRowSelectionRect(fromIndex:int, toIndex:int):void
+		private function drawRowSelectionRect(start:int, end:int):void
 		{
-			var row:Row = contentHolder.rowByCaret(fromIndex);
+			var row:Row = contentHolder.rowByBpIndex(start);
 			
-			var startBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(fromIndex);
-			var endBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(toIndex);
+			var startBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(start);
+			var endBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(end - 1);
 			
 			var g:Graphics = graphics;
 			g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
-			g.drawRect(startBpMetrics.x + 1, startBpMetrics.y + 2, endBpMetrics.x - startBpMetrics.x + endBpMetrics.width, row.sequenceMetrics.height);
+			g.drawRect(startBpMetrics.x + 2, startBpMetrics.y + 2, endBpMetrics.x - startBpMetrics.x + endBpMetrics.width, row.sequenceMetrics.height);
 			g.endFill();
 		}
 	}

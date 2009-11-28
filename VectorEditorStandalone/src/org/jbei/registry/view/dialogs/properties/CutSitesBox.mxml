@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="CutSites"
+	initialize="onInitialize(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			
+			import org.jbei.ApplicationFacade;
+			import org.jbei.lib.RestrictionEnzymeMapper;
+			
+			[Bindable]
+			private var cutSites:ArrayCollection = new ArrayCollection();
+			
+			// Event Handler
+			private function onInitialize(event:Event):void
+			{
+				var reMapper:RestrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
+				
+				for (var restrictionEnzyme:Object in reMapper.cutSitesMap) {
+					var cuts:Array = reMapper.cutSitesMap[restrictionEnzyme] as Array;					
+					
+					cutSites.addItem({name : restrictionEnzyme.name, nCuts : cuts.length});
+				}
+				
+				var sort:Sort = new Sort();
+				sort.fields = [new SortField("nCuts", false, true, true), new SortField("name", false, false, false)];
+				
+				cutSites.sort = sort;
+				cutSites.refresh();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:DataGrid id="cutSitesDataGrid" dataProvider="{ cutSites }" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn dataField="name" headerText="Name"/>
+			<mx:DataGridColumn dataField="nCuts" headerText="# Cuts" width="50"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+</mx:Box>

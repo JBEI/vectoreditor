@@ -1,6 +1,6 @@
 package org.jbei.utils
 {
-	import mx.utils.URLUtil;
+	import flash.external.ExternalInterface;
 	
 	public final class SystemUtils
 	{
@@ -34,6 +34,13 @@ package org.jbei.utils
 		public static function isMacOS():Boolean
 		{
 			return Capabilities.os.indexOf("Mac") >= 0;
+		}
+		
+		public static function goToUrl(url:String):void
+		{
+			if (ExternalInterface.available) {
+				ExternalInterface.call("window.open", url, "_blank", "");
+			} 
 		}
 	}
 }

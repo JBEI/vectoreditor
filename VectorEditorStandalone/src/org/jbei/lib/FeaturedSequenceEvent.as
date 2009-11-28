@@ -17,6 +17,8 @@ package org.jbei.lib
 		public static const KIND_MANUAL_UPDATE:String = "ManualUpdate";
 		public static const KIND_SET_MEMENTO:String = "SetMemento";
 		
+		public static const KIND_INITIALIZED:String = "SequenceInitialized";
+		
 		public var kind:String;
 		public var data:Object;
 		

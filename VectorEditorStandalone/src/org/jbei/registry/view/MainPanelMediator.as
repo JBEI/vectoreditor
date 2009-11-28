@@ -6,6 +6,7 @@ package org.jbei.registry.view
 	import org.jbei.bio.data.DNASequence;
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.FeatureNote;
+	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Pie;
 	import org.jbei.components.SequenceAnnotator;
@@ -15,25 +16,31 @@ package org.jbei.registry.view
 	import org.jbei.components.pieClasses.PieEvent;
 	import org.jbei.components.sequenceClasses.SequenceAnnotatorEvent;
 	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.ORFMapper;
 	import org.jbei.lib.RestrictionEnzymeMapper;
+	import org.jbei.registry.Constants;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.model.EntriesProxy;
 	import org.jbei.registry.model.UserPreferencesProxy;
+	import org.jbei.registry.model.vo.Entry;
 	import org.jbei.registry.model.vo.Plasmid;
 	import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 	import org.jbei.registry.model.vo.SequenceFeature;
 	import org.jbei.registry.model.vo.UserPreferences;
+	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.FeatureDialogForm;
-	import org.jbei.registry.view.dialogs.FeaturesDialogForm;
+	import org.jbei.registry.view.dialogs.GoToDialogForm;
 	import org.jbei.registry.view.dialogs.PreferencesDialogForm;
+	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.jbei.ui.dialogs.ModalDialog;
 	import org.jbei.ui.dialogs.ModalDialogEvent;
 	import org.jbei.ui.dialogs.SimpleDialog;
+	import org.jbei.utils.SystemUtils;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -87,11 +94,21 @@ package org.jbei.registry.view
 				, ApplicationFacade.SELECTION_CHANGED
 				, ApplicationFacade.CARET_POSITION_CHANGED
 				
+				, ApplicationFacade.SHOW_FIND_PANEL
+				, ApplicationFacade.HIDE_FIND_PANEL
+				, ApplicationFacade.FIND
+				, ApplicationFacade.FIND_NEXT
+				, ApplicationFacade.HIGHLIGHT
+				, ApplicationFacade.CLEAR_HIGHLIGHT
+				
 				, ApplicationFacade.SHOW_PREFERENCES_DIALOG
+				, ApplicationFacade.SHOW_PROPERTIES_DIALOG
 				, ApplicationFacade.SHOW_ABOUT_DIALOG
 				, ApplicationFacade.SHOW_CREATE_NEW_FEATURE_DIALOG
 				, ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG
-				, ApplicationFacade.SHOW_FEATURES_DIALOG
+				, ApplicationFacade.SHOW_GOTO_DIALOG
+				, ApplicationFacade.GO_REPORT_BUG
+				, ApplicationFacade.GO_SUGGEST_FEATURE
 				
 				, ApplicationFacade.ENTRY_FETCHED
 				, ApplicationFacade.USER_PREFERENCES_CHANGED
@@ -122,9 +139,11 @@ package org.jbei.registry.view
 					break;
 				case ApplicationFacade.SHOW_AA1:
 					sequenceAnnotator.showAminoAcids1 = notification.getBody() as Boolean;
+					sequenceAnnotator.showAminoAcids3 = false;
 					break;
 				case ApplicationFacade.SHOW_AA3:
 					sequenceAnnotator.showAminoAcids3 = notification.getBody() as Boolean;
+					sequenceAnnotator.showAminoAcids1 = false;
 					break;
 				case ApplicationFacade.SHOW_SPACES:
 					sequenceAnnotator.showSpaceEvery10Bp = notification.getBody() as Boolean;
@@ -152,7 +171,6 @@ package org.jbei.registry.view
 					}
 					
 					var featuredSequence:FeaturedSequence = plasmidToFeaturedSequence(plasmid);
-					ApplicationFacade.getInstance().featuredSequence = featuredSequence;
 					
 					var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 					
@@ -162,6 +180,11 @@ package org.jbei.registry.view
 					}
 					
 					var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
+					
+					ApplicationFacade.getInstance().entry = plasmid as Entry;
+					ApplicationFacade.getInstance().featuredSequence = featuredSequence;
+					ApplicationFacade.getInstance().orfMapper = orfMapper;
+					ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 					
 					sequenceAnnotator.featuredSequence = featuredSequence;
 					pie.featuredSequence = featuredSequence;
@@ -182,7 +205,7 @@ package org.jbei.registry.view
 						positions.push(sequenceAnnotator.selectionStart);
 						positions.push(sequenceAnnotator.selectionEnd);
 					} else {
-						positions.push(1);
+						positions.push(0);
 						positions.push(10);
 					}
 					
@@ -198,10 +221,10 @@ package org.jbei.registry.view
 					preferencesDialog.open();
 					
 					break;
-				case ApplicationFacade.SHOW_ABOUT_DIALOG:
-					var aboutDialog:SimpleDialog = new SimpleDialog(mainPanel, AboutDialogForm);
-					aboutDialog.title = "About";
-					aboutDialog.open();
+				case ApplicationFacade.SHOW_PROPERTIES_DIALOG:
+					var propertiesDialog:SimpleDialog = new SimpleDialog(mainPanel, PropertiesDialogForm);
+					propertiesDialog.title = "Properties";
+					propertiesDialog.open();
 					
 					break;
 				case ApplicationFacade.SHOW_CREATE_NEW_FEATURE_DIALOG:
@@ -216,10 +239,18 @@ package org.jbei.registry.view
 					restrictionEnzymeManagerDialog.open();
 					
 					break;
-				case ApplicationFacade.SHOW_FEATURES_DIALOG:
-					var featuresDialog:SimpleDialog = new SimpleDialog(mainPanel, FeaturesDialogForm);
-					featuresDialog.title = "Features";
-					featuresDialog.open();
+				case ApplicationFacade.SHOW_GOTO_DIALOG:
+					var gotoDialog:ModalDialog = new ModalDialog(mainPanel, GoToDialogForm, sequenceAnnotator.caretPosition);
+					gotoDialog.title = "Go To ...";
+					gotoDialog.open();
+					
+					gotoDialog.addEventListener(ModalDialogEvent.SUBMIT, onGoToDialogSubmit);
+					
+					break;
+				case ApplicationFacade.SHOW_ABOUT_DIALOG:
+					var aboutDialog:SimpleDialog = new SimpleDialog(mainPanel, AboutDialogForm);
+					aboutDialog.title = "About";
+					aboutDialog.open();
 					
 					break;
 				case ApplicationFacade.USER_PREFERENCES_CHANGED:
@@ -263,6 +294,70 @@ package org.jbei.registry.view
 					sequenceAnnotator.dispatchEvent(new Event(Event.SELECT_ALL, true, false));
 					
 					break;
+				case ApplicationFacade.GO_REPORT_BUG:
+					SystemUtils.goToUrl(Constants.REPORT_BUG_URL);
+					
+					break;
+				case ApplicationFacade.GO_SUGGEST_FEATURE:
+					SystemUtils.goToUrl(Constants.SUGGEST_FEATURE_URL);
+					
+					break;
+				case ApplicationFacade.FIND:
+					var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, sequenceAnnotator.caretPosition);
+					
+					if(!findSegment) {
+						findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, 0);
+					}
+					
+					if(findSegment) {
+						sequenceAnnotator.select(findSegment.start, findSegment.end);
+						pie.select(findSegment.start, findSegment.end)
+						
+						sequenceAnnotator.caretPosition = findSegment.start;
+						pie.caretPosition = findSegment.start;
+						
+						sendNotification(ApplicationFacade.FIND_MATCH_FOUND);
+					} else {
+						sequenceAnnotator.deselect();
+						pie.deselect();
+						
+						sendNotification(ApplicationFacade.FIND_MATCH_NOT_FOUND);
+					}
+					
+					break;
+				case ApplicationFacade.FIND_NEXT:
+					var findNextSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, sequenceAnnotator.caretPosition + 1);
+					
+					if(!findNextSegment) {
+						findNextSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, 0);
+					}
+					
+					if(findNextSegment) {
+						sequenceAnnotator.select(findNextSegment.start, findNextSegment.end);
+						pie.select(findNextSegment.start, findNextSegment.end)
+						
+						sequenceAnnotator.caretPosition = findNextSegment.start;
+						pie.caretPosition = findNextSegment.start;
+						
+						sendNotification(ApplicationFacade.FIND_MATCH_FOUND);
+					} else {
+						sequenceAnnotator.deselect();
+						pie.deselect();
+						
+						sendNotification(ApplicationFacade.FIND_MATCH_NOT_FOUND);
+					}
+					
+					break;
+				case ApplicationFacade.CLEAR_HIGHLIGHT:
+					sequenceAnnotator.highlights = null;
+					
+					break;
+				case ApplicationFacade.HIGHLIGHT:
+					var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String);
+					
+					sequenceAnnotator.highlights = segments;
+					
+					break;
 			}
 		}
 		
@@ -290,11 +385,7 @@ package org.jbei.registry.view
 		{
 			var selectionArray:Array = event.data as Array;
 			
-			if(selectionArray.length != 2 || selectionArray[0] == -1 || selectionArray[1] == -1) { return; }
-			
-			// Adjusting because featuredSequence starts from 0, but entry from 1 
-			selectionArray[0] -= 1;
-			selectionArray[1] -= 1;
+			if(selectionArray.length != 2) { return; }
 			
 			sendNotification(ApplicationFacade.SELECTION_CHANGED, selectionArray);
 		}
@@ -318,6 +409,8 @@ package org.jbei.registry.view
 			
 			var featuredSequence:FeaturedSequence = new FeaturedSequence(plasmid.combinedName(), plasmid.circular, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
 			
+			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			
 			if(plasmid.sequence.sequenceFeatures && plasmid.sequence.sequenceFeatures.length > 0) {
 				var features:Array = new Array();
 				for(var i:int = 0; i < plasmid.sequence.sequenceFeatures.length; i++) {
@@ -334,6 +427,8 @@ package org.jbei.registry.view
 				featuredSequence.addFeatures(features, true);
 			}
 			
+			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
+			
 			return featuredSequence;
 		}
 		
@@ -349,6 +444,17 @@ package org.jbei.registry.view
 			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Selected as New Feature";
 			featureDialog.open();
+		}
+		
+		private function onGoToDialogSubmit(event:ModalDialogEvent):void
+		{
+			sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, (event.data as int));
+			sequenceAnnotator.setFocus();
+		}
+		
+		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		{
+			sendNotification(ApplicationFacade.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
 		}
 	}
 }

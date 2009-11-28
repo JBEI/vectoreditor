@@ -53,31 +53,22 @@ package org.jbei.components.sequenceClasses
 		{
 			_rows = new Array();
 			
-			if(contentHolder.featuredSequence.sequence.length == 0) {
-				var fakeRow:Row = new Row(0, new RowData(0, end, "", ""));
-				_rows.push(fakeRow);
+			numRows = int(Math.ceil(((contentHolder.featuredSequence.sequence.length + 1) / contentHolder.bpPerRow)));
+			
+			for(var i:int = 0; i < numRows; i++) {
+				var start:int = i * contentHolder.bpPerRow;
+				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
 				
-				_featureToRowMap = new Dictionary();
-				_cutSiteToRowMap = new Dictionary();
-				_orfToRowMap = new Dictionary();
-			} else {
-				numRows = int(Math.ceil((contentHolder.featuredSequence.sequence.length / contentHolder.bpPerRow)));
+				var sequence:String = contentHolder.featuredSequence.sequence.sequence.substring(start, end + 1);
+				var oppositeSequence:String = contentHolder.featuredSequence.oppositeSequence.sequence.substring(start, end + 1);
 				
-				for(var i:int = 0; i < numRows; i++) {
-					var start:int = i * contentHolder.bpPerRow;
-					var end:int = (i + 1) * contentHolder.bpPerRow - 1;
-					
-					var sequence:String = contentHolder.featuredSequence.sequence.sequence.substring(start, end + 1);
-					var oppositeSequence:String = contentHolder.featuredSequence.oppositeSequence.sequence.substring(start, end + 1);
-					
-					var row:Row = new Row(i, new RowData(start, end, sequence, oppositeSequence));
-					_rows.push(row);
-				}
-				
-				reloadFeatures();
-				reloadORFs();
-				reloadCutSites();
+				var row:Row = new Row(i, new RowData(start, end, sequence, oppositeSequence));
+				_rows.push(row);
 			}
+			
+			reloadFeatures();
+			reloadORFs();
+			reloadCutSites();
 		}
 		
 		// Private Methods

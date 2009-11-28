@@ -18,7 +18,6 @@ package org.jbei.components
     import org.jbei.lib.ORFMapper;
     import org.jbei.lib.RestrictionEnzymeMapper;
     
-	
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
 	[Event(name="featureDoubleClick", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
@@ -38,6 +37,7 @@ package org.jbei.components
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _highlights:Array /* of Segment */;
 		
 		private var contentHolder:ContentHolder;
 		
@@ -56,6 +56,7 @@ package org.jbei.components
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
+		private var highlightsChanged:Boolean = false;
 		private var needsMeasurement:Boolean = false;
 		private var bpPerRowChanged:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
@@ -138,6 +139,20 @@ package org.jbei.components
 	    	
 	    	invalidateProperties();
 	    }
+		
+		public function get highlights():Array /* of Segment */
+		{
+			return _highlights;
+		}
+		
+		public function set highlights(value:Array /* of Segment */):void
+		{
+			_highlights = value;
+			
+			highlightsChanged = true;
+			
+			invalidateProperties();
+		}
 		
 	    public function get showFeatures():Boolean
 	    {
@@ -386,6 +401,14 @@ package org.jbei.components
 				invalidateDisplayList();
 	        }
 	        
+			if(highlightsChanged) {
+				highlightsChanged = false;
+				
+				contentHolder.highlights = _highlights;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showComplementaryChanged) {
 	        	showComplementaryChanged = false;
 	        	

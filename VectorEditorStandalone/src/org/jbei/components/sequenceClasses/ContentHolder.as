@@ -45,11 +45,12 @@ package org.jbei.components.sequenceClasses
 		private const COMPLIMENTARY_FONT_COLOR:int = 0xB0B0B0;
 		private const CUTSITES_FONT_COLOR:int = 0x888888;
 		private const SINGLE_CUTTER_CUTSITES_FONT_COLOR:int = 0xE57676;
-		private const AMINOACIDS_FONT_COLOR:int = 0x5CB3FF;
+		private const AMINOACIDS_FONT_COLOR:int = 0x0066FF;
 		private const MINIMUM_BP_PER_ROW:int = 10;
 		
 		private var sequenceAnnotator:SequenceAnnotator;
 		private var selectionLayer:SelectionLayer;
+		private var highlightLayer:HighlightLayer;
 		private var caret:Caret;
 		
 		private var customContextMenu:ContextMenu;
@@ -64,6 +65,7 @@ package org.jbei.components.sequenceClasses
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _highlights:Array /* of Segment */;
 		
 		private var _rowMapper:RowMapper;
 		private var _bpPerRow:int;
@@ -87,12 +89,15 @@ package org.jbei.components.sequenceClasses
 		
 		private var parentWidth:Number = 0;
 		private var parentHeight:Number = 0;
+		
 		private var shiftKeyDown:Boolean = false;
 		private var shiftDownCaretPosition:int = -1;
 		private var mouseIsDown:Boolean = false;
 		private var mouseOverSelection:Boolean = false;
 		private var startSelectionIndex:int;
 		private var endSelectionIndex:int;
+		private var selectionDirection:int = 0;
+		private var keysSelectionDirection:int = 0;
 		private var startHandleResizing:Boolean = false;
 		private var endHandleResizing:Boolean = false;
 		
@@ -101,6 +106,7 @@ package org.jbei.components.sequenceClasses
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
+		private var highlightsChanged:Boolean = false;
 		private var rowMapperChanged:Boolean = false;
 		private var bpPerRowChanged:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
@@ -170,6 +176,20 @@ package org.jbei.components.sequenceClasses
 			invalidateProperties();
 			
 			orfMapperChanged = true;
+		}
+		
+		public function get highlights():Array /* of Segment */
+		{
+			return _highlights;
+		}
+		
+		public function set highlights(value:Array /* of Segment */):void
+		{
+			_highlights = value;
+			
+			invalidateDisplayList();
+			
+			highlightsChanged = true;
 		}
 		
 		public function get showCutSites():Boolean
@@ -399,12 +419,12 @@ package org.jbei.components.sequenceClasses
 				return;
 			}
 			
-			if(selectionLayer.start != startIndex || selectionLayer.end != endIndex) {
+			if((selectionLayer.start != startIndex || selectionLayer.end != endIndex) && startIndex != endIndex) {
 				doSelect(startIndex, endIndex);
 				
 				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, startIndex, endIndex));
 				
-				tryMoveCaretToPosition(endIndex + 1);
+				tryMoveCaretToPosition(endIndex);
 			}
 		}
 		
@@ -435,12 +455,12 @@ package org.jbei.components.sequenceClasses
 		
 		public function isValidIndex(index:int):Boolean
 		{
-			return index >= 0 && index < featuredSequence.sequence.length;
+			return index >= 0 && index <= featuredSequence.sequence.length;
 		}
 		
 		public function bpMetricsByIndex(index:int):Rectangle
 		{
-			if(featuredSequence.sequence.length > 0 && !isValidIndex(index)) {
+			if(!isValidIndex(index)) {
 				throw new Error("Can't get bp metrics for bp with index " + String(index));
 			}
 			
@@ -466,18 +486,9 @@ package org.jbei.components.sequenceClasses
 			return resultMetrics;
 		}
 		
-		public function rowByCaret(index:int):Row
-		{
-			if(featuredSequence.sequence.length > 0 && !isValidCaretPosition(index)) {
-				throw new Error("Can't get row for caret at " + String(index));
-			}
-			
-			return rowByBpIndex(featuredSequence.sequence.length > 0 && index == featuredSequence.sequence.length ? index - 1 : index); 
-		}
-		
 		public function rowByBpIndex(index:int):Row
 		{
-			if(featuredSequence.sequence.length > 0 && !isValidIndex(index)) {
+			if(!isValidIndex(index)) {
 				throw new Error("Can't get row for bp with index " + String(index));
 			}
 			
@@ -510,6 +521,8 @@ package org.jbei.components.sequenceClasses
 			createSequenceRenderer();
 			
 			createCaret();
+			
+			createHighlightLayer();
 			
 			createSelectionLayer();
 		}
@@ -680,6 +693,12 @@ package org.jbei.components.sequenceClasses
 				loadORFRenderers();
 			}
 			
+			if(highlightsChanged && !needsMeasurement) {
+				highlightsChanged = false;
+				
+				highlightLayer.update();
+			}
+			
 			if(needsMeasurement) {
 				needsMeasurement = false;
 				
@@ -693,6 +712,12 @@ package org.jbei.components.sequenceClasses
 				renderCutSites();
 				renderORFs();
 				
+				if(highlightsChanged) {
+					highlightsChanged = false;
+				}
+				
+				highlightLayer.update();
+				
 				drawBackground();
 				drawSplitLines();
 				
@@ -700,6 +725,10 @@ package org.jbei.components.sequenceClasses
 				
 				if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
 					doSelect(startSelectionIndex, endSelectionIndex);
+					
+					if(numChildren > 1) {
+						swapChildren(selectionLayer, getChildAt(numChildren - 1));
+					}
 				}
 			}
 			
@@ -842,6 +871,16 @@ package org.jbei.components.sequenceClasses
 			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
 		}
 		
+		private function createHighlightLayer():void
+		{
+			if(highlightLayer == null) {
+				highlightLayer = new HighlightLayer(this);
+				highlightLayer.includeInLayout = false;
+				
+				addChild(highlightLayer);
+			}
+		}
+		
 		private function createSelectionLayer():void
 		{
 			if(selectionLayer == null) {
@@ -861,7 +900,7 @@ package org.jbei.components.sequenceClasses
 		private function createCaret():void
 		{
 			if(!caret) {
-				caret = new Caret();
+				caret = new Caret(this);
 				caret.includeInLayout = false;
 				caret.hide();
 	        	addChild(caret);
@@ -890,16 +929,14 @@ package org.jbei.components.sequenceClasses
 	    	if(selectionLayer.selected) { deselect(); }
 	    	
 	    	mouseIsDown = true;
-	    	
+			
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
 			if(!startHandleResizing && !endHandleResizing) {
-				var bpIndex:int = bpAtPoint(new Point(event.localX, event.localY));
+				startSelectionIndex = bpAtPoint(new Point(event.localX, event.localY));
 				
-				if(bpIndex != -1) {
-					startSelectionIndex = bpIndex;
-				}
+				selectionDirection = 0;
 			}
 			
 			tryMoveCaretToPosition(startSelectionIndex);
@@ -915,20 +952,31 @@ package org.jbei.components.sequenceClasses
 	    		if(startHandleResizing) {
 	    			startSelectionIndex = bpIndex;
 	    			
+					selectionDirection = 1; // ignore direction on resizing
+					
 	    			tryMoveCaretToPosition(startSelectionIndex);
 	    		} else if(endHandleResizing) {
-					endSelectionIndex = bpIndex;
+					endSelectionIndex = bpIndex + 1;
+					
+					selectionDirection = 1; // ignore direction on resizing
 	    			
-					tryMoveCaretToPosition(endSelectionIndex + 1);
+					tryMoveCaretToPosition(endSelectionIndex);
 	    		} else {
 					endSelectionIndex = bpIndex;
 	    			
-					tryMoveCaretToPosition(endSelectionIndex + 1);
+					tryMoveCaretToPosition(endSelectionIndex);
 	    		}
 	    		
 				if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
+					if(selectionDirection == 0 && startSelectionIndex != endSelectionIndex) {
+						selectionDirection = (startSelectionIndex < endSelectionIndex) ? 1 : -1;
+					}
+					
+					var start:int = (selectionDirection == -1) ? endSelectionIndex : startSelectionIndex;
+					var end:int = (selectionDirection == -1) ? startSelectionIndex : endSelectionIndex;
+					
 					selectionLayer.startSelecting();
-	    			selectionLayer.select(startSelectionIndex, endSelectionIndex);
+	    			selectionLayer.select(start, end);
 				}
 	    	}
 	    }
@@ -980,7 +1028,7 @@ package org.jbei.components.sequenceClasses
 		
 	    private function onSelectAll(event:Event):void
 	    {
-	    	select(0, _featuredSequence.sequence.length - 1);
+	    	select(0, _featuredSequence.sequence.length);
 	    }
 	    
 	    private function onCopy(event:Event):void
@@ -1016,20 +1064,12 @@ package org.jbei.components.sequenceClasses
 	    		
     			_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
     			
-				tryMoveCaretToPosition(caretPosition + pasteSequence.length);
+				tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
 	    	}
 	    }
 	    
 		private function onKeyUp(event:KeyboardEvent):void
 	    {
-			if(shiftKeyDown) {
-				if(_caretPosition != shiftDownCaretPosition) {
-					select(shiftDownCaretPosition, _caretPosition - 1);
-				} else {
-					deselect();
-				}
-			}
-			
 	    	if(!event.shiftKey) {
 	    		shiftKeyDown = false;
 	    	}
@@ -1042,6 +1082,7 @@ package org.jbei.components.sequenceClasses
 	    	if(event.shiftKey && !shiftKeyDown) {
 	    		shiftDownCaretPosition = _caretPosition;
 	    		shiftKeyDown = true;
+				keysSelectionDirection = 0;
 	    	}
 	    	
 	    	if(event.ctrlKey && event.keyCode == Keyboard.LEFT) {
@@ -1051,7 +1092,7 @@ package org.jbei.components.sequenceClasses
 			} else if(event.ctrlKey && event.keyCode == Keyboard.HOME) {
 				tryMoveCaretToPosition(0);
 			} else if(event.ctrlKey && event.keyCode == Keyboard.END) {
-				tryMoveCaretToPosition(_featuredSequence.sequence.length - 1);
+				tryMoveCaretToPosition(_featuredSequence.sequence.length);
 			} else if(event.keyCode == Keyboard.LEFT) {
 				tryMoveCaretToPosition(_caretPosition - 1);
 	    	} else if(event.keyCode == Keyboard.UP) {
@@ -1061,7 +1102,7 @@ package org.jbei.components.sequenceClasses
 	    	} else if(event.keyCode == Keyboard.DOWN) {
 	    		tryMoveCaretToPosition(_caretPosition + bpPerRow);
 	    	} else if(event.keyCode == Keyboard.HOME || event.keyCode == Keyboard.END) {
-				var row:Row = rowByCaret(_caretPosition);
+				var row:Row = rowByBpIndex(_caretPosition);
 				
 				if(event.keyCode == Keyboard.HOME) {
 					tryMoveCaretToPosition(row.rowData.start);
@@ -1080,7 +1121,8 @@ package org.jbei.components.sequenceClasses
 				if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
 					_featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
 					
-					_caretPosition += 1;
+					tryMoveCaretToPosition(_caretPosition + 1);
+					//_caretPosition += 1;
 				} else if(event.keyCode == Keyboard.DELETE) {
 					if(selectionLayer.selected) {
 						_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
@@ -1089,7 +1131,7 @@ package org.jbei.components.sequenceClasses
 						
 						deselect();
 					} else {
-						_featuredSequence.removeSequence(_caretPosition, _caretPosition);
+						_featuredSequence.removeSequence(_caretPosition, _caretPosition + 1);
 					}
 				} else if(event.keyCode == Keyboard.BACKSPACE && _caretPosition > 0) {
 					if(selectionLayer.selected) {
@@ -1099,9 +1141,34 @@ package org.jbei.components.sequenceClasses
 						
 						deselect();
 					} else {
-						_featuredSequence.removeSequence(_caretPosition - 1, _caretPosition - 1);
+						_featuredSequence.removeSequence(_caretPosition - 1, _caretPosition);
 						
 						tryMoveCaretToPosition(_caretPosition - 1);
+					}
+				}
+			}
+			
+			if(shiftKeyDown) {
+				if(keysSelectionDirection == 0) {
+					if(_caretPosition > shiftDownCaretPosition) {
+						keysSelectionDirection = 1;
+					} else if(_caretPosition < shiftDownCaretPosition) {
+						keysSelectionDirection = -1;
+					} else {
+						deselect();
+						return;
+					}
+				}
+				
+				if(isValidIndex(shiftDownCaretPosition) && isValidIndex(_caretPosition)) {
+					if(keysSelectionDirection == 1) {
+						doSelect(shiftDownCaretPosition, _caretPosition);
+						
+						dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, shiftDownCaretPosition, _caretPosition));
+					} else {
+						doSelect(_caretPosition, shiftDownCaretPosition);
+						
+						dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, _caretPosition, shiftDownCaretPosition));
 					}
 				}
 			}
@@ -1176,7 +1243,7 @@ package org.jbei.components.sequenceClasses
 					
 					if(point.x < row.sequenceMetrics.x) {
 					} else if(point.x > row.sequenceMetrics.x + row.sequenceMetrics.width) {
-						bpIndex += row.rowData.sequence.length - 1;
+						bpIndex += row.rowData.sequence.length;
 					} else {
 						var numberOfCharactersFromBegining:int = Math.floor((point.x - row.sequenceMetrics.x) / sequenceSymbolRenderer.textWidth);
 						
@@ -1186,7 +1253,7 @@ package org.jbei.components.sequenceClasses
 							numberOfSpaces = int(numberOfCharactersFromBegining / 11)
 						}
 						
-						bpIndex += int((point.x - row.sequenceMetrics.x - numberOfSpaces * sequenceSymbolRenderer.textWidth) / sequenceSymbolRenderer.textWidth);
+						bpIndex += Math.floor((point.x - row.sequenceMetrics.x - numberOfSpaces * sequenceSymbolRenderer.textWidth + (sequenceSymbolRenderer.textWidth - 1) / 2) / sequenceSymbolRenderer.textWidth);
 					}
 					
 					break;
@@ -1210,11 +1277,6 @@ package org.jbei.components.sequenceClasses
 			_averageRowHeight = (numberOfRows > 0) ? totalHeight / numberOfRows : 0;
 		}
 		
-		private function isValidCaretPosition(position:int):Boolean
-		{
-			return isValidIndex(position) || position == featuredSequence.sequence.length;
-		}
-		
 		private function tryMoveCaretToPosition(newPosition:int):void
 		{
 			if(invalidSequence) { return; }
@@ -1230,37 +1292,19 @@ package org.jbei.components.sequenceClasses
 		
 		private function moveCaretToPosition(newPosition:int):void
 		{
+			if(! isValidIndex(newPosition)) {
+				throw new Error("Invalid caret position: " + String(newPosition));
+			}
+			
 			if(newPosition != _caretPosition) {
-				doMoveCaretToPosition(newPosition);
+				_caretPosition = newPosition;
 				
 				dispatchEvent(new CaretEvent(CaretEvent.CARET_POSITION_CHANGED, _caretPosition));
 			}
 			
-			var caretMetrics:Rectangle;
-			
-			if(featuredSequence.sequence.length == 0) {
-				caretMetrics = bpMetricsByIndex(0);
-			} else if(_caretPosition == featuredSequence.sequence.length) {
-				caretMetrics = bpMetricsByIndex(featuredSequence.sequence.length - 1);
-				
-				caretMetrics.x += caretMetrics.width;
-			} else {
-				caretMetrics = bpMetricsByIndex(_caretPosition);
-			}
-			
-			caret.x = caretMetrics.x;
-			caret.y = caretMetrics.y + 2; // +2 to look pretty
+			caret.position = _caretPosition;
 			
 			adjustContentToCaret();
-		}
-		
-		private function doMoveCaretToPosition(newPosition:int):void
-		{
-			if(! isValidCaretPosition(newPosition)) {
-				throw new Error("Invalid caret position: " + String(newPosition));
-			}
-			
-			_caretPosition = newPosition;
 		}
 		
 		private function validateCaret():void
@@ -1270,7 +1314,9 @@ package org.jbei.components.sequenceClasses
 		
 		private function adjustContentToCaret():void
 		{
-			var row:Row = rowByCaret(_caretPosition);
+			var row:Row = rowByBpIndex(_caretPosition);
+			
+			if(!row) { return; }
 			
 			if(_totalHeight < sequenceAnnotator.verticalScrollPosition + sequenceAnnotator.height) {
 				this.y = sequenceAnnotator.height - _totalHeight;
@@ -1450,10 +1496,16 @@ package org.jbei.components.sequenceClasses
 	    
 	    private function doSelect(startIndex:int, endIndex:int):void
 	    {
-	    	selectionLayer.deselect();
-			selectionLayer.startSelecting();
-			selectionLayer.select(startIndex, endIndex);
-			selectionLayer.endSelecting();
+			if(startIndex > 0 && endIndex == 0) {
+				endIndex == featuredSequence.sequence.length - 1;
+			}
+			
+			selectionLayer.deselect();
+			if(isValidIndex(startIndex) && isValidIndex(endIndex)) {
+				selectionLayer.startSelecting();
+				selectionLayer.select(startIndex, endIndex);
+				selectionLayer.endSelecting();
+			}
 			
 			startSelectionIndex = startIndex;
 			endSelectionIndex = endIndex;

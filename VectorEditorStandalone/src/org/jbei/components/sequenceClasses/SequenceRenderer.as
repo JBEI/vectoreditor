@@ -2,8 +2,11 @@ package org.jbei.components.sequenceClasses
 {
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
+	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	
 	import mx.core.UIComponent;
 	
@@ -23,6 +26,9 @@ package org.jbei.components.sequenceClasses
 		public function SequenceRenderer(contentHolder:ContentHolder)
 		{
 			super();
+			
+			addEventListener(MouseEvent.ROLL_OVER, onRollOver);
+			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			
 			this.contentHolder = contentHolder;
 		}
@@ -61,6 +67,20 @@ package org.jbei.components.sequenceClasses
 		}
 		
 		// Private Methods
+		private function onRollOver(event:MouseEvent):void
+		{
+			Mouse.cursor = MouseCursor.IBEAM;
+			
+			stage.addEventListener(MouseEvent.ROLL_OUT, onRollOut);
+		}
+		
+		private function onRollOut(event:MouseEvent):void
+		{
+			stage.removeEventListener(MouseEvent.ROLL_OUT, onRollOut);
+			
+			Mouse.cursor = MouseCursor.AUTO;
+		}
+		
 		private function render():void
 		{
 			var g:Graphics = graphics;
@@ -88,7 +108,7 @@ package org.jbei.components.sequenceClasses
 				if(contentHolder.showSpaceEvery10Bp) {
 					sequenceString += splitWithSpaces(row.rowData.sequence); // Rendering sequence itself with spaces every 10bp
 				} else {
-					sequenceString += row.rowData.sequence; // Rendering sequence witout spaces every 10bp
+					sequenceString += row.rowData.sequence; // Rendering sequence without spaces every 10bp
 				}
 				
 				var sequenceStringLength:int = sequenceString.length;
@@ -102,12 +122,12 @@ package org.jbei.components.sequenceClasses
 				
 				// AminoAcids 3
 				if(contentHolder.showAminoAcids3) {
-					renderAA3(row);
+					renderAA(row, true);
 				}
 				
 				// AminoAcids 1
 				if(contentHolder.showAminoAcids1) {
-					renderAA1(row);
+					renderAA(row, false);
 				}
 				
 				// ORFs
@@ -166,50 +186,7 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
-		private function renderAA1(row:Row):void
-		{
-			var sequence:String = contentHolder.featuredSequence.sequence.sequence;
-			var rowSequence:String = row.rowData.sequence;
-			
-			var aminoAcidsString:String = '';
-			
-			for(var i:int = 0; i < rowSequence.length; i++) {
-				if(i + 2 > sequence.length - 1) { break; } // if less then 2 bp to the end no AA can be made
-				
-				var basePairs:String = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
-				var aminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(basePairs);
-				var aaSymbol:String = (! aminoAcid) ? '-' : aminoAcid.name1;
-				
-				aminoAcidsString += aaSymbol;
-			}
-			
-			if(contentHolder.showSpaceEvery10Bp) {
-				aminoAcidsString = splitWithSpaces(aminoAcidsString);
-			}
-			
-			var g:Graphics = graphics;
-			var aminoAcidRenderMatrix:Matrix = new Matrix();
-			
-			for(var j:int = 0; j < aminoAcidsString.length; j++) {
-				var aminoAcidSymbolBitmap:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString.charAt(j));
-				
-				var leftShift:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + j * aminoAcidSymbolBitmap.width;
-				
-				aminoAcidRenderMatrix.tx += leftShift;
-				aminoAcidRenderMatrix.ty += _totalHeight;
-				
-				g.beginBitmapFill(aminoAcidSymbolBitmap, aminoAcidRenderMatrix, false);
-				g.drawRect(leftShift, _totalHeight, aminoAcidSymbolBitmap.width, aminoAcidSymbolBitmap.height);
-				g.endFill();
-				
-				aminoAcidRenderMatrix.tx -= leftShift;
-				aminoAcidRenderMatrix.ty -= _totalHeight;
-			}
-			
-			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
-		}
-		
-		private function renderAA3(row:Row):void
+		private function renderAA(row:Row, isAA3:Boolean):void
 		{
 			var sequence:String = contentHolder.featuredSequence.sequence.sequence;
 			var rowSequence:String = row.rowData.sequence;
@@ -223,7 +200,12 @@ package org.jbei.components.sequenceClasses
 				var basePairs:String = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
 				var aminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(basePairs);
 				
-				var aa:String = (! aminoAcid) ? '---' : aminoAcid.name3;
+				var aa:String;
+				if(isAA3) {
+					aa = (! aminoAcid) ? '---' : aminoAcid.name3;
+				} else {
+					aa = (! aminoAcid) ? '-  ' : aminoAcid.name1 + '  ';
+				}
 				
 				if(i == 0 || (i % 3) == 0) {
 					aminoAcidsString1 += aa;

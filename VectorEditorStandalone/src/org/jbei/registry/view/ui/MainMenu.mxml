@@ -3,7 +3,9 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.events.MenuEvent;
-			import mx.collections.XMLListCollection;
+			
+			import org.jbei.registry.view.ui.menu.MenuItem;
+			import org.jbei.registry.view.ui.menu.MenuItemEvent;
 			
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
 			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
@@ -16,10 +18,14 @@
 			public static const SHOW_CUT_SITE_LABELS_STATE_CHANGED:String = "ShowCutSiteLabelsStateChanged";
 			public static const SHOW_SELECT_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
 			public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
+			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
 			public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
-			public static const SHOW_FEATURES_DIALOG:String = "ShowFeaturesDialog";
+			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
+			public static const SHOW_FIND_DIALOG:String = "ShowFindDialog";
+			public static const GO_REPORT_BUG_WEB_LINK:String = "GoReportBugWebLink";
+			public static const GO_SUGGEST_FEATURE_WEB_LINK:String = "GoSuggestFeatureWebLink";
 			public static const COPY:String = "Copy";
 			public static const CUT:String = "Cut";
 			public static const PASTE:String = "Paste";
@@ -48,12 +54,15 @@
             	
             	// File
             	var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
+				var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
             	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
             	var cloneMenuItem:MenuItem = new MenuItem("cloneMenuItem", "Clone ...");
             	var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Export");
             	fileMenuItem.addSubItem(saveMenuItem);
             	fileMenuItem.addSubItem(cloneMenuItem);
+				fileMenuItem.addSubItem(separatorMenuItem);
+				fileMenuItem.addSubItem(propertiesMenuItem);
             	fileMenuItem.addSubItem(separatorMenuItem);
             	fileMenuItem.addSubItem(printMenuItem);
             	fileMenuItem.addSubItem(exportMenuItem);
@@ -67,15 +76,20 @@
             	var pasteMenuItem:MenuItem = new MenuItem("pasteMenuItem", "Paste");
             	var selectMenuItem:MenuItem = new MenuItem("selectMenuItem", "Select ...");
             	var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
+				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To");
+				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
             	editMenuItem.addSubItem(undoMenuItem);
             	editMenuItem.addSubItem(redoMenuItem);
             	editMenuItem.addSubItem(separatorMenuItem);
             	editMenuItem.addSubItem(copyMenuItem);
             	editMenuItem.addSubItem(cutMenuItem);
             	editMenuItem.addSubItem(pasteMenuItem);
-            	editMenuItem.addSubItem(separatorMenuItem);
-            	editMenuItem.addSubItem(selectMenuItem);
-            	editMenuItem.addSubItem(selectAllMenuItem);
+				editMenuItem.addSubItem(separatorMenuItem);
+				editMenuItem.addSubItem(findMenuItem);
+				editMenuItem.addSubItem(gotoMenuItem);
+				editMenuItem.addSubItem(separatorMenuItem);
+				editMenuItem.addSubItem(selectMenuItem);
+				editMenuItem.addSubItem(selectAllMenuItem);
 				
 				// View
             	var viewMenuItem:MenuItem = new MenuItem("viewMenuItem", "View");
@@ -105,18 +119,21 @@
             	var preferencesMenuItem:MenuItem = new MenuItem("preferencesMenuItem", "Preferences");
             	var restrictionEnzymesManagerMenuItem:MenuItem = new MenuItem("restrictionEnzymesManagerMenuItem", "Restriction Enzymes Manager");
             	var createNewFeatureMenuItem:MenuItem = new MenuItem("createNewFeatureMenuItem", "Create New Feature");
-            	var featuresMenuItem:MenuItem = new MenuItem("featuresMenuItem", "Features");
             	toolsMenuItem.addSubItem(createNewFeatureMenuItem);
             	toolsMenuItem.addSubItem(restrictionEnzymesManagerMenuItem);
-            	toolsMenuItem.addSubItem(featuresMenuItem);
             	toolsMenuItem.addSubItem(separatorMenuItem);
             	toolsMenuItem.addSubItem(preferencesMenuItem);
             	
             	// Help
             	var helpMenuItem:MenuItem = new MenuItem("helpMenuItem", "Help");
             	var aboutMenuItem:MenuItem = new MenuItem("aboutMenuItem", "About");
+				var suggestFeatureMenuItem:MenuItem = new MenuItem("suggestFeatureMenuItem", "Suggest Feature");
+				var reportBugMenuItem:MenuItem = new MenuItem("reportBugMenuItem", "Report Bug");
+				helpMenuItem.addSubItem(suggestFeatureMenuItem);
+				helpMenuItem.addSubItem(reportBugMenuItem);
+				helpMenuItem.addSubItem(separatorMenuItem);
             	helpMenuItem.addSubItem(aboutMenuItem);
-            	
+				
             	menuItems = [fileMenuItem, editMenuItem, viewMenuItem, toolsMenuItem, helpMenuItem];
             	
             	// File
@@ -125,6 +142,7 @@
             	menuItemsMap["exportMenuItem"] = exportMenuItem;
             	menuItemsMap["saveMenuItem"] = saveMenuItem;
             	menuItemsMap["cloneMenuItem"] = cloneMenuItem;
+				menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
             	
             	// Edit
             	menuItemsMap["editMenuItem"] = editMenuItem;
@@ -135,6 +153,8 @@
             	menuItemsMap["pasteMenuItem"] = pasteMenuItem;
             	menuItemsMap["selectMenuItem"] = selectMenuItem;
             	menuItemsMap["selectAllMenuItem"] = selectAllMenuItem;
+				menuItemsMap["gotoMenuItem"] = gotoMenuItem;
+				menuItemsMap["findMenuItem"] = findMenuItem;
             	
             	// View
             	menuItemsMap["viewMenuItem"] = viewMenuItem;
@@ -151,11 +171,12 @@
             	// Tools
             	menuItemsMap["createNewFeatureMenuItem"] = createNewFeatureMenuItem;
             	menuItemsMap["restrictionEnzymesManagerMenuItem"] = restrictionEnzymesManagerMenuItem;
-            	menuItemsMap["featuresMenuItem"] = featuresMenuItem;
             	menuItemsMap["preferencesMenuItem"] = preferencesMenuItem;
             	
             	// Help
             	menuItemsMap["helpMenuItem"] = helpMenuItem;
+				menuItemsMap["suggestFeatureMenuItem"] = suggestFeatureMenuItem;
+				menuItemsMap["reportBugMenuItem"] = reportBugMenuItem;
             	menuItemsMap["aboutMenuItem"] = aboutMenuItem;
             }
             
@@ -185,6 +206,8 @@
             		dispatchEvent(new MenuItemEvent(SHOW_SELECT_BY_RANGE_DIALOG, menuItem));
             	} else if(menuItem.id == "preferencesMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_PREFERENCES_DIALOG, menuItem));
+				} else if(menuItem.id == "propertiesMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_PROPERTIES_DIALOG, menuItem));
             	} else if(menuItem.id == "aboutMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_ABOUT_DIALOG, menuItem));
             	} else if(menuItem.id == "undoMenuItem") {
@@ -203,17 +226,28 @@
             		dispatchEvent(new MenuItemEvent(SHOW_CREATE_NEW_FEATURE_DIALOG, menuItem));
             	} else if(menuItem.id == "restrictionEnzymesManagerMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, menuItem));
-            	} else if(menuItem.id == "featuresMenuItem") {
-            		dispatchEvent(new MenuItemEvent(SHOW_FEATURES_DIALOG, menuItem));
+				} else if(menuItem.id == "gotoMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_GOTO_DIALOG, menuItem));
+				} else if(menuItem.id == "findMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_FIND_DIALOG, menuItem));
+				} else if(menuItem.id == "reportBugMenuItem") {
+					dispatchEvent(new MenuItemEvent(GO_REPORT_BUG_WEB_LINK, menuItem));
+				} else if(menuItem.id == "suggestFeatureMenuItem") {
+					dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
             	}
             }
 		]]>
 	</mx:Script>
 	
+	<mx:Style>
+		.subMenu { openDuration: 0; }
+	</mx:Style>
+	
 	<mx:MenuBar 
 		id="mainMenu" 
 		dataProvider="{ menuItems }" 
 		labelField="label" 
-		width="100%" 
+		width="100%"
+		menuStyleName ="subMenu" 
 		itemClick="onMenuItemClick(event)"/>
 </mx:Box>

@@ -32,5 +32,11 @@ package org.jbei.registry.model.vo
 		{
 			_name = value;
 		}
+		
+		// Public Methods
+		public function toString():String
+		{
+			return _name;
+		}
 	}
 }

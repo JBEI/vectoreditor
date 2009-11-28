@@ -18,7 +18,7 @@
 				} else {
 					var positions:Array = dataObject as Array;
 					
-					positions[0] = int(startTextInput.text);
+					positions[0] = int(startTextInput.text) - 1;
 					positions[1] = int(endTextInput.text);
 					
 					isValid = true;
@@ -31,8 +31,8 @@
 				var positions:Array = dataObject as Array;
 				
 				if(positions && positions.length == 2) {
-					startTextInput.text = (positions[0] + 1);
-					endTextInput.text = (positions[1] + 1);
+					startTextInput.text = positions[0] + 1;
+					endTextInput.text = positions[1];
 				} else {
 					startTextInput.text = "1";
 					endTextInput.text = "10";

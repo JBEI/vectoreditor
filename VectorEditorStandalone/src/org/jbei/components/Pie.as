@@ -2,7 +2,6 @@ package org.jbei.components
 {
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
-	import flash.system.System;
 	
 	import mx.core.ScrollControlBase;
 	import mx.core.ScrollPolicy;
@@ -12,8 +11,6 @@ package org.jbei.components
 	import mx.managers.IFocusManagerComponent;
 	
 	import org.jbei.components.pieClasses.ContentHolder;
-	import org.jbei.components.pieClasses.FeatureRenderer;
-	import org.jbei.components.pieClasses.PieEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.ORFMapper;
@@ -30,6 +27,7 @@ package org.jbei.components
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _highlights:Array /* of Segment */;
 		
 		private var _showCutSites:Boolean = true;
 		private var _showFeatures:Boolean = true;
@@ -40,6 +38,7 @@ package org.jbei.components
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
+		private var highlightsChanged:Boolean = false;
 		
 		private var needsMeasurement:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
@@ -124,6 +123,20 @@ package org.jbei.components
 	    	
 	    	invalidateProperties();
 	    }
+		
+		public function get highlights():Array /* of Segment */
+		{
+			return _highlights;
+		}
+		
+		public function set highlights(value:Array /* of Segment */):void
+		{
+			_highlights = value;
+			
+			highlightsChanged = true;
+			
+			invalidateProperties();
+		}
 		
 	    public function get showFeatures():Boolean
 	    {
@@ -285,6 +298,14 @@ package org.jbei.components
 				invalidateDisplayList();
 	        }
 	        
+			if(highlightsChanged) {
+				highlightsChanged = false;
+				
+				contentHolder.highlights = _highlights;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showFeaturesChanged) {
 	        	showFeaturesChanged = false;
 	        	
