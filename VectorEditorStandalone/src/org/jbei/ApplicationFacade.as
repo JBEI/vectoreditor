@@ -22,7 +22,7 @@ package org.jbei
 		public static const SELECTION_CHANGED:String = "SelectionChanged";
 		public static const CARET_POSITION_CHANGED:String = "CaretPositionChanged";
 		public static const FEATURED_SEQUENCE_CHANGED:String = "FeaturedSequenceChanged";
-		
+		public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged"
 		public static const FETCHING_DATA:String = "FetchingData";
 		public static const DATA_FETCHED:String = "DataFetched";
 		
@@ -42,6 +42,9 @@ package org.jbei
 		public static const PASTE:String = "Paste";
 		public static const SHOW_SELECTION_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
 		public static const SELECT_ALL:String = "SelectAll";
+		
+		public static const SHOW_RAIL:String = "ShowRail";
+		public static const SHOW_PIE:String = "ShowPie";
 		
 		public static const SHOW_FEATURES:String = "ShowFeatures";
 		public static const SHOW_CUTSITES:String = "ShowCutSites";

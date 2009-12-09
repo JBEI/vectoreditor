@@ -73,6 +73,52 @@ package org.jbei.registry.utils
 			return plasmid;
 		}
 		
+		public static function standalonePlasmid3():Plasmid
+		{
+			var plasmid:Plasmid = new Plasmid();
+			plasmid.alias = "Standalone Alias";
+			plasmid.backbone = "Standalone BB";
+			plasmid.circular = true;
+			plasmid.creationTime = new Date();
+			plasmid.creator = "Zinovii Dmytriv";
+			plasmid.creatorEmail = "zdmytriv@lbl.gov";
+			plasmid.keywords = "test, plasmid";
+			plasmid.links = new ArrayCollection();
+			plasmid.links.addItem(new Link("http://google.com", "JBEI:Standalone"));
+			plasmid.longDescription = "Standalone part long description";
+			plasmid.modificationTime = null;
+			plasmid.names = new ArrayCollection();
+			plasmid.names.addItem(new Name("Standalone Part"));
+			plasmid.names.addItem(new Name("Test Part"));
+			plasmid.originOfReplication = "Standalone OOR";
+			plasmid.owner = "Zinovii Dmytriv";
+			plasmid.ownerEmail = "zdmytriv@lbl.gov";
+			plasmid.partNumbers = new ArrayCollection();
+			plasmid.partNumbers.addItem(new PartNumber("JBz_000001"));
+			plasmid.promoters = "Promoter1, Promoter2";
+			plasmid.recordId = "12345678-12345678-12345678-123456781111";
+			plasmid.recordType = "plasmid";
+			plasmid.references = "Standalone references";
+			plasmid.shortDescription = "Short Description";
+			plasmid.status = "public";
+			plasmid.versionId = "12345678-12345678-12345678-123456781111";
+			plasmid.visibility = 5;
+			
+			var sequence:Sequence = new Sequence();
+			sequence.fwdHash = "";
+			sequence.revHash = "";
+			sequence.sequence = "TTTACACTTTGTGCAGATGCTTCCGGCTCGTATAATGTGTGGAACACGTCTTGTGAGCGGATAACAATTGAATTCACCAGATCTCATATGGTACCTGCAGGGATCCTTACTCGAGAAGCTTATAAAACGAAAGGCTCAGTCGAAAGACTGGGCCTTTCGTTTTATGACACCATCGAATGGTGCAAAACCTTTCGCGGTATGGCATGATAGCGCCCGGAAGAGAGTCAATTCAGGGTGGTGAATGTGAAACCAGTAACGTTATACGATGTCGCAGAGTATGCCGGTGTCTCTTATCAGACCGTTTCCCGCGTGGTGAACCAGGCCAGCCACGTTTCTGCGAAAACGCGGGAAAAAGTGGAAGCGGCGATGGCGGAGCTGAATTACATTCCCAACCGCGTGGCACAACAACTGGCGGGCAAACAGTCGTTGCTGATTGGCGTTGCCACCTCCAGTCTGGCCCTGCACGCGCCGTCGCAAATTGTCGCGGCGATTAAATCTCGCGCCGATCAACTGGGTGCCAGCGTGGTGGTGTCGATGGTAGAACGAAGCGGCGTCGAAGCCTGTAAAGCGGCGGTGCACAATCTTCTCGCGCAACGCGTCAGTGGGCTGATCATTAACTATCCGCTGGATGACCAGGATGCCATTGCTGTGGAAGCTGCCTGCACTAATGTTCCGGCGTTATTTCTTGATGTCTCTGACCAGACACCCATCAACAGTATTATTTTCTCCCATGAAGACGGTACGCGACTGGGCGTGGAGCATCTGGTCGCATTGGGTCACCAGCAAATCGCGCTGTTAGCGGGCCCATTAAGTTCTGTCTCGGCGCGTCTGCGTCTGGCTGGCTGGCATAAATATCTCACTCGCAATCAAATTCAGCCGATAGCGGAACGGGAAGGCGACTGGAGTGCCATGTCCGGTTTTCAACAAACCATGCAAATGCTGAATGAGGGCATCGTTCCCACTGCGATGCTGGTTGCCAACGATCAGATGGCGCTGGGCG";
+			sequence.sequenceUser = "";
+			sequence.sequenceFeatures = new ArrayCollection();
+			sequence.sequenceFeatures.addItem(new SequenceFeature(10, 58, 1, new Feature("P-lacUV5", null, null, "", 0, "promoter")));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(900, 100, 1, new Feature("test cds", null, null, "", 0, "cds")));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(310, 310, 1, new Feature("test terminator", null, null, "", 0, "terminator")));
+			
+			plasmid.sequence = sequence;
+			
+			return plasmid;
+		}
+		
 		public static function standalonePlasmid2():Plasmid
 		{
 			var plasmid:Plasmid = new Plasmid();

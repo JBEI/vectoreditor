@@ -16,9 +16,11 @@ package org.jbei.components
 	import org.jbei.lib.ORFMapper;
 	import org.jbei.lib.ORFMapperEvent;
 	import org.jbei.lib.RestrictionEnzymeMapper;
+	import org.jbei.lib.RestrictionEnzymeMapperEvent;
 	
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
+	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
 	
 	public class Pie extends ScrollControlBase implements IFocusManagerComponent
 	{
@@ -34,6 +36,7 @@ package org.jbei.components
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showFeatureLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
+		private var _safeEditing:Boolean = true;
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
@@ -103,7 +106,11 @@ package org.jbei.components
 	    	_restrictionEnzymeMapper = value;
 	    	
 	    	restrictionEnzymeMapperChanged = true;
-	    	
+			
+			if(_restrictionEnzymeMapper) {
+				_restrictionEnzymeMapper.addEventListener(RestrictionEnzymeMapperEvent.RESTRICTION_ENZYME_MAPPER_UPDATED, onRestrictionEnzymeMapperUpdated);
+			}
+			
 	    	invalidateProperties();
 	    }
 		
@@ -228,6 +235,20 @@ package org.jbei.components
 	    	contentHolder.caretPosition = value;
 	    }
 	    
+		public function get safeEditing():Boolean
+		{
+			return _safeEditing;
+		}
+		
+		public function set safeEditing(value:Boolean):void
+		{
+			if(_safeEditing != value) {
+				_safeEditing = value;
+				
+				contentHolder.safeEditing = _safeEditing;
+			}
+		}
+		
 	    public function get selectionStart():int
 	    {
 	    	return contentHolder.selectionStart;
@@ -490,6 +511,13 @@ package org.jbei.components
 		private function onORFMapperUpdated(event:ORFMapperEvent):void
 		{
         	needsMeasurement = true;
+			
+			invalidateDisplayList();
+		}
+		
+		private function onRestrictionEnzymeMapperUpdated(event:RestrictionEnzymeMapperEvent):void
+		{
+			needsMeasurement = true;
 			
 			invalidateDisplayList();
 		}

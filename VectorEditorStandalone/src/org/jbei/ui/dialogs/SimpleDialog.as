@@ -5,20 +5,20 @@ package org.jbei.ui.dialogs
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
 	
-	import mx.containers.Box;
 	import mx.containers.HBox;
 	import mx.containers.TitleWindow;
 	import mx.containers.VBox;
 	import mx.controls.Button;
 	import mx.controls.HRule;
-	import mx.controls.Spacer;
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
 
 	public class SimpleDialog extends TitleWindow
 	{
-		private var dialogForm:Box;
+		private var dialogForm:SimpleDialogForm;
 		private var dialogParent:DisplayObject;
+		
+		private var _activeTabIndex:int;
 		
 		private var mainBox:VBox = new VBox();
 		private var buttonsBox:HBox = new HBox();
@@ -26,12 +26,15 @@ package org.jbei.ui.dialogs
 		private var hRule:HRule = new HRule();
 		
 		// Constructor
-		public function SimpleDialog(dialogParent:DisplayObject, dialogFormClass:Class)
+		public function SimpleDialog(dialogParent:DisplayObject, dialogFormClass:Class, activeTabIndex:int = 0)
 		{
 			super();
 			
 			this.dialogParent = dialogParent;
 			this.dialogForm = new dialogFormClass();
+			this.dialogForm.dialog = this;
+			
+			_activeTabIndex = activeTabIndex;
 			
 			showCloseButton = true;
 			
@@ -42,6 +45,12 @@ package org.jbei.ui.dialogs
 			addEventListener(CloseEvent.CLOSE, onXButtonClick);
 			
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		}
+		
+		// Properties
+		public function get activeTabIndex():int
+		{
+			return _activeTabIndex;
 		}
 		
 		// Public Methods

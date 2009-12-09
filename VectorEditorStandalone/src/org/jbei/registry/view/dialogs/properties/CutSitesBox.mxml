@@ -7,11 +7,14 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
-			import mx.collections.Sort;
-			import mx.collections.SortField;
 			
 			import org.jbei.ApplicationFacade;
+			import org.jbei.bio.data.CutSite;
 			import org.jbei.lib.RestrictionEnzymeMapper;
+			
+			[Embed(source='../../assets/icons/expand.png')]
+			[Bindable]
+			private var expandImage:Class;
 			
 			[Bindable]
 			private var cutSites:ArrayCollection = new ArrayCollection();
@@ -24,23 +27,60 @@
 				for (var restrictionEnzyme:Object in reMapper.cutSitesMap) {
 					var cuts:Array = reMapper.cutSitesMap[restrictionEnzyme] as Array;					
 					
-					cutSites.addItem({name : restrictionEnzyme.name, nCuts : cuts.length});
+					if(cuts.length > 0) {
+						for (var i:int = 0; i < cuts.length; i++) {
+							var cutSite:CutSite = cuts[i] as CutSite;
+							
+							cutSites.addItem(
+								{
+									name : restrictionEnzyme.name, 
+									nCuts : cutSite.numCuts, 
+									cutSite : cutSite, 
+									position : (cutSite.start + " - " + cutSite.end), 
+									strand : (cutSite.forward ? "+" : "-")
+								}
+							);
+						}
+					} else {
+						cutSites.addItem(
+							{
+								name : restrictionEnzyme.name, 
+								nCuts : 0, 
+								cutSite : null, 
+								position : "", 
+								strand : ""
+							}
+						);
+					} 
 				}
-				
-				var sort:Sort = new Sort();
-				sort.fields = [new SortField("nCuts", false, true, true), new SortField("name", false, false, false)];
-				
-				cutSites.sort = sort;
-				cutSites.refresh();
 			}
 		]]>
 	</mx:Script>
 	
-	<mx:DataGrid id="cutSitesDataGrid" dataProvider="{ cutSites }" width="100%" height="100%">
+	<mx:AdvancedDataGrid id="cutSitesDataGrid" initialize="groupCollection.refresh();" width="100%" height="100%" folderOpenIcon="{ expandImage }" folderClosedIcon="{ expandImage }">
+		<mx:dataProvider>
+			<mx:GroupingCollection id="groupCollection" source="{ cutSites }">
+				<mx:grouping>
+					<mx:Grouping>
+						<mx:GroupingField name="name">
+							<mx:summaries>
+								<mx:SummaryRow summaryPlacement="group">
+									<mx:fields>
+										<mx:SummaryField dataField="nCuts" label="cuts" operation="MIN"/>
+									</mx:fields>
+								</mx:SummaryRow>
+							</mx:summaries>
+						</mx:GroupingField>
+					</mx:Grouping>
+				</mx:grouping>
+			</mx:GroupingCollection>
+		</mx:dataProvider>
+		
 		<mx:columns>
-			<mx:DataGridColumn dataField="name" headerText="Name"/>
-			<mx:DataGridColumn dataField="nCuts" headerText="# Cuts" width="50"/>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Name"/>
+			<mx:AdvancedDataGridColumn dataField="position" headerText="Position" width="100"/>
+			<mx:AdvancedDataGridColumn dataField="strand" headerText="Strand" width="100"/>
+			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100"/>
 		</mx:columns>
-	</mx:DataGrid>
-	
+	</mx:AdvancedDataGrid>
 </mx:Box>

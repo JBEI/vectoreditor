@@ -1,6 +1,7 @@
 package org.jbei.utils
 {
 	import flash.external.ExternalInterface;
+	import flash.net.navigateToURL;
 	
 	public final class SystemUtils
 	{

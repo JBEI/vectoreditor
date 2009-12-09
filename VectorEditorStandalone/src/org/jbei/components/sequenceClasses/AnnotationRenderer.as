@@ -63,7 +63,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected function createToolTipLabel():void
 		{
-			tooltipLabel = "";
+			// Abstract Method
 		}
 		
 		// Private Methods

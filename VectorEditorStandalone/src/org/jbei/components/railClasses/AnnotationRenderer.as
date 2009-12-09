@@ -1,4 +1,4 @@
-package org.jbei.components.pieClasses
+package org.jbei.components.railClasses
 {
 	import flash.events.MouseEvent;
 	import flash.geom.Point;

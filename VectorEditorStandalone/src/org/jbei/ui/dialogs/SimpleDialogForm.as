@@ -2,29 +2,18 @@ package org.jbei.ui.dialogs
 {
 	import mx.containers.Box;
 
-	public class AbstractDialogForm extends Box
+	public class SimpleDialogForm extends Box
 	{
 		private var _dataObject:Object;
-		private var _isValid:Boolean = false;
-		private var _dialog:ModalDialog;
+		private var _dialog:SimpleDialog;
 		
 		// Constructor
-		public function AbstractDialogForm()
+		public function SimpleDialogForm()
 		{
 			super();
 		}
 		
 		// Properties
-		public function get isValid():Boolean
-		{
-			return _isValid;
-		}
-		
-		public function set isValid(value:Boolean):void
-		{
-			_isValid = value;
-		}
-		
 		public function get dataObject():Object
 		{
 			return _dataObject;
@@ -35,12 +24,12 @@ package org.jbei.ui.dialogs
 			_dataObject = value;
 		}
 		
-		public function get dialog():ModalDialog
+		public function get dialog():SimpleDialog
 		{
 			return _dialog;
 		}
 		
-		public function set dialog(value:ModalDialog):void
+		public function set dialog(value:SimpleDialog):void
 		{
 			_dialog = value;
 		}
@@ -51,13 +40,6 @@ package org.jbei.ui.dialogs
 			this._dataObject = dataObject;
 			
 			// Abstract Method
-		}
-		
-		public function validate():void
-		{
-			// Abstract Method
-			
-			_isValid = true;
 		}
 	}
 }

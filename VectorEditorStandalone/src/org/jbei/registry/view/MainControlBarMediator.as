@@ -20,8 +20,11 @@ package org.jbei.registry.view
 			
 			controlBar = viewComponent as MainControlBar;
 			
+			controlBar.addEventListener(MainControlBar.SHOW_RAIL_VIEW, onShowRailView);
+			controlBar.addEventListener(MainControlBar.SHOW_PIE_VIEW, onShowPieView);
 			controlBar.addEventListener(MainControlBar.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_CUTSITES_STATE_CHANGED, onShowCutSitesStateChanged);
+			controlBar.addEventListener(MainControlBar.SAFE_EDITING_CHANGED, onSafeEditingChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_CREATE_NEW_FEATURE_DIALOG, onShowCreateNewFeatureDialog);
 			controlBar.addEventListener(MainControlBar.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
@@ -37,12 +40,26 @@ package org.jbei.registry.view
 		
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_FEATURES, ApplicationFacade.SHOW_CUTSITES, ApplicationFacade.SHOW_ORFS, ApplicationFacade.ACTION_STACK_CHANGED, ApplicationFacade.SELECTION_CHANGED];
+			return [ApplicationFacade.SHOW_RAIL
+				, ApplicationFacade.SHOW_PIE
+				, ApplicationFacade.SHOW_FEATURES
+				, ApplicationFacade.SHOW_CUTSITES
+				, ApplicationFacade.SHOW_ORFS
+				, ApplicationFacade.ACTION_STACK_CHANGED
+				, ApplicationFacade.SELECTION_CHANGED
+				, ApplicationFacade.SAFE_EDITING_CHANGED
+			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
+				case ApplicationFacade.SHOW_PIE:
+					controlBar.viewToggleButtonBar.selectedIndex = 0;
+					break;
+				case ApplicationFacade.SHOW_RAIL:
+					controlBar.viewToggleButtonBar.selectedIndex = 1;
+					break;
 				case ApplicationFacade.SHOW_FEATURES:
 					controlBar.showFeaturesButton.selected = (notification.getBody() as Boolean);
 					break;
@@ -64,6 +81,9 @@ package org.jbei.registry.view
 					} else {
 						controlBar.updateCopyAndCutButtonState(false);
 					}
+					break;
+				case ApplicationFacade.SAFE_EDITING_CHANGED:
+					controlBar.safeEditingButton.selected = (notification.getBody() as Boolean);
 					break;
 			}
 		}
@@ -132,6 +152,21 @@ package org.jbei.registry.view
 		private function onShowPropertiesDialog(event:Event):void
 		{
 			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
+		}
+		
+		private function onSafeEditingChanged(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SAFE_EDITING_CHANGED, controlBar.safeEditingButton.selected);
+		}
+		
+		private function onShowRailView(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SHOW_RAIL);
+		}
+		
+		private function onShowPieView(event:Event):void
+		{
+			sendNotification(ApplicationFacade.SHOW_PIE);
 		}
 	}
 }

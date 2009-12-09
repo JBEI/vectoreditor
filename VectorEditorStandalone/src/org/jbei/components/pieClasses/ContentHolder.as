@@ -2,6 +2,7 @@ package org.jbei.components.pieClasses
 {
     import flash.desktop.Clipboard;
     import flash.desktop.ClipboardFormats;
+    import flash.desktop.ClipboardTransferMode;
     import flash.display.Graphics;
     import flash.events.ContextMenuEvent;
     import flash.events.Event;
@@ -26,6 +27,7 @@ package org.jbei.components.pieClasses
     import org.jbei.components.Pie;
     import org.jbei.components.common.Alignment;
     import org.jbei.components.common.CaretEvent;
+    import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.ORFMapper;
@@ -36,12 +38,12 @@ package org.jbei.components.pieClasses
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
 		private const CONNECTOR_LINE_COLOR:int = 0x000000;
 		private const CONNECTOR_LINE_TRASPARENCY:Number = 0.2;
-		private const RAIL_HEIGHT:uint = 5;
 		private const PIE_RADIUS_PERCENTS:Number = 0.60;
 		private const SELECTION_THRESHOLD:Number = 5;
+		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
 		
 		private var pie:Pie;
-		private var rail:Rail;
+		private var railBox:RailBox;
 		private var selectionLayer:SelectionLayer;
 		private var caret:Caret;
 		private var nameBox:NameBox;
@@ -80,10 +82,10 @@ package org.jbei.components.pieClasses
 		private var _showFeatureLabels:Boolean = true;
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
+		private var _safeEditing:Boolean = true;
 		
 		private var mouseIsDown:Boolean = false;
 		private var clickPoint:Point;
-		private var mouseOverSelection:Boolean = false;
 		private var invalidSequence:Boolean = true;
 		private var startSelectionIndex:int;
 		private var endSelectionIndex:int;
@@ -264,6 +266,16 @@ package org.jbei.components.pieClasses
 			if(_caretPosition != value) {
 				tryMoveCaretToPosition(value);
 			}
+		}
+		
+		public function get safeEditing():Boolean
+		{
+			return _safeEditing;
+		}
+		
+		public function set safeEditing(value:Boolean):void
+		{
+			_safeEditing = value;
 		}
 		
 		public function get center():Point
@@ -509,7 +521,7 @@ package org.jbei.components.pieClasses
 				renderORFs();
 		        
 		        // update children metrics
-		        rail.updateMetrics(_railRadius, _center, RAIL_HEIGHT);
+				railBox.updateMetrics();
 		        
 		        caret.updateMetrics(_center, _railRadius + 10);
 				
@@ -617,11 +629,11 @@ package org.jbei.components.pieClasses
         
 	 	private function createRailBox():void
 	 	{
-	        if(!rail) {
-	            rail = new Rail(this);
-	            rail.includeInLayout = false;
+	        if(!railBox) {
+				railBox = new RailBox(this);
+				railBox.includeInLayout = false;
 	            
-            	addChild(rail);
+            	addChild(railBox);
 	        }
 	 	}
 	 	
@@ -759,43 +771,67 @@ package org.jbei.components.pieClasses
 	    	select(0, _featuredSequence.sequence.length);
 	    }
 	    
-	    private function onCopy(event:Event):void
-	    {
-	    	if((selectionStart >= 0) && (selectionEnd >= 0)) {
+		private function onCopy(event:Event):void
+		{
+			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionStart, selectionEnd).sequence);
-	    	}
-	    }
-	    
-	    private function onCut(event:Event):void
-	    {
-	    	if((selectionStart >= 0) && (selectionEnd >= 0)) {
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), false);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence, false);
+			}
+		}
+		
+		private function onCut(event:Event):void
+		{
+			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionStart, selectionEnd).sequence);
-        		
-        		_featuredSequence.removeSequence(selectionStart, selectionEnd);
-        		
-        		deselect();
-	    	}
-	    }
-	    
-	    private function onPaste(event:Event):void
-	    {
-	    	if(_caretPosition >= 0 && Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-	    		var pasteSequence:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT)).toUpperCase();
-	    		for(var i:int = 0; i < pasteSequence.length; i++) {
-	    			if(SequenceUtils.SYMBOLS.indexOf(pasteSequence.charAt(i)) == -1) {
-	    				Alert.show("Paste DNA Sequence contains invalid characters at position " + i + "!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
-	    				return;
-	    			}
-	    		}
-	    		
-    			_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
-    			
-				tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
-	    	}
-	    }
-	    
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), false);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, false);
+				
+				if(_safeEditing) {
+					doDeleteSequence(selectionLayer.start, selectionLayer.end);
+				} else {
+					_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+					
+					deselect();
+				}
+			}
+		}
+		
+		private function onPaste(event:Event):void
+		{
+			if(! isValidIndex(_caretPosition)) { return; }
+			
+			if(Clipboard.generalClipboard.hasFormat(FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
+				var clipboardObject:Object = Clipboard.generalClipboard.getData(FEATURED_SEQUENCE_CLIPBOARD_KEY);
+				
+				if(clipboardObject != null) {
+					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
+					
+					if(!isValidPasteSequence(pasteFeaturedSequence.sequence.sequence)) { return; }
+					
+					if(_safeEditing) {
+						doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+					} else {
+						_featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+						
+						tryMoveCaretToPosition(_caretPosition + pasteFeaturedSequence.sequence.sequence.length);
+					}				
+				}
+			} else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
+				var pasteSequence:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
+				
+				if(!isValidPasteSequence(pasteSequence)) { return; }
+				
+				if(_safeEditing) {
+					doInsertSequence(new DNASequence(pasteSequence), _caretPosition);
+				} else {
+					_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
+					
+					tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
+				}				
+			}
+		}
+		
 		private function onKeyUp(event:KeyboardEvent):void
 	    {
 			if(shiftKeyDown) {
@@ -1112,7 +1148,7 @@ package org.jbei.components.pieClasses
 				featureRenderer.visible = _showFeatures;
 				
 				if(_showFeatures) {
-					featureRenderer.update(_center, _railRadius, featureAlignmentMap);
+					featureRenderer.update(featureAlignmentMap[featureRenderer.feature]);
 				}
 			}
 		}
@@ -1417,22 +1453,6 @@ package org.jbei.components.pieClasses
 			return index;
 		}
 		
-		private function doSelect(start:int, end:int):void
-		{
-			if(start > 0 && end == 0) {
-				end == featuredSequence.sequence.length - 1;
-			}
-			
-			selectionLayer.select(start, end);
-		}
-		
-		private function doDeselect():void
-		{
-	    	startSelectionIndex = -1;
-	    	endSelectionIndex = -1;
-			selectionLayer.deselect();
-		}
-		
 		private function rebuildFeaturesAlignment():void
 		{
 			featureAlignmentMap = new Dictionary();
@@ -1500,6 +1520,54 @@ package org.jbei.components.pieClasses
 		private function validateCaret():void
 		{
 			tryMoveCaretToPosition(_caretPosition);
+		}
+		
+		private function isValidPasteSequence(sequence:String):Boolean
+		{
+			var result:Boolean = true;
+			
+			for(var j:int = 0; j < sequence.length; j++) {
+				if(SequenceUtils.SYMBOLS.indexOf(sequence.charAt(j)) == -1) {
+					Alert.show("Paste DNA Sequence contains invalid characters at position " + j + "!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
+					return result;
+				}
+			}
+			
+			return result;
+		}
+		
+		private function doSelect(start:int, end:int):void
+		{
+			if(start > 0 && end == 0) {
+				end == featuredSequence.sequence.length - 1;
+			}
+			
+			startSelectionIndex = start;
+			endSelectionIndex = end;
+			
+			selectionLayer.select(start, end);
+		}
+		
+		private function doDeselect():void
+		{
+			startSelectionIndex = -1;
+			endSelectionIndex = -1;
+			selectionLayer.deselect();
+		}
+		
+		private function doDeleteSequence(start:int, end:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_DELETE, new Array(start, end)));
+		}
+		
+		private function doInsertSequence(dnaSequence:DNASequence, position:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
+		}
+		
+		private function doInsertFeaturedSequence(currentFeaturedSequence:FeaturedSequence, position:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
 		}
 	}
 }

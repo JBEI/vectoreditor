@@ -35,6 +35,7 @@ package org.jbei.ui.dialogs
 			
 			this.dialogParent = dialogParent;
 			this.dialogForm = new dialogFormClass();
+			this.dialogForm.dialog = this;
 			
 			showCloseButton = true;
 			

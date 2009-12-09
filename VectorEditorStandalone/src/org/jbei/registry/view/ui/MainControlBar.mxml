@@ -4,6 +4,8 @@
 		<![CDATA[
 			import mx.events.ItemClickEvent;
 			
+			public static const SHOW_RAIL_VIEW:String = "ShowRailView";
+			public static const SHOW_PIE_VIEW:String = "ShowPieView";
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
 			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
 			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
@@ -12,6 +14,7 @@
 			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
 			public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
 			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
+			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
 			public static const COPY:String = "Copy";
 			public static const CUT:String = "Cut";
 			public static const PASTE:String = "Paste";
@@ -74,6 +77,10 @@
 			[Bindable]
 			private var propertiesIcon:Class;
 			
+			[Embed(source='../assets/icons/safe_editing.png')]
+			[Bindable]
+			private var safeEditingIcon:Class;
+			
 			// Public Methods
 			public function updateUndoButtonState(active:Boolean):void
 			{
@@ -113,11 +120,19 @@
 			}
 			
 			// Event Handlers
-			private function onChangeViewButtonClick(event:ItemClickEvent):void { }
+			private function onChangeViewButtonClick(event:ItemClickEvent):void
+			{
+				if(event.index == 0) { // Circular View
+					dispatchEvent(new Event(SHOW_PIE_VIEW));
+				} else if (event.index == 1) { // Linear View
+					dispatchEvent(new Event(SHOW_RAIL_VIEW));
+				}
+			}
 		]]>
 	</mx:Script>
 	
 	<mx:ToggleButtonBar 
+		id="viewToggleButtonBar"
 		toggleOnClick="false" 
 		itemClick="onChangeViewButtonClick(event)" 
 		backgroundColor="#FFFFFF" 
@@ -140,6 +155,8 @@
     <mx:Button width="24" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" click="{ dispatchEvent(new Event(UNDO)) }" />
     <mx:Button width="24" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" click="{ dispatchEvent(new Event(REDO)) }" />
     <mx:Spacer width="5" />
+	<mx:Button width="24" id="safeEditingButton" icon="{ safeEditingIcon }" toolTip="Safe Editing" toggle="true" selected="true" change="dispatchEvent(new Event(SAFE_EDITING_CHANGED));"/>
+	<mx:Spacer width="5" />
 	<mx:Button width="24" id="showFindPanelButton" icon="{ findIcon }" toolTip="Find ..." click="dispatchEvent(new Event(SHOW_FIND_PANEL));"/>
 	<mx:Button width="24" id="showGoToDialogButton" icon="{ gotoIcon }" toolTip="Go To ..." click="dispatchEvent(new Event(SHOW_GOTO_DIALOG));"/>
 	<mx:Spacer width="5" />

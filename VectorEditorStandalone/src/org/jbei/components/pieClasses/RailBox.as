@@ -5,21 +5,19 @@ package org.jbei.components.pieClasses
 	
 	import mx.core.UIComponent;
 
-	public class Rail extends UIComponent
+	public class RailBox extends UIComponent
 	{
 		private const FRAME_COLOR:int = 0x000000;
 		private const COLOR:int = 0xFFFF00;
 		private const TRANSPARENCY:Number = 0.3;
+		private const THICKNESS:Number = 5;
 		
 		private var contentHolder:ContentHolder;
 		
 		private var needsMeasurement:Boolean = false;
-		private var radius:Number;
-		private var center:Point;
-		private var thickness:Number;
 		
 		// Contructor
-		public function Rail(contentHolder:ContentHolder)
+		public function RailBox(contentHolder:ContentHolder)
 		{
 			super();
 			
@@ -27,12 +25,8 @@ package org.jbei.components.pieClasses
 		}
 		
 		// Public Methods
-		public function updateMetrics(radius:Number, center:Point, thickness:Number):void
+		public function updateMetrics():void
 		{
-			this.radius = radius;
-			this.center = center;
-			this.thickness = thickness;
-			
 			needsMeasurement = true;
 			
 			invalidateDisplayList();
@@ -58,8 +52,8 @@ package org.jbei.components.pieClasses
 			g.clear();
 			g.lineStyle(1, FRAME_COLOR, TRANSPARENCY);
 			g.beginFill(COLOR, TRANSPARENCY);
-			g.drawCircle(center.x, center.y, radius);
-			g.drawCircle(center.x, center.y, radius - thickness);
+			g.drawCircle(contentHolder.center.x, contentHolder.center.y, contentHolder.railRadius);
+			g.drawCircle(contentHolder.center.x, contentHolder.center.y, contentHolder.railRadius - THICKNESS);
 			g.endFill();
 		}
 	}

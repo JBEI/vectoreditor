@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialogs:AbstractDialogForm 
+	width="100%" height="100%"
+	creationComplete="onCreationComplete(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:dialogs="org.jbei.ui.dialogs.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import org.jbei.ApplicationFacade;
+			import org.jbei.bio.data.DNASequence;
+			import org.jbei.bio.data.Feature;
+			import org.jbei.components.common.EditingEvent;
+			import org.jbei.lib.FeaturedSequence;
+			
+			[Bindable]
+			private var featuredItems:ArrayCollection;
+			
+			private var featuredSequence:FeaturedSequence;
+			private var actionKind:String;
+			private var actionData:Array;
+			
+			// Public Methods
+			public override function validate():void
+			{
+				if(!featuredItems || featuredItems.length == 0) {
+					isValid = true;
+					
+					return;
+				}
+				
+				featuredSequence.manualUpdateStart();
+				for(var i:int = 0; i < featuredItems.length; i++) {
+					if((featuredItems[i] as FeatureEditingTableItem).removeAction) {
+						featuredSequence.removeFeature((featuredItems[i] as FeatureEditingTableItem).feature);
+					}
+				}
+				
+				if(actionKind == EditingEvent.KIND_DELETE) {
+					var start:int = actionData[0] as int;
+					var end:int = actionData[1] as int;
+					
+					featuredSequence.removeSequence(start, end);
+				} else if(actionKind == EditingEvent.KIND_INSERT_SEQUENCE) {
+					var dnaSequence:DNASequence = actionData[0] as DNASequence;
+					var position1:int = actionData[1] as int;
+					
+					featuredSequence.insertSequence(dnaSequence, position1);
+				} else if(actionKind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+					var insertFeaturedSequence:FeaturedSequence = actionData[0] as FeaturedSequence;
+					var position2:int = actionData[1] as int;
+					
+					featuredSequence.insertFeaturedSequence(insertFeaturedSequence, position2);
+				}
+				featuredSequence.manualUpdateEnd();
+				
+				isValid = true;
+			}
+			
+			// Event Hanlers
+			private function onCreationComplete(event:FlexEvent):void
+			{
+				affectedFeaturesDataGrid.setFocus();
+				
+				featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+				
+				var input:Array = dataObject as Array;
+				actionKind = input[0] as String;
+				actionData = input[1] as Array;
+				
+				var affectedFeatures:Array;
+				
+				featuredItems = new ArrayCollection();
+				
+				if(actionKind == EditingEvent.KIND_DELETE) {
+					var start:int = actionData[0] as int;
+					var end:int = actionData[1] as int;
+					
+					affectedFeatures = featuredSequence.featuresByRange(start, end);
+					
+					for(var i1:int = 0; i1 < affectedFeatures.length; i1++) {
+						// Check if feature is completelly covered by segment
+						var currentFeature:Feature = affectedFeatures[i1] as Feature;
+						
+						if(start < end) {
+							if(currentFeature.start <= currentFeature.end) {
+								if(start <= currentFeature.start && end > currentFeature.end) {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
+								} else {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, false, true));
+								}
+							} else {
+								featuredItems.addItem(new FeatureEditingTableItem(currentFeature, false, true));
+							}
+						} else {
+							if(currentFeature.start <= currentFeature.end) {
+								if(currentFeature.end < end) {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
+								} else if(currentFeature.start >= start) {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
+								} else if((currentFeature.end >= start && currentFeature.start < start) || (currentFeature.start < end && currentFeature.end >= end)) {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, false, true));
+								}
+							} else {
+								if(start <= currentFeature.start && end > currentFeature.end) {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
+								} else {
+									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, false, true));
+								}
+							}
+						}
+					}
+				} else if(actionKind == EditingEvent.KIND_INSERT_SEQUENCE) {
+					var dnaSequence:DNASequence = actionData[0] as DNASequence;
+					var position1:int = actionData[1] as int;
+					
+					affectedFeatures = featuredSequence.featuresAt(position1);
+					for(var i2:int = 0; i2 < affectedFeatures.length; i2++) {
+						featuredItems.addItem(new FeatureEditingTableItem(affectedFeatures[i2] as Feature, false, true));
+					}
+				} else if(actionKind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+					var insertFeaturedSequence:FeaturedSequence = actionData[0] as FeaturedSequence;
+					var position2:int = actionData[1] as int;
+					
+					affectedFeatures = featuredSequence.featuresAt(position2);
+					
+					for(var i3:int = 0; i3 < affectedFeatures.length; i3++) {
+						featuredItems.addItem(new FeatureEditingTableItem(affectedFeatures[i3] as Feature, false, true));
+					}
+				}
+			}
+			
+			private function onTurOffSafeEditingButton(event:MouseEvent):void
+			{
+				dialog.close();
+				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SAFE_EDITING_CHANGED, false);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:Label text="Following features are going to be affected:" width="100%" />
+		
+		<mx:DataGrid id="affectedFeaturesDataGrid" dataProvider="{ featuredItems }" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn dataField="feature.label" headerText="Name" sortable="false" />
+				<mx:DataGridColumn dataField="feature.type" headerText="Type"  sortable="false"/>
+				<mx:DataGridColumn dataField="position" headerText="Position"  sortable="false"/>
+				<mx:DataGridColumn headerText="Remove" width="60"  sortable="false" itemRenderer="org.jbei.registry.view.dialogs.editingPromptDialog.FeatureActionRowRenderer" />
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox width="100%" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0" horizontalGap="0"> 
+			<mx:LinkButton id="turOffSafeEditingButton" label="Turn off" click="onTurOffSafeEditingButton(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
+			<mx:Label text="safe editing" />
+		</mx:HBox>
+	</mx:VBox>
+	
+</dialogs:AbstractDialogForm>

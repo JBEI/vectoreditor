@@ -2,6 +2,7 @@ package org.jbei.components.sequenceClasses
 {
     import flash.desktop.Clipboard;
     import flash.desktop.ClipboardFormats;
+    import flash.desktop.ClipboardTransferMode;
     import flash.display.Graphics;
     import flash.events.ContextMenuEvent;
     import flash.events.Event;
@@ -24,6 +25,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.bio.utils.SequenceUtils;
     import org.jbei.components.SequenceAnnotator;
     import org.jbei.components.common.CaretEvent;
+    import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.TextRenderer;
     import org.jbei.lib.FeaturedSequence;
@@ -47,6 +49,7 @@ package org.jbei.components.sequenceClasses
 		private const SINGLE_CUTTER_CUTSITES_FONT_COLOR:int = 0xE57676;
 		private const AMINOACIDS_FONT_COLOR:int = 0x0066FF;
 		private const MINIMUM_BP_PER_ROW:int = 10;
+		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
 		
 		private var sequenceAnnotator:SequenceAnnotator;
 		private var selectionLayer:SelectionLayer;
@@ -86,6 +89,7 @@ package org.jbei.components.sequenceClasses
 		private var _showAminoAcids1:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
 		private var _showORFs:Boolean = false;
+		private var _safeEditing:Boolean = true;
 		
 		private var parentWidth:Number = 0;
 		private var parentHeight:Number = 0;
@@ -93,7 +97,6 @@ package org.jbei.components.sequenceClasses
 		private var shiftKeyDown:Boolean = false;
 		private var shiftDownCaretPosition:int = -1;
 		private var mouseIsDown:Boolean = false;
-		private var mouseOverSelection:Boolean = false;
 		private var startSelectionIndex:int;
 		private var endSelectionIndex:int;
 		private var selectionDirection:int = 0;
@@ -398,7 +401,17 @@ package org.jbei.components.sequenceClasses
 	    	}
 	    }
 	    
-	    // Public Methods
+		public function get safeEditing():Boolean
+		{
+			return _safeEditing;
+		}
+		
+		public function set safeEditing(value:Boolean):void
+		{
+			_safeEditing = value;
+		}
+		
+		// Public Methods
 		public function updateMetrics(parentWidth:Number, parentHeight:Number):void
 		{
 			this.parentWidth = parentWidth;
@@ -1031,41 +1044,65 @@ package org.jbei.components.sequenceClasses
 	    	select(0, _featuredSequence.sequence.length);
 	    }
 	    
-	    private function onCopy(event:Event):void
-	    {
-	    	if((startSelectionIndex >= 0) && (endSelectionIndex >= 0)) {
+		private function onCopy(event:Event):void
+		{
+			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence);
-	    	}
-	    }
-	    
-	    private function onCut(event:Event):void
-	    {
-	    	if((startSelectionIndex >= 0) && (endSelectionIndex >= 0)) {
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), false);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, false);
+			}
+		}
+		
+		private function onCut(event:Event):void
+		{
+			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence);
-        		
-        		_featuredSequence.removeSequence(startSelectionIndex, endSelectionIndex);
-        		
-        		deselect();
-	    	}
-	    }
-	    
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), false);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, false);
+				
+				if(_safeEditing) {
+					doDeleteSequence(selectionLayer.start, selectionLayer.end);
+				} else {
+					_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+					
+					deselect();
+				}
+			}
+		}
+		
 	    private function onPaste(event:Event):void
 	    {
-	    	if(_caretPosition >= 0 && Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-	    		var pasteSequence:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT)).toUpperCase();
-	    		for(var i:int = 0; i < pasteSequence.length; i++) {
-	    			if(SequenceUtils.SYMBOLS.indexOf(pasteSequence.charAt(i)) == -1) {
-	    				Alert.show("Paste DNA Sequence contains invalid characters at position " + i + "!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
-	    				return;
-	    			}
-	    		}
-	    		
-    			_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
-    			
-				tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
-	    	}
+	    	if(! isValidIndex(_caretPosition)) { return; }
+			
+			if(Clipboard.generalClipboard.hasFormat(FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
+				var clipboardObject:Object = Clipboard.generalClipboard.getData(FEATURED_SEQUENCE_CLIPBOARD_KEY);
+				
+				if(clipboardObject != null) {
+					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
+					
+					if(!isValidPasteSequence(pasteFeaturedSequence.sequence.sequence)) { return; }
+					
+					if(_safeEditing) {
+						doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+					} else {
+						_featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+						
+						tryMoveCaretToPosition(_caretPosition + pasteFeaturedSequence.sequence.sequence.length);
+					}				
+				}
+			} else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
+				var pasteSequence:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
+				
+				if(!isValidPasteSequence(pasteSequence)) { return; }
+				
+				if(_safeEditing) {
+					doInsertSequence(new DNASequence(pasteSequence), _caretPosition);
+				} else {
+					_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
+					
+					tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
+				}				
+			}
 	    }
 	    
 		private function onKeyUp(event:KeyboardEvent):void
@@ -1119,31 +1156,50 @@ package org.jbei.components.sequenceClasses
 				}
 			} else if(!event.ctrlKey && !event.shiftKey && !event.altKey && _caretPosition != -1) {
 				if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
-					_featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
-					
-					tryMoveCaretToPosition(_caretPosition + 1);
-					//_caretPosition += 1;
+					if(_safeEditing) {
+						doInsertSequence(new DNASequence(keyCharacter), _caretPosition);
+					} else {
+						_featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
+						
+						tryMoveCaretToPosition(_caretPosition + 1);
+					}
 				} else if(event.keyCode == Keyboard.DELETE) {
 					if(selectionLayer.selected) {
-						_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
-						
-						tryMoveCaretToPosition(selectionLayer.start);
-						
-						deselect();
+						if(_safeEditing) {
+							doDeleteSequence(selectionLayer.start, selectionLayer.end);
+						} else {
+							_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+							
+							tryMoveCaretToPosition(selectionLayer.start);
+							
+							deselect();
+						}
 					} else {
-						_featuredSequence.removeSequence(_caretPosition, _caretPosition + 1);
+						if(_safeEditing) {
+							doDeleteSequence(_caretPosition, _caretPosition + 1);
+						} else {
+							_featuredSequence.removeSequence(_caretPosition, _caretPosition + 1);
+						}
 					}
 				} else if(event.keyCode == Keyboard.BACKSPACE && _caretPosition > 0) {
 					if(selectionLayer.selected) {
-						_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
-						
-						tryMoveCaretToPosition(selectionLayer.start);
-						
-						deselect();
+						if(_safeEditing) {
+							doDeleteSequence(selectionLayer.start, selectionLayer.end);
+						} else {
+							_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+							
+							tryMoveCaretToPosition(selectionLayer.start);
+							
+							deselect();
+						}
 					} else {
-						_featuredSequence.removeSequence(_caretPosition - 1, _caretPosition);
-						
-						tryMoveCaretToPosition(_caretPosition - 1);
+						if(_safeEditing) {
+							doDeleteSequence(_caretPosition - 1, _caretPosition);
+						} else {
+							_featuredSequence.removeSequence(_caretPosition - 1, _caretPosition);
+							
+							tryMoveCaretToPosition(_caretPosition - 1);
+						}
 					}
 				}
 			}
@@ -1517,5 +1573,34 @@ package org.jbei.components.sequenceClasses
 	    	endSelectionIndex = -1;
 	    	selectionLayer.deselect();
 	    }
+		
+		private function isValidPasteSequence(sequence:String):Boolean
+		{
+			var result:Boolean = true;
+			
+			for(var j:int = 0; j < sequence.length; j++) {
+				if(SequenceUtils.SYMBOLS.indexOf(sequence.charAt(j)) == -1) {
+					Alert.show("Paste DNA Sequence contains invalid characters at position " + j + "!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
+					return result;
+				}
+			}
+			
+			return result;
+		}
+		
+		private function doDeleteSequence(start:int, end:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_DELETE, new Array(start, end)));
+		}
+		
+		private function doInsertSequence(dnaSequence:DNASequence, position:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
+		}
+		
+		private function doInsertFeaturedSequence(currentFeaturedSequence:FeaturedSequence, position:int):void
+		{
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
+		}
 	}
 }

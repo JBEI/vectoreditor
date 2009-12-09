@@ -21,11 +21,9 @@ package org.jbei.components
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
 	[Event(name="featureDoubleClick", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
+	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
 	[Event(name="beforeUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	[Event(name="afterUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
-	
-	//[Style(name="selectionColor", type="uint", format="Color", inherit="no")]
-	//[Style(name="selectionAlpha", type="Number", inherit="no")]
 	
 	public class SequenceAnnotator extends ScrollControlBase implements IFocusManagerComponent
 	{
@@ -50,6 +48,7 @@ package org.jbei.components
 		private var _showAminoAcids1:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
 		private var _showORFs:Boolean = false;
+		private var _safeEditing:Boolean = true;
 		
 		private var contentHeight:uint = 0;
 		
@@ -322,6 +321,20 @@ package org.jbei.components
 	    	return contentHolder.selectionEnd;
 	    }
 	    
+		public function get safeEditing():Boolean
+		{
+			return _safeEditing;
+		}
+		
+		public function set safeEditing(value:Boolean):void
+		{
+			if(_safeEditing != value) {
+				_safeEditing = value;
+				
+				contentHolder.safeEditing = _safeEditing;
+			}
+		}
+		
 	    // Public Methods
 		public function scrollToSelection():void
 		{

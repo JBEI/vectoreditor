@@ -110,6 +110,64 @@ package org.jbei.lib
 			return result;
 		}
 		
+		public function subFeaturedSequence(start:int, end:int):FeaturedSequence
+		{
+			var featuredSubSequence:FeaturedSequence;
+			
+			if(start < 0 || end < 0 || start > _sequence.length || end > _sequence.length) {
+				return featuredSubSequence;
+			}
+			
+			var featuredDNASubSequence:DNASequence = subSequence(start, end);
+			var featuredOppositeSubSequence:DNASequence = SequenceUtils.oppositeSequence(featuredDNASubSequence);
+			
+			var subFeatures:ArrayCollection = new ArrayCollection();
+			
+			for(var i:int = 0; i < features.length; i++) {
+				var feature:Feature = features[i] as Feature;
+				
+				if(start < end && feature.start <= feature.end) {
+					if(start <= feature.start && end > feature.end) {
+						var clonedFeature1:Feature = feature.clone();
+						
+						clonedFeature1.start -= start;
+						clonedFeature1.end -= start;
+						
+						subFeatures.addItem(clonedFeature1);
+					}
+				} else if(start > end && feature.start >= feature.end) {
+					if(start <= feature.start && end > feature.end) {
+						var clonedFeature2:Feature = feature.clone();
+						
+						clonedFeature2.start -= start;
+						clonedFeature2.end = _sequence.length + feature.end - start;
+						
+						subFeatures.addItem(clonedFeature2);
+					}
+				} else if(start > end && feature.start <= feature.end) {
+					if(start <= feature.start) {
+						var clonedFeature3:Feature = feature.clone();
+						
+						clonedFeature3.start -= start;
+						clonedFeature3.end -= start;
+						
+						subFeatures.addItem(clonedFeature3);
+					} else if(end > feature.end) {
+						var clonedFeature4:Feature = feature.clone();
+						
+						clonedFeature4.start += sequence.length - start;
+						clonedFeature4.end += sequence.length - start;
+						
+						subFeatures.addItem(clonedFeature4);
+					}
+				}
+			}
+			
+			featuredSubSequence = new FeaturedSequence("Dummy", false, featuredDNASubSequence, featuredOppositeSubSequence, subFeatures);
+			
+			return featuredSubSequence;
+		}
+		
 		public function addFeature(feature:Feature, quiet:Boolean = false):void
 		{
 			if(!quiet && !_manualUpdateStarted) {
@@ -181,6 +239,28 @@ package org.jbei.lib
 		public function hasFeature(feature:Feature):Boolean
 		{
 			return features.contains(feature);
+		}
+		
+		public function insertFeaturedSequence(featuredSequence:FeaturedSequence, position:int, quiet:Boolean = false):void
+		{
+			if(!quiet && !_manualUpdateStarted) {
+				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+			}
+			
+			insertSequence(new DNASequence(featuredSequence.sequence.sequence), position, true);
+			
+			for(var z:int = 0; z < featuredSequence.features.length; z++) {
+				var insertFeature:Feature = (featuredSequence.features[z] as Feature).clone();
+				
+				insertFeature.start += position;
+				insertFeature.end += position;
+				
+				addFeature(insertFeature, true);
+			}
+			
+			if(!quiet && !_manualUpdateStarted) {
+				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {featuredSequence : featuredSequence, position : position}));
+			}
 		}
 		
 		public function insertSequence(insertSequence:DNASequence, position:int, quiet:Boolean = false):void
@@ -493,6 +573,59 @@ package org.jbei.lib
 			if(!quiet && !_manualUpdateStarted) {
 				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_REMOVE, {position : startIndex, length : length}));
 			}
+		}
+		
+		public function featuresByRange(start:int, end:int):Array /* of Feature */
+		{
+			var result:Array = new Array();
+			
+			for(var i:int = 0; i < features.length; i++) {
+				var feature:Feature = features[i] as Feature;
+				
+				if(start < end) {
+					if(feature.start <= feature.end) {
+						if(feature.start < end && feature.end >= start) {
+							result.push(feature);
+						}
+					} else {
+						if(start < feature.end || end > feature.start) {
+							result.push(feature);
+						}
+					}
+				} else {
+					if(feature.start <= feature.end) {
+						if(feature.start >= end && feature.end < start) {
+						} else {
+							result.push(feature);
+						}
+					} else {
+						result.push(feature);
+					}
+				}
+			}
+			
+			return result;
+		}
+		
+		public function featuresAt(position:int):Array /* of Feature */
+		{
+			var result:Array = new Array();
+			
+			for(var i:int = 0; i < features.length; i++) {
+				var feature:Feature = features[i] as Feature;
+				
+				if(feature.start <= feature.end) {
+					if(feature.start < position && feature.end > position) {
+						result.push(feature);
+					}
+				} else {
+					if(feature.start < position || feature.end > position) {
+						result.push(feature);
+					}
+				}
+			}
+			
+			return result;
 		}
 		
 		public function manualUpdateStart():void

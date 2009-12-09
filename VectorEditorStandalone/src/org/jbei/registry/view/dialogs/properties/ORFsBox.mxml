@@ -14,14 +14,24 @@
 			import org.jbei.ApplicationFacade;
 			import org.jbei.bio.data.ORF;
 			import org.jbei.lib.ORFMapper;
+			import org.jbei.ui.dialogs.SimpleDialog;
+			
+			[Bindable]
+			public var parentDialog:SimpleDialog;
 			
 			[Bindable]
 			private var orfs:ArrayCollection = new ArrayCollection();
 			
+			private var orfMapper:ORFMapper;
+			
+			[Bindable]
+			private var minimumORFLength:int;
+			
 			// Event Handler
 			private function onInitialize(event:Event):void
 			{
-				var orfMapper:ORFMapper = ApplicationFacade.getInstance().orfMapper;
+				orfMapper = ApplicationFacade.getInstance().orfMapper;
+				minimumORFLength = orfMapper.minORFSize;
 				
 				for (var i:int = 0; i < orfMapper.orfs.length; i++) {
 					var orf:ORF = orfMapper.orfs[i] as ORF;
@@ -44,15 +54,32 @@
 					ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SELECTION_CHANGED, new Array(orf.start, orf.end + 1));
 				}
 			}
+			
+			private function onPreferencesLinkButtonClick(event:MouseEvent):void
+			{
+				parentDialog.close();
+				
+				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_PREFERENCES_DIALOG);
+			}
 		]]>
 	</mx:Script>
 	
-	<mx:DataGrid id="orfsDataGrid" dataProvider="{ orfs }" width="100%" height="100%" doubleClickEnabled="true" doubleClick="onORFsDataGridDoubleClick(event)">
-		<mx:columns>
-			<mx:DataGridColumn dataField="position" headerText="Position"/>
-			<mx:DataGridColumn dataField="length" headerText="Length" width="75"/>
-			<mx:DataGridColumn dataField="strand" headerText="Strand" width="50"/>
-			<mx:DataGridColumn dataField="frame" headerText="Frame" width="50"/>
-		</mx:columns>
-	</mx:DataGrid>
+	<mx:VBox width="100%" height="100%">
+		<mx:DataGrid id="orfsDataGrid" dataProvider="{ orfs }" width="100%" height="100%" doubleClickEnabled="true" doubleClick="onORFsDataGridDoubleClick(event)">
+			<mx:columns>
+				<mx:DataGridColumn dataField="position" headerText="Position"/>
+				<mx:DataGridColumn dataField="length" headerText="Length" width="75"/>
+				<mx:DataGridColumn dataField="strand" headerText="Strand" width="50"/>
+				<mx:DataGridColumn dataField="frame" headerText="Frame" width="50"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:Label text="Minimum ORF length: {minimumORFLength}" />
+		
+		<mx:HBox width="100%" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0" horizontalGap="0"> 
+			<mx:Label text="Adjust mininum ORF length in" />
+			
+			<mx:LinkButton id="preferencesLinkButton" label="Preferences" click="onPreferencesLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
+		</mx:HBox>
+	</mx:VBox>
 </mx:Box>

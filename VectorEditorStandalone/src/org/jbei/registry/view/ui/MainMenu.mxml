@@ -7,6 +7,8 @@
 			import org.jbei.registry.view.ui.menu.MenuItem;
 			import org.jbei.registry.view.ui.menu.MenuItemEvent;
 			
+			public static const SHOW_RAIL:String = "ShowRail";
+			public static const SHOW_PIE:String = "ShowPie";
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
 			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
 			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
@@ -24,6 +26,7 @@
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
 			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
 			public static const SHOW_FIND_DIALOG:String = "ShowFindDialog";
+			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
 			public static const GO_REPORT_BUG_WEB_LINK:String = "GoReportBugWebLink";
 			public static const GO_SUGGEST_FEATURE_WEB_LINK:String = "GoSuggestFeatureWebLink";
 			public static const COPY:String = "Copy";
@@ -59,13 +62,13 @@
             	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
             	var cloneMenuItem:MenuItem = new MenuItem("cloneMenuItem", "Clone ...");
             	var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Export");
-            	fileMenuItem.addSubItem(saveMenuItem);
-            	fileMenuItem.addSubItem(cloneMenuItem);
-				fileMenuItem.addSubItem(separatorMenuItem);
+            	//fileMenuItem.addSubItem(saveMenuItem);
+            	//fileMenuItem.addSubItem(cloneMenuItem);
+				//fileMenuItem.addSubItem(separatorMenuItem);
 				fileMenuItem.addSubItem(propertiesMenuItem);
-            	fileMenuItem.addSubItem(separatorMenuItem);
-            	fileMenuItem.addSubItem(printMenuItem);
-            	fileMenuItem.addSubItem(exportMenuItem);
+            	//fileMenuItem.addSubItem(separatorMenuItem);
+				//fileMenuItem.addSubItem(printMenuItem);
+				//fileMenuItem.addSubItem(exportMenuItem);
             	
             	// Edit
             	var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
@@ -74,7 +77,8 @@
             	var copyMenuItem:MenuItem = new MenuItem("copyMenuItem", "Copy", "", false, false, false);
             	var cutMenuItem:MenuItem = new MenuItem("cutMenuItem", "Cut", "", false, false, false);
             	var pasteMenuItem:MenuItem = new MenuItem("pasteMenuItem", "Paste");
-            	var selectMenuItem:MenuItem = new MenuItem("selectMenuItem", "Select ...");
+				var safeEditingMenuItem:MenuItem = new MenuItem("safeEditingMenuItem", "Safe Editing", "check", true);
+            	var selectMenuItem:MenuItem = new MenuItem("selectMenuItem", "Select...");
             	var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
 				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To");
 				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
@@ -85,6 +89,8 @@
             	editMenuItem.addSubItem(cutMenuItem);
             	editMenuItem.addSubItem(pasteMenuItem);
 				editMenuItem.addSubItem(separatorMenuItem);
+				editMenuItem.addSubItem(safeEditingMenuItem);
+				editMenuItem.addSubItem(separatorMenuItem);
 				editMenuItem.addSubItem(findMenuItem);
 				editMenuItem.addSubItem(gotoMenuItem);
 				editMenuItem.addSubItem(separatorMenuItem);
@@ -93,6 +99,8 @@
 				
 				// View
             	var viewMenuItem:MenuItem = new MenuItem("viewMenuItem", "View");
+				var showPieMenuItem:MenuItem = new MenuItem("showPieMenuItem", "Circular", "check", true);
+				var showRailMenuItem:MenuItem = new MenuItem("showRailMenuItem", "Linear", "check", false);
             	var showFeaturesMenuItem:MenuItem = new MenuItem("showFeaturesMenuItem", "Features", "check", true);
             	var showCutSitesMenuItem:MenuItem = new MenuItem("showCutSitesMenuItem", "Cut Sites", "check", false);
             	var showORFsMenuItem:MenuItem = new MenuItem("showORFsMenuItem", "ORF", "check", false);
@@ -102,6 +110,9 @@
             	var showAA3MenuItem:MenuItem = new MenuItem("showAA3MenuItem", "Three Letter AA", "check", false);
             	var showFeatureLabelsMenuItem:MenuItem = new MenuItem("showFeatureLabelsMenuItem", "Feature Labels", "check", true);
             	var showCutSiteLabelsMenuItem:MenuItem = new MenuItem("showCutSiteLabelsMenuItem", "Cut Site Labels", "check", true);
+				viewMenuItem.addSubItem(showPieMenuItem);
+				viewMenuItem.addSubItem(showRailMenuItem);
+				viewMenuItem.addSubItem(separatorMenuItem);
             	viewMenuItem.addSubItem(showFeaturesMenuItem);
             	viewMenuItem.addSubItem(showCutSitesMenuItem);
             	viewMenuItem.addSubItem(showORFsMenuItem);
@@ -151,6 +162,7 @@
             	menuItemsMap["copyMenuItem"] = copyMenuItem;
             	menuItemsMap["cutMenuItem"] = cutMenuItem;
             	menuItemsMap["pasteMenuItem"] = pasteMenuItem;
+				menuItemsMap["safeEditingMenuItem"] = safeEditingMenuItem;
             	menuItemsMap["selectMenuItem"] = selectMenuItem;
             	menuItemsMap["selectAllMenuItem"] = selectAllMenuItem;
 				menuItemsMap["gotoMenuItem"] = gotoMenuItem;
@@ -158,6 +170,8 @@
             	
             	// View
             	menuItemsMap["viewMenuItem"] = viewMenuItem;
+				menuItemsMap["showRailMenuItem"] = showRailMenuItem;
+				menuItemsMap["showPieMenuItem"] = showPieMenuItem;
             	menuItemsMap["showFeaturesMenuItem"] = showFeaturesMenuItem;
             	menuItemsMap["showCutSitesMenuItem"] = showCutSitesMenuItem;
             	menuItemsMap["showComplementaryMenuItem"] = showComplementaryMenuItem;
@@ -184,7 +198,11 @@
             {
             	var menuItem:MenuItem = event.item as MenuItem;
             	
-            	if(menuItem.id == "showFeaturesMenuItem") {
+				if(menuItem.id == "showRailMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_RAIL, menuItem));
+				} if(menuItem.id == "showPieMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_PIE, menuItem));
+				} if(menuItem.id == "showFeaturesMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_FEATURES_STATE_CHANGED, menuItem));
             	} else if(menuItem.id == "showCutSitesMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_CUTSITES_STATE_CHANGED, menuItem));
@@ -220,6 +238,8 @@
             		dispatchEvent(new MenuItemEvent(CUT, menuItem));
             	} else if(menuItem.id == "pasteMenuItem") {
             		dispatchEvent(new MenuItemEvent(PASTE, menuItem));
+				} else if(menuItem.id == "safeEditingMenuItem") {
+					dispatchEvent(new MenuItemEvent(SAFE_EDITING_CHANGED, menuItem));
             	} else if(menuItem.id == "selectAllMenuItem") {
             		dispatchEvent(new MenuItemEvent(SELECT_ALL, menuItem));
             	} else if(menuItem.id == "createNewFeatureMenuItem") {

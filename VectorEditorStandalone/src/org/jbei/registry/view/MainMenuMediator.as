@@ -19,6 +19,8 @@ package org.jbei.registry.view
 			super(NAME, viewComponent);
 			
 			mainMenu = viewComponent as MainMenu;
+			mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
+			mainMenu.addEventListener(MainMenu.SHOW_PIE, onShowPie);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_CUTSITES_STATE_CHANGED, onShowCutSitesStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
@@ -44,11 +46,14 @@ package org.jbei.registry.view
 			mainMenu.addEventListener(MainMenu.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
 			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
+			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
 		}
 		
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_FEATURES
+			return [ApplicationFacade.SHOW_RAIL
+				, ApplicationFacade.SHOW_PIE
+				, ApplicationFacade.SHOW_FEATURES
 				, ApplicationFacade.SHOW_CUTSITES
 				, ApplicationFacade.SHOW_ORFS
 				, ApplicationFacade.SHOW_COMPLEMENTARY
@@ -56,12 +61,21 @@ package org.jbei.registry.view
 				, ApplicationFacade.SHOW_AA3
 				, ApplicationFacade.ACTION_STACK_CHANGED
 				, ApplicationFacade.SELECTION_CHANGED
+				, ApplicationFacade.SAFE_EDITING_CHANGED
 				];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
+				case ApplicationFacade.SHOW_PIE:
+					mainMenu.menuItemByName("showPieMenuItem").toggled = true;
+					mainMenu.menuItemByName("showRailMenuItem").toggled = false;
+					break;
+				case ApplicationFacade.SHOW_RAIL:
+					mainMenu.menuItemByName("showPieMenuItem").toggled = false;
+					mainMenu.menuItemByName("showRailMenuItem").toggled = true;
+					break;
 				case ApplicationFacade.SHOW_FEATURES:
 					mainMenu.menuItemByName("showFeaturesMenuItem").toggled = notification.getBody() as Boolean;
 					break;
@@ -94,6 +108,9 @@ package org.jbei.registry.view
 						mainMenu.menuItemByName("cutMenuItem").enabled = false;
 						mainMenu.menuItemByName("copyMenuItem").enabled = false;
 					}
+					break;
+				case ApplicationFacade.SAFE_EDITING_CHANGED:
+					mainMenu.menuItemByName("safeEditingMenuItem").toggled = notification.getBody() as Boolean;
 					break;
 			}
 		}
@@ -222,6 +239,21 @@ package org.jbei.registry.view
 		private function onShowPropertiesDialog(event:MenuItemEvent):void
 		{
 			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
+		}
+		
+		private function onSafeEditingChanged(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SAFE_EDITING_CHANGED, (event.menuItem as MenuItem).toggled);
+		}
+		
+		private function onShowRail(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SHOW_RAIL);
+		}
+		
+		private function onShowPie(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SHOW_PIE);
 		}
 	}
 }

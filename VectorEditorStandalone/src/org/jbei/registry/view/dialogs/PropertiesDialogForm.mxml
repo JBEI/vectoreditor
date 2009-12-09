@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Box 
+<SimpleDialogForm
 	width="100%" 
 	height="100%" 
-	xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:properties="org.jbei.registry.view.dialogs.properties.*">
+	xmlns="org.jbei.ui.dialogs.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:properties="org.jbei.registry.view.dialogs.properties.*"
+	creationComplete="onCreationComplete(event)">
 	
-	<mx:TabNavigator width="100%" height="100%" paddingTop="2" paddingBottom="2" paddingLeft="2" paddingRight="2">
-		<properties:EntryInformationBox width="500" height="400"/>
-		<properties:FeaturesBox width="500" height="400"/>
-		<properties:CutSitesBox width="500" height="400"/>
-		<properties:ORFsBox width="500" height="400"/>
-		<properties:GenBank width="500" height="400"/>
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.ui.dialogs.SimpleDialog;
+			
+			public static const ENTRY_INFORMATION_TAB:int = 0;
+			public static const FEATURES_TAB:int = 1;
+			public static const CUT_SITES_TAB:int = 2;
+			public static const ORF_TAB:int = 3;
+			public static const GEN_BANK_TAB:int = 4;
+			
+			[Bindable]
+			private var parentDialog:SimpleDialog;
+			
+			private function onCreationComplete(event:Event):void
+			{
+				parentDialog = dialog;
+				propertiesTabNavigator.selectedIndex = parentDialog.activeTabIndex;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TabNavigator id="propertiesTabNavigator" width="100%" height="100%" paddingTop="2" paddingBottom="2" paddingLeft="2" paddingRight="2">
+		<properties:EntryInformationBox width="500" height="400" />
+		<properties:FeaturesBox width="500" height="400" />
+		<properties:CutSitesBox width="500" height="400" />
+		<properties:ORFsBox width="500" height="400" parentDialog="{ parentDialog }" />
+		<properties:GenBank width="500" height="400" />
 	</mx:TabNavigator>
-</mx:Box>
+</SimpleDialogForm>

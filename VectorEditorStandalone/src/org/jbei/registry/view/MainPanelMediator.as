@@ -2,6 +2,8 @@ package org.jbei.registry.view
 {
 	import flash.events.Event;
 	
+	import mx.controls.Alert;
+	
 	import org.jbei.ApplicationFacade;
 	import org.jbei.bio.data.DNASequence;
 	import org.jbei.bio.data.Feature;
@@ -9,11 +11,14 @@ package org.jbei.registry.view
 	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Pie;
+	import org.jbei.components.Rail;
 	import org.jbei.components.SequenceAnnotator;
 	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.CommonEvent;
+	import org.jbei.components.common.EditingEvent;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.components.pieClasses.PieEvent;
+	import org.jbei.components.railClasses.RailEvent;
 	import org.jbei.components.sequenceClasses.SequenceAnnotatorEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
@@ -36,6 +41,7 @@ package org.jbei.registry.view
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
+	import org.jbei.registry.view.dialogs.editingPromptDialog.EditingPromptDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.jbei.ui.dialogs.ModalDialog;
 	import org.jbei.ui.dialogs.ModalDialogEvent;
@@ -51,6 +57,7 @@ package org.jbei.registry.view
 		private var mainPanel:MainPanel;
 		private var sequenceAnnotator:SequenceAnnotator;
 		private var pie:Pie;
+		private var rail:Rail;
 		
 		// Constructor
 		public function MainPanelMediator(viewComponent:Object=null)
@@ -58,24 +65,40 @@ package org.jbei.registry.view
 			super(NAME, viewComponent);
 			
 			mainPanel = viewComponent as MainPanel;
-			sequenceAnnotator = (viewComponent as MainPanel).sequenceAnnotator;
-			pie = (viewComponent as MainPanel).pie;
 			
-			sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSequenceAnnotatorSelectionChanged);
-			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onPieSelectionChanged);
-			sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onSequenceAnnotatorCaretPositionChanged);
-			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onPieCaretPositionChanged);
+			sequenceAnnotator = mainPanel.sequenceAnnotator;
+			pie = mainPanel.pie;
+			rail = mainPanel.rail;
 			
-			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.EDIT_FEATURE, onSequenceAnnotatorEditFeature);
-			pie.addEventListener(PieEvent.EDIT_FEATURE, onSequenceAnnotatorEditFeature);
-			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.CREATE_FEATURE, onSequenceAnnotatorCreateFeature);
-			pie.addEventListener(PieEvent.CREATE_FEATURE, onSequenceAnnotatorCreateFeature);
+			sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+				
+			sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			
+			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.EDIT_FEATURE, onEditFeature);
+			pie.addEventListener(PieEvent.EDIT_FEATURE, onEditFeature);
+			rail.addEventListener(RailEvent.EDIT_FEATURE, onEditFeature);
+			
+			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.CREATE_FEATURE, onCreateFeature);
+			pie.addEventListener(PieEvent.CREATE_FEATURE, onCreateFeature);
+			rail.addEventListener(RailEvent.CREATE_FEATURE, onCreateFeature);
+			
+			sequenceAnnotator.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+			pie.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+			rail.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
 		}
 		
 		// Public Methods
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_FEATURES
+			return [
+				  ApplicationFacade.SHOW_RAIL
+				, ApplicationFacade.SHOW_PIE
+				
+				, ApplicationFacade.SHOW_FEATURES
 				, ApplicationFacade.SHOW_CUTSITES
 				, ApplicationFacade.SHOW_ORFS
 				, ApplicationFacade.SHOW_COMPLEMENTARY
@@ -93,6 +116,7 @@ package org.jbei.registry.view
 				
 				, ApplicationFacade.SELECTION_CHANGED
 				, ApplicationFacade.CARET_POSITION_CHANGED
+				, ApplicationFacade.SAFE_EDITING_CHANGED 
 				
 				, ApplicationFacade.SHOW_FIND_PANEL
 				, ApplicationFacade.HIDE_FIND_PANEL
@@ -119,48 +143,85 @@ package org.jbei.registry.view
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
+				case ApplicationFacade.SHOW_RAIL:
+					pie.visible = false;
+					pie.includeInLayout = false;
+					rail.visible = true;
+					rail.includeInLayout = true;
+					
+					break;
+				case ApplicationFacade.SHOW_PIE:
+					pie.visible = true;
+					pie.includeInLayout = true;
+					rail.visible = false;
+					rail.includeInLayout = false;
+					
+					break;
 				case ApplicationFacade.SHOW_FEATURES:
 					var showFeatures:Boolean = notification.getBody() as Boolean;
+					
 					sequenceAnnotator.showFeatures = showFeatures;
 					pie.showFeatures = showFeatures;
+					rail.showFeatures = showFeatures;
+					
 					break;
 				case ApplicationFacade.SHOW_CUTSITES:
 					var showCutSites:Boolean = notification.getBody() as Boolean;
+					
 					sequenceAnnotator.showCutSites = showCutSites;
 					pie.showCutSites = showCutSites;
+					rail.showCutSites = showCutSites;
+					
 					break;
 				case ApplicationFacade.SHOW_ORFS:
 					var showORFs:Boolean = notification.getBody() as Boolean;
+					
 					sequenceAnnotator.showORFs = showORFs;
 					pie.showORFs = showORFs;
+					rail.showORFs = showORFs;
+					
 					break;
 				case ApplicationFacade.SHOW_COMPLEMENTARY:
 					sequenceAnnotator.showComplementarySequence = notification.getBody() as Boolean;
+					
 					break;
 				case ApplicationFacade.SHOW_AA1:
 					sequenceAnnotator.showAminoAcids1 = notification.getBody() as Boolean;
 					sequenceAnnotator.showAminoAcids3 = false;
+					
 					break;
 				case ApplicationFacade.SHOW_AA3:
 					sequenceAnnotator.showAminoAcids3 = notification.getBody() as Boolean;
 					sequenceAnnotator.showAminoAcids1 = false;
+					
 					break;
 				case ApplicationFacade.SHOW_SPACES:
 					sequenceAnnotator.showSpaceEvery10Bp = notification.getBody() as Boolean;
+					
 					break;
 				case ApplicationFacade.SHOW_FEATURE_LABELS:
-					pie.showFeatureLabels = notification.getBody() as Boolean;
+					var showFeatureLabels:Boolean = notification.getBody() as Boolean;
+					
+					pie.showFeatureLabels = showFeatureLabels;
+					rail.showFeatureLabels = showFeatureLabels;
+					
 					break;
 				case ApplicationFacade.SHOW_CUT_SITE_LABELS:
-					pie.showCutSiteLabels = notification.getBody() as Boolean;
+					var showCutSiteLabels:Boolean = notification.getBody() as Boolean;
+					
+					pie.showCutSiteLabels = showCutSiteLabels;
+					rail.showCutSiteLabels = showCutSiteLabels;
+					
 					break;
 				case ApplicationFacade.CARET_POSITION_CHANGED:
 					moveCaret(notification.getBody() as int);
+					
 					break;
 				case ApplicationFacade.SELECTION_CHANGED:
 					var selectionArray:Array = notification.getBody() as Array;
 					
 					select(selectionArray[0], selectionArray[1]);
+					
 					break;
 				case ApplicationFacade.ENTRY_FETCHED:
 					var plasmid:Plasmid = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).plasmid;
@@ -188,12 +249,21 @@ package org.jbei.registry.view
 					
 					sequenceAnnotator.featuredSequence = featuredSequence;
 					pie.featuredSequence = featuredSequence;
+					rail.featuredSequence = featuredSequence;
 					
 					sequenceAnnotator.orfMapper = orfMapper;
 					pie.orfMapper = orfMapper;
+					rail.orfMapper = orfMapper;
 					
 					sequenceAnnotator.restrictionEnzymeMapper = reMapper;
 					pie.restrictionEnzymeMapper = reMapper;
+					rail.restrictionEnzymeMapper = reMapper;
+					
+					if(featuredSequence.circular) {
+						sendNotification(ApplicationFacade.SHOW_PIE);
+					} else {
+						sendNotification(ApplicationFacade.SHOW_RAIL);
+					}
 					
 					sendNotification(ApplicationFacade.USER_PREFERENCES_CHANGED);
 					
@@ -276,22 +346,23 @@ package org.jbei.registry.view
 					break;
 				case ApplicationFacade.COPY:
 					// Broadcasting COPY event
-					sequenceAnnotator.dispatchEvent(new Event(Event.COPY, true, false));
+					sequenceAnnotator.dispatchEvent(new Event(Event.COPY, true, true));
 					
 					break;
 				case ApplicationFacade.CUT:
 					// Broadcasting CUT event
-					sequenceAnnotator.dispatchEvent(new Event(Event.CUT, true, false));
+					sequenceAnnotator.dispatchEvent(new Event(Event.CUT, true, true));
 					
 					break;
 				case ApplicationFacade.PASTE:
 					// Broadcasting PASTE event
-					sequenceAnnotator.dispatchEvent(new Event(Event.PASTE, true, false));
+					//sequenceAnnotator.dispatchEvent(new Event(Event.PASTE, true, true));
+					Alert.show("To use the Paste command in this browser, please press Ctrl+V.");
 					
 					break;
 				case ApplicationFacade.SELECT_ALL:
 					// Broadcasting SELECT_ALL event
-					sequenceAnnotator.dispatchEvent(new Event(Event.SELECT_ALL, true, false));
+					sequenceAnnotator.dispatchEvent(new Event(Event.SELECT_ALL, true, true));
 					
 					break;
 				case ApplicationFacade.GO_REPORT_BUG:
@@ -311,15 +382,18 @@ package org.jbei.registry.view
 					
 					if(findSegment) {
 						sequenceAnnotator.select(findSegment.start, findSegment.end);
-						pie.select(findSegment.start, findSegment.end)
+						pie.select(findSegment.start, findSegment.end);
+						rail.select(findSegment.start, findSegment.end);
 						
 						sequenceAnnotator.caretPosition = findSegment.start;
 						pie.caretPosition = findSegment.start;
+						rail.caretPosition = findSegment.start;
 						
 						sendNotification(ApplicationFacade.FIND_MATCH_FOUND);
 					} else {
 						sequenceAnnotator.deselect();
 						pie.deselect();
+						rail.deselect();
 						
 						sendNotification(ApplicationFacade.FIND_MATCH_NOT_FOUND);
 					}
@@ -334,15 +408,18 @@ package org.jbei.registry.view
 					
 					if(findNextSegment) {
 						sequenceAnnotator.select(findNextSegment.start, findNextSegment.end);
-						pie.select(findNextSegment.start, findNextSegment.end)
+						pie.select(findNextSegment.start, findNextSegment.end);
+						rail.select(findNextSegment.start, findNextSegment.end);
 						
 						sequenceAnnotator.caretPosition = findNextSegment.start;
 						pie.caretPosition = findNextSegment.start;
+						rail.caretPosition = findNextSegment.start;
 						
 						sendNotification(ApplicationFacade.FIND_MATCH_FOUND);
 					} else {
 						sequenceAnnotator.deselect();
 						pie.deselect();
+						rail.deselect();
 						
 						sendNotification(ApplicationFacade.FIND_MATCH_NOT_FOUND);
 					}
@@ -358,25 +435,23 @@ package org.jbei.registry.view
 					sequenceAnnotator.highlights = segments;
 					
 					break;
+				case ApplicationFacade.SAFE_EDITING_CHANGED:
+					var safeEditing:Boolean = notification.getBody() as Boolean;
+					
+					sequenceAnnotator.safeEditing = safeEditing;
+					pie.safeEditing = safeEditing;
+					rail.safeEditing = safeEditing;
+					
+					break;
 			}
 		}
 		
-		private function onPieSelectionChanged(event:SelectionEvent):void
+		private function onSelectionChanged(event:SelectionEvent):void
 		{
 			sendNotification(ApplicationFacade.SELECTION_CHANGED, [event.start, event.end]);
 		}
 		
-		private function onSequenceAnnotatorSelectionChanged(event:SelectionEvent):void
-		{
-			sendNotification(ApplicationFacade.SELECTION_CHANGED, [event.start, event.end]);
-		}
-		
-		private function onPieCaretPositionChanged(event:CaretEvent):void
-		{
-			sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, event.position);
-		}
-		
-		private function onSequenceAnnotatorCaretPositionChanged(event:CaretEvent):void
+		private function onCaretPositionChanged(event:CaretEvent):void
 		{
 			sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, event.position);
 		}
@@ -394,12 +469,14 @@ package org.jbei.registry.view
 		{
 			pie.select(start, end);
 			sequenceAnnotator.select(start, end);
+			rail.select(start, end);
 		}
 		
 		private function moveCaret(position:int):void
 		{
-			pie.caretPosition = position;
 			sequenceAnnotator.caretPosition = position;
+			pie.caretPosition = position;
+			rail.caretPosition = position;
 		}
 		
 		// TODO: Move this method somewhere else
@@ -432,14 +509,14 @@ package org.jbei.registry.view
 			return featuredSequence;
 		}
 		
-		private function onSequenceAnnotatorEditFeature(event:CommonEvent):void
+		private function onEditFeature(event:CommonEvent):void
 		{
 			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Edit Feature";
 			featureDialog.open();
 		}
 		
-		private function onSequenceAnnotatorCreateFeature(event:CommonEvent):void
+		private function onCreateFeature(event:CommonEvent):void
 		{
 			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Selected as New Feature";
@@ -455,6 +532,75 @@ package org.jbei.registry.view
 		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
 		{
 			sendNotification(ApplicationFacade.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
+		}
+		
+		private function onEditing(event:EditingEvent):void
+		{
+			var showDialog:Boolean = false;
+			
+			var featuredSequence:FeaturedSequence = ApplicationFacade.getInstance().featuredSequence;
+			var features:Array;
+			
+			if(event.kind == EditingEvent.KIND_DELETE) {
+				var start:int = (event.data as Array)[0] as int;
+				var end:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresByRange(start, end);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.removeSequence(start, end);
+					
+					sendNotification(ApplicationFacade.SELECTION_CHANGED, new Array(-1, -1));
+					sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, start);
+				}
+			} else if(event.kind == EditingEvent.KIND_INSERT_SEQUENCE) {
+				var dnaSequence:DNASequence = (event.data as Array)[0] as DNASequence;
+				var position1:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresAt(position1);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.insertSequence(dnaSequence, position1);
+					sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, position1 + dnaSequence.length);
+				}
+			} else if(event.kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+				var insertFeaturedSequence:FeaturedSequence = (event.data as Array)[0] as FeaturedSequence;
+				var position2:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresAt(position2);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.insertFeaturedSequence(insertFeaturedSequence, position2);
+					sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, position2 + insertFeaturedSequence.sequence.length);
+				}
+			}
+			
+			if(showDialog) {
+				var editingPromptDialog:ModalDialog = new ModalDialog(mainPanel, EditingPromptDialogForm, new Array(event.kind, event.data));
+				
+				editingPromptDialog.title = "Editing...";
+				editingPromptDialog.open();
+				editingPromptDialog.addEventListener(ModalDialogEvent.SUBMIT, onEditingPromptDialogSubmit);
+			}
+		}
+		
+		private function onEditingPromptDialogSubmit(event:ModalDialogEvent):void
+		{
+			var input:Array = event.data as Array;
+			var kind:String = input[0] as String;
+			var data:Array = input[1] as Array;
+			
+			if(kind == EditingEvent.KIND_DELETE) {
+				sendNotification(ApplicationFacade.SELECTION_CHANGED, new Array(-1, -1));
+				sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, data[0] as int);
+			} else if(kind == EditingEvent.KIND_INSERT_SEQUENCE) {
+				sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as DNASequence).sequence.length);
+			} else if(kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+				sendNotification(ApplicationFacade.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as FeaturedSequence).sequence.length);
+			}
 		}
 	}
 }

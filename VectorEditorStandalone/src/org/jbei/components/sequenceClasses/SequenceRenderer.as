@@ -195,9 +195,28 @@ package org.jbei.components.sequenceClasses
 			var aminoAcidsString2:String = '';
 			var aminoAcidsString3:String = '';
 			for(var i:int = 0; i < rowSequence.length; i++) {
-				if(i + 2 > sequence.length - 1) { break; } // if less then 2 bp to the end no AA can be made
+				var basePairs:String;
 				
-				var basePairs:String = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
+				if(contentHolder.featuredSequence.circular) {
+					if(sequence.length < 3) {
+						basePairs = "-";
+					} else {
+						if(row.rowData.start + i == sequence.length - 2) { 
+							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(0);
+						} else if(row.rowData.start + i == sequence.length - 1) {
+							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(0) + sequence.charAt(1);
+						} else {
+							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
+						}
+					}
+				} else {
+					if(row.rowData.start + i + 2 > sequence.length - 1) { 
+						basePairs = "-"
+					} else {
+						basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
+					}
+				}
+				
 				var aminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(basePairs);
 				
 				var aa:String;
@@ -352,9 +371,12 @@ package org.jbei.components.sequenceClasses
 					end = start + 10;
 					
 					if(start < stringLength) {
-						if(!splitLast && end > stringLength) {
-						} else {
+						if(end <= stringLength) {
 							result += " ";
+						} else {
+							if(splitLast) {
+								result += " ";
+							}
 						}
 					}
 				}

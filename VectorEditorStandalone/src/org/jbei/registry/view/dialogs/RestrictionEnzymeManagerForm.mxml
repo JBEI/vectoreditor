@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AbstractDialogForm creationComplete="onCreationComplete(event)" xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+<AbstractDialogForm 
+	creationComplete="onCreationComplete(event)"
+	width="100%"
+	height="100%"
+	xmlns="org.jbei.ui.dialogs.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
 	<mx:Script>
 		<![CDATA[
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
