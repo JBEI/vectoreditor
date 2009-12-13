@@ -3,6 +3,7 @@ package org.jbei.registry.view
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	import org.jbei.ApplicationFacade;
 	import org.jbei.bio.data.DNASequence;
@@ -17,9 +18,6 @@ package org.jbei.registry.view
 	import org.jbei.components.common.CommonEvent;
 	import org.jbei.components.common.EditingEvent;
 	import org.jbei.components.common.SelectionEvent;
-	import org.jbei.components.pieClasses.PieEvent;
-	import org.jbei.components.railClasses.RailEvent;
-	import org.jbei.components.sequenceClasses.SequenceAnnotatorEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.ORFMapper;
@@ -78,13 +76,17 @@ package org.jbei.registry.view
 			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
 			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
 			
-			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.EDIT_FEATURE, onEditFeature);
-			pie.addEventListener(PieEvent.EDIT_FEATURE, onEditFeature);
-			rail.addEventListener(RailEvent.EDIT_FEATURE, onEditFeature);
+			sequenceAnnotator.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+			pie.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+			rail.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
 			
-			sequenceAnnotator.addEventListener(SequenceAnnotatorEvent.CREATE_FEATURE, onCreateFeature);
-			pie.addEventListener(PieEvent.CREATE_FEATURE, onCreateFeature);
-			rail.addEventListener(RailEvent.CREATE_FEATURE, onCreateFeature);
+			sequenceAnnotator.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			pie.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			rail.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			
+			sequenceAnnotator.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+			pie.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+			rail.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
 			
 			sequenceAnnotator.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
 			pie.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
@@ -118,8 +120,6 @@ package org.jbei.registry.view
 				, ApplicationFacade.CARET_POSITION_CHANGED
 				, ApplicationFacade.SAFE_EDITING_CHANGED 
 				
-				, ApplicationFacade.SHOW_FIND_PANEL
-				, ApplicationFacade.HIDE_FIND_PANEL
 				, ApplicationFacade.FIND
 				, ApplicationFacade.FIND_NEXT
 				, ApplicationFacade.HIGHLIGHT
@@ -146,13 +146,19 @@ package org.jbei.registry.view
 				case ApplicationFacade.SHOW_RAIL:
 					pie.visible = false;
 					pie.includeInLayout = false;
+					pie.featuredSequence = null;
+					
+					rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
 					rail.visible = true;
 					rail.includeInLayout = true;
 					
 					break;
 				case ApplicationFacade.SHOW_PIE:
+					pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
 					pie.visible = true;
 					pie.includeInLayout = true;
+					
+					rail.featuredSequence = null;
 					rail.visible = false;
 					rail.includeInLayout = false;
 					
@@ -514,6 +520,18 @@ package org.jbei.registry.view
 			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Edit Feature";
 			featureDialog.open();
+		}
+		
+		private function onRemoveFeature(event:CommonEvent):void
+		{
+			var feature:Feature = event.data as Feature;
+			
+			Alert.show("Are you sure you want to remove this feature?", "Remove Feature", Alert.YES | Alert.NO, null, function onRemoveFeatureDialogClose(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES) {
+					ApplicationFacade.getInstance().featuredSequence.removeFeature(feature);
+				}
+			});
 		}
 		
 		private function onCreateFeature(event:CommonEvent):void

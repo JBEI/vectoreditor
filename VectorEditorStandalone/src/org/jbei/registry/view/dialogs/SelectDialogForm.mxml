@@ -37,6 +37,9 @@
 					startTextInput.text = "1";
 					endTextInput.text = "10";
 				}
+				
+				// Hack to fix flex's setFocus bug
+				this.callLater(function ():void {startTextInput.setFocus();});
 			}
 		]]>
 	</mx:Script>

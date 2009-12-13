@@ -4,6 +4,7 @@ package org.jbei.components.pieClasses
 	
 	import org.jbei.bio.data.CutSite;
 	import org.jbei.bio.data.IAnnotation;
+	import org.jbei.components.common.LabelBox;
 
 	public class CutSiteLabelBox extends LabelBox
 	{

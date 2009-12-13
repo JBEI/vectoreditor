@@ -35,7 +35,8 @@
 				visible = true;
 				includeInLayout = true;
 				
-				findTextInput.setFocus();
+				// This hack fixes flex bug with setFocus after menu action
+				this.callLater(function ():void {findTextInput.setFocus();});
 			}
 			
 			public function hide():void

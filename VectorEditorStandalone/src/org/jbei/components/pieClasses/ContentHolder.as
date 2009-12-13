@@ -26,20 +26,25 @@ package org.jbei.components.pieClasses
     import org.jbei.bio.utils.SequenceUtils;
     import org.jbei.components.Pie;
     import org.jbei.components.common.Alignment;
+    import org.jbei.components.common.AnnotationRenderer;
     import org.jbei.components.common.CaretEvent;
+    import org.jbei.components.common.CommonEvent;
     import org.jbei.components.common.EditingEvent;
+    import org.jbei.components.common.IContentHolder;
+    import org.jbei.components.common.LabelBox;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.ORFMapper;
     import org.jbei.lib.RestrictionEnzymeMapper;
 	
-	public class ContentHolder extends UIComponent
+	public class ContentHolder extends UIComponent implements IContentHolder
 	{
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
 		private const CONNECTOR_LINE_COLOR:int = 0x000000;
 		private const CONNECTOR_LINE_TRASPARENCY:Number = 0.2;
 		private const PIE_RADIUS_PERCENTS:Number = 0.60;
 		private const SELECTION_THRESHOLD:Number = 5;
+		private const DISTANCE_LABEL_FROM_RAIL:int = 30;
 		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
 		
 		private var pie:Pie;
@@ -51,6 +56,7 @@ package org.jbei.components.pieClasses
 		
 		private var customContextMenu:ContextMenu;
 		private var editFeatureContextMenuItem:ContextMenuItem;
+		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
 		
 		private var _featuredSequence:FeaturedSequence;
@@ -129,9 +135,17 @@ package org.jbei.components.pieClasses
 		{
 			_featuredSequence = value;
 			
-			invalidateProperties();
-			
-			featuredSequenceChanged = true;
+			if(_featuredSequence) {
+				initializeSequence();
+				
+				invalidateProperties();
+				
+				featuredSequenceChanged = true;
+			} else {
+				disableSequence();
+				
+				invalidateDisplayList();
+			}
 		}
 		
 		public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
@@ -387,18 +401,10 @@ package org.jbei.components.pieClasses
 	 	{
 	 		super.commitProperties();
 	 		
-			if(! _featuredSequence) {
-				disableSequence();
-				
-				invalidateDisplayList();
-				
-				return;
-			}
+			if(invalidSequence) { return; }
 			
 			if(featuredSequenceChanged) {
 				featuredSequenceChanged = false;
-				
-				initializeSequence();
 				
 				needsMeasurement = true;
 				
@@ -550,12 +556,12 @@ package org.jbei.components.pieClasses
 		// Private Methods
 		private function disableSequence():void
 		{
+			invalidSequence = true;
+			
 			featureAlignmentMap = null;
 			orfAlignmentMap = null;
 			
 			caretPosition = 0;
-			
-			invalidSequence = true;
 			
 			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -623,6 +629,9 @@ package org.jbei.components.pieClasses
 			editFeatureContextMenuItem = new ContextMenuItem("Edit Feature");
 			editFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditFeatureMenuItem);
         	
+			removeFeatureContextMenuItem = new ContextMenuItem("Remove Feature");
+			removeFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveFeatureMenuItem);
+			
 			selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
 			selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
         }
@@ -739,7 +748,7 @@ package org.jbei.components.pieClasses
         private function onMouseDoubleClick(event:MouseEvent):void
         {
         	if(event.target is FeatureRenderer) {
-        		dispatchEvent(new PieEvent(PieEvent.EDIT_FEATURE, true, false, (event.target as FeatureRenderer).feature));
+        		dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, false, (event.target as FeatureRenderer).feature));
         	}
         }
         
@@ -749,6 +758,7 @@ package org.jbei.components.pieClasses
 			
 			if(event.mouseTarget is FeatureRenderer) {
 		        customContextMenu.customItems.push(editFeatureContextMenuItem);
+				customContextMenu.customItems.push(removeFeatureContextMenuItem);
 			}
 			
 			if(selectionLayer.selected) {
@@ -758,12 +768,21 @@ package org.jbei.components.pieClasses
 		
 		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new PieEvent(PieEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
+		}
+		
+		private function onRemoveFeatureMenuItem(event:ContextMenuEvent):void
+		{
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.REMOVE_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
 		}
 		
 		private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new PieEvent(PieEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
+			dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
 		}
 		
 	    private function onSelectAll(event:Event):void
@@ -985,8 +1004,8 @@ package org.jbei.components.pieClasses
 				var label1Center:int = annotationCenter(labelBox1.relatedAnnotation);
 				var angle1:Number = label1Center * 2 * Math.PI / _featuredSequence.sequence.length;
 				
-				var xPosition1:Number = _center.x + Math.sin(angle1) * (_railRadius + 20);
-				var yPosition1:Number = _center.y - Math.cos(angle1) * (_railRadius + 20);
+				var xPosition1:Number = _center.x + Math.sin(angle1) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
+				var yPosition1:Number = _center.y - Math.cos(angle1) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
 				
 				if(yPosition1 < lastLabelYPosition) {
 					lastLabelYPosition = yPosition1 - labelBox1.totalHeight;
@@ -1019,8 +1038,8 @@ package org.jbei.components.pieClasses
 				var label2Center:int = annotationCenter(labelBox2.relatedAnnotation);
 				var angle2:Number = label2Center * 2 * Math.PI / _featuredSequence.sequence.length - Math.PI / 2;
 				
-				var xPosition2:Number = _center.x + Math.cos(angle2) * (_railRadius + 20);
-				var yPosition2:Number = _center.y + Math.sin(angle2) * (_railRadius + 20);
+				var xPosition2:Number = _center.x + Math.cos(angle2) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
+				var yPosition2:Number = _center.y + Math.sin(angle2) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
 				
 				if(yPosition2 > lastLabelYPosition) {
 					lastLabelYPosition = yPosition2 + labelBox2.totalHeight;
@@ -1053,8 +1072,8 @@ package org.jbei.components.pieClasses
 				var label3Center:int = annotationCenter(labelBox3.relatedAnnotation);
 				var angle3:Number = 2 * Math.PI - label3Center * 2 * Math.PI / _featuredSequence.sequence.length;
 				
-				var xPosition3:Number = _center.x - Math.sin(angle3) * (_railRadius + 20) - labelBox3.totalWidth;
-				var yPosition3:Number = _center.y - Math.cos(angle3) * (_railRadius + 20);
+				var xPosition3:Number = _center.x - Math.sin(angle3) * (_railRadius + DISTANCE_LABEL_FROM_RAIL) - labelBox3.totalWidth;
+				var yPosition3:Number = _center.y - Math.cos(angle3) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
 				
 				if(yPosition3 < lastLabelYPosition) {
 					lastLabelYPosition = yPosition3 - labelBox3.totalHeight;
@@ -1087,8 +1106,8 @@ package org.jbei.components.pieClasses
 				var label4Center:int = annotationCenter(labelBox4.relatedAnnotation);
 				var angle4:Number = label4Center * 2 * Math.PI / _featuredSequence.sequence.length - Math.PI;
 				
-				var xPosition4:Number = _center.x - Math.sin(angle4) * (_railRadius + 20) - labelBox4.totalWidth;
-				var yPosition4:Number = _center.y + Math.cos(angle4) * (_railRadius + 20);
+				var xPosition4:Number = _center.x - Math.sin(angle4) * (_railRadius + DISTANCE_LABEL_FROM_RAIL) - labelBox4.totalWidth;
+				var yPosition4:Number = _center.y + Math.cos(angle4) * (_railRadius + DISTANCE_LABEL_FROM_RAIL);
 				
 				if(yPosition4 > lastLabelYPosition) {
 					lastLabelYPosition = yPosition4 + labelBox4.totalHeight;
@@ -1148,7 +1167,7 @@ package org.jbei.components.pieClasses
 				featureRenderer.visible = _showFeatures;
 				
 				if(_showFeatures) {
-					featureRenderer.update(featureAlignmentMap[featureRenderer.feature]);
+					featureRenderer.update(_railRadius, _center, featureAlignmentMap[featureRenderer.feature]);
 				}
 			}
 		}
@@ -1163,7 +1182,7 @@ package org.jbei.components.pieClasses
 				cutSiteRenderer.visible = _showCutSites;
 				
 				if(_showCutSites) {
-					cutSiteRenderer.update(_center, _railRadius);
+					cutSiteRenderer.update(_railRadius, _center);
 				}
 			}
 		}
@@ -1178,7 +1197,7 @@ package org.jbei.components.pieClasses
 				orfRenderer.visible = _showORFs;
 				
 				if(_showORFs) {
-					orfRenderer.update(_center, _railRadius, orfAlignmentMap);
+					orfRenderer.update(_railRadius, _center, orfAlignmentMap);
 				}
 			}
 		}

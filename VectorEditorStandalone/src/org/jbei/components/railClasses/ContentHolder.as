@@ -9,6 +9,7 @@ package org.jbei.components.railClasses
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import flash.ui.Keyboard;
@@ -25,14 +26,18 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Rail;
 	import org.jbei.components.common.Alignment;
+	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.CaretEvent;
+	import org.jbei.components.common.CommonEvent;
 	import org.jbei.components.common.EditingEvent;
+	import org.jbei.components.common.IContentHolder;
+	import org.jbei.components.common.LabelBox;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.ORFMapper;
 	import org.jbei.lib.RestrictionEnzymeMapper;
 	
-	public class ContentHolder extends UIComponent
+	public class ContentHolder extends UIComponent implements IContentHolder
 	{
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
 		private const CONNECTOR_LINE_COLOR:int = 0x000000;
@@ -52,6 +57,7 @@ package org.jbei.components.railClasses
 		
 		private var customContextMenu:ContextMenu;
 		private var editFeatureContextMenuItem:ContextMenuItem;
+		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
 		
 		private var _horizontalCenter:Number;
@@ -59,8 +65,6 @@ package org.jbei.components.railClasses
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
-		private var _startRailPoint:Point;
-		private var _endRailPoint:Point;
 		private var _caretPosition:int;
 		private var _totalHeight:int = 0;
 		private var _totalWidth:int = 0;
@@ -72,6 +76,7 @@ package org.jbei.components.railClasses
 		private var _showORFs:Boolean = true;
 		private var _safeEditing:Boolean = true;
 		
+		private var _railMetrics:Rectangle;
 		private var parentWidth:Number = 0;
 		private var parentHeight:Number = 0;
 		private var selectionDirection:int = 0;
@@ -130,9 +135,17 @@ package org.jbei.components.railClasses
 		{
 			_featuredSequence = value;
 			
-			invalidateProperties();
-			
-			featuredSequenceChanged = true;
+			if(_featuredSequence) {
+				initializeSequence();
+				
+				invalidateProperties();
+				
+				featuredSequenceChanged = true;
+			} else {
+				disableSequence();
+				
+				invalidateDisplayList();
+			}
 		}
 		
 		public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
@@ -279,14 +292,9 @@ package org.jbei.components.railClasses
 			_safeEditing = value;
 		}
 		
-		public function get startRailPoint():Point
+		public function get railMetrics():Rectangle
 		{
-			return _startRailPoint;
-		}
-		
-		public function get endRailPoint():Point
-		{
-			return _endRailPoint;
+			return _railMetrics;
 		}
 		
 		public function get totalHeight():Number
@@ -394,18 +402,10 @@ package org.jbei.components.railClasses
 		{
 			super.commitProperties();
 			
-			if(! _featuredSequence) {
-				disableSequence();
-				
-				invalidateDisplayList();
-				
-				return;
-			}
+			if(invalidSequence) { return; }
 			
 			if(featuredSequenceChanged) {
 				featuredSequenceChanged = false;
-				
-				initializeSequence();
 				
 				needsMeasurement = true;
 				
@@ -520,12 +520,11 @@ package org.jbei.components.railClasses
 					yRailPosition -= featureAlignment.numberOfRows * (FeatureRenderer.DEFAULT_FEATURE_HEIGHT + FeatureRenderer.DEFAULT_GAP)
 				}
 				
-				_startRailPoint = new Point(HORIZONTAL_PADDING, yRailPosition);
-				_endRailPoint = new Point(parentWidth - HORIZONTAL_PADDING, yRailPosition);
+				_railMetrics = new Rectangle(HORIZONTAL_PADDING, yRailPosition, parentWidth - 2 * HORIZONTAL_PADDING, RailBox.THICKNESS);
 				
-				_bpWidth = (_endRailPoint.x - _startRailPoint.x) / featuredSequence.sequence.length;
+				_bpWidth = _railMetrics.width / featuredSequence.sequence.length;
 				
-				_horizontalCenter = (_startRailPoint.x - _endRailPoint.x) / 2;
+				_horizontalCenter = _railMetrics.x + _railMetrics.width / 2;
 				
 				_totalHeight = parentHeight;
 				_totalWidth = parentWidth;
@@ -589,6 +588,9 @@ package org.jbei.components.railClasses
 			editFeatureContextMenuItem = new ContextMenuItem("Edit Feature");
 			editFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditFeatureMenuItem);
 			
+			removeFeatureContextMenuItem = new ContextMenuItem("Remove Feature");
+			removeFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveFeatureMenuItem);
+			
 			selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
 			selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
 		}
@@ -642,12 +644,12 @@ package org.jbei.components.railClasses
 		
 		private function disableSequence():void
 		{
+			invalidSequence = true;
+			
 			featureAlignmentMap = null;
 			orfAlignmentMap = null;
 			
 			caretPosition = 0;
-			
-			invalidSequence = true;
 			
 			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -752,7 +754,7 @@ package org.jbei.components.railClasses
 		private function onMouseDoubleClick(event:MouseEvent):void
 		{
 			if(event.target is FeatureRenderer) {
-				dispatchEvent(new RailEvent(RailEvent.EDIT_FEATURE, true, false, (event.target as FeatureRenderer).feature));
+				dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, false, (event.target as FeatureRenderer).feature));
 			}
 		}
 		
@@ -870,8 +872,8 @@ package org.jbei.components.railClasses
 			
 			if(event.mouseTarget is FeatureRenderer) {
 				customContextMenu.customItems.push(editFeatureContextMenuItem);
+				customContextMenu.customItems.push(removeFeatureContextMenuItem);
 			}
-			
 			
 			if(selectionLayer.selected) {
 				customContextMenu.customItems.push(selectedAsNewFeatureContextMenuItem);
@@ -880,12 +882,21 @@ package org.jbei.components.railClasses
 		
 		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new RailEvent(RailEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
+		}
+		
+		private function onRemoveFeatureMenuItem(event:ContextMenuEvent):void
+		{
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.REMOVE_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
 		}
 		
 		private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new RailEvent(RailEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
+			dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
 		}
 		
 		private function renderFeatures():void
@@ -898,7 +909,7 @@ package org.jbei.components.railClasses
 				featureRenderer.visible = _showFeatures;
 				
 				if(_showFeatures) {
-					featureRenderer.update(featureAlignmentMap[featureRenderer.feature]);
+					featureRenderer.update(_railMetrics, bpWidth, featureAlignmentMap[featureRenderer.feature]);
 					featureRenderer.validateNow();
 				}
 			}
@@ -914,7 +925,7 @@ package org.jbei.components.railClasses
 				cutSiteRenderer.visible = _showCutSites;
 				
 				if(_showCutSites) {
-					cutSiteRenderer.update();
+					cutSiteRenderer.update(_railMetrics, bpWidth);
 					cutSiteRenderer.validateNow();
 				}
 			}
@@ -930,7 +941,7 @@ package org.jbei.components.railClasses
 				orfRenderer.visible = _showORFs;
 				
 				if(_showORFs) {
-					orfRenderer.update(orfAlignmentMap[orfRenderer.orf]);
+					orfRenderer.update(_railMetrics, bpWidth, orfAlignmentMap[orfRenderer.orf]);
 				}
 			}
 		}
@@ -947,7 +958,7 @@ package org.jbei.components.railClasses
 				
 				if(! leftLabelBox1.includeInView) { continue; }
 				
-				var leftGap:Number = _startRailPoint.x + _bpWidth * leftLabelBox1.relatedAnnotation.start - leftLabelBox1.totalWidth;
+				var leftGap:Number = _railMetrics.x + _bpWidth * leftLabelBox1.relatedAnnotation.start - leftLabelBox1.totalWidth;
 				
 				if(leftGap < biggestLeftGap) {
 					biggestLeftGap = leftGap;
@@ -956,19 +967,18 @@ package org.jbei.components.railClasses
 			
 			// Adjust RailMetrics and ContentMetrics because labels can stick out
 			if(biggestLeftGap < 0) {
-				_startRailPoint.x += Math.abs(biggestLeftGap);
-				_endRailPoint.x += Math.abs(biggestLeftGap);
+				_railMetrics.x += Math.abs(biggestLeftGap);
 				_totalWidth += Math.abs(biggestLeftGap);
 			}
 			
 			// Calculate Vertical Position
-			var previousYPosition1:Number = _startRailPoint.y - LABELS_RAIL_GAP;
+			var previousYPosition1:Number = _railMetrics.y - LABELS_RAIL_GAP;
 			for(var j1:uint = 0; j1 < numberOfLeftLabels; j1++) {
 				var leftLabelBox2:LabelBox = leftLabels[j1] as LabelBox;
 				
 				if(! leftLabelBox2.includeInView) { continue; }
 				
-				leftLabelBox2.x = _startRailPoint.x + _bpWidth * leftLabelBox2.relatedAnnotation.start - leftLabelBox2.totalWidth;
+				leftLabelBox2.x = _railMetrics.x + _bpWidth * leftLabelBox2.relatedAnnotation.start - leftLabelBox2.totalWidth;
 				leftLabelBox2.y = previousYPosition1 - leftLabelBox2.totalHeight;
 				previousYPosition1 = leftLabelBox2.y;
 				
@@ -987,7 +997,7 @@ package org.jbei.components.railClasses
 				
 				if(! rightLabelBox1.includeInView) { continue; }
 				
-				var rightGap:Number = _totalWidth - (_startRailPoint.x + _bpWidth * rightLabelBox1.relatedAnnotation.start + rightLabelBox1.totalWidth + HORIZONTAL_PADDING);
+				var rightGap:Number = _totalWidth - (_railMetrics.x + _bpWidth * rightLabelBox1.relatedAnnotation.start + rightLabelBox1.totalWidth + HORIZONTAL_PADDING);
 				
 				if(rightGap < biggestRightGap) {
 					biggestRightGap = rightGap;
@@ -1000,13 +1010,13 @@ package org.jbei.components.railClasses
 			}
 			
 			// Calculate Vertical Position
-			var previousYPosition2:Number = _startRailPoint.y - LABELS_RAIL_GAP;
+			var previousYPosition2:Number = _railMetrics.y - LABELS_RAIL_GAP;
 			for(var j2:int = numberOfRightLabels - 1; j2 >= 0; j2--) {
 				var rightLabelBox2:LabelBox = rightLabels[j2] as LabelBox;
 				
 				if(! rightLabelBox2.includeInView) { continue; }
 				
-				rightLabelBox2.x = _startRailPoint.x + _bpWidth * rightLabelBox2.relatedAnnotation.start;
+				rightLabelBox2.x = _railMetrics.x + _bpWidth * rightLabelBox2.relatedAnnotation.start;
 				rightLabelBox2.y = previousYPosition2 - rightLabelBox2.totalHeight;
 				previousYPosition2 = rightLabelBox2.y;
 				
@@ -1019,8 +1029,7 @@ package org.jbei.components.railClasses
 			// Adjust content height
 			if(biggestTopGap < 0) {
 				var verticalShift:Number = Math.abs(biggestTopGap) + 10; // +10 just to look nice
-				_startRailPoint.y += verticalShift;
-				_endRailPoint.y += verticalShift;
+				_railMetrics.y += verticalShift;
 				
 				_totalHeight += verticalShift;
 				
@@ -1032,7 +1041,7 @@ package org.jbei.components.railClasses
 				}
 			}
 			
-			_horizontalCenter = (_startRailPoint.x + _endRailPoint.x) / 2;
+			_horizontalCenter = _railMetrics.x + _railMetrics.width / 2;
 		}
 		
 		private function loadFeatureRenderers():void
@@ -1375,12 +1384,12 @@ package org.jbei.components.railClasses
 			
 			var result:int = 0;
 			
-			if(contentPoint.x < _startRailPoint.x) {
+			if(contentPoint.x < _railMetrics.x) {
 				result = 0;
-			} else if(contentPoint.x > _endRailPoint.x) {
+			} else if(contentPoint.x > _railMetrics.x + _railMetrics.width) {
 				result = featuredSequence.sequence.length;
 			} else {
-				result = int(Math.floor((contentPoint.x - _startRailPoint.x) / _bpWidth));
+				result = int(Math.floor((contentPoint.x - _railMetrics.x) / _bpWidth));
 			}
 			
 			return result;

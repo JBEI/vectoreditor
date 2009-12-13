@@ -8,8 +8,6 @@ package org.jbei.bio.utils
 		// Public Methods
 		public static function calculateORFs(dnaSequence:DNASequence, minimumORF:int = -1):Array /* of ORF */
 		{
-			trace("fix SequenceUtils.calculateORFs for circular sequence");
-			
 			if(! dnaSequence || dnaSequence.length < 6) {
 				return new Array();
 			}
@@ -23,8 +21,6 @@ package org.jbei.bio.utils
 		
 		public static function calculateReverseComplementaryORFs(reverseComplementDNASequence:DNASequence, minimumORF:int = -1):Array /* of ORF */
 		{
-			trace("fix SequenceUtils.calculateReverseComplementaryORFs for circular sequence");
-			
 			var orfs:Array = new Array();
 			
 			if(! reverseComplementDNASequence || reverseComplementDNASequence.length < 6) {
@@ -50,6 +46,8 @@ package org.jbei.bio.utils
 				for(var j:int = 0; j < orf.startCodons.length; j++) {
 					orf.startCodons[j] = sequenceLength - orf.startCodons[j] - 1;
 				}
+				
+				orf.startCodons.sort(codonsSort);
 			}
 			
 			return result;
@@ -58,8 +56,6 @@ package org.jbei.bio.utils
 		// Private Methods
 		private static function orfPerFrame(frameStartIndex:int, sequence:String, minimumORF:int = -1, isComplement:Boolean = false):Array /* of ORF */
 		{
-			trace("fix SequenceUtils.orfPerFrame for circular sequence");
-			
 			var orfs:Array = new Array();
 			var sequenceLength:int = sequence.length;
 			
@@ -72,7 +68,6 @@ package org.jbei.bio.utils
 				
 				var codonSeq:String = sequence.charAt(index) + sequence.charAt(index + 1) + sequence.charAt(index + 2);
 				
-				//if(!aminoAcidFromBP(codonSeq) && !(codonSeq == 'ATG' || codonSeq == 'AUG' || codonSeq == 'GTG' || codonSeq == 'GUG' || codonSeq == 'TAA' || codonSeq == 'TAG' || codonSeq == 'TGA' || codonSeq == 'UAA' || codonSeq == 'UAG' || codonSeq == 'UGA')) {
 				if(!AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq) && !(codonSeq == 'ATG' || codonSeq == 'AUG' || codonSeq == 'TAA' || codonSeq == 'TAG' || codonSeq == 'TGA' || codonSeq == 'UAA' || codonSeq == 'UAG' || codonSeq == 'UGA')) { 
 					startIndex = -1;
 					endIndex = -1;
@@ -83,7 +78,6 @@ package org.jbei.bio.utils
 					continue;
 				}
 				
-				//if(codonSeq == 'ATG' || codonSeq == 'AUG' || codonSeq == 'GTG' || codonSeq == 'GUG') {
 				if(codonSeq == 'ATG' || codonSeq == 'AUG') {
 					if(startIndex == -1) {
 						startIndex = index;
@@ -124,6 +118,17 @@ package org.jbei.bio.utils
 			}
 			
 			return orfs;
+		}
+		
+		private static function codonsSort(a:int, b:int):Number
+		{
+			if(a > b) {
+				return 1;
+			} else if(a < b) {
+				return -1;
+			} else  {
+				return 0;
+			}
 		}
 	}
 }

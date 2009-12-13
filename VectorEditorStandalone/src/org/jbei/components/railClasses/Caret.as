@@ -76,10 +76,8 @@ package org.jbei.components.railClasses
 			
 			if(contentHolder.featuredSequence.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
 			
-			var bpWidth:Number = (contentHolder.endRailPoint.x - contentHolder.startRailPoint.x) / contentHolder.featuredSequence.sequence.length;
-			
-			var xPosition:Number = contentHolder.startRailPoint.x + bpWidth * _position;
-			var yPosition:Number = contentHolder.startRailPoint.y - RailBox.THICKNESS;
+			var xPosition:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * _position;
+			var yPosition:Number = contentHolder.railMetrics.y - RailBox.THICKNESS;
 			
 			g.lineStyle(1, CARET_COLOR);
 			g.moveTo(xPosition, yPosition);

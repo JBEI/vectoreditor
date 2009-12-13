@@ -62,26 +62,26 @@ package org.jbei.components.railClasses
 		
 		private function drawSelection(fromIndex:int, endIndex:int):void
 		{
-			var fromPointX:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * fromIndex;
-			var toPointX:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * endIndex;
+			var fromPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * fromIndex;
+			var toPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * endIndex;
 			
 			// draw selection with frame
 			var g:Graphics = graphics;
 			g.clear();
 			if(fromIndex <= endIndex) {
 				g.beginFill(HIGHLIGHT_COLOR, HIGHLIGHT_TRANSPARENCY);
-				g.drawRect(fromPointX, contentHolder.startRailPoint.y - RailBox.THICKNESS, toPointX - fromPointX, 3 * RailBox.THICKNESS);
+				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, toPointX - fromPointX, 3 * RailBox.THICKNESS);
 				g.endFill();
 			} else {
-				var startPointX:Number = contentHolder.startRailPoint.x;
-				var endPointX:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * contentHolder.featuredSequence.sequence.length;
+				var startPointX:Number = contentHolder.railMetrics.x;
+				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.featuredSequence.sequence.length;
 				
 				g.beginFill(HIGHLIGHT_COLOR, HIGHLIGHT_TRANSPARENCY);
-				g.drawRect(fromPointX, contentHolder.startRailPoint.y - RailBox.THICKNESS, endPointX - fromPointX, 3 * RailBox.THICKNESS);
+				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, endPointX - fromPointX, 3 * RailBox.THICKNESS);
 				g.endFill();
 				
 				g.beginFill(HIGHLIGHT_COLOR, HIGHLIGHT_TRANSPARENCY);
-				g.drawRect(startPointX, contentHolder.startRailPoint.y - RailBox.THICKNESS, toPointX - startPointX, 3 * RailBox.THICKNESS);
+				g.drawRect(startPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, toPointX - startPointX, 3 * RailBox.THICKNESS);
 				g.endFill();
 			}
 		}

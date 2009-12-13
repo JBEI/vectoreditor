@@ -4,27 +4,34 @@ package org.jbei.components.pieClasses
 	
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.IAnnotation;
-
+	import org.jbei.components.common.LabelBox;
+	
 	public class FeatureLabelBox extends LabelBox
 	{
 		private const FONT_FACE:String = "Tahoma";
 		private const FONT_SIZE:int = 11;
 		private const FONT_COLOR:int = 0x000000;
 		
-		private var feature:Feature;
+		private var _feature:Feature;
 		
 		// Contructor
 		public function FeatureLabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
 		{
 			super(contentHolder, relatedAnnotation);
 			
-			feature = relatedAnnotation as Feature;
+			_feature = relatedAnnotation as Feature;
+		}
+		
+		// Properties
+		public function get feature():Feature
+		{
+			return _feature;
 		}
 		
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return feature.type + (feature.label == "" ? "" : (" - " + feature.label)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			return _feature.type + (_feature.label == "" ? "" : (" - " + _feature.label)) + ": " + (_feature.start + 1) + ".." + (_feature.end + 1);
 		}
 		
 		protected override function textFormat():TextFormat
@@ -34,7 +41,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function label():String
 		{
-			return feature.label;
+			return _feature.label;
 		}
 	}
 }

@@ -4,6 +4,8 @@ package org.jbei.components.sequenceClasses
 	import flash.geom.Rectangle;
 	
 	import org.jbei.bio.data.Feature;
+	import org.jbei.components.common.AnnotationRenderer;
+	import org.jbei.components.common.IContentHolder;
 
 	public class FeatureRenderer extends AnnotationRenderer
 	{
@@ -11,10 +13,14 @@ package org.jbei.components.sequenceClasses
 		public static const DEFAULT_FEATURES_SEQUENCE_GAP:int = 3;
 		public static const DEFAULT_FEATURES_GAP:int = 2;
 		
+		private var sequenceContentHolder:ContentHolder;
+		
 		// Contructor
-		public function FeatureRenderer(contentHolder:ContentHolder, feature:Feature)
+		public function FeatureRenderer(contentHolder:IContentHolder, feature:Feature)
 		{
 			super(contentHolder, feature);
+			
+			sequenceContentHolder = contentHolder as ContentHolder;
 		}
 		
 		// Properties
@@ -23,24 +29,27 @@ package org.jbei.components.sequenceClasses
 			return annotation as Feature;
 		}
 		
+		// Public Methods
+		public function update():void
+		{
+			needsMeasurement = true;
+			invalidateDisplayList();
+		}
+		
 		// Protected Methods
 		protected override function render():void
 		{
 			super.render();
 			
-			if(!contentHolder.isValidIndex(feature.start) || !contentHolder.isValidIndex(feature.end)) {
-				throw new Error("Feature can't be rendered. Invalid positions: [" + String(feature.start) + ", " + String(feature.end) + "]");
-			}
-			
 			var g:Graphics = graphics;
 			g.clear();
 			
-			var featureRows:Array = contentHolder.rowMapper.featureToRowMap[feature];
+			var featureRows:Array = sequenceContentHolder.rowMapper.featureToRowMap[feature];
 			
 			if(! featureRows) { return; }
 			
 			for(var i:int = 0; i < featureRows.length; i++) {
-				var row:Row = contentHolder.rowMapper.rows[featureRows[i]] as Row;
+				var row:Row = sequenceContentHolder.rowMapper.rows[featureRows[i]] as Row;
 				
 				// find feature row index
 				var alignmentRowIndex:int = -1;
@@ -72,6 +81,9 @@ package org.jbei.components.sequenceClasses
 					}
 						/* |--------------------------------------------------------------------------------------|
 						*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+					else if(row.rowData.end >= contentHolder.featuredSequence.sequence.length) {
+						endBP = contentHolder.featuredSequence.sequence.length - 1;
+					}
 					else {
 						endBP = row.rowData.end;
 					}
@@ -95,18 +107,18 @@ package org.jbei.components.sequenceClasses
 				* |--------------------------------------------------------------------------------------|
 				*  FFFFFFFFFFFFFFFFFFFFFFFFFFF|                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
 				if(startBP > endBP) {
-					var bpStartMetrics1:Rectangle = contentHolder.bpMetricsByIndex(row.rowData.start);
-					var bpEndMetrics1:Rectangle = contentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
+					var bpStartMetrics1:Rectangle = sequenceContentHolder.bpMetricsByIndex(row.rowData.start);
+					var bpEndMetrics1:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
 					
-					var bpStartMetrics2:Rectangle = contentHolder.bpMetricsByIndex(startBP);
-					var bpEndMetrics2:Rectangle = contentHolder.bpMetricsByIndex(Math.min(row.rowData.end, contentHolder.featuredSequence.sequence.length - 1));
+					var bpStartMetrics2:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
+					var bpEndMetrics2:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(row.rowData.end, contentHolder.featuredSequence.sequence.length - 1));
 					
 					var featureX1:Number = bpStartMetrics1.x + 2; // +2 to look pretty
 					var featureX2:Number = bpStartMetrics2.x + 2; // +2 to look pretty
 					var featureYCommon:Number = bpStartMetrics1.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
 					
-					var featureRowWidth1:Number = bpEndMetrics1.x - bpStartMetrics1.x + contentHolder.sequenceSymbolRenderer.textWidth;
-					var featureRowWidth2:Number = bpEndMetrics2.x - bpStartMetrics2.x + contentHolder.sequenceSymbolRenderer.textWidth;
+					var featureRowWidth1:Number = bpEndMetrics1.x - bpStartMetrics1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
+					var featureRowWidth2:Number = bpEndMetrics2.x - bpStartMetrics2.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					
 					var featureRowHeightCommon:Number = DEFAULT_FEATURE_HEIGHT;
 					
@@ -121,13 +133,13 @@ package org.jbei.components.sequenceClasses
 						drawFeatureNegativeArrow(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
 					}
 				} else {
-					var bpStartMetrics:Rectangle = contentHolder.bpMetricsByIndex(startBP);
-					var bpEndMetrics:Rectangle = contentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
+					var bpStartMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
+					var bpEndMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
 					
 					var featureX:Number = bpStartMetrics.x + 2; // +2 to look pretty
 					var featureY:Number = bpStartMetrics.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
 					
-					var featureRowWidth:Number = bpEndMetrics.x - bpStartMetrics.x + contentHolder.sequenceSymbolRenderer.textWidth;
+					var featureRowWidth:Number = bpEndMetrics.x - bpStartMetrics.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					var featureRowHeight:Number = DEFAULT_FEATURE_HEIGHT;
 					
 					if(feature.strand == Feature.UNKNOWN) {
@@ -189,7 +201,7 @@ package org.jbei.components.sequenceClasses
 		
 		private function drawFeaturePositiveArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
-			if(width > contentHolder.sequenceSymbolRenderer.width) {
+			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
 				g.moveTo(x, y);
 				g.lineTo(x + width - 8, y);
 				g.lineTo(x + width, y + height / 2);
@@ -206,7 +218,7 @@ package org.jbei.components.sequenceClasses
 		
 		private function drawFeatureNegativeArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
-			if(width > contentHolder.sequenceSymbolRenderer.width) {
+			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
 				g.moveTo(x + 8, y);
 				g.lineTo(x + width, y);
 				g.lineTo(x + width, y + height);

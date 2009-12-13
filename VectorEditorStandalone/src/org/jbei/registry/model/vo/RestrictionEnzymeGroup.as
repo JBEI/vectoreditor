@@ -59,6 +59,20 @@ package org.jbei.registry.model.vo
 			_enzymes.removeAll();
 		}
 		
+		public function hasEnzyme(restrictionEnzyme:RestrictionEnzyme):Boolean
+		{
+			var result:Boolean = false;
+			
+			for(var i:int = 0; i < enzymes.length; i++) {
+				if(enzymes[i] == restrictionEnzyme) {
+					result = true;
+					break;
+				}
+			}
+			
+			return result;
+		}
+		
 		public function getRestrictionEnzyme(index:int):RestrictionEnzyme
 		{
 			if(index < 0 || index >= enzymes.length) {

@@ -1,4 +1,4 @@
-package org.jbei.components.railClasses
+package org.jbei.components.common
 {
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -11,7 +11,7 @@ package org.jbei.components.railClasses
 	
 	public class AnnotationRenderer extends UIComponent
 	{
-		protected var contentHolder:ContentHolder;
+		protected var contentHolder:IContentHolder;
 		protected var annotation:IAnnotation;
 		protected var needsMeasurement:Boolean = false;
 		protected var tooltipLabel:String;
@@ -19,7 +19,7 @@ package org.jbei.components.railClasses
 		private var tip:ToolTip;
 		
 		// Constructor
-		public function AnnotationRenderer(contentHolder:ContentHolder, annotation:IAnnotation)
+		public function AnnotationRenderer(contentHolder:IContentHolder, annotation:IAnnotation)
 		{
 			super();
 			
@@ -61,9 +61,14 @@ package org.jbei.components.railClasses
 		private function onRollOver(event:MouseEvent):void
 		{
 			// Calculate tip position
-			var localPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
+			var tipPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
 			
-			tip = ToolTipManager.createToolTip(tooltipLabel, localPoint.x, localPoint.y) as ToolTip;
+			tip = ToolTipManager.createToolTip(tooltipLabel, tipPoint.x, tipPoint.y) as ToolTip;
+			
+			if(tip.x + tip.width > stage.stageWidth) {
+				tip.x -= (tip.x + tip.width - stage.stageWidth);
+				tip.y += 20;
+			}
 		}
 		
 		private function onRollOut(event:MouseEvent):void

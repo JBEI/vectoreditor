@@ -45,6 +45,9 @@ package org.jbei.ui.dialogs
 			addEventListener(CloseEvent.CLOSE, onXButtonClick);
 			
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			
+			// Hack to fix flex's setFocus bug
+			this.callLater(function ():void {okButton.setFocus();});
 		}
 		
 		// Properties

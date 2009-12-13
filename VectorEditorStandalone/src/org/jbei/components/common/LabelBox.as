@@ -1,4 +1,4 @@
-package org.jbei.components.railClasses
+package org.jbei.components.common
 {
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -8,26 +8,23 @@ package org.jbei.components.railClasses
 	import mx.controls.ToolTip;
 	import mx.core.FlexTextField;
 	import mx.core.UIComponent;
-	import mx.core.UITextField;
 	import mx.managers.ToolTipManager;
 	
-	import org.jbei.bio.data.CutSite;
-	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.IAnnotation;
 
 	public class LabelBox extends UIComponent
 	{
-		private var _relatedAnnotation:IAnnotation;
-		private var _includeInView:Boolean = true;
 		private var needsMeasurement:Boolean = true;
 		private var textField:FlexTextField;
-		private var contentHolder:ContentHolder;
+		private var contentHolder:IContentHolder;
 		private var tip:ToolTip;
+		private var _relatedAnnotation:IAnnotation;
+		private var _includeInView:Boolean = true;
 		private var _totalWidth:Number;
 		private var _totalHeight:Number;
 		
 		// Constructor
-		public function LabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
+		public function LabelBox(contentHolder:IContentHolder, relatedAnnotation:IAnnotation)
 		{
 			super();
 			

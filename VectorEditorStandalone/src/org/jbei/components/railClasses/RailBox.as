@@ -53,7 +53,7 @@ package org.jbei.components.railClasses
 			g.clear();
 			g.lineStyle(1, FRAME_COLOR, TRANSPARENCY);
 			g.beginFill(COLOR, TRANSPARENCY);
-			g.drawRect(contentHolder.startRailPoint.x, contentHolder.startRailPoint.y, contentHolder.endRailPoint.x - contentHolder.startRailPoint.x, THICKNESS);
+			g.drawRect(contentHolder.railMetrics.x, contentHolder.railMetrics.y, contentHolder.railMetrics.width, THICKNESS);
 			g.endFill();
 		}
 	}

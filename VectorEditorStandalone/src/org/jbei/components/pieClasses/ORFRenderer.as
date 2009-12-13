@@ -7,6 +7,7 @@ package org.jbei.components.pieClasses
 	
 	import org.jbei.bio.data.ORF;
 	import org.jbei.components.common.GraphicUtils;
+	import org.jbei.components.common.AnnotationRenderer;
 
 	public class ORFRenderer extends AnnotationRenderer
 	{
@@ -16,9 +17,9 @@ package org.jbei.components.pieClasses
 		private const ORF_FRAME_COLOR2:int = 0x31B440;
 		private const ORF_FRAME_COLOR3:int = 0x3366CC;
 		
-		private var center:Point;
-		private var railRadius:Number;
 		private var orfAlignmentMap:Dictionary;
+		private var railRadius:Number;
+		private var center:Point;
 		
 		// Contructor
 		public function ORFRenderer(contentHolder:ContentHolder, orf:ORF)
@@ -33,11 +34,11 @@ package org.jbei.components.pieClasses
 		}
 		
 		// Public Methods
-		public function update(center:Point, railRadius:Number, orfAlignmentMap:Dictionary):void
+		public function update(railRadius:Number, center:Point, orfAlignmentMap:Dictionary):void
 		{
-			this.center = center;
-			this.railRadius = railRadius;
 			this.orfAlignmentMap = orfAlignmentMap;
+			this.railRadius = railRadius;
+			this.center = center;
 			
 			needsMeasurement = true;
 			invalidateDisplayList();

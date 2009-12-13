@@ -2,8 +2,10 @@ package org.jbei.components.railClasses
 {
 	import flash.display.Graphics;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import org.jbei.bio.data.CutSite;
+	import org.jbei.components.common.AnnotationRenderer;
 	
 	public class CutSiteRenderer extends AnnotationRenderer
 	{
@@ -12,6 +14,8 @@ package org.jbei.components.railClasses
 		private const LINE_COLOR:int = 0x606060;
 		
 		private var _connectionPoint:Point;
+		private var bpWidth:Number;
+		private var railMetrics:Rectangle;
 		
 		// Constructor
 		public function CutSiteRenderer(contentHolder:ContentHolder, cutSite:CutSite)
@@ -31,8 +35,11 @@ package org.jbei.components.railClasses
 		}
 		
 		// Public Methods
-		public function update():void
+		public function update(railMetrics:Rectangle, bpWidth:Number):void
 		{
+			this.railMetrics = railMetrics;
+			this.bpWidth = bpWidth;
+			
 			needsMeasurement = true;
 			invalidateDisplayList();
 		}
@@ -47,9 +54,9 @@ package org.jbei.components.railClasses
 			
 			g.lineStyle(1, LINE_COLOR);
 			
-			var xPosition:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * (cutSite.end + cutSite.start) / 2;
-			var yPosition1:Number = contentHolder.startRailPoint.y;
-			var yPosition2:Number = contentHolder.startRailPoint.y - CUT_SITE_HEIGHT;
+			var xPosition:Number = railMetrics.x + bpWidth * cutSite.start;
+			var yPosition1:Number = railMetrics.y;
+			var yPosition2:Number = railMetrics.y - CUT_SITE_HEIGHT;
 			
 			_connectionPoint = new Point(xPosition, (yPosition1 + yPosition2) / 2);
 			

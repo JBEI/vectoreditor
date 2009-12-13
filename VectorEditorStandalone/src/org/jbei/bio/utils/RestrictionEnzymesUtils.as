@@ -10,31 +10,37 @@ package org.jbei.bio.utils
 	
 	public class RestrictionEnzymesUtils
 	{
-		public static function cutByRestrictionEnzymesGroup(restrictionEnzymeGroup:ArrayCollection, sequence:DNASequence, reverseComplement:DNASequence, circular:Boolean, forwardOnly:Boolean = false):Dictionary /* [RestrictionEnzyme] = Array(CutSite) */
+		public static function cutSequence(restrictionEnzymeGroup:ArrayCollection, sequence:DNASequence):Dictionary /* [RestrictionEnzyme] = Array(CutSite) */
 		{
 			var reCuts:Dictionary = new Dictionary();
 			
 			for(var i:int = 0; i < restrictionEnzymeGroup.length; i++) {
 				var re:RestrictionEnzyme = restrictionEnzymeGroup[i] as RestrictionEnzyme;
 				
-				reCuts[re] = cutByRestrictionEnzyme(re, sequence, reverseComplement, circular, forwardOnly);
+				reCuts[re] = cutByRestrictionEnzyme(re, sequence);
 			}
 			
 			return reCuts;
 		}
 		
-		public static function cutByRestrictionEnzyme(restrictionEnzyme:RestrictionEnzyme, sequence:DNASequence, reverseComplement:DNASequence, circular:Boolean, forwardOnly:Boolean = false):Array /* of CutSite */
+		public static function cutReverseComplementary(restrictionEnzymeGroup:ArrayCollection, reverseComplement:DNASequence):Dictionary /* [RestrictionEnzyme] = Array(CutSite) */
+		{
+			var reCuts:Dictionary = new Dictionary();
+			
+			for(var i:int = 0; i < restrictionEnzymeGroup.length; i++) {
+				var re:RestrictionEnzyme = restrictionEnzymeGroup[i] as RestrictionEnzyme;
+				
+				reCuts[re] = cutReverseComplementByRestrictionEnzyme(re, reverseComplement);
+			}
+			
+			return reCuts;
+		}
+		
+		public static function cutByRestrictionEnzyme(restrictionEnzyme:RestrictionEnzyme, sequence:DNASequence):Array /* of CutSite */
 		{
 			var cutSites:Array = new Array();
 			
 			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex, "g");
-			var reverseRegExpPattern:RegExp = new RegExp(restrictionEnzyme.reverseRegex, "g");
-			
-			var dnaSequence:String = sequence.sequence;
-			
-			if(circular) { // make twice bigger to handle over zero cases 
-				dnaSequence += dnaSequence;
-			}
 			
 			var numCuts:int = 0;
 			
@@ -43,7 +49,7 @@ package org.jbei.bio.utils
 				reLength = restrictionEnzyme.dsForward;
 			}
 			
-			var match:Object = forwardRegExpPattern.exec(dnaSequence);
+			var match:Object = forwardRegExpPattern.exec(sequence.sequence);
 			while (match != null) {
 				if(match.index >= sequence.length) { break; } // break when cutsite start is more then seq length, because it means it's duplicate
 				
@@ -53,51 +59,40 @@ package org.jbei.bio.utils
 				
 				cutSites.push(cutSite);
 				
-				match = forwardRegExpPattern.exec(dnaSequence);
+				match = forwardRegExpPattern.exec(sequence.sequence);
 				
 				numCuts++;
 			}
 			
-			if(!forwardOnly && !restrictionEnzyme.isPalindromic()) {
-				var complementSequence:String = reverseComplement.sequence;
-				
-				if(circular) { // make twice bigger to handle over zero cases 
-					complementSequence += complementSequence;
-				}
-				
-				var reReverseLength:int = restrictionEnzyme.site.length;
-				if(restrictionEnzyme.site.length != restrictionEnzyme.dsForward + restrictionEnzyme.dsReverse) {
-					reReverseLength = restrictionEnzyme.dsReverse;
-				}
-				
-				var reverseMatch:Object = reverseRegExpPattern.exec(complementSequence);
-				while (reverseMatch != null) {
-					if(reverseMatch.index >= sequence.length) { break; } // break when cutsite start is more then seq length, because it means it's duplicate
-					
-					if((!circular && sequence.length < reReverseLength) || (!circular && sequence.length - reverseMatch.index - reReverseLength < 0)) { break; } // re is too short
-					
-					var isDuplicate:Boolean = false;
-					for(var i:int = 0; i < cutSites.length; i++) {
-						if((cutSites[i] as CutSite).start + restrictionEnzyme.site.length == sequence.length - reverseMatch.index) {
-							isDuplicate = true;
-							break;
-						}
-					}
-					
-					if(isDuplicate) { break; }
-					
-					var reverseCutSite:CutSite = new CutSite(restrictionEnzyme, sequence.length - reverseMatch.index - reReverseLength, sequence.length - reverseMatch.index - 1, false);
-					
-					cutSites.push(reverseCutSite);
-					
-					reverseMatch = reverseRegExpPattern.exec(complementSequence);
-					
-					numCuts++;
-				}
+			return cutSites;
+		}
+		
+		public static function cutReverseComplementByRestrictionEnzyme(restrictionEnzyme:RestrictionEnzyme, sequence:DNASequence):Array /* of CutSite */
+		{
+			var cutSites:Array = new Array();
+			
+			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex, "g");
+			
+			var numCuts:int = 0;
+			
+			var reLength:int = restrictionEnzyme.site.length;
+			if(restrictionEnzyme.site.length != restrictionEnzyme.dsForward + restrictionEnzyme.dsReverse) {
+				reLength = restrictionEnzyme.dsForward;
 			}
 			
-			for(var j:int = 0; j < cutSites.length; j++) {
-				(cutSites[j] as CutSite).numCuts = numCuts;
+			var match:Object = forwardRegExpPattern.exec(sequence.sequence);
+			while (match != null) {
+				if(match.index >= sequence.length) { break; } // break when cutsite start is more then seq length, because it means it's duplicate
+				
+				if(sequence.length <= match.index + reLength - 1) { break; } // sequence is too short
+				
+				var cutSite:CutSite = new CutSite(restrictionEnzyme, sequence.length - match.index - reLength, sequence.length - match.index - 1, false);
+				
+				cutSites.push(cutSite);
+				
+				match = forwardRegExpPattern.exec(sequence.sequence);
+				
+				numCuts++;
 			}
 			
 			return cutSites;

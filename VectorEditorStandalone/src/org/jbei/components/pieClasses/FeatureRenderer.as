@@ -2,11 +2,10 @@ package org.jbei.components.pieClasses
 {
 	import flash.display.Graphics;
 	import flash.geom.Point;
-	import flash.utils.Dictionary;
 	
 	import org.jbei.bio.data.Feature;
+	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
-	import org.jbei.components.pieClasses.AnnotationRenderer;
 
 	public class FeatureRenderer extends AnnotationRenderer
 	{
@@ -19,7 +18,10 @@ package org.jbei.components.pieClasses
 		private var angle1:Number;
 		private var angle2:Number;
 		private var featureRadius:Number;
+		
 		private var alignmentRowIndex:int;
+		private var railRadius:Number;
+		private var center:Point;
 		
 		// Contructor
 		public function FeatureRenderer(contentHolder:ContentHolder, feature:Feature)
@@ -39,11 +41,13 @@ package org.jbei.components.pieClasses
 		}
 		
 		// Public Methods
-		public function update(alignmentRowIndex:int):void
+		public function update(railRadius:Number, center:Point, alignmentRowIndex:int):void
 		{
 			this.alignmentRowIndex = alignmentRowIndex;
+			this.railRadius = railRadius;
+			this.center = center;
 			
-			featureRadius = contentHolder.railRadius - DEFAULT_FEATURES_GAP - 2*DEFAULT_FEATURES_GAP;
+			featureRadius = railRadius - DEFAULT_FEATURES_GAP - 2*DEFAULT_FEATURES_GAP;
 			if(alignmentRowIndex > 0) {
 				featureRadius -= alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP);
 			}
@@ -61,7 +65,7 @@ package org.jbei.components.pieClasses
 				centralAngle = (angle1 + angle2) / 2;
 			}
 			
-			_middlePoint = GraphicUtils.pointOnCircle(contentHolder.center, centralAngle, featureRadius);
+			_middlePoint = GraphicUtils.pointOnCircle(center, centralAngle, featureRadius);
 			
 			needsMeasurement = true;
 			invalidateDisplayList();
@@ -86,7 +90,7 @@ package org.jbei.components.pieClasses
 				direction = 0;
 			}
 			
-			GraphicUtils.drawDirectedPiePiece(g, contentHolder.center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2, direction);
+			GraphicUtils.drawDirectedPiePiece(g, center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2, direction);
 			
 			g.endFill();
 		}

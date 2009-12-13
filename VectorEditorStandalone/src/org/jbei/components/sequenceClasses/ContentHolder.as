@@ -24,8 +24,11 @@ package org.jbei.components.sequenceClasses
     import org.jbei.bio.data.ORF;
     import org.jbei.bio.utils.SequenceUtils;
     import org.jbei.components.SequenceAnnotator;
+    import org.jbei.components.common.AnnotationRenderer;
     import org.jbei.components.common.CaretEvent;
+    import org.jbei.components.common.CommonEvent;
     import org.jbei.components.common.EditingEvent;
+    import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.TextRenderer;
     import org.jbei.lib.FeaturedSequence;
@@ -33,7 +36,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.lib.RestrictionEnzymeMapper;
     import org.jbei.utils.SystemUtils;
 	
-	public class ContentHolder extends UIComponent
+	public class ContentHolder extends UIComponent implements IContentHolder
 	{
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
 		private const SPLIT_LINE_COLOR:int = 0x000000;
@@ -58,6 +61,7 @@ package org.jbei.components.sequenceClasses
 		
 		private var customContextMenu:ContextMenu;
 		private var editFeatureContextMenuItem:ContextMenuItem;
+		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
 		
 		private var featureRenderers:Array = new Array(); /* of FeatureRenderer */
@@ -605,6 +609,7 @@ package org.jbei.components.sequenceClasses
 			if(showFeaturesChanged) {
 				showFeaturesChanged = false;
 				
+				rowMapperChanged = true;
 				needsMeasurement = true;
 				
 				invalidateDisplayList();
@@ -812,6 +817,9 @@ package org.jbei.components.sequenceClasses
 			editFeatureContextMenuItem = new ContextMenuItem("Edit Feature");
 			editFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditFeatureMenuItem);
         	
+			removeFeatureContextMenuItem = new ContextMenuItem("Remove Feature");
+			removeFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveFeatureMenuItem);
+			
 			selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
 			selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
         }
@@ -1012,7 +1020,7 @@ package org.jbei.components.sequenceClasses
         private function onMouseDoubleClick(event:MouseEvent):void
         {
         	if(event.target is FeatureRenderer) {
-        		dispatchEvent(new SequenceAnnotatorEvent(SequenceAnnotatorEvent.EDIT_FEATURE, true, true, (event.target as FeatureRenderer).feature));
+        		dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.target as FeatureRenderer).feature));
         	}
         }
         
@@ -1022,6 +1030,7 @@ package org.jbei.components.sequenceClasses
 			
 			if(event.mouseTarget is FeatureRenderer) {
 		        customContextMenu.customItems.push(editFeatureContextMenuItem);
+				customContextMenu.customItems.push(removeFeatureContextMenuItem);
 			}
 			
 			if(selectionLayer.selected) {
@@ -1031,12 +1040,21 @@ package org.jbei.components.sequenceClasses
 		
 		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new SequenceAnnotatorEvent(SequenceAnnotatorEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
+		}
+		
+		private function onRemoveFeatureMenuItem(event:ContextMenuEvent):void
+		{
+			if(event.mouseTarget is FeatureRenderer) {
+				dispatchEvent(new CommonEvent(CommonEvent.REMOVE_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+			}
 		}
 		
 		private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
 		{
-			dispatchEvent(new SequenceAnnotatorEvent(SequenceAnnotatorEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
+			dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
 		}
 		
 	    private function onSelectAll(event:Event):void

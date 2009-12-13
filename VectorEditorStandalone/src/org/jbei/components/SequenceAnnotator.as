@@ -11,8 +11,8 @@ package org.jbei.components
     import mx.events.ScrollEventDirection;
     import mx.managers.IFocusManagerComponent;
     
+    import org.jbei.components.common.CommonEvent;
     import org.jbei.components.sequenceClasses.ContentHolder;
-    import org.jbei.components.sequenceClasses.SequenceAnnotatorEvent;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.FeaturedSequenceEvent;
     import org.jbei.lib.ORFMapper;
@@ -520,7 +520,7 @@ package org.jbei.components
 			if(needsMeasurement) {
 				needsMeasurement = false;
 				
-				dispatchEvent(new SequenceAnnotatorEvent(SequenceAnnotatorEvent.BEFORE_UPDATE));
+				dispatchEvent(new CommonEvent(CommonEvent.BEFORE_UPDATE));
 				
 				try {
 					contentHolder.updateMetrics(unscaledWidth, unscaledHeight);
@@ -530,7 +530,7 @@ package org.jbei.components
 				} catch (error:Error) {
 					trace(error.getStackTrace());
 				} finally {
-					dispatchEvent(new SequenceAnnotatorEvent(SequenceAnnotatorEvent.AFTER_UPDATE));
+					dispatchEvent(new CommonEvent(CommonEvent.AFTER_UPDATE));
 				}
 			}
 		}

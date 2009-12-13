@@ -1,8 +1,10 @@
 package org.jbei.components.railClasses
 {
 	import flash.display.Graphics;
+	import flash.geom.Rectangle;
 	
 	import org.jbei.bio.data.ORF;
+	import org.jbei.components.common.AnnotationRenderer;
 
 	public class ORFRenderer extends AnnotationRenderer
 	{
@@ -13,6 +15,8 @@ package org.jbei.components.railClasses
 		private const ORF_FRAME_COLOR3:int = 0x3366CC;
 		
 		private var alignmentRowIndex:int;
+		private var bpWidth:Number;
+		private var railMetrics:Rectangle;
 		
 		// Contructor
 		public function ORFRenderer(contentHolder:ContentHolder, orf:ORF)
@@ -27,9 +31,11 @@ package org.jbei.components.railClasses
 		}
 		
 		// Public Methods
-		public function update(alignmentRowIndex:int):void
+		public function update(railMetrics:Rectangle, bpWidth:Number, alignmentRowIndex:int):void
 		{
 			this.alignmentRowIndex = alignmentRowIndex;
+			this.railMetrics = railMetrics;
+			this.bpWidth = bpWidth;
 			
 			needsMeasurement = true;
 			invalidateDisplayList();
@@ -44,19 +50,25 @@ package org.jbei.components.railClasses
 			g.clear();
 			g.lineStyle(2, color);
 			
-			var bpWidth:Number = (contentHolder.endRailPoint.x - contentHolder.startRailPoint.x) / contentHolder.featuredSequence.sequence.length;
+			var startPosition:Number = railMetrics.x + bpWidth * orf.start;
+			var endPosition:Number = railMetrics.x + bpWidth * orf.end;
 			
-			var startPosition:Number = contentHolder.startRailPoint.x + bpWidth * orf.start;
-			var endPosition:Number = contentHolder.startRailPoint.x + bpWidth * orf.end;
+			var yPosition:Number = railMetrics.y - RAIL_GAP - alignmentRowIndex * DEFAULT_GAP;
 			
-			var yPosition:Number = contentHolder.startRailPoint.y - RAIL_GAP - alignmentRowIndex * DEFAULT_GAP;
-			
-			g.moveTo(startPosition, yPosition);
-			g.lineTo(endPosition, yPosition);
+			if(orf.start > orf.end) { // circular
+				g.moveTo(railMetrics.x, yPosition);
+				g.lineTo(endPosition, yPosition);
+				
+				g.moveTo(startPosition, yPosition);
+				g.lineTo(railMetrics.x + bpWidth * contentHolder.featuredSequence.sequence.length, yPosition);
+			} else { // linear
+				g.moveTo(startPosition, yPosition);
+				g.lineTo(endPosition, yPosition);
+			}
 			
 			// render start codons as bold dots
 			for(var i:int = 0; i < orf.startCodons.length; i++) {
-				g.drawCircle(contentHolder.startRailPoint.x + bpWidth * orf.startCodons[i], yPosition, 2);
+				g.drawCircle(railMetrics.x + bpWidth * orf.startCodons[i], yPosition, 2);
 			}
 			
 			// render end codons as arrows

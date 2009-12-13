@@ -2,8 +2,10 @@ package org.jbei.components.railClasses
 {
 	import flash.display.Graphics;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import org.jbei.bio.data.Feature;
+	import org.jbei.components.common.AnnotationRenderer;
 
 	public class FeatureRenderer extends AnnotationRenderer
 	{
@@ -16,6 +18,8 @@ package org.jbei.components.railClasses
 		private var _connectionPoint:Point;
 		
 		private var alignmentRowIndex:int;
+		private var bpWidth:Number;
+		private var railMetrics:Rectangle;
 		
 		// Contructor
 		public function FeatureRenderer(contentHolder:ContentHolder, feature:Feature)
@@ -35,9 +39,11 @@ package org.jbei.components.railClasses
 		}
 		
 		// Public Methods
-		public function update(alignmentRowIndex:int):void
+		public function update(railMetrics:Rectangle, bpWidth:Number, alignmentRowIndex:int):void
 		{
 			this.alignmentRowIndex = alignmentRowIndex;
+			this.railMetrics = railMetrics;
+			this.bpWidth = bpWidth;
 			
 			needsMeasurement = true;
 			invalidateDisplayList();
@@ -52,14 +58,14 @@ package org.jbei.components.railClasses
 			g.clear();
 			g.lineStyle(1, FRAME_COLOR);
 			
-			var xStartPosition:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * feature.start;
-			var xEndPosition:Number = contentHolder.startRailPoint.x + contentHolder.bpWidth * feature.end;
-			var yPosition:Number = contentHolder.startRailPoint.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP);
+			var xStartPosition:Number = railMetrics.x + bpWidth * feature.start;
+			var xEndPosition:Number = railMetrics.x + bpWidth * feature.end;
+			var yPosition:Number = railMetrics.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP);
 			
 			_connectionPoint = new Point(xStartPosition, (yPosition + yPosition + RailBox.THICKNESS) / 2);
 			
 			if(feature.start <= feature.end) { // non-circular feature
-				var featureWidth:Number = contentHolder.bpWidth * (feature.end - feature.start + 1);
+				var featureWidth:Number = bpWidth * (feature.end - feature.start + 1);
 				
 				g.beginFill(color);
 				switch(feature.strand) {
@@ -78,8 +84,8 @@ package org.jbei.components.railClasses
 				}
 				g.endFill();
 			} else { // circular feature
-				var startPosition:Number = contentHolder.startRailPoint.x;
-				var endPosition:Number = contentHolder.startRailPoint.x + contentHolder.featuredSequence.sequence.length * contentHolder.bpWidth;
+				var startPosition:Number = railMetrics.x;
+				var endPosition:Number = railMetrics.x + contentHolder.featuredSequence.sequence.length * bpWidth;
 				
 				switch(feature.strand) {
 					case Feature.POSITIVE:
@@ -88,7 +94,7 @@ package org.jbei.components.railClasses
 						g.endFill();
 						
 						g.beginFill(color);
-						drawFeaturePositiveArrow(g, startPosition, yPosition, xEndPosition - contentHolder.startRailPoint.x, DEFAULT_FEATURE_HEIGHT);
+						drawFeaturePositiveArrow(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
 						g.endFill();
 						
 						break;
@@ -98,7 +104,7 @@ package org.jbei.components.railClasses
 						g.endFill();
 						
 						g.beginFill(color);
-						drawFeatureRect(g, startPosition, yPosition, xEndPosition - contentHolder.startRailPoint.x, DEFAULT_FEATURE_HEIGHT);
+						drawFeatureRect(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
 						g.endFill();
 						
 						break;
@@ -108,7 +114,7 @@ package org.jbei.components.railClasses
 						g.endFill();
 						
 						g.beginFill(color);
-						drawFeatureRect(g, startPosition, yPosition, xEndPosition - contentHolder.startRailPoint.x, DEFAULT_FEATURE_HEIGHT);
+						drawFeatureRect(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
 						g.endFill();
 						
 						break;

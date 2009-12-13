@@ -4,6 +4,7 @@ package org.jbei.components.pieClasses
 	import flash.geom.Point;
 	
 	import org.jbei.bio.data.CutSite;
+	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 	
 	public class CutSiteRenderer extends AnnotationRenderer
@@ -35,12 +36,12 @@ package org.jbei.components.pieClasses
 		}
 		
 		// Public Methods
-		public function update(center:Point, railRadius:Number):void
+		public function update(railRadius:Number, center:Point):void
 		{
 			this.center = center;
 			this.railRadius = railRadius;
 			
-			angle = (0.5 * cutSite.start + 0.5 * (cutSite.end + 1)) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			angle = cutSite.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 			
 			_middlePoint = GraphicUtils.pointOnCircle(center, angle, railRadius + 10);
 			
