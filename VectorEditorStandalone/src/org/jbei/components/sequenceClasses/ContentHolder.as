@@ -31,6 +31,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.TextRenderer;
+    import org.jbei.lib.AAMapper;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.ORFMapper;
     import org.jbei.lib.RestrictionEnzymeMapper;
@@ -71,6 +72,7 @@ package org.jbei.components.sequenceClasses
 		
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
+		private var _aaMapper:AAMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
 		
@@ -88,6 +90,7 @@ package org.jbei.components.sequenceClasses
 		private var _showComplementary:Boolean = true;
 		private var _showFeatures:Boolean = true;
 		private var _sequenceFontSize:int = 11;
+		private var _labelFontSize:int = 10;
 		private var _caretPosition:int = 0;
 		private var _showSpaceEvery10Bp:Boolean = true;
 		private var _showAminoAcids1:Boolean = false;
@@ -112,6 +115,7 @@ package org.jbei.components.sequenceClasses
 		private var needsMeasurement:Boolean = false;
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
+		private var aaMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
 		private var highlightsChanged:Boolean = false;
 		private var rowMapperChanged:Boolean = false;
@@ -120,6 +124,7 @@ package org.jbei.components.sequenceClasses
 		private var showCutSitesChanged:Boolean = false;
 		private var showComplementaryChanged:Boolean = false;
 		private var sequenceFontSizeChanged:Boolean = false;
+		private var labelFontSizeChanged:Boolean = false;
 		private var showSpaceEvery10BpChanged:Boolean = false;
 		private var showAminoAcids1Changed:Boolean = false;
 		private var showAminoAcids3Changed:Boolean = false;
@@ -183,6 +188,20 @@ package org.jbei.components.sequenceClasses
 			invalidateProperties();
 			
 			orfMapperChanged = true;
+		}
+		
+		public function get aaMapper():AAMapper
+		{
+			return _aaMapper;
+		}
+		
+		public function set aaMapper(value:AAMapper):void
+		{
+			_aaMapper = value;
+			
+			invalidateProperties();
+			
+			aaMapperChanged = true;
 		}
 		
 		public function get highlights():Array /* of Segment */
@@ -279,6 +298,22 @@ package org.jbei.components.sequenceClasses
 	    	}
 	    }
 	    
+		public function get labelFontSize():int
+		{
+			return _labelFontSize;
+		}
+		
+		public function set labelFontSize(value:int):void
+		{
+			if (value != labelFontSize) {
+				_labelFontSize = value;
+				
+				labelFontSizeChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 	    public function get showSpaceEvery10Bp():Boolean
 	    {
 	        return _showSpaceEvery10Bp;
@@ -585,6 +620,14 @@ package org.jbei.components.sequenceClasses
 				invalidateDisplayList();
 			}
 			
+			if(aaMapperChanged) {
+				aaMapperChanged = false;
+				
+				needsMeasurement = true;
+				
+				invalidateDisplayList();
+			}
+			
 			if(showComplementaryChanged) {
 				showComplementaryChanged = false;
 				
@@ -644,6 +687,22 @@ package org.jbei.components.sequenceClasses
 				invalidateDisplayList();
 	        }
 	        
+			if(labelFontSizeChanged) {
+				labelFontSizeChanged = false;
+				
+				needsMeasurement = true;
+				
+				var cutSiteTextFormat:TextFormat = new TextFormat(_cutSiteTextRenderer.textFormat.font, _labelFontSize, _cutSiteTextRenderer.textFormat.color);
+				var singleCutterCutSiteTextFormat:TextFormat = new TextFormat(_singleCutterCutSiteTextRenderer.textFormat.font, _labelFontSize, _singleCutterCutSiteTextRenderer.textFormat.color);
+				
+				_cutSiteTextRenderer.textFormat = cutSiteTextFormat;
+				_singleCutterCutSiteTextRenderer.textFormat = singleCutterCutSiteTextFormat;
+				
+				clearCutterTextRenderers();
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showSpaceEvery10BpChanged) {
 	        	showSpaceEvery10BpChanged = false;
 	        	
@@ -941,6 +1000,16 @@ package org.jbei.components.sequenceClasses
 			_sequenceSymbolRenderer.textToBitmap("A");
 			_complimentarySymbolRenderer.textToBitmap("A");
 			_aminoAcidsTextRenderer.textToBitmap("A");
+		}
+		
+		private function clearCutterTextRenderers():void
+		{
+			_cutSiteTextRenderer.clearCache();
+			_singleCutterCutSiteTextRenderer.clearCache();
+			
+			// Load dummy renderers to calculate width and height
+			_cutSiteTextRenderer.textToBitmap("EcoRI");
+			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
 		}
 		
 	    private function onMouseDown(event:MouseEvent):void

@@ -11,14 +11,17 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.events.ValidationResultEvent;
+			
+			import org.jbei.ApplicationFacade;
 			import org.jbei.registry.model.UserPreferencesProxy;
 			import org.jbei.registry.model.vo.UserPreferences;
-			import org.jbei.ApplicationFacade;
 			
 			private var changed:Boolean = false;
 			
 			[Bindable]
 			private var userPreferences:UserPreferences;
+			
+			private var userPreferencesProxy:UserPreferencesProxy;
 			
 			// Public Methods
 			public override function validate():void
@@ -34,11 +37,12 @@
 				} else {
 					isValid = true;
 					
-					userPreferences.bpPerRow = bpPerRowNumericStepper.value;
+					userPreferences.bpPerRow = floatingSequenceWidthCheckBox.selected ? -1 : bpPerRowNumericStepper.value;
 					userPreferences.orfMinimumLength = orfMinimumLengthNumericStepper.value;
 					userPreferences.sequenceFontSize = sequenceFontSizeNumericStepper.value;
-						
-					var userPreferencesProxy:UserPreferencesProxy = ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy;
+					userPreferences.labelsFontSize = labelsFontSizeNumericStepper.value;
+					userPreferences.maxResitrictionEnzymesCuts = setMaxCutOffCheckBox.selected ? -1 : maxResitrictionEnzymesCutsNumericStepper.value;
+					
 					userPreferencesProxy.saveUserPreferences("This IS USER TOKEN!", userPreferences);
 				}
 			}
@@ -46,9 +50,8 @@
 			// Private Methods
 			private function onCreationComplete(event:Event):void
 			{
-				userPreferences = (ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy).userPreferences;
-				
-				bpPerRowNumericStepper.setFocus();
+				userPreferencesProxy = ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy;
+				userPreferences = userPreferencesProxy.userPreferences;
 			}
 			
 			private function onChange(event:Event):void
@@ -81,6 +84,19 @@
 		maxValue="500" 
 		property="value" 
 		domain="int"/>
+	<mx:NumberValidator 
+		id="maxResitrictionEnzymesCutsNumberValidator" 
+		source="{ maxResitrictionEnzymesCutsNumericStepper }" 
+		required="true" minValue="1" 
+		property="value" 
+		domain="int"/>
+	<mx:NumberValidator 
+		id="labelsFontSizeNumberValidator" 
+		source="{ labelsFontSizeNumericStepper }" 
+		required="true" minValue="9" 
+		maxValue="14" 
+		property="value" 
+		domain="int"/>
 	
 	<mx:TabNavigator 
 		borderStyle="solid"
@@ -100,14 +116,22 @@
 				paddingRight="5">
 				
 				<mx:FormItem label="BP Per Row:" direction="horizontal">
-				    <mx:NumericStepper 
-				    	id="bpPerRowNumericStepper" 
-				    	stepSize="10" 
-				    	minimum="10" 
-				    	maximum="100" 
-				    	width="60"
-				    	value="{ userPreferences.bpPerRow }"
-				    	change="onChange(event)" />
+					<mx:VBox width="100%" height="100%">
+						<mx:CheckBox
+							id="floatingSequenceWidthCheckBox"
+							label="Floating sequence width"
+							selected="{ userPreferences.bpPerRow == -1 }" 
+							change="onChange(event)"/>
+						<mx:NumericStepper 
+							id="bpPerRowNumericStepper" 
+							stepSize="10" 
+							minimum="10" 
+							maximum="100" 
+							width="60"
+							enabled="{ !floatingSequenceWidthCheckBox.selected }"
+							value="{ (floatingSequenceWidthCheckBox.selected || userPreferences.bpPerRow == -1) ? 60 : userPreferences.bpPerRow }"
+							change="onChange(event)" />
+					</mx:VBox>
 			    </mx:FormItem>
 				<mx:FormItem label="Sequence Font Size:" direction="horizontal">
 				    <mx:NumericStepper 
@@ -119,6 +143,34 @@
 				    	value="{ userPreferences.sequenceFontSize }"
 				    	change="onChange(event)" />
 			    </mx:FormItem>
+				<mx:FormItem label="Labels Font Size:" direction="horizontal">
+					<mx:NumericStepper 
+						id="labelsFontSizeNumericStepper" 
+						stepSize="1" 
+						minimum="9" 
+						maximum="14"
+						width="60" 
+						value="{ userPreferences.labelsFontSize }"
+						change="onChange(event)" />
+				</mx:FormItem>
+				<mx:FormItem label="Max cutoffs" direction="horizontal">
+					<mx:VBox width="100%" height="100%">
+						<mx:CheckBox
+							id="setMaxCutOffCheckBox"
+							label="Unlimited cutoffs"
+							selected="{ userPreferences.maxResitrictionEnzymesCuts == -1 }" 
+							change="onChange(event)"/>
+						<mx:NumericStepper 
+							id="maxResitrictionEnzymesCutsNumericStepper" 
+							stepSize="1" 
+							minimum="1" 
+							maximum="100"
+							width="60" 
+							enabled="{ !setMaxCutOffCheckBox.selected }"
+							value="{ userPreferences.maxResitrictionEnzymesCuts }"
+							change="onChange(event)" />
+					</mx:VBox>
+				</mx:FormItem>
 				<mx:FormItem label="ORF Minimum Length:" direction="horizontal">
 				    <mx:NumericStepper 
 				    	id="orfMinimumLengthNumericStepper" 

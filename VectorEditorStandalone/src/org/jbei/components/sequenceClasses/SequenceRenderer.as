@@ -10,9 +10,6 @@ package org.jbei.components.sequenceClasses
 	
 	import mx.core.UIComponent;
 	
-	import org.jbei.bio.data.AminoAcid;
-	import org.jbei.bio.utils.AminoAcidsHelper;
-	
 	public class SequenceRenderer extends UIComponent
 	{
 		private var contentHolder:ContentHolder;
@@ -188,57 +185,115 @@ package org.jbei.components.sequenceClasses
 		
 		private function renderAA(row:Row, isAA3:Boolean):void
 		{
-			var sequence:String = contentHolder.featuredSequence.sequence.sequence;
-			var rowSequence:String = row.rowData.sequence;
+			var aa1:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame1 : contentHolder.aaMapper.sequenceAA1Frame1;
+			var aa2:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame2 : contentHolder.aaMapper.sequenceAA1Frame2;
+			var aa3:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame3 : contentHolder.aaMapper.sequenceAA1Frame3;
 			
-			var aminoAcidsString1:String = '';
-			var aminoAcidsString2:String = '';
-			var aminoAcidsString3:String = '';
-			for(var i:int = 0; i < rowSequence.length; i++) {
-				var basePairs:String;
+			var shift1:int = 0;
+			var shift2:int = 0;
+			var shift3:int = 0;
+			
+			if(row.rowData.start % 3 == 0) {
+				shift1 = 0;
+				shift2 = 1;
+				shift3 = 2;
+			} else if(row.rowData.start % 3 == 1) {
+				shift1 = 2;
+				shift2 = 0;
+				shift3 = 1;
+			} else if(row.rowData.start % 3 == 2) {
+				shift1 = 1;
+				shift2 = 2;
+				shift3 = 0;
+			}
+			
+			var start1:int = 0;
+			var start2:int = 0;
+			var start3:int = 0;
+			
+			var end1:int = 0;
+			var end2:int = 0;
+			var end3:int = 0;
+			
+			if(row.rowData.start % 3 == 0) {
+				start1 = row.rowData.start;
+			} else if(row.rowData.start % 3 == 1) {
+				start1 = 3 * (int(row.rowData.start / 3) + 1);
+			} else if(row.rowData.start % 3 == 2) {
+				start1 = 3 * (int(row.rowData.start / 3) + 1);
+			}
+			
+			if(row.rowData.start % 3 == 1) {
+				start2 = 3 * int(row.rowData.start / 3);
+			} else if(row.rowData.start % 3 == 0) {
+				start2 = row.rowData.start;
+			} else if(row.rowData.start % 3 == 2) {
+				start2 = 3 * (int(row.rowData.start / 3) + 1);
+			}
+			
+			if(row.rowData.start % 3 == 2) {
+				start3 = 3 * int(row.rowData.start / 3);
+			} else if(row.rowData.start % 3 == 1) {
+				start3 = 3 * int(row.rowData.start / 3);
+			} else if(row.rowData.start % 3 == 0) {
+				start3 = row.rowData.start;
+			}
+			
+			if((row.rowData.end + 1) % 3 == 0) {
+				end1 = (row.rowData.end + 1);
+			} else if((row.rowData.end + 1) % 3 == 1) {
+				end1 = 3 * (int((row.rowData.end + 1) / 3) + 1);
+			} else if((row.rowData.end + 1) % 3 == 2) {
+				end1 = 3 * (int((row.rowData.end + 1) / 3) + 1);
+			}
+			
+			if((row.rowData.end + 1) % 3 == 1) {
+				end2 = 3 * int((row.rowData.end + 1) / 3);
+			} else if((row.rowData.end + 1) % 3 == 0) {
+				end2 = (row.rowData.end + 1);
+			} else if((row.rowData.end + 1) % 3 == 2) {
+				end2 = 3 * (int((row.rowData.end + 1) / 3) + 1);
+			}
+			
+			if((row.rowData.end + 1) % 3 == 2) {
+				end3 = 3 * int((row.rowData.end + 1) / 3);
+			} else if((row.rowData.end + 1) % 3 == 1) {
+				end3 = 3 * int((row.rowData.end + 1) / 3);
+			} else if((row.rowData.end + 1) % 3 == 0) {
+				end3 = (row.rowData.end + 1);
+			}
+			
+			var aminoAcidsString1:String = "";
+			var aminoAcidsString2:String = "";
+			var aminoAcidsString3:String = "";
+			if(isAA3) {
+				aminoAcidsString1 = aa1.substring(start1, end1);
+				aminoAcidsString2 = aa2.substring(start2, end2);
+				aminoAcidsString3 = aa3.substring(start3, end3);
+			} else {
+				var subString1:String = aa1.substring(start1 / 3, end1 / 3);
+				var subString2:String = aa2.substring(start2 / 3, end2 / 3);
+				var subString3:String = aa3.substring(start3 / 3, end3 / 3);
 				
-				if(contentHolder.featuredSequence.circular) {
-					if(sequence.length < 3) {
-						basePairs = "-";
-					} else {
-						if(row.rowData.start + i == sequence.length - 2) { 
-							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(0);
-						} else if(row.rowData.start + i == sequence.length - 1) {
-							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(0) + sequence.charAt(1);
-						} else {
-							basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
-						}
-					}
-				} else {
-					if(row.rowData.start + i + 2 > sequence.length - 1) { 
-						basePairs = "-"
-					} else {
-						basePairs = sequence.charAt(row.rowData.start + i) + sequence.charAt(row.rowData.start + i + 1) + sequence.charAt(row.rowData.start + i + 2);
-					}
+				var sparsedString1:String = "";
+				var sparsedString2:String = "";
+				var sparsedString3:String = "";
+				
+				for(var i:int = 0; i < subString1.length; i++) {
+					sparsedString1 += subString1.charAt(i) + "  ";
+					sparsedString2 += subString2.charAt(i) + "  ";
+					sparsedString3 += subString3.charAt(i) + "  ";
 				}
 				
-				var aminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(basePairs);
-				
-				var aa:String;
-				if(isAA3) {
-					aa = (! aminoAcid) ? '---' : aminoAcid.name3;
-				} else {
-					aa = (! aminoAcid) ? '-  ' : aminoAcid.name1 + '  ';
-				}
-				
-				if(i == 0 || (i % 3) == 0) {
-					aminoAcidsString1 += aa;
-				} else if(i == 1 || ((i + 2) % 3 == 0)) {
-					aminoAcidsString2 += aa;
-				} else if(i == 2 || ((i + 1) % 3 == 0)) {
-					aminoAcidsString3 += aa;
-				}
+				aminoAcidsString1 = sparsedString1.substring(0, end1 - start1 + 1);
+				aminoAcidsString2 = sparsedString2.substring(0, end2 - start2 + 1);
+				aminoAcidsString3 = sparsedString3.substring(0, end3 - start3 + 1);
 			}
 			
 			if(contentHolder.showSpaceEvery10Bp) {
-				aminoAcidsString1 = splitWithSpaces(aminoAcidsString1, 10, false);
-				aminoAcidsString2 = splitWithSpaces(aminoAcidsString2, 9, false);
-				aminoAcidsString3 = splitWithSpaces(aminoAcidsString3, 8, false);
+				aminoAcidsString1 = splitWithSpaces(aminoAcidsString1, shift1, false);
+				aminoAcidsString2 = splitWithSpaces(aminoAcidsString2, shift2, false);
+				aminoAcidsString3 = splitWithSpaces(aminoAcidsString3, shift3, false);
 			}
 			
 			var g:Graphics = graphics;
@@ -248,7 +303,7 @@ package org.jbei.components.sequenceClasses
 			for(var j1:int = 0; j1 < aminoAcidsString1.length; j1++) {
 				var aminoAcidSymbolBitmap1:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString1.charAt(j1));
 				
-				var leftShift1:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + j1 * aminoAcidSymbolBitmap1.width;
+				var leftShift1:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + (j1 + shift1) * aminoAcidSymbolBitmap1.width;
 				
 				aminoAcidRenderMatrix.tx += leftShift1;
 				aminoAcidRenderMatrix.ty += _totalHeight;
@@ -267,7 +322,7 @@ package org.jbei.components.sequenceClasses
 			for(var j2:int = 0; j2 < aminoAcidsString2.length; j2++) {
 				var aminoAcidSymbolBitmap2:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString2.charAt(j2));
 				
-				var leftShift2:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + (j2 + 1) * aminoAcidSymbolBitmap2.width;
+				var leftShift2:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + (j2 + shift2) * aminoAcidSymbolBitmap2.width;
 				
 				aminoAcidRenderMatrix.tx += leftShift2;
 				aminoAcidRenderMatrix.ty += _totalHeight;
@@ -286,7 +341,7 @@ package org.jbei.components.sequenceClasses
 			for(var j3:int = 0; j3 < aminoAcidsString3.length; j3++) {
 				var aminoAcidSymbolBitmap3:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString3.charAt(j3));
 				
-				var leftShift3:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + (j3 + 2) * aminoAcidSymbolBitmap3.width;
+				var leftShift3:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + (j3 + shift3) * aminoAcidSymbolBitmap3.width;
 				
 				aminoAcidRenderMatrix.tx += leftShift3;
 				aminoAcidRenderMatrix.ty += _totalHeight;
@@ -353,31 +408,25 @@ package org.jbei.components.sequenceClasses
 			return result;
 		}
 		
-		private function splitWithSpaces(string:String, firstSplitShift:int = 10, splitLast:Boolean = true):String
+		private function splitWithSpaces(string:String, shift:int = 0, splitLast:Boolean = true):String
 		{
 			var result:String = "";
 			
 			var stringLength:int = string.length;
 			
-			if(stringLength <= 10) {
+			if(stringLength <= 10 - shift) {
 				result += string;
 			} else {
 				var start:int = 0;
-				var end:int = firstSplitShift;
+				var end:int = 10 - shift;
 				while(start < stringLength) {
 					result += string.substring(start, end);
 					
-					start += (start == 0) ? firstSplitShift : 10;
-					end = start + 10;
+					start = end;
+					end += 10;
 					
-					if(start < stringLength) {
-						if(end <= stringLength) {
-							result += " ";
-						} else {
-							if(splitLast) {
-								result += " ";
-							}
-						}
+					if(end <= contentHolder.bpPerRow) {
+						result += " ";
 					}
 				}
 			}

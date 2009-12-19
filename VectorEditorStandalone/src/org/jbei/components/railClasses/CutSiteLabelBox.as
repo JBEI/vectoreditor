@@ -1,6 +1,8 @@
 package org.jbei.components.railClasses
 {
-	import flash.text.TextFormat;
+	import flash.display.BitmapData;
+	import flash.display.Graphics;
+	import flash.geom.Matrix;
 	
 	import org.jbei.bio.data.CutSite;
 	import org.jbei.bio.data.IAnnotation;
@@ -8,10 +10,7 @@ package org.jbei.components.railClasses
 
 	public class CutSiteLabelBox extends LabelBox
 	{
-		private const FONT_FACE:String = "Tahoma";
-		private const FONT_SIZE:int = 10;
-		private const FONT_COLOR:int = 0x888888;
-		private const SINGLE_CUTTER_FONT_COLOR:int = 0xE57676;
+		private var contentHolder:ContentHolder;
 		
 		private var cutSite:CutSite;
 		
@@ -19,6 +18,8 @@ package org.jbei.components.railClasses
 		public function CutSiteLabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
 		{
 			super(contentHolder, relatedAnnotation);
+			
+			this.contentHolder = contentHolder;
 			
 			cutSite = relatedAnnotation as CutSite;
 		}
@@ -29,15 +30,19 @@ package org.jbei.components.railClasses
 			return cutSite.label + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.forward ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 		
-		protected override function textFormat():TextFormat
+		protected override function render():void
 		{
-			var fontColor:int = FONT_COLOR;
+			var g:Graphics = graphics;
+			g.clear();
 			
-			if(cutSite.numCuts == 1) {
-				fontColor = SINGLE_CUTTER_FONT_COLOR;
-			}
+			var cutSiteBitMap:BitmapData = (cutSite.numCuts == 1) ? contentHolder.singleCutterCutSiteTextRenderer.textToBitmap(cutSite.label) : contentHolder.cutSiteTextRenderer.textToBitmap(cutSite.label);
 			
-			return new TextFormat(FONT_FACE, FONT_SIZE, fontColor);
+			_totalWidth = cutSiteBitMap.width;
+			_totalHeight = cutSiteBitMap.height;
+			
+			g.beginBitmapFill(cutSiteBitMap);
+			g.drawRect(0, 0, cutSiteBitMap.width, cutSiteBitMap.height);
+			g.endFill();
 		}
 		
 		protected override function label():String

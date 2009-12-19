@@ -10,8 +10,6 @@
 			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
 			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
-			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
-			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
 			public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
 			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
 			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
@@ -65,10 +63,6 @@
 			[Bindable]
 			private var cutDisabledIcon:Class;
 			
-			[Embed(source='../assets/icons/goto.png')]
-			[Bindable]
-			private var gotoIcon:Class;
-			
 			[Embed(source='../assets/icons/find.png')]
 			[Bindable]
 			private var findIcon:Class;
@@ -80,6 +74,22 @@
 			[Embed(source='../assets/icons/safe_editing.png')]
 			[Bindable]
 			private var safeEditingIcon:Class;
+			
+			[Embed(source='../assets/icons/restriction_enzymes.png')]
+			[Bindable]
+			private var restrictionEnzymesIcon:Class;
+			
+			[Embed(source='../assets/icons/features.png')]
+			[Bindable]
+			private var featuresIcon:Class;
+			
+			[Embed(source='../assets/icons/cut_sites.png')]
+			[Bindable]
+			private var cutSitesIcon:Class;
+			
+			[Embed(source='../assets/icons/orf.png')]
+			[Bindable]
+			private var orfIcon:Class;
 			
 			// Public Methods
 			public function updateUndoButtonState(active:Boolean):void
@@ -136,7 +146,8 @@
 		toggleOnClick="false" 
 		itemClick="onChangeViewButtonClick(event)" 
 		backgroundColor="#FFFFFF" 
-		buttonWidth="25" 
+		buttonWidth="32" 
+		buttonHeight="32"
 		paddingLeft="0" 
 		paddingRight="0" 
 		buttonStyleName="haloSilver"
@@ -148,24 +159,22 @@
         </mx:dataProvider>
     </mx:ToggleButtonBar>
     <mx:Spacer width="5" />
-    <mx:Button width="24" id="copyButton" icon="{ copyDisabledIcon }" enabled="false" toolTip="Copy" click="{ dispatchEvent(new Event(COPY)) }" />
-    <mx:Button width="24" id="cutButton" icon="{ cutDisabledIcon }" enabled="false" toolTip="Cut" click="{ dispatchEvent(new Event(CUT)) }" />
-    <mx:Button width="24" id="pasteButton" icon="{ pasteIcon }" enabled="true" toolTip="Paste" click="{ dispatchEvent(new Event(PASTE)) }" />
+    <mx:Button width="32" height="32" id="copyButton" icon="{ copyDisabledIcon }" enabled="false" toolTip="Copy" click="{ dispatchEvent(new Event(COPY)) }" />
+    <mx:Button width="32" height="32" id="cutButton" icon="{ cutDisabledIcon }" enabled="false" toolTip="Cut" click="{ dispatchEvent(new Event(CUT)) }" />
+    <mx:Button width="32" height="32" id="pasteButton" icon="{ pasteIcon }" enabled="true" toolTip="Paste" click="{ dispatchEvent(new Event(PASTE)) }" />
     <mx:Spacer width="5" />
-    <mx:Button width="24" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" click="{ dispatchEvent(new Event(UNDO)) }" />
-    <mx:Button width="24" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" click="{ dispatchEvent(new Event(REDO)) }" />
+    <mx:Button width="32" height="32" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" click="{ dispatchEvent(new Event(UNDO)) }" />
+    <mx:Button width="32" height="32" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" click="{ dispatchEvent(new Event(REDO)) }" />
     <mx:Spacer width="5" />
-	<mx:Button width="24" id="safeEditingButton" icon="{ safeEditingIcon }" toolTip="Safe Editing" toggle="true" selected="true" change="dispatchEvent(new Event(SAFE_EDITING_CHANGED));"/>
+	<mx:Button width="32" height="32" id="safeEditingButton" icon="{ safeEditingIcon }" toolTip="Safe Editing" toggle="true" selected="true" change="dispatchEvent(new Event(SAFE_EDITING_CHANGED));"/>
 	<mx:Spacer width="5" />
-	<mx:Button width="24" id="showFindPanelButton" icon="{ findIcon }" toolTip="Find ..." click="dispatchEvent(new Event(SHOW_FIND_PANEL));"/>
-	<mx:Button width="24" id="showGoToDialogButton" icon="{ gotoIcon }" toolTip="Go To ..." click="dispatchEvent(new Event(SHOW_GOTO_DIALOG));"/>
+	<mx:Button width="32" height="32" id="showFindPanelButton" icon="{ findIcon }" toolTip="Find ..." click="dispatchEvent(new Event(SHOW_FIND_PANEL));"/>
 	<mx:Spacer width="5" />
-	<mx:Button width="24" id="showFeaturesButton" label="F" toolTip="Show Features" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
-    <mx:Button width="24" id="showCutSitesButton" label="C" toolTip="Show Cut Sites" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_CUTSITES_STATE_CHANGED));"/>
-    <mx:Button width="24" id="showORFsButton" label="O" toolTip="Show ORF" toggle="true" labelPlacement="left" paddingLeft="2" paddingRight="3" selected="false" change="dispatchEvent(new Event(SHOW_ORFS_STATE_CHANGED));"/>
+	<mx:Button width="32" height="32" id="showFeaturesButton" icon="{ featuresIcon }" toolTip="Show Features" toggle="true" labelPlacement="left" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
+    <mx:Button width="32" height="32" id="showCutSitesButton" icon="{ cutSitesIcon }" toolTip="Show Cut Sites" toggle="true" labelPlacement="left" selected="false" change="dispatchEvent(new Event(SHOW_CUTSITES_STATE_CHANGED));"/>
+    <mx:Button width="32" height="32" id="showORFsButton" icon="{ orfIcon }" toolTip="Show ORF" toggle="true" labelPlacement="left" selected="false" change="dispatchEvent(new Event(SHOW_ORFS_STATE_CHANGED));"/>
     <mx:Spacer width="5" />
-    <mx:Button width="25" id="showRestrictionEnzymesManagerDialogButton" label="RE" toolTip="Manage Restriction Enzymes" click="dispatchEvent(new Event(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG));" labelPlacement="left" paddingLeft="2" paddingRight="3" />
-    <mx:Button width="25" id="showCreateFeatureDialogButton" label="CF" toolTip="Create New Feature" click="dispatchEvent(new Event(SHOW_CREATE_NEW_FEATURE_DIALOG));" labelPlacement="left" paddingLeft="2" paddingRight="3" />
+    <mx:Button width="32" height="32" id="showRestrictionEnzymesManagerDialogButton" icon="{ restrictionEnzymesIcon }" toolTip="Manage Restriction Enzymes" click="dispatchEvent(new Event(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG));" labelPlacement="left" paddingLeft="2" paddingRight="3" />
 	<mx:Spacer width="5" />
-	<mx:Button width="24" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" click="dispatchEvent(new Event(SHOW_PROPERTIES_DIALOG));" />
+	<mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" click="dispatchEvent(new Event(SHOW_PROPERTIES_DIALOG));" />
 </mx:ApplicationControlBar>

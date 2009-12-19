@@ -18,6 +18,7 @@ package org.jbei.registry.view
 	import org.jbei.components.common.CommonEvent;
 	import org.jbei.components.common.EditingEvent;
 	import org.jbei.components.common.SelectionEvent;
+	import org.jbei.lib.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.ORFMapper;
@@ -253,6 +254,11 @@ package org.jbei.registry.view
 					ApplicationFacade.getInstance().orfMapper = orfMapper;
 					ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 					
+					featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
+					
+					var aaMapper:AAMapper = new AAMapper(featuredSequence);
+					sequenceAnnotator.aaMapper = aaMapper;
+					
 					sequenceAnnotator.featuredSequence = featuredSequence;
 					pie.featuredSequence = featuredSequence;
 					rail.featuredSequence = featuredSequence;
@@ -331,11 +337,18 @@ package org.jbei.registry.view
 					break;
 				case ApplicationFacade.USER_PREFERENCES_CHANGED:
  					var userPreferences:UserPreferences = (ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy).userPreferences;
+					
 					pie.orfMapper.minORFSize = userPreferences.orfMinimumLength;
+					pie.restrictionEnzymeMapper.maxRestrictionEnzymeCuts = userPreferences.maxResitrictionEnzymesCuts;
+					pie.labelFontSize = userPreferences.labelsFontSize;
+					
+					rail.labelFontSize = userPreferences.labelsFontSize;
 					
 					sequenceAnnotator.orfMapper.minORFSize = userPreferences.orfMinimumLength;
 					sequenceAnnotator.sequenceFontSize = userPreferences.sequenceFontSize;
 					sequenceAnnotator.bpPerRow = userPreferences.bpPerRow;
+					sequenceAnnotator.floatingWidth = userPreferences.bpPerRow == -1;
+					sequenceAnnotator.labelFontSize = userPreferences.labelsFontSize;
 					
 					break;
 				case ApplicationFacade.USER_RESTRICTION_ENZYMES_CHANGED:
@@ -348,6 +361,7 @@ package org.jbei.registry.view
 					
 					sequenceAnnotator.restrictionEnzymeMapper = reMapper1;
 					pie.restrictionEnzymeMapper = reMapper1;
+					rail.restrictionEnzymeMapper = reMapper1;
 					
 					break;
 				case ApplicationFacade.COPY:
@@ -380,10 +394,12 @@ package org.jbei.registry.view
 					
 					break;
 				case ApplicationFacade.FIND:
-					var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, sequenceAnnotator.caretPosition);
+					var findData:Array = notification.getBody() as Array;
+					
+					var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, findData[0] as String, findData[1] as String, findData[2] as String, sequenceAnnotator.caretPosition);
 					
 					if(!findSegment) {
-						findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, 0);
+						findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, findData[0] as String, findData[1] as String, findData[2] as String, 0);
 					}
 					
 					if(findSegment) {
@@ -406,10 +422,11 @@ package org.jbei.registry.view
 					
 					break;
 				case ApplicationFacade.FIND_NEXT:
-					var findNextSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, sequenceAnnotator.caretPosition + 1);
+					var findNextData:Array = notification.getBody() as Array;
+					var findNextSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, (findNextData[0] as String), (findNextData[1] as String), (findNextData[2] as String), sequenceAnnotator.caretPosition + 1);
 					
 					if(!findNextSegment) {
-						findNextSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String, 0);
+						findNextSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, (findNextData[0] as String), (findNextData[1] as String), (findNextData[2] as String), 0);
 					}
 					
 					if(findNextSegment) {
@@ -436,7 +453,8 @@ package org.jbei.registry.view
 					
 					break;
 				case ApplicationFacade.HIGHLIGHT:
-					var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, notification.getBody() as String, notification.getType() as String);
+					var highlightFindData:Array = notification.getBody() as Array;
+					var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, highlightFindData[0] as String, highlightFindData[1] as String, highlightFindData[2] as String);
 					
 					sequenceAnnotator.highlights = segments;
 					
@@ -509,8 +527,6 @@ package org.jbei.registry.view
 				
 				featuredSequence.addFeatures(features, true);
 			}
-			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
 			
 			return featuredSequence;
 		}

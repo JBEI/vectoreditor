@@ -4,9 +4,11 @@ package org.jbei.registry.model.vo
 	[RemoteClass(alias="org.jbei.registry.services.blazeds.VectorEditor.vo.UserPreferences")]
 	public class UserPreferences
 	{
-		private var _bpPerRow:int = 60;
+		private var _bpPerRow:int = -1;
 		private var _sequenceFontSize:int = 11;
 		private var _orfMinimumLength:int = 300;
+		private var _labelsFontSize:int = 10;
+		private var _maxResitrictionEnzymesCuts:int = -1;
 		
 		// Constructor
 		public function UserPreferences()
@@ -42,6 +44,26 @@ package org.jbei.registry.model.vo
 		public function set orfMinimumLength(value:int):void
 		{
 			_orfMinimumLength = value;
+		}
+		
+		public function get labelsFontSize():int
+		{
+			return _labelsFontSize;
+		}
+		
+		public function set labelsFontSize(value:int):void
+		{
+			_labelsFontSize = value;
+		}
+		
+		public function get maxResitrictionEnzymesCuts():int
+		{
+			return _maxResitrictionEnzymesCuts;
+		}
+		
+		public function set maxResitrictionEnzymesCuts(value:int):void
+		{
+			_maxResitrictionEnzymesCuts = value;
 		}
 	}
 }

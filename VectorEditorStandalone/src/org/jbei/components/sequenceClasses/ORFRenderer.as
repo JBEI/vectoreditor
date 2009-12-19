@@ -155,7 +155,7 @@ package org.jbei.components.sequenceClasses
 				
 				if(! orf.isComplement && endBP == orf.end) {
 					var codonEndPoint1:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
-					var codonEndPointX1:Number = codonEndPoint1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
+					var codonEndPointX1:Number = codonEndPoint1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth + 3;
 					var codonEndPointY1:Number = codonEndPoint1.y - upShift;
 					
 					g.beginFill(color);
@@ -166,7 +166,7 @@ package org.jbei.components.sequenceClasses
 					g.endFill();
 				} else if(orf.isComplement && startBP == orf.start) {
 					var codonEndPoint2:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
-					var codonEndPointX2:Number = codonEndPoint2.x;
+					var codonEndPointX2:Number = codonEndPoint2.x + 3;
 					var codonEndPointY2:Number = codonEndPoint2.y - upShift;
 					
 					g.beginFill(color);

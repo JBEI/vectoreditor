@@ -10,6 +10,7 @@ package org.jbei.components.railClasses
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.text.TextFormat;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import flash.ui.Keyboard;
@@ -33,6 +34,7 @@ package org.jbei.components.railClasses
 	import org.jbei.components.common.IContentHolder;
 	import org.jbei.components.common.LabelBox;
 	import org.jbei.components.common.SelectionEvent;
+	import org.jbei.components.common.TextRenderer;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.ORFMapper;
 	import org.jbei.lib.RestrictionEnzymeMapper;
@@ -47,6 +49,10 @@ package org.jbei.components.railClasses
 		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
 		private const BOTTOM_PADDING:int = 55;
 		private const LABELS_RAIL_GAP:Number = 20;
+		private const LABEL_FONT_FACE:String = "Tahoma";
+		private const FEATURE_LABEL_FONT_COLOR:int = 0x000000;
+		private const CUTSITES_LABEL_FONT_COLOR:int = 0x888888;
+		private const SINGLE_CUTTER_LABEL_FONT_COLOR:int = 0xE57676;
 		
 		private var rail:Rail;
 		private var railBox:RailBox;
@@ -59,6 +65,10 @@ package org.jbei.components.railClasses
 		private var editFeatureContextMenuItem:ContextMenuItem;
 		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
+		
+		private var _cutSiteTextRenderer:TextRenderer;
+		private var _singleCutterCutSiteTextRenderer:TextRenderer;
+		private var _featureTextRenderer:TextRenderer;
 		
 		private var _horizontalCenter:Number;
 		private var _featuredSequence:FeaturedSequence;
@@ -75,6 +85,7 @@ package org.jbei.components.railClasses
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
 		private var _safeEditing:Boolean = true;
+		private var _labelFontSize:int = 10;
 		
 		private var _railMetrics:Rectangle;
 		private var parentWidth:Number = 0;
@@ -111,6 +122,7 @@ package org.jbei.components.railClasses
 		private var showFeatureLabelsChanged:Boolean = false;
 		private var showCutSiteLabelsChanged:Boolean = false;
 		private var showORFsChanged:Boolean = false;
+		private var labelFontSizeChanged:Boolean = false;
 		
 		private var featureAlignmentMap:Dictionary;
 		private var orfAlignmentMap:Dictionary;
@@ -292,6 +304,22 @@ package org.jbei.components.railClasses
 			_safeEditing = value;
 		}
 		
+		public function get labelFontSize():int
+		{
+			return _labelFontSize;
+		}
+		
+		public function set labelFontSize(value:int):void
+		{
+			if (value != labelFontSize) {
+				_labelFontSize = value;
+				
+				labelFontSizeChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 		public function get railMetrics():Rectangle
 		{
 			return _railMetrics;
@@ -325,6 +353,21 @@ package org.jbei.components.railClasses
 		public function get bpWidth():Number
 		{
 			return _bpWidth;
+		}
+		
+		public function get cutSiteTextRenderer():TextRenderer
+		{
+			return _cutSiteTextRenderer;
+		}
+		
+		public function get singleCutterCutSiteTextRenderer():TextRenderer
+		{
+			return _singleCutterCutSiteTextRenderer;
+		}
+		
+		public function get featureTextRenderer():TextRenderer
+		{
+			return _featureTextRenderer;
 		}
 		
 		// Public Methods
@@ -396,6 +439,8 @@ package org.jbei.components.railClasses
 			createSelectionLayer();
 			
 			createCaret();
+			
+			createTextRenderers();
 		}
 		
 		protected override function commitProperties():void
@@ -416,6 +461,23 @@ package org.jbei.components.railClasses
 				restrictionEnzymeMapperChanged = false;
 				
 				needsMeasurement = true;
+				
+				invalidateDisplayList();
+			}
+			
+			if(labelFontSizeChanged) {
+				labelFontSizeChanged = false;
+				
+				needsMeasurement = true;
+				
+				var cutSiteTextFormat:TextFormat = new TextFormat(_cutSiteTextRenderer.textFormat.font, _labelFontSize, _cutSiteTextRenderer.textFormat.color);
+				var singleCutterCutSiteTextFormat:TextFormat = new TextFormat(_singleCutterCutSiteTextRenderer.textFormat.font, _labelFontSize, _singleCutterCutSiteTextRenderer.textFormat.color);
+				var featureTextFormat:TextFormat = new TextFormat(_cutSiteTextRenderer.textFormat.font, _labelFontSize, _cutSiteTextRenderer.textFormat.color);
+				
+				_cutSiteTextRenderer.textFormat = cutSiteTextFormat;
+				_singleCutterCutSiteTextRenderer.textFormat = singleCutterCutSiteTextFormat;
+				
+				clearLabelTextRenderers();
 				
 				invalidateDisplayList();
 			}
@@ -640,6 +702,30 @@ package org.jbei.components.railClasses
 				
 				addChild(highlightLayer);
 			}
+		}
+		
+		private function createTextRenderers():void
+		{
+			_cutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, CUTSITES_LABEL_FONT_COLOR));
+			_cutSiteTextRenderer.includeInLayout = false;
+			_cutSiteTextRenderer.visible = false;
+			
+			_singleCutterCutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, SINGLE_CUTTER_LABEL_FONT_COLOR));
+			_singleCutterCutSiteTextRenderer.includeInLayout = false;
+			_singleCutterCutSiteTextRenderer.visible = false;
+			
+			_featureTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize + 1, FEATURE_LABEL_FONT_COLOR));
+			_featureTextRenderer.includeInLayout = false;
+			_featureTextRenderer.visible = false;
+			
+			addChild(_cutSiteTextRenderer);
+			addChild(_singleCutterCutSiteTextRenderer);
+			addChild(_featureTextRenderer);
+			
+			// Load dummy renderers to calculate width and height
+			_cutSiteTextRenderer.textToBitmap("EcoRI");
+			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
+			_featureTextRenderer.textToBitmap("EcoRI");
 		}
 		
 		private function disableSequence():void
@@ -1427,6 +1513,18 @@ package org.jbei.components.railClasses
 		private function doInsertFeaturedSequence(currentFeaturedSequence:FeaturedSequence, position:int):void
 		{
 			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
+		}
+		
+		private function clearLabelTextRenderers():void
+		{
+			_cutSiteTextRenderer.clearCache();
+			_singleCutterCutSiteTextRenderer.clearCache();
+			_featureTextRenderer.clearCache();
+			
+			// Load dummy renderers to calculate width and height
+			_cutSiteTextRenderer.textToBitmap("EcoRI");
+			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
+			_featureTextRenderer.textToBitmap("EcoRI");
 		}
 	}
 }

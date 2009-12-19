@@ -2,8 +2,6 @@ package org.jbei.components.common
 {
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormat;
 	
 	import mx.controls.ToolTip;
 	import mx.core.FlexTextField;
@@ -15,13 +13,13 @@ package org.jbei.components.common
 	public class LabelBox extends UIComponent
 	{
 		private var needsMeasurement:Boolean = true;
-		private var textField:FlexTextField;
 		private var contentHolder:IContentHolder;
 		private var tip:ToolTip;
 		private var _relatedAnnotation:IAnnotation;
 		private var _includeInView:Boolean = true;
-		private var _totalWidth:Number;
-		private var _totalHeight:Number;
+		
+		protected var _totalWidth:Number;
+		protected var _totalHeight:Number;
 		
 		// Constructor
 		public function LabelBox(contentHolder:IContentHolder, relatedAnnotation:IAnnotation)
@@ -68,33 +66,6 @@ package org.jbei.components.common
 		}
 		
 		// Protected Methods
-		protected override function createChildren():void
-		{
-			super.createChildren();
-			
-	        createTextBox();
-	 	}
-		
-		protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
-		{
-			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			
-			if(needsMeasurement) {
-				needsMeasurement = false;
-				
-				textField.defaultTextFormat = textFormat();
-				textField.text = label();
-				
-				_totalWidth = textField.width;
-				_totalHeight = textField.height;
-			}
-		}
-		
-		protected function textFormat():TextFormat
-		{
-			return new TextFormat("Tahoma", 10, 0x000000);
-		}
-		
 		protected function label():String
 		{
 			// Abstract Method
@@ -105,6 +76,22 @@ package org.jbei.components.common
 		{
 			// Abstract Method
 			return "";
+		}
+		
+		protected function render():void
+		{
+			// Abstract Method
+		}
+		
+		protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			
+			if(needsMeasurement) {
+				needsMeasurement = false;
+				
+				render();
+			}
 		}
 		
 		// Private Methods
@@ -123,19 +110,6 @@ package org.jbei.components.common
 		private function onRollOut(event:MouseEvent):void
 		{
 			ToolTipManager.destroyToolTip(tip);
-		}
-		
-		private function createTextBox():void
-		{
-			if(!textField) {
-				textField = new FlexTextField();
-				textField.autoSize = TextFieldAutoSize.LEFT;
-				textField.selectable = false;
-				textField.x = 0;
-				textField.y = 0;
-				
-				addChild(textField);
-			}
 		}
 	}
 }

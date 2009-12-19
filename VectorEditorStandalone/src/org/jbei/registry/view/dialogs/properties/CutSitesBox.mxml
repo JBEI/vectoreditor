@@ -11,6 +11,10 @@
 			import org.jbei.ApplicationFacade;
 			import org.jbei.bio.data.CutSite;
 			import org.jbei.lib.RestrictionEnzymeMapper;
+			import org.jbei.ui.dialogs.SimpleDialog;
+			
+			[Bindable]
+			public var parentDialog:SimpleDialog;
 			
 			[Embed(source='../../assets/icons/expand.png')]
 			[Bindable]
@@ -24,8 +28,10 @@
 			{
 				var reMapper:RestrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
 				
-				for (var restrictionEnzyme:Object in reMapper.cutSitesMap) {
-					var cuts:Array = reMapper.cutSitesMap[restrictionEnzyme] as Array;					
+				maxCutOffsLabel.htmlText = "Max Cut Offs: <b>" + ((reMapper.maxRestrictionEnzymeCuts == -1) ? "unlimited" : String(reMapper.maxRestrictionEnzymeCuts)) + "</b>";
+				
+				for (var restrictionEnzyme:Object in reMapper.allCutSitesMap) {
+					var cuts:Array = reMapper.allCutSitesMap[restrictionEnzyme] as Array;					
 					
 					if(cuts.length > 0) {
 						for (var i:int = 0; i < cuts.length; i++) {
@@ -36,7 +42,7 @@
 									name : restrictionEnzyme.name, 
 									nCuts : cutSite.numCuts, 
 									cutSite : cutSite, 
-									position : (cutSite.start + " - " + cutSite.end), 
+									position : ((cutSite.start + 1) + " - " + (cutSite.end + 1)), 
 									strand : (cutSite.forward ? "+" : "-")
 								}
 							);
@@ -53,6 +59,20 @@
 						);
 					} 
 				}
+			}
+			
+			private function onRestrictionEnzymesManagerLinkButtonClick(event:MouseEvent):void
+			{
+				parentDialog.close();
+				
+				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
+			}
+			
+			private function onPreferencesLinkButtonClick(event:MouseEvent):void
+			{
+				parentDialog.close();
+				
+				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_PREFERENCES_DIALOG);
 			}
 		]]>
 	</mx:Script>
@@ -77,10 +97,22 @@
 		</mx:dataProvider>
 		
 		<mx:columns>
-			<mx:AdvancedDataGridColumn dataField="name" headerText="Name"/>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Name" />
+			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100"/>
 			<mx:AdvancedDataGridColumn dataField="position" headerText="Position" width="100"/>
 			<mx:AdvancedDataGridColumn dataField="strand" headerText="Strand" width="100"/>
-			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
+	
+	<mx:VBox width="100%">
+		<mx:Label id="maxCutOffsLabel" />
+		
+		<mx:HBox width="100%" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0" horizontalGap="0">
+			<mx:Label text="Adjust Max Cut Offs in" />
+			<mx:LinkButton id="preferencesLinkButton" label="Preferences" click="onPreferencesLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
+		</mx:HBox>
+		
+		<mx:LinkButton id="restrictionEnzymesManagerLinkButton" label="Manager Restriction Enzymes" click="onRestrictionEnzymesManagerLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
+	</mx:VBox>
+	
 </mx:Box>

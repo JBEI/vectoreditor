@@ -16,6 +16,8 @@ package org.jbei.lib
 		private var dirty:Boolean = true;
 		private var _cutSites:ArrayCollection /* of CutSite */;
 		private var _cutSitesMap:Dictionary /* [RestrictionEnzyme] = Array(CutSite) */;
+		private var _allCutSites:ArrayCollection /* of CutSite */;
+		private var _allCutSitesMap:Dictionary /* [RestrictionEnzyme] = Array(CutSite) */;
 		private var _maxRestrictionEnzymeCuts:int = -1;
 		private var _restrictionEnzymeGroup:RestrictionEnzymeGroup;
 		private var _featuredSequence:FeaturedSequence;
@@ -31,6 +33,21 @@ package org.jbei.lib
 		}
 		
 		// Properties
+		public function get allCutSites():ArrayCollection /* of CutSite */
+		{
+			if(dirty) {
+				recalculate();
+				
+				CONFIG::debugging {
+					trace("RE MAP REQUESTED AND RECALCULATED!");
+				}
+				
+				dirty = false;
+			}
+			
+			return _allCutSites;
+		}
+		
 		public function get cutSites():ArrayCollection /* of CutSite */
 		{
 			if(dirty) {
@@ -44,6 +61,17 @@ package org.jbei.lib
 			}
 			
 			return _cutSites;
+		}
+		
+		public function get allCutSitesMap():Dictionary /* [RestrictionEnzyme] = Array(CutSite) */
+		{
+			if(dirty) {
+				recalculate();
+				
+				dirty = false;
+			}
+			
+			return _allCutSitesMap;
 		}
 		
 		public function get cutSitesMap():Dictionary /* [RestrictionEnzyme] = Array(CutSite) */
@@ -150,18 +178,20 @@ package org.jbei.lib
 		{
 			_cutSites = new ArrayCollection();
 			_cutSitesMap = new Dictionary();
+			_allCutSites = new ArrayCollection();
+			_allCutSitesMap = new Dictionary();
 			
 			for(var restrictionEnzyme:Object in normalCutSites) {
 				var tmpArray1:Array = normalCutSites[restrictionEnzyme];
 				var tmpArray2:Array = reverseCutSites[restrictionEnzyme];
 				
-				_cutSitesMap[restrictionEnzyme] = new Array();
+				_allCutSitesMap[restrictionEnzyme] = new Array();
 				
 				var numCuts:int = 0;
-				var csMap:Array = _cutSitesMap[restrictionEnzyme];
+				var csMap:Array = _allCutSitesMap[restrictionEnzyme];
 				
 				for(var k:int = 0; k < tmpArray1.length; k++) {
-					_cutSites.addItem(tmpArray1[k]);
+					_allCutSites.addItem(tmpArray1[k]);
 					csMap.push(tmpArray1[k]);
 					numCuts++;
 				}
@@ -180,7 +210,7 @@ package org.jbei.lib
 					}
 					
 					if(! skip) {
-						_cutSites.addItem(cutSite2);
+						_allCutSites.addItem(cutSite2);
 						csMap.push(cutSite2);
 						numCuts++;
 					}
@@ -189,6 +219,29 @@ package org.jbei.lib
 				for(var l:int = 0; l < csMap.length; l++) {
 					(csMap[l] as CutSite).numCuts = numCuts;
 				}
+			}
+			
+			if(_maxRestrictionEnzymeCuts > 0 && _allCutSites.length > 0) {
+				for(var c1:int = 0; c1 < _allCutSites.length; c1++) {
+					if((_allCutSites[c1] as CutSite).numCuts <= maxRestrictionEnzymeCuts) {
+						_cutSites.addItem(_allCutSites[c1]);
+					}
+				}
+				
+				for(var re:Object in _allCutSitesMap) {
+					var cuts:Array = _allCutSitesMap[re] as Array;
+					
+					_cutSitesMap[re] = new Array();
+					
+					if(cuts.length > 0 && (cuts[0] as CutSite).numCuts <= maxRestrictionEnzymeCuts) {
+						for(var c2:int = 0; c2 < cuts.length; c2++) {
+							(_cutSitesMap[re] as Array).push(cuts[c2]);
+						}
+					}
+				}
+			} else {
+				_cutSites = _allCutSites;
+				_cutSitesMap = _allCutSitesMap;
 			}
 		}
 		

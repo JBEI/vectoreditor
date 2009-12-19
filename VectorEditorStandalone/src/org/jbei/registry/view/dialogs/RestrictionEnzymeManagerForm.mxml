@@ -11,6 +11,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.collections.Sort;
 			import mx.collections.SortField;
+			import mx.controls.Alert;
 			
 			import org.jbei.ApplicationFacade;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
@@ -142,6 +143,11 @@
 			
 			private function onAddSelectedToGroupButtonClick(event:MouseEvent):void
 			{
+				if(!userGroupsComboBox.selectedItem) {
+					Alert.show("Create group first");
+					return;
+				}
+				
 				if(systemREList.selectedItems.length == 0 || !userGroupsComboBox.selectedItem) { return; }
 				
 				var currentRestrictionEnzymesGroup:RestrictionEnzymeGroup = userGroupsComboBox.selectedItem as RestrictionEnzymeGroup;
@@ -159,6 +165,11 @@
 			
 			private function onAddAllToGroupButtonClick(event:MouseEvent):void
 			{
+				if(!userGroupsComboBox.selectedItem) {
+					Alert.show("Create or Select group first");
+					return;
+				}
+				
 				if(!userGroupsComboBox.selectedItem) { return; }
 				
 				var currentRestrictionEnzymesGroup:RestrictionEnzymeGroup = userGroupsComboBox.selectedItem as RestrictionEnzymeGroup;

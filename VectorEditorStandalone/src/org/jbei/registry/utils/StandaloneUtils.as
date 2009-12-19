@@ -193,7 +193,7 @@ package org.jbei.registry.utils
 		public static function standaloneUserPreferences():UserPreferences
 		{
 			var userPreferences:UserPreferences = new UserPreferences();
-			userPreferences.bpPerRow = 60;
+			userPreferences.bpPerRow = -1;
 			userPreferences.orfMinimumLength = 300;
 			userPreferences.sequenceFontSize = 11;
 			

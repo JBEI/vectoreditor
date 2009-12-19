@@ -193,14 +193,14 @@ package org.jbei.components.sequenceClasses
 			var leftBpRectangle:Rectangle = contentHolder.bpMetricsByIndex(_start);
 			var startRow:Row = contentHolder.rowByBpIndex(_start);
 			
-			leftHandle.x = leftBpRectangle.x - leftHandle.actualWidth / 2 + 1;
+			leftHandle.x = leftBpRectangle.x - leftHandle.actualWidth / 2 + 2;
 			leftHandle.y = leftBpRectangle.y + startRow.sequenceMetrics.height / 2 - leftHandle.actualHeight / 2 + 2;
 			leftHandle.show();
 			
 			var rightBpRectangle:Rectangle = contentHolder.bpMetricsByIndex(_end - 1);
 			var endRow:Row = contentHolder.rowByBpIndex(_end - 1);
 			
-			rightHandle.x = rightBpRectangle.x + rightBpRectangle.width - rightHandle.actualWidth / 2 + 1;
+			rightHandle.x = rightBpRectangle.x + rightBpRectangle.width - rightHandle.actualWidth / 2 + 2;
 			rightHandle.y = rightBpRectangle.y + endRow.sequenceMetrics.height / 2 - rightHandle.actualHeight / 2 + 2;
 			rightHandle.show();
 	    }

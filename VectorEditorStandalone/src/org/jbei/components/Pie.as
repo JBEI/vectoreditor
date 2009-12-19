@@ -24,6 +24,9 @@ package org.jbei.components
 	
 	public class Pie extends ScrollControlBase implements IFocusManagerComponent
 	{
+		private const MIN_LABEL_FONT_SIZE:int = 9;
+		private const MAX_LABEL_FONT_SIZE:int = 14;
+		
 		private var contentHolder:ContentHolder;
 		
 		private var _featuredSequence:FeaturedSequence;
@@ -37,6 +40,7 @@ package org.jbei.components
 		private var _showFeatureLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
 		private var _safeEditing:Boolean = true;
+		private var _labelFontSize:int = 10;
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
@@ -49,6 +53,7 @@ package org.jbei.components
 		private var showORFsChanged:Boolean = false;
 		private var showFeatureLabelsChanged:Boolean = false;
 		private var showCutSiteLabelsChanged:Boolean = false;
+		private var labelFontSizeChanged:Boolean = false;
 		
 		// Constructor
 		public function Pie()
@@ -259,6 +264,25 @@ package org.jbei.components
 	    	return contentHolder.selectionEnd;
 	    }
 	    
+		public function get labelFontSize():int
+		{
+			return _labelFontSize;
+		}
+		
+		public function set labelFontSize(value:int):void
+		{
+			if(value < MIN_LABEL_FONT_SIZE) { value = MIN_LABEL_FONT_SIZE; }
+			if(value > MAX_LABEL_FONT_SIZE) { value = MAX_LABEL_FONT_SIZE; }
+			
+			if (value != labelFontSize) {
+				_labelFontSize = value;
+				
+				labelFontSizeChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 	    // Public Methods
 	    public function select(start:int, end:int):void
 	    {
@@ -376,6 +400,16 @@ package org.jbei.components
 	        	
 	        	invalidateDisplayList();
 	        }
+			
+			if(labelFontSizeChanged) {
+				labelFontSizeChanged = false;
+				
+				needsMeasurement = true;
+				
+				contentHolder.labelFontSize = _labelFontSize;
+				
+				invalidateDisplayList();
+			}
 		}
 		
 		protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void

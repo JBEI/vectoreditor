@@ -68,7 +68,7 @@ package org.jbei.bio.utils
 				
 				var codonSeq:String = sequence.charAt(index) + sequence.charAt(index + 1) + sequence.charAt(index + 2);
 				
-				if(!AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq) && !(codonSeq == 'ATG' || codonSeq == 'AUG' || codonSeq == 'TAA' || codonSeq == 'TAG' || codonSeq == 'TGA' || codonSeq == 'UAA' || codonSeq == 'UAG' || codonSeq == 'UGA')) { 
+				if(!AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq) && !AminoAcidsHelper.instance.isStartCodon(codonSeq)) { 
 					startIndex = -1;
 					endIndex = -1;
 					startCodonIndexes = null;
@@ -93,7 +93,7 @@ package org.jbei.bio.utils
 					continue;
 				}
 				
-				if(codonSeq == 'TAA' || codonSeq == 'TAG' || codonSeq == 'TGA' || codonSeq == 'UAA' || codonSeq == 'UAG' || codonSeq == 'UGA') {
+				if(AminoAcidsHelper.instance.isStopCodon(codonSeq)) {
 					if(startIndex != -1) {
 						endIndex = index + 2;
 						if(minimumORF == -1 || (Math.abs(endIndex - startIndex) + 1 >= minimumORF)) {

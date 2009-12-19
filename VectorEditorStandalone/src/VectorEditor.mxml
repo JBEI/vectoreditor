@@ -23,8 +23,8 @@
 			import org.jbei.utils.Logger;
 			import org.jbei.utils.LoggerEvent;
 			
-			private const DEBUG_ENTRY_ID:String = "12345678-12345678-12345678-123456781111";      
-			private const DEBUG_SERVER_URL:String = ""
+			private const DEBUG_ENTRY_ID:String = "12345678-12345678-12345678-123456781111";
+			private const DEBUG_SERVER_URL:String = "";
 			
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
 			

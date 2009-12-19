@@ -1,6 +1,7 @@
 package org.jbei.components.pieClasses
 {
-	import flash.text.TextFormat;
+	import flash.display.BitmapData;
+	import flash.display.Graphics;
 	
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.IAnnotation;
@@ -8,9 +9,7 @@ package org.jbei.components.pieClasses
 	
 	public class FeatureLabelBox extends LabelBox
 	{
-		private const FONT_FACE:String = "Tahoma";
-		private const FONT_SIZE:int = 11;
-		private const FONT_COLOR:int = 0x000000;
+		private var contentHolder:ContentHolder;
 		
 		private var _feature:Feature;
 		
@@ -18,6 +17,8 @@ package org.jbei.components.pieClasses
 		public function FeatureLabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
 		{
 			super(contentHolder, relatedAnnotation);
+			
+			this.contentHolder = contentHolder;
 			
 			_feature = relatedAnnotation as Feature;
 		}
@@ -34,9 +35,19 @@ package org.jbei.components.pieClasses
 			return _feature.type + (_feature.label == "" ? "" : (" - " + _feature.label)) + ": " + (_feature.start + 1) + ".." + (_feature.end + 1);
 		}
 		
-		protected override function textFormat():TextFormat
+		protected override function render():void
 		{
-			return new TextFormat(FONT_FACE, FONT_SIZE, FONT_COLOR);
+			var g:Graphics = graphics;
+			g.clear();
+			
+			var featureBitMap:BitmapData = contentHolder.featureTextRenderer.textToBitmap(feature.label);
+			
+			_totalWidth = featureBitMap.width;
+			_totalHeight = featureBitMap.height;
+			
+			g.beginBitmapFill(featureBitMap);
+			g.drawRect(0, 0, featureBitMap.width, featureBitMap.height);
+			g.endFill();
 		}
 		
 		protected override function label():String

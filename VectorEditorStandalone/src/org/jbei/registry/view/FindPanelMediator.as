@@ -68,17 +68,17 @@ package org.jbei.registry.view
 		// Private Methods
 		private function onFind(event:Event):void
 		{
-			sendNotification(ApplicationFacade.FIND, findPanel.findExpression, findPanel.findType);
+			sendNotification(ApplicationFacade.FIND, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onFindNext(event:Event):void
 		{
-			sendNotification(ApplicationFacade.FIND_NEXT, findPanel.findExpression, findPanel.findType);
+			sendNotification(ApplicationFacade.FIND_NEXT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onHighlight(event:Event):void
 		{
-			sendNotification(ApplicationFacade.HIGHLIGHT, findPanel.findExpression, findPanel.findType);
+			sendNotification(ApplicationFacade.HIGHLIGHT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onClearHighlight(event:Event):void

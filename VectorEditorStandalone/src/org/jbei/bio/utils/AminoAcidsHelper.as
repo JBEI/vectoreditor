@@ -40,6 +40,32 @@ package org.jbei.bio.utils
 			return aminoAcidsTable[basePairs];
 		}
 		
+		public function isStartCodon(basePairs:String):Boolean
+		{
+			basePairs = basePairs.toUpperCase();
+			
+			return (basePairs == 'ATG'
+				|| basePairs == 'AUG'
+				|| basePairs == 'TAA'
+				|| basePairs == 'TAG'
+				|| basePairs == 'TGA'
+				|| basePairs == 'UAA'
+				|| basePairs == 'UAG'
+				|| basePairs == 'UGA');
+		}
+		
+		public function isStopCodon(basePairs:String):Boolean
+		{
+			basePairs = basePairs.toUpperCase();
+			
+			return (basePairs == 'TAA'
+				|| basePairs == 'TAG'
+				|| basePairs == 'TGA'
+				|| basePairs == 'UAA'
+				|| basePairs == 'UAG'
+				|| basePairs == 'UGA');
+		}
+		
 		// Private Methods
 		private function createAminoAcidsTable():void
 		{

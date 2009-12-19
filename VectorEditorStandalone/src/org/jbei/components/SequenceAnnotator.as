@@ -13,9 +13,12 @@ package org.jbei.components
     
     import org.jbei.components.common.CommonEvent;
     import org.jbei.components.sequenceClasses.ContentHolder;
+    import org.jbei.lib.AAMapper;
+    import org.jbei.lib.AAMapperEvent;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.FeaturedSequenceEvent;
     import org.jbei.lib.ORFMapper;
+    import org.jbei.lib.ORFMapperEvent;
     import org.jbei.lib.RestrictionEnzymeMapper;
     
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
@@ -31,9 +34,12 @@ package org.jbei.components
 		private const LIVE_SCROLL_SPEED:Number = 10;
 		private const MIN_FONT_SIZE:int = 10;
 		private const MAX_FONT_SIZE:int = 18;
+		private const MIN_LABEL_FONT_SIZE:int = 9;
+		private const MAX_LABEL_FONT_SIZE:int = 14;
 		
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
+		private var _aaMapper:AAMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
 		
@@ -44,16 +50,20 @@ package org.jbei.components
 		private var _showFeatures:Boolean = true;
 		private var _bpPerRow:int = DEFAULT_BP_PER_ROW;
 		private var _sequenceFontSize:int = 11;
+		private var _labelFontSize:int = 10;
 		private var _showSpaceEvery10Bp:Boolean = true;
 		private var _showAminoAcids1:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
 		private var _showORFs:Boolean = false;
 		private var _safeEditing:Boolean = true;
+		private var _floatingWidth:Boolean = true;
 		
 		private var contentHeight:uint = 0;
+		private var floatingBpPerRow:int = DEFAULT_BP_PER_ROW;
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
+		private var aaMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
 		private var highlightsChanged:Boolean = false;
 		private var needsMeasurement:Boolean = false;
@@ -62,11 +72,13 @@ package org.jbei.components
 		private var showCutSitesChanged:Boolean = false;
 		private var showComplementaryChanged:Boolean = false;
 		private var sequenceFontSizeChanged:Boolean = false;
+		private var labelFontSizeChanged:Boolean = false;
 		private var showSpaceEvery10BpChanged:Boolean = false;
 		private var showAminoAcids1Changed:Boolean = false;
 		private var showAminoAcids3Changed:Boolean = false;
 		private var showORFsChanged:Boolean = false;
 		private var editingMode:Boolean = false;
+		private var floatingWidthChanged:Boolean = false;
 		
 		// Constructor
 		public function SequenceAnnotator()
@@ -132,12 +144,32 @@ package org.jbei.components
 		
 	    public function set orfMapper(value:ORFMapper):void
 	    {
-	    	_orfMapper = value;
-	    	
-	    	orfMapperChanged = true;
-	    	
-	    	invalidateProperties();
+			_orfMapper = value;
+			
+			orfMapperChanged = true;
+			if(_orfMapper) {
+				_orfMapper.addEventListener(ORFMapperEvent.ORF_MAPPER_UPDATED, onORFMapperUpdated);
+			}
+			
+			invalidateProperties();
 	    }
+		
+		public function get aaMapper():AAMapper
+		{
+			return _aaMapper;
+		}
+		
+		public function set aaMapper(value:AAMapper):void
+		{
+			_aaMapper = value;
+			
+			aaMapperChanged = true;
+			if(_aaMapper) {
+				_aaMapper.addEventListener(AAMapperEvent.AA_MAPPER_UPDATED, onAAMapperUpdated);
+			}
+			
+			invalidateProperties();
+		}
 		
 		public function get highlights():Array /* of Segment */
 		{
@@ -228,6 +260,10 @@ package org.jbei.components
 		    	_showSpaceEvery10Bp = value;
 		    	
 		    	showSpaceEvery10BpChanged = true;
+				
+				if(floatingWidth) {
+					calculateFloatingBpPerRow();
+				}
 		    	
 		    	invalidateProperties();
 	    	}
@@ -288,7 +324,6 @@ package org.jbei.components
 	    
 	    public function set sequenceFontSize(value:int):void
 	    {
-	    	// Don't allow to set some crazy font sizes
 	    	if(value < MIN_FONT_SIZE) { value = MIN_FONT_SIZE; }
 	    	if(value > MAX_FONT_SIZE) { value = MAX_FONT_SIZE; }
 	    	
@@ -301,6 +336,41 @@ package org.jbei.components
 	    	}
 	    }
 	    
+		public function get floatingWidth():Boolean
+		{
+			return _floatingWidth;
+		}
+		
+		public function set floatingWidth(value:Boolean):void
+		{
+			if (value != floatingWidth) {
+				_floatingWidth = value;
+				
+				floatingWidthChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
+		public function get labelFontSize():int
+		{
+			return _labelFontSize;
+		}
+		
+		public function set labelFontSize(value:int):void
+		{
+			if(value < MIN_LABEL_FONT_SIZE) { value = MIN_LABEL_FONT_SIZE; }
+			if(value > MAX_LABEL_FONT_SIZE) { value = MAX_LABEL_FONT_SIZE; }
+			
+			if (value != labelFontSize) {
+				_labelFontSize = value;
+				
+				labelFontSizeChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 	    public function get caretPosition():int
 	    {
 	    	return contentHolder.caretPosition;
@@ -404,6 +474,16 @@ package org.jbei.components
 				invalidateDisplayList();
 	        }
 	        
+			if(aaMapperChanged) {
+				aaMapperChanged = false;
+				
+				needsMeasurement = true;
+				
+				contentHolder.aaMapper = _aaMapper;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(orfMapperChanged) {
 	        	orfMapperChanged = false;
 				
@@ -452,7 +532,21 @@ package org.jbei.components
 	        	invalidateDisplayList();
 	        }
 	        
-	        if(bpPerRowChanged) {
+			if(floatingWidthChanged) {
+				floatingWidthChanged = false;
+				
+				needsMeasurement = true;
+				
+				if(floatingWidth) {
+					calculateFloatingBpPerRow();
+					
+					contentHolder.bpPerRow = floatingBpPerRow;
+				} else {
+					contentHolder.bpPerRow = _bpPerRow;
+				}
+			}
+			
+	        if(bpPerRowChanged && !floatingWidth) {
 	        	bpPerRowChanged = false;
 	        	
 				needsMeasurement = true;
@@ -472,6 +566,16 @@ package org.jbei.components
 	        	invalidateDisplayList();
 	        }
 	        
+			if(labelFontSizeChanged) {
+				labelFontSizeChanged = true;
+				
+				needsMeasurement = true;
+				
+				contentHolder.labelFontSize = _labelFontSize;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showSpaceEvery10BpChanged) {
 	        	showSpaceEvery10BpChanged = false;
 	        	
@@ -543,16 +647,6 @@ package org.jbei.components
 		}
 		
 		// Private Methods
-		private function adjustScrollBars():void
-		{
-			setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
-			
-			if(verticalScrollBar) {
-				verticalScrollBar.lineScrollSize = contentHolder.averageRowHeight;
-				verticalScrollBar.pageScrollSize = verticalScrollBar.lineScrollSize * 10;
-			}
-		}
-		
 	    private function onScroll(event:ScrollEvent):void
 	    {
 	    	if(event.direction == ScrollEventDirection.HORIZONTAL) {
@@ -579,26 +673,6 @@ package org.jbei.components
 	    	}
 		}
 	    
-		private function doScroll(delta:int, speed:uint = 3):void
-		{
-	        if (verticalScrollBar && verticalScrollBar.visible) {
-	            var scrollDirection:int = delta <= 0 ? 1 : -1;
-				
-	            var oldPosition:Number = verticalScrollPosition;
-	            verticalScrollPosition += speed * scrollDirection;
-				
-				if(verticalScrollPosition < 0) {
-					verticalScrollPosition = 0;
-				}
-				
-	            var scrollEvent:ScrollEvent = new ScrollEvent(ScrollEvent.SCROLL);
-	            scrollEvent.direction = ScrollEventDirection.VERTICAL;
-	            scrollEvent.position = verticalScrollPosition;
-	            scrollEvent.delta = verticalScrollPosition - oldPosition;
-	            dispatchEvent(scrollEvent);
-	        }
-		}
-		
 	    private function onResize(event:ResizeEvent):void
 	    {
 	    	needsMeasurement = true;
@@ -612,6 +686,10 @@ package org.jbei.components
 		    	contentHolder.y = 0;
 		    	contentHolder.x = 0;
 		    }
+			
+			if(floatingWidth) {
+				calculateFloatingBpPerRow();
+			}
 	    }
         
 	    private function onFocusIn(event:FocusEvent):void
@@ -631,11 +709,72 @@ package org.jbei.components
         	}
         }
         
+		private function onAAMapperUpdated(event:AAMapperEvent):void
+		{
+			aaMapperChanged = true;
+			needsMeasurement = true;
+			
+			invalidateDisplayList();
+		}
+		
+		private function onORFMapperUpdated(event:ORFMapperEvent):void
+		{
+			orfMapperChanged = true;
+			needsMeasurement = true;
+			
+			invalidateDisplayList();
+		}
+		
         private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
         {
 			featuredSequenceChanged = true;
 			
 			invalidateProperties();
         }
+		
+		private function adjustScrollBars():void
+		{
+			setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
+			
+			if(verticalScrollBar) {
+				verticalScrollBar.lineScrollSize = contentHolder.averageRowHeight;
+				verticalScrollBar.pageScrollSize = verticalScrollBar.lineScrollSize * 10;
+			}
+		}
+		
+		private function doScroll(delta:int, speed:uint = 3):void
+		{
+			if (verticalScrollBar && verticalScrollBar.visible) {
+				var scrollDirection:int = delta <= 0 ? 1 : -1;
+				
+				var oldPosition:Number = verticalScrollPosition;
+				verticalScrollPosition += speed * scrollDirection;
+				
+				if(verticalScrollPosition < 0) {
+					verticalScrollPosition = 0;
+				}
+				
+				var scrollEvent:ScrollEvent = new ScrollEvent(ScrollEvent.SCROLL);
+				scrollEvent.direction = ScrollEventDirection.VERTICAL;
+				scrollEvent.position = verticalScrollPosition;
+				scrollEvent.delta = verticalScrollPosition - oldPosition;
+				dispatchEvent(scrollEvent);
+			}
+		}
+		
+		private function calculateFloatingBpPerRow():void
+		{
+			if(contentHolder) {
+				var numberOfFittingBP:int = int((width - 30) / contentHolder.sequenceSymbolRenderer.textWidth) - 7; // -30 for scrollbar and extra space, -7 for index
+				
+				var extraSpaces:int = showSpaceEvery10Bp ? int(numberOfFittingBP / 10) : 0;
+				
+				floatingBpPerRow = (numberOfFittingBP < 20) ? 10 : (10 * int(Math.floor((numberOfFittingBP - extraSpaces) / 10)));
+			} else {
+				floatingBpPerRow = DEFAULT_BP_PER_ROW;
+			}
+			
+			contentHolder.bpPerRow = floatingBpPerRow;
+		}
 	}
 }

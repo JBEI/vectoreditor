@@ -8,6 +8,20 @@ package org.jbei.bio.utils
 		public static const SYMBOLS:Array         = new Array('A', 'T', 'G', 'C', 'U', 'Y', 'R', 'S', 'W', 'K', 'M', 'B', 'V', 'D', 'H', 'N');
 		public static const REVERSE_SYMBOLS:Array = new Array('T', 'A', 'C', 'G', 'A', 'R', 'Y', 'S', 'W', 'M', 'K', 'V', 'B', 'H', 'D', 'N');
 		
+		/*
+		K = G or T
+		M = A or C
+		R = A or G
+		Y = C or T
+		S = C or G
+		W = A or T
+		B = C or G or T
+		V = A or C or G
+		H = A or C or T
+		D = A or G or T
+		N = G or A or T or C
+		*/
+		
 		// Public Methods
 		public static function isValidDNA(sequence:String):Boolean
 		{

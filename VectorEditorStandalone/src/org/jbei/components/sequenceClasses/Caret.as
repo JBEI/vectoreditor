@@ -85,7 +85,7 @@ package org.jbei.components.sequenceClasses
 		{
 			var caretMetrics:Rectangle = contentHolder.bpMetricsByIndex(_position);
 			
-			this.x = caretMetrics.x;
+			this.x = caretMetrics.x + 1; // +1 to look pretty
 			this.y = caretMetrics.y + 2; // +2 to look pretty
 			
 			measuredWidth = CARET_WIDTH;
