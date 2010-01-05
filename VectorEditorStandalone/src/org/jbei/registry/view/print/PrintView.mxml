@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:print="org.jbei.registry.view.print.*"
+	backgroundColor="0xFFFFFF">
+	
+	<mx:Script>
+		<![CDATA[
+			public function load(bitmap:BitmapData, header:String, footer:String):void
+			{
+				printHeader.setHeader(header);
+				
+				mainCanvas.graphics.clear();
+				mainCanvas.graphics.beginBitmapFill(bitmap);
+				mainCanvas.graphics.drawRect(0, 0, bitmap.width, bitmap.height);
+				mainCanvas.graphics.endFill();
+				
+				printFooter.setFooter(footer);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<print:PrintHeader id="printHeader" includeInLayout="true"/>
+		
+		<mx:UIComponent id="mainCanvas" includeInLayout="true" width="100%" height="100%"/>
+		
+		<print:PrintFooter id="printFooter" includeInLayout="true"/>
+	</mx:VBox>
+</mx:VBox>

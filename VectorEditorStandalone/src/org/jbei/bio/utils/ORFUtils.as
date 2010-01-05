@@ -63,22 +63,29 @@ package org.jbei.bio.utils
 			var startIndex:int = -1;
 			var endIndex:int = -1;
 			var startCodonIndexes:Array = new Array();
+			var possibleStopCodon:Boolean = false;
 			while(true) {
 				if(index + 2 >= sequenceLength) { break; }
 				
 				var codonSeq:String = sequence.charAt(index) + sequence.charAt(index + 1) + sequence.charAt(index + 2);
 				
-				if(!AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq) && !AminoAcidsHelper.instance.isStartCodon(codonSeq)) { 
-					startIndex = -1;
+				possibleStopCodon = false;
+				
+				if(!AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq) && !AminoAcidsHelper.instance.isStartCodon(codonSeq)) {
+					if(AminoAcidsHelper.instance.evaluatePossibleStop(codonSeq)) {
+						possibleStopCodon = true;
+					}
+					
+					/*startIndex = -1;
 					endIndex = -1;
 					startCodonIndexes = null;
 					
 					index += 3;
 					
-					continue;
+					continue;*/
 				}
 				
-				if(codonSeq == 'ATG' || codonSeq == 'AUG') {
+				if(!possibleStopCodon && AminoAcidsHelper.instance.isStartCodon(codonSeq)) {
 					if(startIndex == -1) {
 						startIndex = index;
 					}
@@ -93,7 +100,7 @@ package org.jbei.bio.utils
 					continue;
 				}
 				
-				if(AminoAcidsHelper.instance.isStopCodon(codonSeq)) {
+				if(possibleStopCodon || AminoAcidsHelper.instance.isStopCodon(codonSeq)) {
 					if(startIndex != -1) {
 						endIndex = index + 2;
 						if(minimumORF == -1 || (Math.abs(endIndex - startIndex) + 1 >= minimumORF)) {

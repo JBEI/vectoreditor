@@ -1,9 +1,12 @@
 package org.jbei.registry.view
 {
+	import flash.display.BitmapData;
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.printing.FlexPrintJob;
+	import mx.printing.FlexPrintJobScaleType;
 	
 	import org.jbei.ApplicationFacade;
 	import org.jbei.bio.data.DNASequence;
@@ -17,6 +20,7 @@ package org.jbei.registry.view
 	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.CommonEvent;
 	import org.jbei.components.common.EditingEvent;
+	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
@@ -106,6 +110,7 @@ package org.jbei.registry.view
 				, ApplicationFacade.SHOW_ORFS
 				, ApplicationFacade.SHOW_COMPLEMENTARY
 				, ApplicationFacade.SHOW_AA1
+				, ApplicationFacade.SHOW_AA1_REVCOM
 				, ApplicationFacade.SHOW_AA3
 				, ApplicationFacade.SHOW_SPACES
 				, ApplicationFacade.SHOW_FEATURE_LABELS
@@ -138,6 +143,10 @@ package org.jbei.registry.view
 				, ApplicationFacade.ENTRY_FETCHED
 				, ApplicationFacade.USER_PREFERENCES_CHANGED
 				, ApplicationFacade.USER_RESTRICTION_ENZYMES_CHANGED
+				
+				, ApplicationFacade.PRINT_PIE
+				, ApplicationFacade.PRINT_RAIL
+				, ApplicationFacade.PRINT_SEQUENCE
 			];
 		}
 		
@@ -195,6 +204,10 @@ package org.jbei.registry.view
 				case ApplicationFacade.SHOW_AA1:
 					sequenceAnnotator.showAminoAcids1 = notification.getBody() as Boolean;
 					sequenceAnnotator.showAminoAcids3 = false;
+					
+					break;
+				case ApplicationFacade.SHOW_AA1_REVCOM:
+					sequenceAnnotator.showAminoAcids1RevCom = notification.getBody() as Boolean;
 					
 					break;
 				case ApplicationFacade.SHOW_AA3:
@@ -467,7 +480,132 @@ package org.jbei.registry.view
 					rail.safeEditing = safeEditing;
 					
 					break;
+				case ApplicationFacade.PRINT_SEQUENCE:
+					mainPanel.callLater(printSequence);
+					
+					break;
+				case ApplicationFacade.PRINT_RAIL:
+					mainPanel.callLater(printRail);
+					
+					break;
+				case ApplicationFacade.PRINT_PIE:
+					mainPanel.callLater(printPie);
+					
+					break;
 			}
+		}
+		
+		private function printPie():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingPie.featuredSequence = pie.featuredSequence;
+				mainPanel.printingPie.restrictionEnzymeMapper = pie.restrictionEnzymeMapper;
+				mainPanel.printingPie.orfMapper = pie.orfMapper;
+				mainPanel.printingPie.showFeatures = pie.showFeatures;
+				mainPanel.printingPie.showFeatureLabels = pie.showFeatureLabels;
+				mainPanel.printingPie.showCutSites = pie.showCutSites;
+				mainPanel.printingPie.showCutSiteLabels = pie.showCutSiteLabels;
+				mainPanel.printingPie.showORFs = pie.showORFs;
+				mainPanel.printingPie.labelFontSize = pie.labelFontSize;
+				mainPanel.printingPie.width = printableWidth;
+				mainPanel.printingPie.removeMask();
+				mainPanel.printingPie.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingPie.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
+		}
+		
+		private function printSequence():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingSequenceAnnotator.featuredSequence = sequenceAnnotator.featuredSequence;
+				mainPanel.printingSequenceAnnotator.restrictionEnzymeMapper = sequenceAnnotator.restrictionEnzymeMapper;
+				mainPanel.printingSequenceAnnotator.orfMapper = sequenceAnnotator.orfMapper;
+				mainPanel.printingSequenceAnnotator.aaMapper = sequenceAnnotator.aaMapper;
+				mainPanel.printingSequenceAnnotator.showFeatures = sequenceAnnotator.showFeatures;
+				mainPanel.printingSequenceAnnotator.showCutSites = sequenceAnnotator.showCutSites;
+				mainPanel.printingSequenceAnnotator.showORFs = sequenceAnnotator.showORFs;
+				mainPanel.printingSequenceAnnotator.showAminoAcids1 = sequenceAnnotator.showAminoAcids1;
+				mainPanel.printingSequenceAnnotator.showAminoAcids3 = sequenceAnnotator.showAminoAcids3;
+				mainPanel.printingSequenceAnnotator.showAminoAcids1RevCom = sequenceAnnotator.showAminoAcids1RevCom;
+				mainPanel.printingSequenceAnnotator.labelFontSize = sequenceAnnotator.labelFontSize;
+				mainPanel.printingSequenceAnnotator.sequenceFontSize = sequenceAnnotator.sequenceFontSize;
+				mainPanel.printingSequenceAnnotator.showSpaceEvery10Bp = sequenceAnnotator.showSpaceEvery10Bp;
+				mainPanel.printingSequenceAnnotator.floatingWidth = true;
+				mainPanel.printingSequenceAnnotator.width = printableWidth;
+				mainPanel.printingSequenceAnnotator.removeMask();
+				mainPanel.printingSequenceAnnotator.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingSequenceAnnotator.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
+		}
+		
+		private function printRail():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingRail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+				mainPanel.printingRail.restrictionEnzymeMapper = rail.restrictionEnzymeMapper;
+				mainPanel.printingRail.orfMapper = rail.orfMapper;
+				mainPanel.printingRail.showFeatures = rail.showFeatures;
+				mainPanel.printingRail.showFeatureLabels = rail.showFeatureLabels;
+				mainPanel.printingRail.showCutSites = rail.showCutSites;
+				mainPanel.printingRail.showCutSiteLabels = rail.showCutSiteLabels;
+				mainPanel.printingRail.showORFs = rail.showORFs;
+				mainPanel.printingRail.labelFontSize = rail.labelFontSize;
+				mainPanel.printingRail.width = printableWidth;
+				mainPanel.printingRail.removeMask();
+				mainPanel.printingRail.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingRail.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
 		}
 		
 		private function onSelectionChanged(event:SelectionEvent):void

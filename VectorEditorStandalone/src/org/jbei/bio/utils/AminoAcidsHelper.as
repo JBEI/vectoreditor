@@ -45,13 +45,7 @@ package org.jbei.bio.utils
 			basePairs = basePairs.toUpperCase();
 			
 			return (basePairs == 'ATG'
-				|| basePairs == 'AUG'
-				|| basePairs == 'TAA'
-				|| basePairs == 'TAG'
-				|| basePairs == 'TGA'
-				|| basePairs == 'UAA'
-				|| basePairs == 'UAG'
-				|| basePairs == 'UGA');
+				|| basePairs == 'AUG');
 		}
 		
 		public function isStopCodon(basePairs:String):Boolean
@@ -64,6 +58,27 @@ package org.jbei.bio.utils
 				|| basePairs == 'UAA'
 				|| basePairs == 'UAG'
 				|| basePairs == 'UGA');
+		}
+		
+		public function evaluatePossibleStop(codon:String):Boolean
+		{
+			var n1:Array = getNucleotideVariations(codon.charAt(0));
+			var n2:Array = getNucleotideVariations(codon.charAt(1));
+			var n3:Array = getNucleotideVariations(codon.charAt(2));
+			
+			for(var i1:int = 0; i1 < n1.length; i1++) {
+				for(var i2:int = 0; i2 < n2.length; i2++) {
+					for(var i3:int = 0; i3 < n3.length; i3++) {
+						var testCodon:String = n1[i1] + n2[i2] + n3[i3];
+						
+						if(isStopCodon(testCodon)) {
+							return true;
+						}
+					}
+				}
+			}
+			
+			return false;
 		}
 		
 		// Private Methods
@@ -187,6 +202,52 @@ package org.jbei.bio.utils
 			aminoAcidsTable['GUC'] = valine;
 			aminoAcidsTable['GUA'] = valine;
 			aminoAcidsTable['GUG'] = valine;
+		}
+		
+		/*
+		K = G or T
+		M = A or C
+		R = A or G
+		Y = C or T
+		S = C or G
+		W = A or T
+		B = C or G or T
+		V = A or C or G
+		H = A or C or T
+		D = A or G or T
+		N = G or A or T or C
+		*/
+		private function getNucleotideVariations(nucleotide:String):Array
+		{
+			var result:Array = new Array();
+			
+			if(nucleotide == 'A' || nucleotide == 'C' || nucleotide == 'T' || nucleotide == 'G' || nucleotide == 'U') {
+				result = new Array(nucleotide);
+			} else if(nucleotide == 'K') {
+				result = new Array('G', 'T');
+			} else if(nucleotide == 'M') {
+				result = new Array('A', 'C');
+			} else if(nucleotide == 'R') {
+				result = new Array('A', 'G');
+			} else if(nucleotide == 'Y') {
+				result = new Array('C', 'T');
+			} else if(nucleotide == 'S') {
+				result = new Array('C', 'G');
+			} else if(nucleotide == 'W') {
+				result = new Array('A', 'T');
+			} else if(nucleotide == 'B') {
+				result = new Array('C', 'G', 'T');
+			} else if(nucleotide == 'V') {
+				result = new Array('A', 'C', 'G');
+			} else if(nucleotide == 'H') {
+				result = new Array('A', 'C', 'T');
+			} else if(nucleotide == 'D') {
+				result = new Array('A', 'G', 'T');
+			} else if(nucleotide == 'N') {
+				result = new Array('A', 'C', 'T', 'G');
+			}
+			
+			return result;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package org.jbei.components
 {
-    import flash.display.BitmapData;
     import flash.events.FocusEvent;
     import flash.events.MouseEvent;
     
@@ -12,6 +11,7 @@ package org.jbei.components
     import mx.managers.IFocusManagerComponent;
     
     import org.jbei.components.common.CommonEvent;
+    import org.jbei.components.common.PrintableContent;
     import org.jbei.components.sequenceClasses.ContentHolder;
     import org.jbei.lib.AAMapper;
     import org.jbei.lib.AAMapperEvent;
@@ -53,6 +53,7 @@ package org.jbei.components
 		private var _labelFontSize:int = 10;
 		private var _showSpaceEvery10Bp:Boolean = true;
 		private var _showAminoAcids1:Boolean = false;
+		private var _showAminoAcids1RevCom:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
 		private var _showORFs:Boolean = false;
 		private var _safeEditing:Boolean = true;
@@ -75,6 +76,7 @@ package org.jbei.components
 		private var labelFontSizeChanged:Boolean = false;
 		private var showSpaceEvery10BpChanged:Boolean = false;
 		private var showAminoAcids1Changed:Boolean = false;
+		private var showAminoAcids1RevComChanged:Boolean = false;
 		private var showAminoAcids3Changed:Boolean = false;
 		private var showORFsChanged:Boolean = false;
 		private var editingMode:Boolean = false;
@@ -285,6 +287,22 @@ package org.jbei.components
 	    	}
 	    }
 	    
+		public function get showAminoAcids1RevCom():Boolean
+		{
+			return _showAminoAcids1RevCom;
+		}
+		
+		public function set showAminoAcids1RevCom(value:Boolean):void
+		{
+			if(_showAminoAcids1RevCom != value) {
+				_showAminoAcids1RevCom = value;
+				
+				showAminoAcids1RevComChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 	    public function get showAminoAcids3():Boolean
 	    {
 	        return _showAminoAcids3;
@@ -424,15 +442,25 @@ package org.jbei.components
 	    	contentHolder.deselect();
 	    }
 		
-		public function printableContent():BitmapData
+		public function printingContent(pageWidth:Number, pageHeight:Number):PrintableContent
 		{
-			// CRASHES IF content height or width bigger then 2800px
-			// Read more http://livedocs.adobe.com/flex/3/langref/flash/display/BitmapData.html#BitmapData()
-			// Fix it later by making pagination
-			var contentBitmapData:BitmapData = new BitmapData(contentHolder.totalWidth, contentHolder.totalHeight);
-			contentBitmapData.draw(contentHolder);
+			var printableContent:PrintableContent = new PrintableContent();
 			
-			return contentBitmapData;
+			printableContent.width = contentHolder.totalWidth;
+			printableContent.height = contentHolder.totalHeight;
+			
+			var numPages:int = Math.ceil(contentHolder.totalHeight / pageHeight);
+			
+			for(var i:int = 0; i < numPages; i++) {
+				printableContent.pages.push(contentHolder.contentBitmapData(i, pageWidth, pageHeight));
+			}
+			
+			return printableContent;
+		}
+		
+		public function removeMask():void
+		{
+			contentHolder.mask = null;
 		}
 		
 		// Protected Methods
@@ -596,6 +624,16 @@ package org.jbei.components
 	        	invalidateDisplayList();
 	        }
 	        
+			if(showAminoAcids1RevComChanged) {
+				showAminoAcids1RevComChanged = false;
+				
+				needsMeasurement = true;
+				
+				contentHolder.showAminoAcids1RevCom = _showAminoAcids1RevCom;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showAminoAcids3Changed) {
 	        	showAminoAcids3Changed = false;
 	        	

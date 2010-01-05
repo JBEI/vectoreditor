@@ -3,11 +3,13 @@ package org.jbei.components.railClasses
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
 	import flash.desktop.ClipboardTransferMode;
+	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextFormat;
@@ -24,6 +26,8 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.IAnnotation;
 	import org.jbei.bio.data.ORF;
+	import org.jbei.bio.data.Segment;
+	import org.jbei.bio.utils.SegmentUtils;
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Rail;
 	import org.jbei.components.common.Alignment;
@@ -60,6 +64,7 @@ package org.jbei.components.railClasses
 		private var caret:Caret;
 		private var nameBox:NameBox;
 		private var highlightLayer:HighlightLayer;
+		private var wireframeSelectionLayer:WireframeSelectionLayer;
 		
 		private var customContextMenu:ContextMenu;
 		private var editFeatureContextMenuItem:ContextMenuItem;
@@ -423,6 +428,32 @@ package org.jbei.components.railClasses
 			return index >= 0 && index <= featuredSequence.sequence.length;
 		}
 		
+		public function contentBitmapData(pageWidth:Number, pageHeight:Number, scaleToPage:Boolean = false, page:int = 0):BitmapData
+		{
+			var bitmapData:BitmapData;
+			
+			var matrix:Matrix = new Matrix();
+			if(scaleToPage) {
+				bitmapData = new BitmapData(pageWidth, pageHeight);
+				
+				var scaleX:Number = pageWidth / _totalWidth;
+				var scaleY:Number = pageHeight / _totalHeight;
+				
+				var relativeScale:Number = Math.min(scaleX, scaleY);
+				
+				matrix.scale(relativeScale, relativeScale);
+				
+				bitmapData.draw(this, matrix);
+			} else {
+				bitmapData = new BitmapData(pageWidth, pageHeight);
+				
+				matrix.ty = pageHeight * (page + 1) - totalHeight;
+				bitmapData.draw(this, matrix, null, null, new Rectangle(0, 0, pageWidth, pageHeight));
+			}
+			
+			return bitmapData;
+		}
+		
 		// Protected Methods
 		protected override function createChildren():void
 		{
@@ -441,6 +472,8 @@ package org.jbei.components.railClasses
 			createCaret();
 			
 			createTextRenderers();
+			
+			createWireframeSelectionLayer();
 		}
 		
 		protected override function commitProperties():void
@@ -618,6 +651,7 @@ package org.jbei.components.railClasses
 				highlightLayer.update();
 				
 				selectionLayer.updateMetrics();
+				wireframeSelectionLayer.updateMetrics();
 				
 				if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
 					selectionLayer.deselect();
@@ -728,6 +762,15 @@ package org.jbei.components.railClasses
 			_featureTextRenderer.textToBitmap("EcoRI");
 		}
 		
+		private function createWireframeSelectionLayer():void
+		{
+			if(!wireframeSelectionLayer) {
+				wireframeSelectionLayer = new WireframeSelectionLayer(this);
+				wireframeSelectionLayer.includeInLayout = false;
+				addChild(wireframeSelectionLayer);
+			}
+		}
+		
 		private function disableSequence():void
 		{
 			invalidSequence = true;
@@ -801,6 +844,8 @@ package org.jbei.components.railClasses
 			clickPoint = new Point(event.stageX, event.stageY);
 			
 			tryMoveCaretToPosition(startSelectionIndex);
+			
+			wireframeSelectionLayer.show();
 		}
 		
 		private function onMouseMove(event:MouseEvent):void
@@ -815,8 +860,17 @@ package org.jbei.components.railClasses
 				var start:int = (selectionDirection == -1) ? endSelectionIndex : startSelectionIndex;
 				var end:int = (selectionDirection == -1) ? startSelectionIndex : endSelectionIndex;
 				
-				selectionLayer.startSelecting();
-				selectionLayer.select(start, end);
+				wireframeSelectionLayer.startSelecting();
+				wireframeSelectionLayer.select(start, end);
+				
+				if(event.ctrlKey) { // regular selection
+					selectionLayer.startSelecting();
+					selectionLayer.select(start, end);
+					
+					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+				} else { // sticky selection
+					doStickySelect(start, end);
+				}
 				
 				tryMoveCaretToPosition(end);
 			}
@@ -830,10 +884,13 @@ package org.jbei.components.railClasses
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
-			if(selectionLayer.selected && selectionLayer.selecting) {
+			if(wireframeSelectionLayer.selected && wireframeSelectionLayer.selecting) {
+				wireframeSelectionLayer.endSelecting();
 				selectionLayer.endSelecting();
 				
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+				
+				wireframeSelectionLayer.hide();
 			}
 		}
 		
@@ -1498,6 +1555,117 @@ package org.jbei.components.railClasses
 			startSelectionIndex = -1;
 			endSelectionIndex = -1;
 			selectionLayer.deselect();
+		}
+		
+		private function doStickySelect(start:int, end:int):void
+		{
+			var selectedAnnotations:Array = new Array();
+			var selectionSegment:Segment = new Segment(start, end);
+			
+			if(_showFeatures) {
+				for(var i1:int = 0; i1 < featuredSequence.features.length; i1++) {
+					var feature:Feature = featuredSequence.features[i1] as Feature;
+					
+					if(SegmentUtils.contains(selectionSegment, new Segment(feature.start, feature.end))) {
+						selectedAnnotations.push(feature);
+					}
+				}
+			}
+			
+			if(_showCutSites) {
+				for(var i2:int = 0; i2 < restrictionEnzymeMapper.cutSites.length; i2++) {
+					var cutSite:CutSite = restrictionEnzymeMapper.cutSites[i2] as CutSite;
+					
+					if(SegmentUtils.contains(selectionSegment, new Segment(cutSite.start, cutSite.end))) {
+						selectedAnnotations.push(cutSite);
+					}
+				}
+			}
+			
+			if(_showORFs) {
+				for(var i3:int = 0; i3 < orfMapper.orfs.length; i3++) {
+					var orf:ORF = orfMapper.orfs[i3] as ORF;
+					
+					if(SegmentUtils.contains(selectionSegment, new Segment(orf.start, orf.end))) {
+						selectedAnnotations.push(orf);
+					}
+				}
+			}
+			
+			if(selectedAnnotations.length > 0) {
+				if(start <= end) { // normal
+					var minStart:int = (selectedAnnotations[0] as IAnnotation).start;
+					var maxEnd:int = (selectedAnnotations[0] as IAnnotation).end;
+					
+					for(var j1:int = 0; j1 < selectedAnnotations.length; j1++) {
+						var annotation1:IAnnotation = selectedAnnotations[j1] as IAnnotation;
+						
+						if(minStart > annotation1.start) { minStart = annotation1.start; }
+						if(maxEnd < annotation1.end) { maxEnd = annotation1.end; }
+					}
+					
+					selectionLayer.startSelecting();
+					selectionLayer.select(minStart, maxEnd);
+				} else { // circular
+					var minStart1:int = -1;
+					var maxEnd1:int = -1;
+					
+					var minStart2:int = -1;
+					var maxEnd2:int = -1;
+					
+					for(var j2:int = 0; j2 < selectedAnnotations.length; j2++) {
+						var annotation2:IAnnotation = selectedAnnotations[j2] as IAnnotation;
+						
+						if(annotation2.start > start) {
+							if(minStart1 == -1) { minStart1 = annotation2.start; }
+							
+							if(annotation2.start < minStart1) { minStart1 = annotation2.start; }
+						} else {
+							if(minStart2 == -1) { minStart2 = annotation2.start; }
+							
+							if(annotation2.start < minStart2) { minStart2 = annotation2.start; }
+						}
+						
+						if(annotation2.end > end) {
+							if(maxEnd1 == -1) { maxEnd1 = annotation2.end; }
+							
+							if(annotation2.end > maxEnd1) { maxEnd1 = annotation2.end; }
+						} else {
+							if(maxEnd2 == -1) { maxEnd2 = annotation2.end; }
+							
+							if(annotation2.end > maxEnd2) { maxEnd2 = annotation2.end; }
+						}
+					}
+					
+					var selStart:int = minStart1;
+					var selEnd:int;
+					
+					if(minStart1 == -1 && minStart2 != -1) {
+						selStart = minStart2;
+					} else if(minStart1 != -1 && minStart2 == -1) {
+						selStart = minStart1;
+					} else if(minStart1 != -1 && minStart2 != -1) {
+						selStart = minStart1;
+					}
+					
+					if(maxEnd1 == -1 && maxEnd2 != -1) {
+						selEnd = maxEnd2;
+					} else if(maxEnd1 != -1 && maxEnd2 == -1) {
+						selEnd = maxEnd1;
+					} else if(maxEnd1 != -1 && maxEnd2 != -1) {
+						selEnd = maxEnd2;
+					}
+					
+					if(selEnd == -1 || selStart == -1) {
+						selectionLayer.deselect();
+					} else {
+						selectionLayer.startSelecting();
+						selectionLayer.select(selStart, selEnd);
+					}
+				}
+			} else {
+				selectionLayer.deselect();
+			}
 		}
 		
 		private function doDeleteSequence(start:int, end:int):void

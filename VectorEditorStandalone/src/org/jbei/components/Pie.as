@@ -1,7 +1,9 @@
 package org.jbei.components
 {
+	import flash.display.BitmapData;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
 	
 	import mx.core.ScrollControlBase;
 	import mx.core.ScrollPolicy;
@@ -10,6 +12,7 @@ package org.jbei.components
 	import mx.events.ScrollEventDirection;
 	import mx.managers.IFocusManagerComponent;
 	
+	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.pieClasses.ContentHolder;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
@@ -294,7 +297,32 @@ package org.jbei.components
 	    	contentHolder.deselect();
 	    }
 		
-	    // Protected Methods
+		public function printingContent(pageWidth:Number, pageHeight:Number, scaleToPage:Boolean = false):PrintableContent
+		{
+			var printableContent:PrintableContent = new PrintableContent();
+			
+			printableContent.width = contentHolder.totalWidth;
+			printableContent.height = contentHolder.totalHeight;
+			
+			if(scaleToPage) {
+				printableContent.pages.push(contentHolder.contentBitmapData(pageWidth, pageHeight, true));
+			} else {
+				var numPages:int = Math.ceil(contentHolder.totalHeight / pageHeight);
+				
+				for(var i:int = 0; i < numPages; i++) {
+					printableContent.pages.push(contentHolder.contentBitmapData(pageWidth, pageHeight, false, i));
+				}
+			}
+			
+			return printableContent;
+		}
+		
+		public function removeMask():void
+		{
+			contentHolder.mask = null;
+		}
+		
+		// Protected Methods
 		protected override function createChildren():void
 		{
 			super.createChildren();

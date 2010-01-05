@@ -14,6 +14,7 @@
 			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
 			public static const SHOW_COMPLEMENTARY_STATE_CHANGED:String = "ShowComplementaryStateChanged";
 			public static const SHOW_AA1_STATE_CHANGED:String = "ShowAA1StateChanged";
+			public static const SHOW_AA1_REVCOM_STATE_CHANGED:String = "ShowAA1RevComStateChanged";
 			public static const SHOW_AA3_STATE_CHANGED:String = "ShowAA3StateChanged";
 			public static const SHOW_SPACES_STATE_CHANGED:String = "ShowSpacesStateChanged";
 			public static const SHOW_FEATURE_LABELS_STATE_CHANGED:String = "ShowFeatureLabelsStateChanged";
@@ -21,6 +22,9 @@
 			public static const SHOW_SELECT_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
 			public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
 			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
+			public static const PRINT_SEQUENCE:String = "PrintSequence";
+			public static const PRINT_PIE:String = "PrintPie";
+			public static const PRINT_RAIL:String = "PrintRail";
 			public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
@@ -62,12 +66,15 @@
             	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
             	var cloneMenuItem:MenuItem = new MenuItem("cloneMenuItem", "Clone ...");
             	var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Export");
+				var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
+				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
+				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
             	//fileMenuItem.addSubItem(saveMenuItem);
             	//fileMenuItem.addSubItem(cloneMenuItem);
 				//fileMenuItem.addSubItem(separatorMenuItem);
+				fileMenuItem.addSubItem(printMenuItem);
+            	fileMenuItem.addSubItem(separatorMenuItem);
 				fileMenuItem.addSubItem(propertiesMenuItem);
-            	//fileMenuItem.addSubItem(separatorMenuItem);
-				//fileMenuItem.addSubItem(printMenuItem);
 				//fileMenuItem.addSubItem(exportMenuItem);
             	
             	// Edit
@@ -106,7 +113,8 @@
             	var showORFsMenuItem:MenuItem = new MenuItem("showORFsMenuItem", "ORF", "check", false);
             	var showComplementaryMenuItem:MenuItem = new MenuItem("showComplementaryMenuItem", "Complementary", "check", true);
             	var showSpacesMenuItem:MenuItem = new MenuItem("showSpacesMenuItem", "Spaces", "check", true);
-            	var showAA1MenuItem:MenuItem = new MenuItem("showAA1MenuItem", "One Letter AA", "check", false);
+            	var showAA1MenuItem:MenuItem = new MenuItem("showAA1MenuItem", "Sequence AA", "check", false);
+				var showAA1RevComMenuItem:MenuItem = new MenuItem("showAA1RevComMenuItem", "RevCom AA", "check", false);
             	var showAA3MenuItem:MenuItem = new MenuItem("showAA3MenuItem", "Three Letter AA", "check", false);
             	var showFeatureLabelsMenuItem:MenuItem = new MenuItem("showFeatureLabelsMenuItem", "Feature Labels", "check", true);
             	var showCutSiteLabelsMenuItem:MenuItem = new MenuItem("showCutSiteLabelsMenuItem", "Cut Site Labels", "check", true);
@@ -120,7 +128,8 @@
             	viewMenuItem.addSubItem(showComplementaryMenuItem);
             	viewMenuItem.addSubItem(showSpacesMenuItem);
             	viewMenuItem.addSubItem(showAA1MenuItem);
-            	viewMenuItem.addSubItem(showAA3MenuItem);
+				viewMenuItem.addSubItem(showAA1RevComMenuItem);
+            	//viewMenuItem.addSubItem(showAA3MenuItem);
             	viewMenuItem.addSubItem(separatorMenuItem);
             	viewMenuItem.addSubItem(showFeatureLabelsMenuItem);
             	viewMenuItem.addSubItem(showCutSiteLabelsMenuItem);
@@ -144,6 +153,11 @@
 				helpMenuItem.addSubItem(reportBugMenuItem);
 				helpMenuItem.addSubItem(separatorMenuItem);
             	helpMenuItem.addSubItem(aboutMenuItem);
+				
+				// File -> Print
+				printMenuItem.addSubItem(printSequenceMenuItem);
+				printMenuItem.addSubItem(printPieMenuItem);
+				printMenuItem.addSubItem(printRailMenuItem);
 				
             	menuItems = [fileMenuItem, editMenuItem, viewMenuItem, toolsMenuItem, helpMenuItem];
             	
@@ -178,6 +192,7 @@
             	menuItemsMap["showSpacesMenuItem"] = showSpacesMenuItem;
             	menuItemsMap["showORFsMenuItem"] = showORFsMenuItem;
             	menuItemsMap["showAA1MenuItem"] = showAA1MenuItem;
+				menuItemsMap["showAA1RevComMenuItem"] = showAA1RevComMenuItem;
             	menuItemsMap["showAA3MenuItem"] = showAA3MenuItem;
             	menuItemsMap["showFeatureLabelsMenuItem"] = showFeatureLabelsMenuItem;
             	menuItemsMap["showCutSiteLabelsMenuItem"] = showCutSiteLabelsMenuItem;
@@ -192,6 +207,11 @@
 				menuItemsMap["suggestFeatureMenuItem"] = suggestFeatureMenuItem;
 				menuItemsMap["reportBugMenuItem"] = reportBugMenuItem;
             	menuItemsMap["aboutMenuItem"] = aboutMenuItem;
+				
+				// File->Print
+				menuItemsMap["printSequenceMenuItem"] = printSequenceMenuItem;
+				menuItemsMap["printRailMenuItem"] = printRailMenuItem;
+				menuItemsMap["printPieMenuItem"] = printPieMenuItem;
             }
             
             private function onMenuItemClick(event:MenuEvent):void
@@ -214,6 +234,8 @@
             		dispatchEvent(new MenuItemEvent(SHOW_SPACES_STATE_CHANGED, menuItem));
             	} else if(menuItem.id == "showAA1MenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_AA1_STATE_CHANGED, menuItem));
+				} else if(menuItem.id == "showAA1RevComMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_AA1_REVCOM_STATE_CHANGED, menuItem));
             	} else if(menuItem.id == "showAA3MenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_AA3_STATE_CHANGED, menuItem));
             	} else if(menuItem.id == "showFeatureLabelsMenuItem") {
@@ -226,6 +248,12 @@
             		dispatchEvent(new MenuItemEvent(SHOW_PREFERENCES_DIALOG, menuItem));
 				} else if(menuItem.id == "propertiesMenuItem") {
 					dispatchEvent(new MenuItemEvent(SHOW_PROPERTIES_DIALOG, menuItem));
+				} else if(menuItem.id == "printSequenceMenuItem") {
+					dispatchEvent(new MenuItemEvent(PRINT_SEQUENCE, menuItem));
+				} else if(menuItem.id == "printPieMenuItem") {
+					dispatchEvent(new MenuItemEvent(PRINT_PIE, menuItem));
+				} else if(menuItem.id == "printRailMenuItem") {
+					dispatchEvent(new MenuItemEvent(PRINT_RAIL, menuItem));
             	} else if(menuItem.id == "aboutMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_ABOUT_DIALOG, menuItem));
             	} else if(menuItem.id == "undoMenuItem") {

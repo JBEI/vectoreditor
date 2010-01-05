@@ -26,6 +26,7 @@ package org.jbei.registry.view
 			mainMenu.addEventListener(MainMenu.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_COMPLEMENTARY_STATE_CHANGED, onShowComplementaryStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_AA1_STATE_CHANGED, onShowAA1StateChanged);
+			mainMenu.addEventListener(MainMenu.SHOW_AA1_REVCOM_STATE_CHANGED, onShowAA1RevComStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_AA3_STATE_CHANGED, onShowAA3StateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_SPACES_STATE_CHANGED, onShowSpacesStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURE_LABELS_STATE_CHANGED, onShowFeatureLabelsStateChanged);
@@ -36,6 +37,9 @@ package org.jbei.registry.view
 			mainMenu.addEventListener(MainMenu.SHOW_FIND_DIALOG, onShowFindDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_ABOUT_DIALOG, onShowAboutDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
+			mainMenu.addEventListener(MainMenu.PRINT_SEQUENCE, onPrintSequence);
+			mainMenu.addEventListener(MainMenu.PRINT_PIE, onPrintPie);
+			mainMenu.addEventListener(MainMenu.PRINT_RAIL, onPrintRail);
 			mainMenu.addEventListener(MainMenu.COPY, onCopy);
 			mainMenu.addEventListener(MainMenu.CUT, onCut);
 			mainMenu.addEventListener(MainMenu.PASTE, onPaste);
@@ -146,6 +150,11 @@ package org.jbei.registry.view
 			sendNotification(ApplicationFacade.SHOW_AA3, (event.menuItem as MenuItem).toggled);
 		}
 		
+		private function onShowAA1RevComStateChanged(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.SHOW_AA1_REVCOM, (event.menuItem as MenuItem).toggled);
+		}
+		
 		private function onShowSpacesStateChanged(event:MenuItemEvent):void
 		{
 			sendNotification(ApplicationFacade.SHOW_SPACES, (event.menuItem as MenuItem).toggled);
@@ -254,6 +263,21 @@ package org.jbei.registry.view
 		private function onShowPie(event:MenuItemEvent):void
 		{
 			sendNotification(ApplicationFacade.SHOW_PIE);
+		}
+		
+		private function onPrintSequence(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.PRINT_SEQUENCE);
+		}
+		
+		private function onPrintRail(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.PRINT_RAIL);
+		}
+		
+		private function onPrintPie(event:MenuItemEvent):void
+		{
+			sendNotification(ApplicationFacade.PRINT_PIE);
 		}
 	}
 }

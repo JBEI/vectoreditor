@@ -5,11 +5,9 @@ package org.jbei.components.railClasses
 	
 	import mx.core.UIComponent;
 	
-	public class SelectionLayer extends UIComponent
+	public class WireframeSelectionLayer extends UIComponent
 	{
-		private const SELECTION_COLOR:int = 0x0099FF;
-		private const SELECTION_TRANSPARENCY:Number = 0.3;
-		private const SELECTION_FRAME_COLOR:Number = 0xCCCCCC;
+		private const FRAME_COLOR:Number = 0x808080;
 		
 		private var contentHolder:ContentHolder;
 		
@@ -21,7 +19,7 @@ package org.jbei.components.railClasses
 		private var endPoint:Point = new Point();
 		
 		// Contructor
-		public function SelectionLayer(contentHolder:ContentHolder)
+		public function WireframeSelectionLayer(contentHolder:ContentHolder)
 		{
 			super();
 			
@@ -87,6 +85,26 @@ package org.jbei.components.railClasses
 			_selecting = false;
 		}
 		
+		public function show():void
+		{
+			_start = -1;
+			_end = -1;
+			_selected = false;
+			_selecting = false;
+			
+			graphics.clear();
+		}
+		
+		public function hide():void
+		{
+			_start = -1;
+			_end = -1;
+			_selected = false;
+			_selecting = false;
+			
+			graphics.clear();
+		}
+		
 		// Private Methods
 		private function drawSelection(fromIndex:int, endIndex:int):void
 		{
@@ -98,22 +116,15 @@ package org.jbei.components.railClasses
 			// draw selection with frame
 			var g:Graphics = graphics;
 			g.clear();
-			g.lineStyle(1, SELECTION_FRAME_COLOR, 0.8);
+			g.lineStyle(1, FRAME_COLOR, 0.8);
 			if(fromIndex <= endIndex) {
-				g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
 				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, toPointX - fromPointX, 3 * RailBox.THICKNESS);
-				g.endFill();
 			} else {
 				var startPointX:Number = contentHolder.railMetrics.x;
 				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.featuredSequence.sequence.length;
 				
-				g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
 				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, endPointX - fromPointX, 3 * RailBox.THICKNESS);
-				g.endFill();
-				
-				g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
 				g.drawRect(startPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, toPointX - startPointX, 3 * RailBox.THICKNESS);
-				g.endFill();
 			}
 		}
 	}

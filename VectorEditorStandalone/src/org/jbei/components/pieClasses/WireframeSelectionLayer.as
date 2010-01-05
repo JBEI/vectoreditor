@@ -1,18 +1,15 @@
 package org.jbei.components.pieClasses
 {
 	import flash.display.Graphics;
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
 	import mx.core.UIComponent;
 	
 	import org.jbei.components.common.GraphicUtils;
 	
-	public class SelectionLayer extends UIComponent
+	public class WireframeSelectionLayer extends UIComponent
 	{
-		private const SELECTION_COLOR:int = 0x0099FF;
-		private const SELECTION_TRANSPARENCY:Number = 0.3;
-		private const SELECTION_FRAME_COLOR:Number = 0xCCCCCC;
+		private const FRAME_COLOR:Number = 0x808080;
 		
 		private var contentHolder:ContentHolder;
 		
@@ -26,12 +23,12 @@ package org.jbei.components.pieClasses
 		private var radius:Number = 0;
 		private var center:Point = new Point(0, 0);
 		
-		// Contructor
-		public function SelectionLayer(contentHolder:ContentHolder)
+		// Constructor
+		public function WireframeSelectionLayer(contentHolder:ContentHolder)
 		{
 			super();
 			
-			this.contentHolder = contentHolder;
+			this.contentHolder = contentHolder
 		}
 		
 		// Properties
@@ -86,6 +83,26 @@ package org.jbei.components.pieClasses
 			graphics.clear();
 		}
 		
+		public function show():void
+		{
+			_start = -1;
+			_end = -1;
+			_selected = false;
+			_selecting = false;
+			
+			graphics.clear();
+		}
+		
+		public function hide():void
+		{
+			_start = -1;
+			_end = -1;
+			_selected = false;
+			_selecting = false;
+			
+			graphics.clear();
+		}
+		
 		public function startSelecting():void
 		{
 			_selecting = true;
@@ -110,13 +127,11 @@ package org.jbei.components.pieClasses
 			// draw selection with frame
 			var g:Graphics = graphics;
 			g.clear();
-			g.lineStyle(1, SELECTION_FRAME_COLOR, 0.8);
-			g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
+			g.lineStyle(1, FRAME_COLOR, 0.8);
 			g.moveTo(center.x, center.y);
 			g.lineTo(startPoint.x, startPoint.y);
 			GraphicUtils.drawArc(g, center, radius - 1, angle1, angle2);
 			g.lineTo(center.x, center.y);
-			g.endFill();
 		}
 	}
 }

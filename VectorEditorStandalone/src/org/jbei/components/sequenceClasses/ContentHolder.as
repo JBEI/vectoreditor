@@ -3,11 +3,13 @@ package org.jbei.components.sequenceClasses
     import flash.desktop.Clipboard;
     import flash.desktop.ClipboardFormats;
     import flash.desktop.ClipboardTransferMode;
+    import flash.display.BitmapData;
     import flash.display.Graphics;
     import flash.events.ContextMenuEvent;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
+    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.text.TextFormat;
@@ -94,6 +96,7 @@ package org.jbei.components.sequenceClasses
 		private var _caretPosition:int = 0;
 		private var _showSpaceEvery10Bp:Boolean = true;
 		private var _showAminoAcids1:Boolean = false;
+		private var _showAminoAcids1RevCom:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
 		private var _showORFs:Boolean = false;
 		private var _safeEditing:Boolean = true;
@@ -127,6 +130,7 @@ package org.jbei.components.sequenceClasses
 		private var labelFontSizeChanged:Boolean = false;
 		private var showSpaceEvery10BpChanged:Boolean = false;
 		private var showAminoAcids1Changed:Boolean = false;
+		private var showAminoAcids1RevComChanged:Boolean = false;
 		private var showAminoAcids3Changed:Boolean = false;
 		private var showORFsChanged:Boolean = false;
 		
@@ -346,6 +350,22 @@ package org.jbei.components.sequenceClasses
 	    	}
 	    }
 	    
+		public function get showAminoAcids1RevCom():Boolean
+		{
+			return _showAminoAcids1RevCom;
+		}
+		
+		public function set showAminoAcids1RevCom(value:Boolean):void
+		{
+			if(_showAminoAcids1RevCom != value) {
+				_showAminoAcids1RevCom = value;
+				
+				showAminoAcids1RevComChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
 	    public function get showAminoAcids3():Boolean
 	    {
 	        return _showAminoAcids3;
@@ -561,6 +581,17 @@ package org.jbei.components.sequenceClasses
 			return position;
 		}
 		
+		public function contentBitmapData(page:int, pageWidth:Number, pageHeight:Number):BitmapData
+		{
+			var currentHeight:Number = Math.min(pageHeight, totalHeight - pageHeight * page);
+			
+			var bitmapData:BitmapData = new BitmapData(pageWidth, currentHeight);
+			var matrix:Matrix = new Matrix(1, 0, 0, 1, 0, -pageHeight * page);
+			bitmapData.draw(this, matrix, null, null, new Rectangle(0, 0, pageWidth, currentHeight));
+			
+			return bitmapData;
+		}
+		
 		// Protected Methods
 		protected override function createChildren():void
 		{
@@ -719,6 +750,14 @@ package org.jbei.components.sequenceClasses
 	        	invalidateDisplayList();
 	        }
 	        
+			if(showAminoAcids1RevComChanged) {
+				showAminoAcids1RevComChanged = false;
+				
+				needsMeasurement = true;
+				
+				invalidateDisplayList();
+			}
+			
 	        if(showAminoAcids3Changed) {
 	        	showAminoAcids3Changed = false;
 	        	
@@ -1046,7 +1085,7 @@ package org.jbei.components.sequenceClasses
 					
 	    			tryMoveCaretToPosition(startSelectionIndex);
 	    		} else if(endHandleResizing) {
-					endSelectionIndex = bpIndex + 1;
+					endSelectionIndex = bpIndex;
 					
 					selectionDirection = 1; // ignore direction on resizing
 	    			
@@ -1388,15 +1427,18 @@ package org.jbei.components.sequenceClasses
 					} else if(point.x > row.sequenceMetrics.x + row.sequenceMetrics.width) {
 						bpIndex += row.rowData.sequence.length;
 					} else {
-						var numberOfCharactersFromBegining:int = Math.floor((point.x - row.sequenceMetrics.x) / sequenceSymbolRenderer.textWidth);
+						var numberOfCharactersFromBegining:int = Math.floor((point.x - row.sequenceMetrics.x + (sequenceSymbolRenderer.textWidth - 1) / 2) / sequenceSymbolRenderer.textWidth);
 						
 						var numberOfSpaces:int = 0;
 						
 						if(_showSpaceEvery10Bp) {
-							numberOfSpaces = int(numberOfCharactersFromBegining / 11)
+							numberOfSpaces = int(numberOfCharactersFromBegining / 11);
 						}
 						
-						bpIndex += Math.floor((point.x - row.sequenceMetrics.x - numberOfSpaces * sequenceSymbolRenderer.textWidth + (sequenceSymbolRenderer.textWidth - 1) / 2) / sequenceSymbolRenderer.textWidth);
+						var numberOfValidCharacters:int = numberOfCharactersFromBegining - numberOfSpaces;
+						
+						bpIndex += numberOfValidCharacters;
+						//Math.floor((point.x - row.sequenceMetrics.x - numberOfSpaces * sequenceSymbolRenderer.textWidth + (sequenceSymbolRenderer.textWidth - 1) / 2) / sequenceSymbolRenderer.textWidth);
 					}
 					
 					break;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" 
+	horizontalAlign="center" 
+	verticalAlign="top">
+	
+	<mx:Script>
+		<![CDATA[
+			public function setHeader(text:String):void
+			{
+				headerLabel.text = text;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="headerLabel" text=""/>
+</mx:VBox>

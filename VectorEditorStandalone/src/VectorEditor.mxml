@@ -16,7 +16,6 @@
 			import mx.controls.Alert;
 			
 			import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
-			
 			import org.jbei.ApplicationFacade;
 			import org.jbei.registry.utils.SystemUtils;
 			import org.jbei.registry.view.ApplicationMediator;

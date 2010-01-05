@@ -117,6 +117,10 @@ package org.jbei.components.sequenceClasses
 					var featureX2:Number = bpStartMetrics2.x + 2; // +2 to look pretty
 					var featureYCommon:Number = bpStartMetrics1.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
 					
+					if(sequenceContentHolder.showAminoAcids1RevCom) {
+						featureYCommon += 3 * sequenceContentHolder.aminoAcidsTextRenderer.textHeight;
+					}
+					
 					var featureRowWidth1:Number = bpEndMetrics1.x - bpStartMetrics1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					var featureRowWidth2:Number = bpEndMetrics2.x - bpStartMetrics2.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					
@@ -126,11 +130,11 @@ package org.jbei.components.sequenceClasses
 						drawFeatureRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
 						drawFeatureRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
 					} else if(feature.strand == Feature.POSITIVE) {
-						drawFeaturePositiveArrow(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
-						drawFeatureRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
+						drawFeatureForwardArrow(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
+						drawFeatureForwardRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
 					} else if(feature.strand == Feature.NEGATIVE) {
-						drawFeatureRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
-						drawFeatureNegativeArrow(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
+						drawFeatureBackwardRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
+						drawFeatureBackwardArrow(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
 					}
 				} else {
 					var bpStartMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
@@ -139,6 +143,10 @@ package org.jbei.components.sequenceClasses
 					var featureX:Number = bpStartMetrics.x + 2; // +2 to look pretty
 					var featureY:Number = bpStartMetrics.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
 					
+					if(sequenceContentHolder.showAminoAcids1RevCom) {
+						featureY += 3 * sequenceContentHolder.aminoAcidsTextRenderer.textHeight;
+					}
+					
 					var featureRowWidth:Number = bpEndMetrics.x - bpStartMetrics.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					var featureRowHeight:Number = DEFAULT_FEATURE_HEIGHT;
 					
@@ -146,15 +154,15 @@ package org.jbei.components.sequenceClasses
 						drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
 					} else if(feature.strand == Feature.POSITIVE) {
 						if(feature.end >= row.rowData.start && feature.end <= row.rowData.end) {
-							drawFeaturePositiveArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							drawFeatureForwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						} else {
-							drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							drawFeatureForwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						}
 					} else if(feature.strand == Feature.NEGATIVE) {
 						if(feature.start >= row.rowData.start && feature.start <= row.rowData.end) {
-							drawFeatureNegativeArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							drawFeatureBackwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						} else {
-							drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							drawFeatureBackwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						}
 					}
 				}
@@ -199,7 +207,25 @@ package org.jbei.components.sequenceClasses
 			g.drawRect(x, y, width, height);
 		}
 		
-		private function drawFeaturePositiveArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		private function drawFeatureForwardRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		{
+			g.moveTo(x, y);
+			g.curveTo(x + 3, y + height / 2, x, y + height);
+			g.lineTo(x + width, y + height);
+			g.lineTo(x + width, y);
+			g.lineTo(x, y);
+		}
+		
+		private function drawFeatureBackwardRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		{
+			g.moveTo(x, y);
+			g.lineTo(x, y + height);
+			g.lineTo(x + width, y + height);
+			g.curveTo(x + width - 3, y + height / 2, x + width, y);
+			g.lineTo(x, y);
+		}
+		
+		private function drawFeatureForwardArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
 				g.moveTo(x, y);
@@ -207,7 +233,7 @@ package org.jbei.components.sequenceClasses
 				g.lineTo(x + width, y + height / 2);
 				g.lineTo(x + width - 8, y + height);
 				g.lineTo(x, y + height);
-				g.lineTo(x, y);
+				g.curveTo(x + 3, y + height / 2, x, y);
 			} else {
 				g.moveTo(x, y);
 				g.lineTo(x + width, y + height / 2);
@@ -216,12 +242,12 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
-		private function drawFeatureNegativeArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		private function drawFeatureBackwardArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
 				g.moveTo(x + 8, y);
 				g.lineTo(x + width, y);
-				g.lineTo(x + width, y + height);
+				g.curveTo(x + width - 3, y + height / 2, x + width, y + height);
 				g.lineTo(x + 8, y + height);
 				g.lineTo(x, y + height / 2);
 				g.lineTo(x + 8, y);

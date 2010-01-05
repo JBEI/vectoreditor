@@ -11,8 +11,8 @@ package org.jbei.components.pieClasses
 
 	public class ORFRenderer extends AnnotationRenderer
 	{
-		private const DISTANCE_FROM_RAIL:Number = 15;
-		private const DISTANCE_BETWEEN_ORFS:Number = 10;
+		public static const DISTANCE_FROM_RAIL:Number = 15;
+		public static const DISTANCE_BETWEEN_ORFS:Number = 10;
 		private const ORF_FRAME_COLOR1:int = 0xFF0000;
 		private const ORF_FRAME_COLOR2:int = 0x31B440;
 		private const ORF_FRAME_COLOR3:int = 0x3366CC;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	horizontalAlign="right"
+	verticalAlign="bottom">
+	
+	<mx:Script>
+		<![CDATA[
+			public function setFooter(text:String):void
+			{
+				footerLabel.text = text;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="footerLabel" text=""/>
+</mx:VBox>

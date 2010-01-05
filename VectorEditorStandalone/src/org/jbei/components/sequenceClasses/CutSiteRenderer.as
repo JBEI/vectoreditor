@@ -50,7 +50,7 @@ package org.jbei.components.sequenceClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
-			var cutSiteHeight:int = sequenceContentHolder.cutSiteTextRenderer.textHeight - 2 + 3; // -2 to remove extra space from textrenderer, +3 to add curvy line
+			var cutSiteHeight:int = sequenceContentHolder.cutSiteTextRenderer.textHeight - 2 + 3; // -2 to remove extra space from textrenderer, +3 to add curvy line, +4 for ds Marker
 			
 			var cutSiteRows:Array = sequenceContentHolder.rowMapper.cutSiteToRowMap[cutSite];
 			
@@ -107,6 +107,12 @@ package org.jbei.components.sequenceClasses
 					}
 				}
 				
+				var dsForwardPosition:int = cutSite.start + cutSite.restrictionEnzyme.dsForward;
+				var dsReversePosition:int = cutSite.start + cutSite.restrictionEnzyme.dsReverse;
+				
+				dsForwardPosition = (dsForwardPosition >= row.rowData.start && dsForwardPosition < row.rowData.end) ? dsForwardPosition : -1;
+				dsReversePosition = (dsReversePosition >= row.rowData.start && dsReversePosition < row.rowData.end) ? dsReversePosition : -1;
+				
 				var bpStartMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
 				var bpEndMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 				
@@ -127,8 +133,34 @@ package org.jbei.components.sequenceClasses
 				g.endFill();
 				
 				g.beginBitmapFill(curvyLineBitmapData, matrix, true);
-				g.drawRect(cutSiteX + 2, cutSiteY + cutSiteBitMap.height - 2, currentWidth - 2, 3); // height -2 to remove extra space from textrenderer, total height +3 to add curvy line
+				g.drawRect(cutSiteX + 2, cutSiteY + cutSiteBitMap.height, currentWidth - 2, 3); // height -2 to remove extra space from textrenderer, total height +3 to add curvy line
 				g.endFill();
+				
+				if(dsForwardPosition != -1) {
+					var dsForwardMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(dsForwardPosition - 1);
+					
+					var ds1X:Number = dsForwardMetrics.x + dsForwardMetrics.width + 2;
+					var ds1Y:Number = cutSiteY + cutSiteBitMap.height;
+					
+					g.beginFill(0x625D5D);
+					g.moveTo(ds1X, ds1Y);
+					g.lineTo(ds1X - 3, ds1Y - 4);
+					g.lineTo(ds1X + 3, ds1Y - 4);
+					g.endFill();
+				}
+				
+				if(dsReversePosition != -1) {
+					var dsReverseMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(dsReversePosition - 1);
+					
+					var ds2X:Number = dsReverseMetrics.x + dsReverseMetrics.width + 2;
+					var ds2Y:Number = cutSiteY + cutSiteBitMap.height + 3;
+					
+					g.beginFill(0x625D5D);
+					g.moveTo(ds2X, ds2Y);
+					g.lineTo(ds2X - 3, ds2Y + 4);
+					g.lineTo(ds2X + 3, ds2Y + 4);
+					g.endFill();
+				}
 			}
 		}
 		

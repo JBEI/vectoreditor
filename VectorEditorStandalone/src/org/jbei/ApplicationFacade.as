@@ -51,6 +51,7 @@ package org.jbei
 		public static const SHOW_ORFS:String = "ShowORFs";
 		public static const SHOW_COMPLEMENTARY:String = "ShowComplementary";
 		public static const SHOW_AA1:String = "ShowAA1";
+		public static const SHOW_AA1_REVCOM:String = "ShowAA1RevCom";
 		public static const SHOW_AA3:String = "ShowAA3";
 		public static const SHOW_SPACES:String = "ShowSpaces";
 		public static const SHOW_FEATURE_LABELS:String = "ShowFeatureLabels";
@@ -73,6 +74,10 @@ package org.jbei
 		public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 		public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
 		public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
+		
+		public static const PRINT_SEQUENCE:String = "PrintSequence";
+		public static const PRINT_RAIL:String = "PrintRail";
+		public static const PRINT_PIE:String = "PrintPie";
 		
 		private var _application:VectorEditor;
 		private var _actionStack:ActionStack;

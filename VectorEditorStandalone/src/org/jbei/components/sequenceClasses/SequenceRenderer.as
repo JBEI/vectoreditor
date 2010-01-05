@@ -113,18 +113,20 @@ package org.jbei.components.sequenceClasses
 				// RestrictionEnzymes
 				if(contentHolder.showCutSites) {
 					if(row.rowData.cutSitesAlignment && row.rowData.cutSitesAlignment.length > 0) {
-						_totalHeight += row.rowData.cutSitesAlignment.length * contentHolder.cutSiteTextRenderer.textHeight;
+						_totalHeight += row.rowData.cutSitesAlignment.length * contentHolder.cutSiteTextRenderer.textHeight + 3;
 					}
 				}
 				
 				// AminoAcids 3
 				if(contentHolder.showAminoAcids3) {
-					renderAA(row, true);
+					//renderAA(row, true);
+					renderAA(row);
 				}
 				
 				// AminoAcids 1
 				if(contentHolder.showAminoAcids1) {
-					renderAA(row, false);
+					//renderAA(row, false);
+					renderAA(row);
 				}
 				
 				// ORFs
@@ -166,6 +168,11 @@ package org.jbei.components.sequenceClasses
 					sequenceHeight = _totalHeight - sequenceY;
 				}
 				
+				// AminoAcids 1 RevCom
+				if(contentHolder.showAminoAcids1RevCom) {
+					renderAARevCom(row);
+				}
+				
 				// Features
 				if(contentHolder.showFeatures) {
 					if(row.rowData.featuresAlignment && row.rowData.featuresAlignment.length > 0) {
@@ -183,11 +190,183 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
-		private function renderAA(row:Row, isAA3:Boolean):void
+		private function renderAA(row:Row):void
 		{
-			var aa1:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame1 : contentHolder.aaMapper.sequenceAA1Frame1;
+			var aa1:String = contentHolder.aaMapper.sequenceAA1Frame1Sparse;
+			var aa2:String = " " + contentHolder.aaMapper.sequenceAA1Frame2Sparse;
+			var aa3:String = "  " + contentHolder.aaMapper.sequenceAA1Frame3Sparse;
+			
+			var start:int = row.rowData.start;
+			var end:int = row.rowData.end;
+			
+			var aminoAcidsString1:String = aa1.substring(start, end + 1);
+			var aminoAcidsString2:String = aa2.substring(start, end + 1);
+			var aminoAcidsString3:String = aa3.substring(start, end + 1);
+			
+			var numberOfSpaces:int = 0;
+			
+			if(contentHolder.showSpaceEvery10Bp) {
+				aminoAcidsString1 = splitWithSpaces(aminoAcidsString1, 0, false);
+				aminoAcidsString2 = splitWithSpaces(aminoAcidsString2, 0, false);
+				aminoAcidsString3 = splitWithSpaces(aminoAcidsString3, 0, false);
+				
+				numberOfSpaces = (row.rowData.sequence.length % 10) ? int(row.rowData.sequence.length / 10) : (int(row.rowData.sequence.length / 10) - 1);
+			}
+			
+			var g:Graphics = graphics;
+			var aminoAcidRenderMatrix:Matrix = new Matrix();
+			
+			// Render first row of AA3
+			for(var j1:int = 0; j1 < aminoAcidsString1.length; j1++) {
+				var aminoAcidSymbolBitmap1:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString1.charAt(j1));
+				
+				var leftShift1:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + j1 * aminoAcidSymbolBitmap1.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift1;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap1, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift1, _totalHeight, aminoAcidSymbolBitmap1.width, aminoAcidSymbolBitmap1.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift1;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+			
+			// Render second row of AA3
+			for(var j2:int = 0; j2 < aminoAcidsString2.length; j2++) {
+				var aminoAcidSymbolBitmap2:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString2.charAt(j2));
+				
+				var leftShift2:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + j2 * aminoAcidSymbolBitmap2.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift2;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap2, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift2, _totalHeight, aminoAcidSymbolBitmap2.width, aminoAcidSymbolBitmap2.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift2;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+			
+			// Render third row of AA3
+			for(var j3:int = 0; j3 < aminoAcidsString3.length; j3++) {
+				var aminoAcidSymbolBitmap3:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString3.charAt(j3));
+				
+				var leftShift3:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + j3 * aminoAcidSymbolBitmap3.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift3;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap3, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift3, _totalHeight, aminoAcidSymbolBitmap3.width, aminoAcidSymbolBitmap3.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift3;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+		}
+		
+		private function renderAARevCom(row:Row):void
+		{
+			var aa1:String = contentHolder.aaMapper.revComAA1Frame1Sparse;
+			var aa2:String = " " + contentHolder.aaMapper.revComAA1Frame2Sparse;
+			var aa3:String = "  " + contentHolder.aaMapper.revComAA1Frame3Sparse;
+			
+			var start:int = contentHolder.featuredSequence.sequence.length - row.rowData.end - 1;
+			var end:int = contentHolder.featuredSequence.sequence.length - row.rowData.start - 1;
+			
+			var aminoAcidsString1:String = aa1.substring(start, end + 1);
+			var aminoAcidsString2:String = aa2.substring(start, end + 1);
+			var aminoAcidsString3:String = aa3.substring(start, end + 1);
+			
+			var numberOfSpaces:int = 0;
+			
+			if(contentHolder.showSpaceEvery10Bp) {
+				aminoAcidsString1 = splitWithSpaces(aminoAcidsString1, 0, false);
+				aminoAcidsString2 = splitWithSpaces(aminoAcidsString2, 0, false);
+				aminoAcidsString3 = splitWithSpaces(aminoAcidsString3, 0, false);
+				
+				numberOfSpaces = (row.rowData.sequence.length % 10) ? int(row.rowData.sequence.length / 10) : (int(row.rowData.sequence.length / 10) - 1);
+			}
+			
+			var g:Graphics = graphics;
+			var aminoAcidRenderMatrix:Matrix = new Matrix();
+			
+			// Render first row of AA3
+			for(var j1:int = 0; j1 < aminoAcidsString1.length; j1++) {
+				var aminoAcidSymbolBitmap1:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString1.charAt(j1));
+				
+				var leftShift1:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + ((row.rowData.sequence.length - 1) + numberOfSpaces - j1) * aminoAcidSymbolBitmap1.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift1;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap1, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift1, _totalHeight, aminoAcidSymbolBitmap1.width, aminoAcidSymbolBitmap1.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift1;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+			
+			// Render second row of AA3
+			for(var j2:int = 0; j2 < aminoAcidsString2.length; j2++) {
+				var aminoAcidSymbolBitmap2:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString2.charAt(j2));
+				
+				var leftShift2:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + ((row.rowData.sequence.length - 1) + numberOfSpaces - j2) * aminoAcidSymbolBitmap2.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift2;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap2, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift2, _totalHeight, aminoAcidSymbolBitmap2.width, aminoAcidSymbolBitmap2.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift2;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+			
+			// Render third row of AA3
+			for(var j3:int = 0; j3 < aminoAcidsString3.length; j3++) {
+				var aminoAcidSymbolBitmap3:BitmapData = contentHolder.aminoAcidsTextRenderer.textToBitmap(aminoAcidsString3.charAt(j3));
+				
+				var leftShift3:int = 6 * contentHolder.sequenceSymbolRenderer.textWidth + ((row.rowData.sequence.length - 1) + numberOfSpaces - j3) * aminoAcidSymbolBitmap3.width;
+				
+				aminoAcidRenderMatrix.tx += leftShift3;
+				aminoAcidRenderMatrix.ty += _totalHeight;
+				
+				g.beginBitmapFill(aminoAcidSymbolBitmap3, aminoAcidRenderMatrix, false);
+				g.drawRect(leftShift3, _totalHeight, aminoAcidSymbolBitmap3.width, aminoAcidSymbolBitmap3.height);
+				g.endFill();
+				
+				aminoAcidRenderMatrix.tx -= leftShift3;
+				aminoAcidRenderMatrix.ty -= _totalHeight;
+			}
+			
+			_totalHeight += contentHolder.aminoAcidsTextRenderer.textHeight;
+		}
+		
+		private function renderAAOld(row:Row, isAA3:Boolean):void
+		{
+			/*var aa1:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame1 : contentHolder.aaMapper.sequenceAA1Frame1;
 			var aa2:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame2 : contentHolder.aaMapper.sequenceAA1Frame2;
-			var aa3:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame3 : contentHolder.aaMapper.sequenceAA1Frame3;
+			var aa3:String = isAA3 ? contentHolder.aaMapper.sequenceAA3Frame3 : contentHolder.aaMapper.sequenceAA1Frame3;*/
+			
+			var aa1:String = contentHolder.aaMapper.sequenceAA1Frame1;
+			var aa2:String = contentHolder.aaMapper.sequenceAA1Frame2;
+			var aa3:String = contentHolder.aaMapper.sequenceAA1Frame3;
 			
 			var shift1:int = 0;
 			var shift2:int = 0;

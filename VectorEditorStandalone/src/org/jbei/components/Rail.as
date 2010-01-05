@@ -10,6 +10,7 @@ package org.jbei.components
 	import mx.events.ScrollEventDirection;
 	import mx.managers.IFocusManagerComponent;
 	
+	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.railClasses.ContentHolder;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
@@ -291,6 +292,31 @@ package org.jbei.components
 		public function deselect():void
 		{
 			contentHolder.deselect();
+		}
+		
+		public function printingContent(pageWidth:Number, pageHeight:Number, scaleToPage:Boolean = false):PrintableContent
+		{
+			var printableContent:PrintableContent = new PrintableContent();
+			
+			printableContent.width = contentHolder.totalWidth;
+			printableContent.height = contentHolder.totalHeight;
+			
+			if(scaleToPage) {
+				printableContent.pages.push(contentHolder.contentBitmapData(pageWidth, pageHeight, true));
+			} else {
+				var numPages:int = Math.ceil(contentHolder.totalHeight / pageHeight);
+				
+				for(var i:int = 0; i < numPages; i++) {
+					printableContent.pages.push(contentHolder.contentBitmapData(pageWidth, pageHeight, false, i));
+				}
+			}
+			
+			return printableContent;
+		}
+		
+		public function removeMask():void
+		{
+			contentHolder.mask = null;
 		}
 		
 		// Protected Methods
