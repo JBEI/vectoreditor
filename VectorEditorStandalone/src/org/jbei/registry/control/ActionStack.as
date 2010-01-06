@@ -3,10 +3,9 @@ package org.jbei.registry.control
 	import flash.events.EventDispatcher;
 	
 	import mx.collections.ArrayCollection;
-	import mx.utils.DisplayUtil;
 	
-	import org.jbei.ApplicationFacade;
-	import org.jbei.common.IMemento;
+	import org.jbei.lib.common.IMemento;
+	import org.jbei.registry.ApplicationFacade;
 	
 	public class ActionStack extends EventDispatcher
 	{

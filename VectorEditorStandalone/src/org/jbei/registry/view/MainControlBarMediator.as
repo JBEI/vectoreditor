@@ -2,7 +2,8 @@ package org.jbei.registry.view
 {
 	import flash.events.Event;
 	
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainControlBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -38,40 +39,40 @@ package org.jbei.registry.view
 		
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_RAIL
-				, ApplicationFacade.SHOW_PIE
-				, ApplicationFacade.SHOW_FEATURES
-				, ApplicationFacade.SHOW_CUTSITES
-				, ApplicationFacade.SHOW_ORFS
-				, ApplicationFacade.ACTION_STACK_CHANGED
-				, ApplicationFacade.SELECTION_CHANGED
-				, ApplicationFacade.SAFE_EDITING_CHANGED
+			return [Notifications.SHOW_RAIL
+				, Notifications.SHOW_PIE
+				, Notifications.SHOW_FEATURES
+				, Notifications.SHOW_CUTSITES
+				, Notifications.SHOW_ORFS
+				, Notifications.ACTION_STACK_CHANGED
+				, Notifications.SELECTION_CHANGED
+				, Notifications.SAFE_EDITING_CHANGED
 			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case ApplicationFacade.SHOW_PIE:
+				case Notifications.SHOW_PIE:
 					controlBar.viewToggleButtonBar.selectedIndex = 0;
 					break;
-				case ApplicationFacade.SHOW_RAIL:
+				case Notifications.SHOW_RAIL:
 					controlBar.viewToggleButtonBar.selectedIndex = 1;
 					break;
-				case ApplicationFacade.SHOW_FEATURES:
+				case Notifications.SHOW_FEATURES:
 					controlBar.showFeaturesButton.selected = (notification.getBody() as Boolean);
 					break;
-				case ApplicationFacade.SHOW_CUTSITES:
+				case Notifications.SHOW_CUTSITES:
 					controlBar.showCutSitesButton.selected = (notification.getBody() as Boolean);
 					break;
-				case ApplicationFacade.SHOW_ORFS:
+				case Notifications.SHOW_ORFS:
 					controlBar.showORFsButton.selected = (notification.getBody() as Boolean);
 					break;
-				case ApplicationFacade.ACTION_STACK_CHANGED:
+				case Notifications.ACTION_STACK_CHANGED:
 					controlBar.updateUndoButtonState(!ApplicationFacade.getInstance().actionStack.undoStackIsEmpty);
 					controlBar.updateRedoButtonState(!ApplicationFacade.getInstance().actionStack.redoStackIsEmpty);
 					break;
-				case ApplicationFacade.SELECTION_CHANGED:
+				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
 					if(selectionPositions.length == 2 && selectionPositions[0] > -1 && selectionPositions[1] > -1) {
@@ -80,7 +81,7 @@ package org.jbei.registry.view
 						controlBar.updateCopyAndCutButtonState(false);
 					}
 					break;
-				case ApplicationFacade.SAFE_EDITING_CHANGED:
+				case Notifications.SAFE_EDITING_CHANGED:
 					controlBar.safeEditingButton.selected = (notification.getBody() as Boolean);
 					break;
 			}
@@ -89,72 +90,72 @@ package org.jbei.registry.view
 		// Private Methods
 		private function onShowFeaturesStateChanged(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FEATURES, controlBar.showFeaturesButton.selected);
+			sendNotification(Notifications.SHOW_FEATURES, controlBar.showFeaturesButton.selected);
 		}
 		
 		private function onShowCutSitesStateChanged(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_CUTSITES, controlBar.showCutSitesButton.selected);
+			sendNotification(Notifications.SHOW_CUTSITES, controlBar.showCutSitesButton.selected);
 		}
 		
 		private function onShowORFsStateChanged(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_ORFS, controlBar.showORFsButton.selected);
+			sendNotification(Notifications.SHOW_ORFS, controlBar.showORFsButton.selected);
 		}
 		
 		private function onShowRestrictionEnzymesManagerDialog(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
+			sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
 		private function onUndo(event:Event):void
 		{
-			sendNotification(ApplicationFacade.UNDO);
+			sendNotification(Notifications.UNDO);
 		}
 		
 		private function onRedo(event:Event):void
 		{
-			sendNotification(ApplicationFacade.REDO);
+			sendNotification(Notifications.REDO);
 		}
 		
 		private function onCopy(event:Event):void
 		{
-			sendNotification(ApplicationFacade.COPY);
+			sendNotification(Notifications.COPY);
 		}
 		
 		private function onCut(event:Event):void
 		{
-			sendNotification(ApplicationFacade.CUT);
+			sendNotification(Notifications.CUT);
 		}
 		
 		private function onPaste(event:Event):void
 		{
-			sendNotification(ApplicationFacade.PASTE);
+			sendNotification(Notifications.PASTE);
 		}
 		
 		private function onShowFindPanel(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FIND_PANEL);
+			sendNotification(Notifications.SHOW_FIND_PANEL);
 		}
 		
 		private function onShowPropertiesDialog(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
+			sendNotification(Notifications.SHOW_PROPERTIES_DIALOG);
 		}
 		
 		private function onSafeEditingChanged(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SAFE_EDITING_CHANGED, controlBar.safeEditingButton.selected);
+			sendNotification(Notifications.SAFE_EDITING_CHANGED, controlBar.safeEditingButton.selected);
 		}
 		
 		private function onShowRailView(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_RAIL);
+			sendNotification(Notifications.SHOW_RAIL);
 		}
 		
 		private function onShowPieView(event:Event):void
 		{
-			sendNotification(ApplicationFacade.SHOW_PIE);
+			sendNotification(Notifications.SHOW_PIE);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package org.jbei.registry.view
 {
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -17,45 +18,45 @@ package org.jbei.registry.view
 		// Public Methods
 		public override function listNotificationInterests():Array
 		{
-			return [ApplicationFacade.USER_PREFERENCES_FETCHED
-				, ApplicationFacade.USER_RESTRICTION_ENZYMES_FETCHED
-				, ApplicationFacade.APPLICATION_FAILURE
+			return [Notifications.USER_PREFERENCES_FETCHED
+				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
+				, Notifications.APPLICATION_FAILURE
 				
-				, ApplicationFacade.DATA_FETCHED
-				, ApplicationFacade.FETCHING_DATA
+				, Notifications.DATA_FETCHED
+				, Notifications.FETCHING_DATA
 				
-				, ApplicationFacade.UNDO
-				, ApplicationFacade.REDO];
+				, Notifications.UNDO
+				, Notifications.REDO];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case ApplicationFacade.APPLICATION_FAILURE:
+				case Notifications.APPLICATION_FAILURE:
 					ApplicationFacade.getInstance().application.disableApplication(notification.getBody() as String);
 					
 					break;
-				case ApplicationFacade.USER_PREFERENCES_FETCHED:
-					sendNotification(ApplicationFacade.FETCH_USER_RESTRICTION_ENZYMES);
+				case Notifications.USER_PREFERENCES_FETCHED:
+					sendNotification(Notifications.FETCH_USER_RESTRICTION_ENZYMES);
 					
 					break;
-				case ApplicationFacade.USER_RESTRICTION_ENZYMES_FETCHED:
-					sendNotification(ApplicationFacade.FETCH_ENTRY);
+				case Notifications.USER_RESTRICTION_ENZYMES_FETCHED:
+					sendNotification(Notifications.FETCH_ENTRY);
 					
 					break;
-				case ApplicationFacade.UNDO:
+				case Notifications.UNDO:
 					ApplicationFacade.getInstance().actionStack.undo();
 					
 					break;
-				case ApplicationFacade.REDO:
+				case Notifications.REDO:
 					ApplicationFacade.getInstance().actionStack.redo();
 					
 					break;
-				case ApplicationFacade.FETCHING_DATA:
+				case Notifications.FETCHING_DATA:
 					ApplicationFacade.getInstance().application.lock();
 					
 					break;
-				case ApplicationFacade.DATA_FETCHED:
+				case Notifications.DATA_FETCHED:
 					ApplicationFacade.getInstance().application.unlock();
 					
 					break;

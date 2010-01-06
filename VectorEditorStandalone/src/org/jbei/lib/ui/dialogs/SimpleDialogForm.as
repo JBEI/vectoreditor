@@ -1,4 +1,4 @@
-package org.jbei.ui.dialogs
+package org.jbei.lib.ui.dialogs
 {
 	import mx.containers.Box;
 

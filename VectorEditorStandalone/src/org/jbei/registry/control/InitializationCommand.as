@@ -1,6 +1,5 @@
 package org.jbei.registry.control
 {
-	import org.jbei.ApplicationFacade;
 	import org.puremvc.as3.patterns.command.MacroCommand;
 
 	public class InitializationCommand extends MacroCommand

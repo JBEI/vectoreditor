@@ -5,7 +5,7 @@ package org.jbei.registry.model
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
 	
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.model.vo.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
@@ -56,31 +56,31 @@ package org.jbei.registry.model
 		// Private Methods
 		private function onUserRestrictionEnzymesServiceFault(event:FaultEvent):void
 		{
-			sendNotification(ApplicationFacade.APPLICATION_FAILURE, "UserRestrictionEnzymesService failed!");
+			sendNotification(Notifications.APPLICATION_FAILURE, "UserRestrictionEnzymesService failed!");
 		}
 		
 		private function onUserRestrictionEnzymesServiceInvoke(event:InvokeEvent):void
 		{
-			sendNotification(ApplicationFacade.FETCHING_DATA, "Loading User Restriction Enzymes...");
+			sendNotification(Notifications.FETCHING_DATA, "Loading User Restriction Enzymes...");
 		}
 		
 		private function onUserRestrictionEnzymesServiceFetchResult(event:ResultEvent):void
 		{
 			if(!event.result) {
-				sendNotification(ApplicationFacade.APPLICATION_FAILURE, "Failed to fetch user restriction enzymes!");
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch user restriction enzymes!");
 				return;
 			}
 			
-			sendNotification(ApplicationFacade.DATA_FETCHED);
+			sendNotification(Notifications.DATA_FETCHED);
 			
 			updateUserRestrictionEnzymes(event.result as UserRestrictionEnzymes);
 		}
 		
 		private function onUserRestrictionEnzymesServiceSaveResult(event:ResultEvent):void
 		{
-			sendNotification(ApplicationFacade.DATA_FETCHED);
+			sendNotification(Notifications.DATA_FETCHED);
 			
-			sendNotification(ApplicationFacade.USER_RESTRICTION_ENZYMES_CHANGED);
+			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
 			
 			Logger.getInstance().info("User restriction enzymes saved successfully");
 		}
@@ -97,7 +97,7 @@ package org.jbei.registry.model
 				RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
 			}
 			
-			sendNotification(ApplicationFacade.USER_RESTRICTION_ENZYMES_FETCHED);
+			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_FETCHED);
 			
 			Logger.getInstance().info("User restriction enzymes fetched successfully");
 		}

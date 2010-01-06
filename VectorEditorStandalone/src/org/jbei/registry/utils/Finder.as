@@ -4,7 +4,7 @@ package org.jbei.registry.utils
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.lib.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.utils.FindUtils;
+	import org.jbei.lib.FindUtils;
 
 	public class Finder
 	{
@@ -20,6 +20,8 @@ package org.jbei.registry.utils
 			if(!featuredSequence || featuredSequence.sequence.length == 0 || expression.length == 0) { return null; }
 			
 			var resultSegment:Segment = null;
+			
+			expression = expression.toUpperCase();
 			
 			switch(dataType) {
 				case DATA_TYPE_DNA:
@@ -48,25 +50,35 @@ package org.jbei.registry.utils
 				case DATA_TYPE_AMINO_ACIDS:
 					var aaMapper:AAMapper = new AAMapper(featuredSequence);
 					
-					var position:int = 0;
+					var position1:int = 0;
 					if(start == 0) {
-						position = 0;
+						position1 = 0;
 					} else {
 						if(start % 3 == 0) {
-							position = (start + 3) / 3;
+							position1 = (start + 3) / 3;
 						} else if(start % 3 == 1) {
-							position = (start + 2) / 3;
+							position1 = (start + 2) / 3;
 						} else if(start % 3 == 2) {
-							position = (start + 1) / 3;
+							position1 = (start + 1) / 3;
 						}
 					}
 					
-					var sequenceSegmentFrame1:Segment = FindUtils.find(aaMapper.sequenceAA1Frame1, expression.toUpperCase(), position);
-					var sequenceSegmentFrame2:Segment = FindUtils.find(aaMapper.sequenceAA1Frame2, expression.toUpperCase(), position);
-					var sequenceSegmentFrame3:Segment = FindUtils.find(aaMapper.sequenceAA1Frame3, expression.toUpperCase(), position);
-					/*var revComSegmentFrame1:Segment = FindUtils.findLast(aaMapper.revComAA1Frame1, expression.toUpperCase(), featuredSequence.sequence.length - position);
-					var revComSegmentFrame2:Segment = FindUtils.findLast(aaMapper.revComAA1Frame2, expression.toUpperCase(), featuredSequence.sequence.length - position);
-					var revComSegmentFrame3:Segment = FindUtils.findLast(aaMapper.revComAA1Frame3, expression.toUpperCase(), featuredSequence.sequence.length - position);*/
+					var position2:int = 0;
+					if((featuredSequence.sequence.length - start - 1) % 3 == 0) {
+						position2 = (featuredSequence.sequence.length - start - 1 - 3) / 3;
+					} else if((featuredSequence.sequence.length - start - 1) % 3 == 1) {
+						position2 = ((featuredSequence.sequence.length - start - 1) - 2) / 3;
+					} else if((featuredSequence.sequence.length - start - 1) % 3 == 2) {
+						position2 = ((featuredSequence.sequence.length - start - 1) - 1) / 3;
+					}
+					
+					var sequenceSegmentFrame1:Segment = FindUtils.find(aaMapper.sequenceAA1Frame1, expression, position1);
+					var sequenceSegmentFrame2:Segment = FindUtils.find(aaMapper.sequenceAA1Frame2, expression, position1);
+					var sequenceSegmentFrame3:Segment = FindUtils.find(aaMapper.sequenceAA1Frame3, expression, position1);
+					
+					var revComSegmentFrame1:Segment = FindUtils.findLast(aaMapper.revComAA1Frame1, expression, position2);
+					var revComSegmentFrame2:Segment = FindUtils.findLast(aaMapper.revComAA1Frame2, expression, position2);
+					var revComSegmentFrame3:Segment = FindUtils.findLast(aaMapper.revComAA1Frame3, expression, position2);
 					
 					var smallestStart:int = -1;
 					var frame:int = 0;
@@ -100,9 +112,9 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					/*if(revComSegmentFrame1) {
-						revComSegmentFrame1.start = 3 * revComSegmentFrame1.start + 3;
-						revComSegmentFrame1.end = 3 * revComSegmentFrame1.end + 3;
+					if(revComSegmentFrame1) {
+						revComSegmentFrame1.start = 3 * revComSegmentFrame1.start;
+						revComSegmentFrame1.end = 3 * revComSegmentFrame1.end;
 						
 						if(frame == 0 || revComSegmentFrame1.start < smallestStart) {
 							smallestStart = revComSegmentFrame1.start;
@@ -127,9 +139,11 @@ package org.jbei.registry.utils
 						revComSegmentFrame3.end = 3 * revComSegmentFrame3.end + 1;
 						
 						if(frame == 0 || revComSegmentFrame3.start < smallestStart) {
+							smallestStart = revComSegmentFrame3.start;
+							
 							frame = -3;
 						}
-					}*/
+					}
 					
 					if(frame == 1) {
 						resultSegment = sequenceSegmentFrame1;
@@ -137,13 +151,13 @@ package org.jbei.registry.utils
 						resultSegment = sequenceSegmentFrame2;
 					} else if(frame == 3) {
 						resultSegment = sequenceSegmentFrame3;
-					}/* else if(frame == -1) {
+					} else if(frame == -1) {
 						resultSegment = revComSegmentFrame1;
 					} else if(frame == -2) {
 						resultSegment = revComSegmentFrame2;
 					} else if(frame == -3) {
 						resultSegment = revComSegmentFrame3;
-					}*/
+					}
 					
 					break;
 			}
@@ -166,21 +180,26 @@ package org.jbei.registry.utils
 					
 					result = new Array();
 					
-					for(var j1:int = 0; j1 < sequenceSegments.length; j1++) {
-						result.push(sequenceSegments[j1]);
+					for(var k1:int = 0; k1 < sequenceSegments.length; k1++) {
+						result.push(sequenceSegments[k1]);
 					}
 					
-					for(var j2:int = 0; j2 < reverseComplementSegments.length; j2++) {
-						result.push(new Segment(featuredSequence.sequence.length - (reverseComplementSegments[j2] as Segment).end, featuredSequence.sequence.length - (reverseComplementSegments[j2] as Segment).start))
+					for(var k2:int = 0; k2 < reverseComplementSegments.length; k2++) {
+						result.push(new Segment(featuredSequence.sequence.length - (reverseComplementSegments[k2] as Segment).end, featuredSequence.sequence.length - (reverseComplementSegments[k2] as Segment).start))
 					}
 					
 					break;
 				case DATA_TYPE_AMINO_ACIDS:
 					var aaMapper:AAMapper = new AAMapper(featuredSequence);
 					
-					var segments1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression.toUpperCase());
-					var segments2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression.toUpperCase());
-					var segments3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression.toUpperCase());
+					expression = expression.toUpperCase();
+					
+					var segments1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression);
+					var segments2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression);
+					var segments3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression);
+					var revComSegments1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression);
+					var revComSegments2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression);
+					var revComSegments3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression);
 					
 					result = new Array();
 					
@@ -205,6 +224,26 @@ package org.jbei.registry.utils
 						result.push((segments3[i3] as Segment));
 					}
 					
+					for(var j1:int = 0; j1 < revComSegments1.length; j1++) {
+						(revComSegments1[j1] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).start;
+						(revComSegments1[j1] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).end;
+						
+						result.push((revComSegments1[j1] as Segment));
+					}
+					
+					for(var j2:int = 0; j2 < revComSegments2.length; j2++) {
+						(revComSegments2[j2] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).start - 1;
+						(revComSegments2[j2] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).end - 1;
+						
+						result.push((revComSegments2[j2] as Segment));
+					}
+					
+					for(var j3:int = 0; j3 < revComSegments3.length; j3++) {
+						(revComSegments3[j3] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).start - 2;
+						(revComSegments3[j3] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).end - 2;
+						
+						result.push((revComSegments3[j3] as Segment));
+					}
 					break;
 			}
 			

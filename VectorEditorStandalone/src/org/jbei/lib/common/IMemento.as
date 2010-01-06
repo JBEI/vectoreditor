@@ -1,4 +1,4 @@
-package org.jbei.common
+package org.jbei.lib.common
 {
 	public interface IMemento
 	{

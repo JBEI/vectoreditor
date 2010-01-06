@@ -2,7 +2,7 @@
 <SimpleDialogForm
 	width="100%"
 	height="100%"
-	xmlns="org.jbei.ui.dialogs.*"
+	xmlns="org.jbei.lib.ui.dialogs.*"
 	xmlns:mx="http://www.adobe.com/2006/mxml">
 	
 	<mx:Script>

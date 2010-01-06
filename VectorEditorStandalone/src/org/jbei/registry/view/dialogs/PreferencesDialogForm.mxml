@@ -4,7 +4,7 @@
 	height="100%" 
 	minWidth="300"
 	minHeight="200"
-	xmlns="org.jbei.ui.dialogs.*" 
+	xmlns="org.jbei.lib.ui.dialogs.*" 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	creationComplete="onCreationComplete(event)">
 	
@@ -12,7 +12,7 @@
 		<![CDATA[
 			import mx.events.ValidationResultEvent;
 			
-			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.model.UserPreferencesProxy;
 			import org.jbei.registry.model.vo.UserPreferences;
 			

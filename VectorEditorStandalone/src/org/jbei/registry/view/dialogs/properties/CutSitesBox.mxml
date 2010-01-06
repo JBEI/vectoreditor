@@ -8,10 +8,11 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
-			import org.jbei.ApplicationFacade;
 			import org.jbei.bio.data.CutSite;
 			import org.jbei.lib.RestrictionEnzymeMapper;
-			import org.jbei.ui.dialogs.SimpleDialog;
+			import org.jbei.lib.ui.dialogs.SimpleDialog;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			public var parentDialog:SimpleDialog;
@@ -65,14 +66,14 @@
 			{
 				parentDialog.close();
 				
-				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
+				ApplicationFacade.getInstance().sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 			}
 			
 			private function onPreferencesLinkButtonClick(event:MouseEvent):void
 			{
 				parentDialog.close();
 				
-				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_PREFERENCES_DIALOG);
+				ApplicationFacade.getInstance().sendNotification(Notifications.SHOW_PREFERENCES_DIALOG);
 			}
 		]]>
 	</mx:Script>

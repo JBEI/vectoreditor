@@ -8,12 +8,11 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.Constants;
 			import org.jbei.registry.model.vo.Entry;
 			import org.jbei.registry.model.vo.PartNumber;
 			import org.jbei.registry.model.vo.Plasmid;
-			import org.jbei.utils.SystemUtils;
 			
 			// Event Handlers
 			private function onCreationComplete(event:Event):void

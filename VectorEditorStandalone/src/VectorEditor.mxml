@@ -16,7 +16,8 @@
 			import mx.controls.Alert;
 			
 			import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
-			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
 			import org.jbei.registry.utils.SystemUtils;
 			import org.jbei.registry.view.ApplicationMediator;
 			import org.jbei.utils.Logger;
@@ -114,7 +115,7 @@
 				Logger.getInstance().info("Entry ID: " + facade.entryId);
 				Logger.getInstance().info("Server URL: " + facade.serverURL);
 				
-				facade.sendNotification(ApplicationFacade.INITIALIZATION, this);
+				facade.sendNotification(Notifications.INITIALIZATION, this);
 			}
 		]]>
 	</mx:Script>

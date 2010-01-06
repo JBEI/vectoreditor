@@ -1,4 +1,4 @@
-package org.jbei.utils
+package org.jbei.lib
 {
 	import org.jbei.bio.data.Segment;
 

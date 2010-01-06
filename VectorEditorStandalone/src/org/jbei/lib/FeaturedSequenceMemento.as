@@ -3,7 +3,7 @@ package org.jbei.lib
 	import mx.collections.ArrayCollection;
 	
 	import org.jbei.bio.data.DNASequence;
-	import org.jbei.common.IMemento;
+	import org.jbei.lib.common.IMemento;
 	
 	public class FeaturedSequenceMemento implements IMemento
 	{

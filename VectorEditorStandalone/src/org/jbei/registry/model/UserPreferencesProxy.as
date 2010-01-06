@@ -5,10 +5,9 @@ package org.jbei.registry.model
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
 	
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.model.vo.UserPreferences;
 	import org.jbei.registry.utils.StandaloneUtils;
-	import org.jbei.registry.view.dialogs.PreferencesDialogForm;
 	import org.jbei.utils.Logger;
 	import org.puremvc.as3.patterns.proxy.Proxy;
 
@@ -63,31 +62,31 @@ package org.jbei.registry.model
 		// Private Methods
 		private function onUserPreferencesServiceFault(event:FaultEvent):void
 		{
-			sendNotification(ApplicationFacade.APPLICATION_FAILURE, "UserPreferencesService failed!");
+			sendNotification(Notifications.APPLICATION_FAILURE, "UserPreferencesService failed!");
 		}
 		
 		private function onUserPreferencesServiceInvoke(event:InvokeEvent):void
 		{
-			sendNotification(ApplicationFacade.FETCHING_DATA, "Loading User Preferences...");
+			sendNotification(Notifications.FETCHING_DATA, "Loading User Preferences...");
 		}
 		
 		private function onUserPreferencesServiceFetchResult(event:ResultEvent):void
 		{
 			if(!event.result) {
-				sendNotification(ApplicationFacade.APPLICATION_FAILURE, "Failed to fetch user preferences!");
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch user preferences!");
 				return;
 			}
 			
-			sendNotification(ApplicationFacade.DATA_FETCHED);
+			sendNotification(Notifications.DATA_FETCHED);
 			
 			updateUserPreferences(event.result as UserPreferences);
 		}
 		
 		private function onUserPreferencesServiceSaveResult(event:ResultEvent):void
 		{
-			sendNotification(ApplicationFacade.DATA_FETCHED);
+			sendNotification(Notifications.DATA_FETCHED);
 			
-			sendNotification(ApplicationFacade.USER_PREFERENCES_CHANGED);
+			sendNotification(Notifications.USER_PREFERENCES_CHANGED);
 			
 			Logger.getInstance().info("User preferences saved successfully");
 		}
@@ -101,7 +100,7 @@ package org.jbei.registry.model
 		{
 			_userPreferences = userPreferences;
 			
-			sendNotification(ApplicationFacade.USER_PREFERENCES_FETCHED);
+			sendNotification(Notifications.USER_PREFERENCES_FETCHED);
 			
 			Logger.getInstance().info("User preferences fetched successfully");
 		}

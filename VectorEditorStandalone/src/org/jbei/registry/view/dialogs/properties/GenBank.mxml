@@ -6,8 +6,8 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.ApplicationFacade;
 			import org.jbei.lib.FeaturedSequence;
+			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.utils.SystemUtils;
 			
 			private function onInitialize(event:Event):void

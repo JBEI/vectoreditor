@@ -9,7 +9,7 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.ApplicationFacade;
 			
 			// Event Handlers
 			private function onKeyDown(event:KeyboardEvent):void

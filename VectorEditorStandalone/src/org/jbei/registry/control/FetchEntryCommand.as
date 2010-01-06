@@ -1,11 +1,7 @@
 package org.jbei.registry.control
 {
-	import mx.rpc.events.FaultEvent;
-	import mx.rpc.events.ResultEvent;
-	
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.model.EntriesProxy;
-	import org.jbei.registry.model.vo.Plasmid;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 	

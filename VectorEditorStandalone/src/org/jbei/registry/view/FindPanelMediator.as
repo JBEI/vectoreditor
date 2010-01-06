@@ -2,7 +2,7 @@ package org.jbei.registry.view
 {
 	import flash.events.Event;
 	
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.FindPanel;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -30,35 +30,35 @@ package org.jbei.registry.view
 		// Public Methods
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_FIND_PANEL
-				, ApplicationFacade.HIDE_FIND_PANEL
-				, ApplicationFacade.FIND_MATCH_FOUND
-				, ApplicationFacade.FIND_MATCH_NOT_FOUND
-				, ApplicationFacade.FEATURED_SEQUENCE_CHANGED
+			return [Notifications.SHOW_FIND_PANEL
+				, Notifications.HIDE_FIND_PANEL
+				, Notifications.FIND_MATCH_FOUND
+				, Notifications.FIND_MATCH_NOT_FOUND
+				, Notifications.FEATURED_SEQUENCE_CHANGED
 			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case ApplicationFacade.SHOW_FIND_PANEL:
+				case Notifications.SHOW_FIND_PANEL:
 					findPanel.show();
 					
 					break;
-				case ApplicationFacade.HIDE_FIND_PANEL:
+				case Notifications.HIDE_FIND_PANEL:
 					findPanel.hide();
-					sendNotification(ApplicationFacade.CLEAR_HIGHLIGHT);
+					sendNotification(Notifications.CLEAR_HIGHLIGHT);
 					
 					break;
-				case ApplicationFacade.FIND_MATCH_FOUND:
+				case Notifications.FIND_MATCH_FOUND:
 					findPanel.highlightFindBox(true);
 					
 					break;
-				case ApplicationFacade.FIND_MATCH_NOT_FOUND:
+				case Notifications.FIND_MATCH_NOT_FOUND:
 					findPanel.highlightFindBox(false);
 					
 					break;
-				case ApplicationFacade.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.FEATURED_SEQUENCE_CHANGED:
 					findPanel.updateHighlight();
 					
 					break;
@@ -68,27 +68,27 @@ package org.jbei.registry.view
 		// Private Methods
 		private function onFind(event:Event):void
 		{
-			sendNotification(ApplicationFacade.FIND, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
+			sendNotification(Notifications.FIND, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onFindNext(event:Event):void
 		{
-			sendNotification(ApplicationFacade.FIND_NEXT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
+			sendNotification(Notifications.FIND_NEXT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onHighlight(event:Event):void
 		{
-			sendNotification(ApplicationFacade.HIGHLIGHT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
+			sendNotification(Notifications.HIGHLIGHT, [findPanel.findExpression, findPanel.dataType, findPanel.searchType]);
 		}
 		
 		private function onClearHighlight(event:Event):void
 		{
-			sendNotification(ApplicationFacade.CLEAR_HIGHLIGHT);
+			sendNotification(Notifications.CLEAR_HIGHLIGHT);
 		}
 		
 		private function onHideFindPanel(event:Event):void
 		{
-			sendNotification(ApplicationFacade.HIDE_FIND_PANEL);
+			sendNotification(Notifications.HIDE_FIND_PANEL);
 		}
 	}
 }

@@ -12,11 +12,12 @@
 			import mx.controls.dataGridClasses.DataGridItemRenderer;
 			import mx.utils.StringUtil;
 			
-			import org.jbei.ApplicationFacade;
 			import org.jbei.bio.data.Feature;
+			import org.jbei.lib.ui.dialogs.ModalDialog;
+			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
 			import org.jbei.registry.view.dialogs.FeatureDialogForm;
-			import org.jbei.ui.dialogs.ModalDialog;
-			import org.jbei.ui.dialogs.ModalDialogEvent;
 			
 			[Bindable]
 			private var filteredFeatures:ArrayCollection = new ArrayCollection();
@@ -158,7 +159,7 @@
 				if(event.target is DataGridItemRenderer) {
 					var feature:Feature = (event.target as DataGridItemRenderer).data.feature;
 					
-					ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SELECTION_CHANGED, new Array(feature.start, feature.end + 1));
+					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(feature.start, feature.end + 1));
 				}
 			}
 			

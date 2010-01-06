@@ -1,7 +1,7 @@
 package org.jbei.registry.view
 {
-	import org.jbei.ApplicationFacade;
-	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.registry.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.StatusBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -23,19 +23,19 @@ package org.jbei.registry.view
 		// Public Methods
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SELECTION_CHANGED
-				, ApplicationFacade.CARET_POSITION_CHANGED
+			return [Notifications.SELECTION_CHANGED
+				, Notifications.CARET_POSITION_CHANGED
 				
-				, ApplicationFacade.FETCHING_DATA
-				, ApplicationFacade.DATA_FETCHED
-				, ApplicationFacade.FEATURED_SEQUENCE_CHANGED
+				, Notifications.FETCHING_DATA
+				, Notifications.DATA_FETCHED
+				, Notifications.FEATURED_SEQUENCE_CHANGED
 			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case ApplicationFacade.SELECTION_CHANGED:
+				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
 					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().featuredSequence) { return; }
@@ -57,7 +57,7 @@ package org.jbei.registry.view
 					}
 					
 					break;
-				case ApplicationFacade.CARET_POSITION_CHANGED:
+				case Notifications.CARET_POSITION_CHANGED:
 					var caretPosition:int = notification.getBody() as int;
 					if(caretPosition > -1) {
 						statusBar.caretPositionLabel.text = String(caretPosition);
@@ -66,13 +66,13 @@ package org.jbei.registry.view
 					}
 					
 					break;
-				case ApplicationFacade.FETCHING_DATA:
+				case Notifications.FETCHING_DATA:
 					statusBar.statusLabel.text = notification.getBody() as String;
 					break;
-				case ApplicationFacade.DATA_FETCHED:
+				case Notifications.DATA_FETCHED:
 					statusBar.statusLabel.text = "Done";
 					break;
-				case ApplicationFacade.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.FEATURED_SEQUENCE_CHANGED:
 					if(ApplicationFacade.getInstance().featuredSequence) {
 						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().featuredSequence.sequence.length);
 					} else {

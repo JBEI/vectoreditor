@@ -8,8 +8,8 @@ package org.jbei.lib
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.FeatureNote;
 	import org.jbei.bio.utils.SequenceUtils;
-	import org.jbei.common.IMemento;
-	import org.jbei.common.IOriginator;
+	import org.jbei.lib.common.IMemento;
+	import org.jbei.lib.common.IOriginator;
 	import org.jbei.utils.StringUtils;
 	
 	public class FeaturedSequence extends EventDispatcher implements IOriginator

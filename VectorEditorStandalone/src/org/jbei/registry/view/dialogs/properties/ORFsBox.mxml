@@ -11,10 +11,11 @@
 			import mx.collections.SortField;
 			import mx.controls.dataGridClasses.DataGridItemRenderer;
 			
-			import org.jbei.ApplicationFacade;
 			import org.jbei.bio.data.ORF;
 			import org.jbei.lib.ORFMapper;
-			import org.jbei.ui.dialogs.SimpleDialog;
+			import org.jbei.lib.ui.dialogs.SimpleDialog;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			public var parentDialog:SimpleDialog;
@@ -51,7 +52,7 @@
 				if(event.target is DataGridItemRenderer) {
 					var orf:ORF = (event.target as DataGridItemRenderer).data.orf;
 					
-					ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SELECTION_CHANGED, new Array(orf.start, orf.end + 1));
+					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(orf.start, orf.end + 1));
 				}
 			}
 			
@@ -59,7 +60,7 @@
 			{
 				parentDialog.close();
 				
-				ApplicationFacade.getInstance().sendNotification(ApplicationFacade.SHOW_PREFERENCES_DIALOG);
+				ApplicationFacade.getInstance().sendNotification(Notifications.SHOW_PREFERENCES_DIALOG);
 			}
 		]]>
 	</mx:Script>

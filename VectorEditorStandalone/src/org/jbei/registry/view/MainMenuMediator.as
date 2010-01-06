@@ -1,6 +1,7 @@
 package org.jbei.registry.view
 {
-	import org.jbei.ApplicationFacade;
+	import org.jbei.registry.ApplicationFacade;
+	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainMenu;
 	import org.jbei.registry.view.ui.menu.MenuItem;
 	import org.jbei.registry.view.ui.menu.MenuItemEvent;
@@ -55,54 +56,54 @@ package org.jbei.registry.view
 		
 		public override function listNotificationInterests():Array 
 		{
-			return [ApplicationFacade.SHOW_RAIL
-				, ApplicationFacade.SHOW_PIE
-				, ApplicationFacade.SHOW_FEATURES
-				, ApplicationFacade.SHOW_CUTSITES
-				, ApplicationFacade.SHOW_ORFS
-				, ApplicationFacade.SHOW_COMPLEMENTARY
-				, ApplicationFacade.SHOW_AA1
-				, ApplicationFacade.SHOW_AA3
-				, ApplicationFacade.ACTION_STACK_CHANGED
-				, ApplicationFacade.SELECTION_CHANGED
-				, ApplicationFacade.SAFE_EDITING_CHANGED
+			return [Notifications.SHOW_RAIL
+				, Notifications.SHOW_PIE
+				, Notifications.SHOW_FEATURES
+				, Notifications.SHOW_CUTSITES
+				, Notifications.SHOW_ORFS
+				, Notifications.SHOW_COMPLEMENTARY
+				, Notifications.SHOW_AA1
+				, Notifications.SHOW_AA3
+				, Notifications.ACTION_STACK_CHANGED
+				, Notifications.SELECTION_CHANGED
+				, Notifications.SAFE_EDITING_CHANGED
 				];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case ApplicationFacade.SHOW_PIE:
+				case Notifications.SHOW_PIE:
 					mainMenu.menuItemByName("showPieMenuItem").toggled = true;
 					mainMenu.menuItemByName("showRailMenuItem").toggled = false;
 					break;
-				case ApplicationFacade.SHOW_RAIL:
+				case Notifications.SHOW_RAIL:
 					mainMenu.menuItemByName("showPieMenuItem").toggled = false;
 					mainMenu.menuItemByName("showRailMenuItem").toggled = true;
 					break;
-				case ApplicationFacade.SHOW_FEATURES:
+				case Notifications.SHOW_FEATURES:
 					mainMenu.menuItemByName("showFeaturesMenuItem").toggled = notification.getBody() as Boolean;
 					break;
-				case ApplicationFacade.SHOW_CUTSITES:
+				case Notifications.SHOW_CUTSITES:
 					mainMenu.menuItemByName("showCutSitesMenuItem").toggled = notification.getBody() as Boolean;
 					break;
-				case ApplicationFacade.SHOW_ORFS:
+				case Notifications.SHOW_ORFS:
 					mainMenu.menuItemByName("showORFsMenuItem").toggled = notification.getBody() as Boolean;
 					break;
-				case ApplicationFacade.SHOW_COMPLEMENTARY:
+				case Notifications.SHOW_COMPLEMENTARY:
 					mainMenu.menuItemByName("showComplementaryMenuItem").toggled = notification.getBody() as Boolean;
 					break;
-				case ApplicationFacade.SHOW_AA1:
+				case Notifications.SHOW_AA1:
 					mainMenu.menuItemByName("showAA3MenuItem").toggled = false;
 					break;
-				case ApplicationFacade.SHOW_AA3:
+				case Notifications.SHOW_AA3:
 					mainMenu.menuItemByName("showAA1MenuItem").toggled = false;
 					break;
-				case ApplicationFacade.ACTION_STACK_CHANGED:
+				case Notifications.ACTION_STACK_CHANGED:
 					mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.undoStackIsEmpty;
 					mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.redoStackIsEmpty;
 					break;
-				case ApplicationFacade.SELECTION_CHANGED:
+				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
 					if(selectionPositions[0] > -1 && selectionPositions[1] > -1) {
@@ -113,7 +114,7 @@ package org.jbei.registry.view
 						mainMenu.menuItemByName("copyMenuItem").enabled = false;
 					}
 					break;
-				case ApplicationFacade.SAFE_EDITING_CHANGED:
+				case Notifications.SAFE_EDITING_CHANGED:
 					mainMenu.menuItemByName("safeEditingMenuItem").toggled = notification.getBody() as Boolean;
 					break;
 			}
@@ -122,162 +123,162 @@ package org.jbei.registry.view
 		// Private Methods
 		private function onShowFeaturesStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FEATURES, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_FEATURES, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowCutSitesStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_CUTSITES, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_CUTSITES, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowORFsStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_ORFS, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_ORFS, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowComplementaryStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_COMPLEMENTARY, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_COMPLEMENTARY, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowAA1StateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_AA1, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_AA1, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowAA3StateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_AA3, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_AA3, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowAA1RevComStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_AA1_REVCOM, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_AA1_REVCOM, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowSpacesStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_SPACES, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_SPACES, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowFeatureLabelsStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FEATURE_LABELS, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_FEATURE_LABELS, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowCutSiteLabelsStateChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_CUT_SITE_LABELS, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SHOW_CUT_SITE_LABELS, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowSelectByRangeDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_SELECTION_BY_RANGE_DIALOG);
+			sendNotification(Notifications.SHOW_SELECTION_BY_RANGE_DIALOG);
 		}
 		
 		private function onShowPreferencesDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_PREFERENCES_DIALOG);
+			sendNotification(Notifications.SHOW_PREFERENCES_DIALOG);
 		}
 		
 		private function onShowAboutDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_ABOUT_DIALOG);
+			sendNotification(Notifications.SHOW_ABOUT_DIALOG);
 		}
 		
 		private function onUndo(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.UNDO);
+			sendNotification(Notifications.UNDO);
 		}
 		
 		private function onRedo(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.REDO);
+			sendNotification(Notifications.REDO);
 		}
 		
 		private function onCopy(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.COPY);
+			sendNotification(Notifications.COPY);
 		}
 		
 		private function onCut(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.CUT);
+			sendNotification(Notifications.CUT);
 		}
 		
 		private function onPaste(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.PASTE);
+			sendNotification(Notifications.PASTE);
 		}
 		
 		private function onSelectAll(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SELECT_ALL);
+			sendNotification(Notifications.SELECT_ALL);
 		}
 		
 		private function onShowCreateNewFeatureDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_CREATE_NEW_FEATURE_DIALOG);
+			sendNotification(Notifications.SHOW_CREATE_NEW_FEATURE_DIALOG);
 		}
 		
 		private function onShowRestrictionEnzymesManagerDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
+			sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
 		private function onShowGoToDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_GOTO_DIALOG);
+			sendNotification(Notifications.SHOW_GOTO_DIALOG);
 		}
 		
 		private function onShowFindDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_FIND_PANEL);
+			sendNotification(Notifications.SHOW_FIND_PANEL);
 		}
 		
 		private function onGoReportBugWebLink(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.GO_REPORT_BUG);
+			sendNotification(Notifications.GO_REPORT_BUG);
 		}
 		
 		private function onGoSuggestFeatureWebLink(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.GO_SUGGEST_FEATURE);
+			sendNotification(Notifications.GO_SUGGEST_FEATURE);
 		}
 		
 		private function onShowPropertiesDialog(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_PROPERTIES_DIALOG);
+			sendNotification(Notifications.SHOW_PROPERTIES_DIALOG);
 		}
 		
 		private function onSafeEditingChanged(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SAFE_EDITING_CHANGED, (event.menuItem as MenuItem).toggled);
+			sendNotification(Notifications.SAFE_EDITING_CHANGED, (event.menuItem as MenuItem).toggled);
 		}
 		
 		private function onShowRail(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_RAIL);
+			sendNotification(Notifications.SHOW_RAIL);
 		}
 		
 		private function onShowPie(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.SHOW_PIE);
+			sendNotification(Notifications.SHOW_PIE);
 		}
 		
 		private function onPrintSequence(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.PRINT_SEQUENCE);
+			sendNotification(Notifications.PRINT_SEQUENCE);
 		}
 		
 		private function onPrintRail(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.PRINT_RAIL);
+			sendNotification(Notifications.PRINT_RAIL);
 		}
 		
 		private function onPrintPie(event:MenuItemEvent):void
 		{
-			sendNotification(ApplicationFacade.PRINT_PIE);
+			sendNotification(Notifications.PRINT_PIE);
 		}
 	}
 }

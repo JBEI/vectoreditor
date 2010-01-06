@@ -2,14 +2,14 @@
 <SimpleDialogForm
 	width="100%" 
 	height="100%" 
-	xmlns="org.jbei.ui.dialogs.*"
+	xmlns="org.jbei.lib.ui.dialogs.*"
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:properties="org.jbei.registry.view.dialogs.properties.*"
 	creationComplete="onCreationComplete(event)">
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.ui.dialogs.SimpleDialog;
+			import org.jbei.lib.ui.dialogs.SimpleDialog;
 			
 			public static const ENTRY_INFORMATION_TAB:int = 0;
 			public static const FEATURES_TAB:int = 1;

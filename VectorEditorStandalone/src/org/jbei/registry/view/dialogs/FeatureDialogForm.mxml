@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AbstractDialogForm creationComplete="onCreationComplete()" xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+<AbstractDialogForm creationComplete="onCreationComplete()" xmlns="org.jbei.lib.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
-			import mx.events.ValidationResultEvent;
-			import mx.validators.ValidationResult;
 			import mx.collections.ArrayCollection;
+			import mx.events.ValidationResultEvent;
 			
-			import org.jbei.ApplicationFacade;
-			import org.jbei.bio.data.FeatureNote;
 			import org.jbei.bio.data.Feature;
-			import org.jbei.lib.FeaturedSequenceEvent;
+			import org.jbei.bio.data.FeatureNote;
+			import org.jbei.registry.ApplicationFacade;
 			
 			[Bindable]
 			private var featureTypes:ArrayCollection = new ArrayCollection(
