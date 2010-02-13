@@ -3,6 +3,8 @@ package org.jbei.registry.model.vo
 	[RemoteClass(alias="org.jbei.ice.lib.models.FundingSource")]
 	public class FundingSource
 	{
+		private var _id:int;
+		
 		private var _fundingSource:String;
 		
 		private var _principalInvestigator:String;
