@@ -23,9 +23,6 @@
 			import org.jbei.utils.Logger;
 			import org.jbei.utils.LoggerEvent;
 			
-			private const DEBUG_ENTRY_ID:String = "12345678-12345678-12345678-123456781111";
-			private const DEBUG_SERVER_URL:String = "";
-			
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
 			
 			private var mouseWheelSupport:ExternalMouseWheelSupport = null;
@@ -84,36 +81,28 @@
 					facade.entryId = Application.application.parameters.entryId;
 				} else {
 					CONFIG::release {
-						facade.sendNotification(ApplicationFacade.APPLICATION_FAILURE, "Parameter entryId is mandatory!");
+						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter entryId is mandatory!");
 						
-						Logger.getInstance().info("Missing mandatory parameter 'entryID'");
+						Logger.getInstance().info("Missing mandatory parameter 'entryId'");
 						
 						return;
-					}
-					
-					CONFIG::debugging {
-						facade.entryId = DEBUG_ENTRY_ID;
 					}
 				}
 				
-				if(Application.application.parameters.wsdl_url && (Application.application.parameters.wsdl_url as String).length > 0) {
-					facade.serverURL = Application.application.parameters.serverURL;
+				if(Application.application.parameters.sessionId && (Application.application.parameters.sessionId as String).length > 0) {
+					facade.sessionId = Application.application.parameters.sessionId;
 				} else {
 					CONFIG::release {
-						facade.sendNotification(ApplicationFacade.APPLICATION_FAILURE, "Parameter serverURL is mandatory!");
+						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
 						
-						Logger.getInstance().info("Missing mandatory parameter 'serverURL'");
+						Logger.getInstance().info("Missing mandatory parameter 'sessionId'");
 						
 						return;
-					}
-					
-					CONFIG::debugging {
-						facade.serverURL = DEBUG_SERVER_URL;
 					}
 				}
 				
 				Logger.getInstance().info("Entry ID: " + facade.entryId);
-				Logger.getInstance().info("Server URL: " + facade.serverURL);
+				Logger.getInstance().info("Session ID: " + facade.sessionId);
 				
 				facade.sendNotification(Notifications.INITIALIZATION, this);
 			}

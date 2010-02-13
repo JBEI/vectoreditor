@@ -43,7 +43,7 @@
 					userPreferences.labelsFontSize = labelsFontSizeNumericStepper.value;
 					userPreferences.maxResitrictionEnzymesCuts = setMaxCutOffCheckBox.selected ? -1 : maxResitrictionEnzymesCutsNumericStepper.value;
 					
-					userPreferencesProxy.saveUserPreferences("This IS USER TOKEN!", userPreferences);
+					userPreferencesProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
 				}
 			}
 			

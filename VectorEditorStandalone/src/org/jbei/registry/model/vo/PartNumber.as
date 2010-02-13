@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.PartNumber")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.PartNumber")]
 	public class PartNumber
 	{
 		private var _id:int;

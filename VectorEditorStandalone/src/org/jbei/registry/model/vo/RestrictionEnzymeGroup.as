@@ -2,7 +2,7 @@ package org.jbei.registry.model.vo
 {
 	import mx.collections.ArrayCollection;
 	
-	[RemoteClass(alias="org.jbei.registry.services.blazeds.VectorEditor.vo.RestrictionEnzymeGroup")]
+	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.RestrictionEnzymeGroup")]
 	public class RestrictionEnzymeGroup
 	{
 		private var _enzymes:ArrayCollection /* of RestrictionEnzyme */ = new ArrayCollection();

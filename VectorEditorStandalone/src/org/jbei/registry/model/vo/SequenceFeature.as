@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.SequenceFeature")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.SequenceFeature")]
 	public class SequenceFeature
 	{
 		private var _id:int;

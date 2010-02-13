@@ -190,8 +190,8 @@
 	</mx:ComboBox>
 	<mx:ComboBox id="searchTypeComboBox" labelField="label" change="onSearchTypeComboBoxChange(event)">
 		<mx:ArrayCollection>
-			<mx:Object label="Litteral" data="{ Finder.SEARCH_TYPE_LITTERAL }"/>
-			<mx:Object label="Ambiguos" data="{ Finder.SEARCH_TYPE_AMBIGUOUS }"/>
+			<mx:Object label="Literal" data="{ Finder.SEARCH_TYPE_LITTERAL }"/>
+			<mx:Object label="Ambiguous" data="{ Finder.SEARCH_TYPE_AMBIGUOUS }"/>
 		</mx:ArrayCollection>
 	</mx:ComboBox>
 	<mx:Button id="highlightAllButton" label="Highlight All" toggle="true" selected="false" change="onHighlightAllButtonChange(event)"/>

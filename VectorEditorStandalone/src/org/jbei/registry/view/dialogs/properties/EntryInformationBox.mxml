@@ -11,17 +11,13 @@
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.Constants;
 			import org.jbei.registry.model.vo.Entry;
+			import org.jbei.registry.model.vo.Part;
 			import org.jbei.registry.model.vo.PartNumber;
 			import org.jbei.registry.model.vo.Plasmid;
+			import org.jbei.registry.model.vo.Strain;
 			
 			// Event Handlers
 			private function onCreationComplete(event:Event):void
-			{
-				buildEntryInfo();
-			}
-			
-			// Private Methods
-			private function buildEntryInfo():void
 			{
 				var entry:Entry = ApplicationFacade.getInstance().entry;
 				
@@ -29,25 +25,17 @@
 				
 				var entryInfo:String;
 				
-				if(entry.recordType == "plasmid") {
-					entryInfo = buildPlasmidInfo(entry as Plasmid);
-				} else if(entry.recordType == "part") {
-					//entryInfo = buildPartInfo();
-				} else if(entry.recordType == "strain") {
-					//entryInfo = buildStrainInfo();
-				} else {
-					return;
-				}
+				entryInfo = buildEntryInfo(entry);
 				
 				entryInfoTextArea.htmlText = '<p>' + entryInfo + "</p>";
 			}
 			
-			private function buildPlasmidInfo(entry:Plasmid):String
+			// Private Methods
+			private function buildEntryInfo(entry:Entry):String
 			{
 				var partNumbers:String = entry.partNumbers ? entry.partNumbers.toArray().join(", ") : "";
 				var names:String = entry.names ? entry.names.toArray().join(", ") : "";
 				var links:String = entry.links ? entry.links.toArray().join(", ") : "";
-				var selectionMarkers:String = entry.selectionMarkers ? entry.selectionMarkers.toArray().join(", ") : "";
 				
 				var entryInfo:String = (entry.partNumbers && entry.partNumbers.length >= 1) ? '<b>ID:</b>  <font color="#0000FF"><u><a href="' + Constants.ENTRY_REGISTRY_URL + (entry.partNumbers[0] as PartNumber) + '/" target="_blank">' + partNumbers + '</a></u></font>' : "";
 				entryInfo += '<br /><b>Name:</b>  ' + names;
@@ -74,12 +62,26 @@
 					}
 				}
 				
-				entryInfo += '<br /><b>Selection Markers:</b>  ' + selectionMarkers;
-				
-				entryInfo += '<br /><b>Backbone:</b>  ' + (entry.backbone ? entry.backbone : '');
-				entryInfo += '<br /><b>Origin Of Replication:</b>  ' + (entry.originOfReplication ? entry.originOfReplication : '');
-				entryInfo += '<br /><b>Promoters:</b>  ' + (entry.promoters ? entry.promoters : '');
-				entryInfo += '<br /><b>Circular:</b>  ' + (entry.circular ? 'Yes' : 'No');
+				if(entry is Plasmid) {
+					var plasmid:Plasmid = entry as Plasmid;
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + plasmid.selectionMarkers ? plasmid.selectionMarkers.toArray().join(", ") : "";
+					entryInfo += '<br /><b>Backbone:</b>  ' + (plasmid.backbone ? plasmid.backbone : '');
+					entryInfo += '<br /><b>Origin Of Replication:</b>  ' + (plasmid.originOfReplication ? plasmid.originOfReplication : '');
+					entryInfo += '<br /><b>Promoters:</b>  ' + (plasmid.promoters ? plasmid.promoters : '');
+					entryInfo += '<br /><b>Circular:</b>  ' + (plasmid.circular ? 'Yes' : 'No');
+				} else if(entry is Strain) {
+					var strain:Strain = entry as Strain;
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + strain.selectionMarkers ? strain.selectionMarkers.toArray().join(", ") : "";
+					entryInfo += '<br /><b>Host:</b>  ' + strain.host;
+					entryInfo += '<br /><b>Genotype/Phenotype:</b>  ' + strain.genotypePhenotype;
+					entryInfo += '<br /><b>Plasmids:</b>  ' + strain.plasmids;
+				} else if(entry is Part) {
+					var part:Part = entry as Part;
+					
+					entryInfo += '<br /><b>Package Format:</b>  ' + part.packageFormat;
+				}
 				
 				entryInfo += '<br /><b>Links:</b>  ' + links;
 				entryInfo += '<br /><b>Keywords:</b>  ' + (entry.keywords ? entry.keywords : '');
@@ -87,6 +89,8 @@
 				entryInfo += '<br /><b>Summary:</b>  ' + (entry.shortDescription ? entry.shortDescription : '');
 				entryInfo += '<br /><b>Notes:</b>  ' + (entry.longDescription ? entry.longDescription : '');
 				entryInfo += '<br /><b>References:</b>  ' + (entry.references ? entry.references : '');
+				entryInfo += '<br /><b>Bio Safety Level:</b>  ' + (entry.bioSafetyLevel ? entry.bioSafetyLevel : '');
+				entryInfo += '<br /><b>Intellectual Property:</b>  ' + (entry.intellectualProperty ? entry.intellectualProperty : '');
 				entryInfo += '<br /><b>Created:</b>  ' + (entry.creationTime ? entry.creationTime.toString() : '');
 				entryInfo += '<br /><b>Modified:</b>  ' + (entry.modificationTime ? entry.modificationTime.toString() : '');
 				

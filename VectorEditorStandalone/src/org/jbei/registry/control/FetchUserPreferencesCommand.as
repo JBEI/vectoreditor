@@ -11,7 +11,7 @@ package org.jbei.registry.control
 		{
 			var userPreferencesProxy:UserPreferencesProxy = ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy;
 			
-			userPreferencesProxy.fetchUserPreferences("This IS USER TOKEN!");
+			userPreferencesProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
 		}
 	}
 }

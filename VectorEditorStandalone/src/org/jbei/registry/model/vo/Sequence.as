@@ -2,7 +2,7 @@ package org.jbei.registry.model.vo
 {
 	import mx.collections.ArrayCollection;
 	
-	[RemoteClass(alias="org.jbei.registry.lib.models.Sequence")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.Sequence")]
 	public class Sequence
 	{
 		public var entry:Object;

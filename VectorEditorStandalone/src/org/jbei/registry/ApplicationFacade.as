@@ -40,9 +40,11 @@ package org.jbei.registry
 	import org.jbei.registry.model.EntriesProxy;
 	import org.jbei.registry.model.UserPreferencesProxy;
 	import org.jbei.registry.model.vo.Entry;
+	import org.jbei.registry.model.vo.Part;
 	import org.jbei.registry.model.vo.Plasmid;
 	import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 	import org.jbei.registry.model.vo.SequenceFeature;
+	import org.jbei.registry.model.vo.Strain;
 	import org.jbei.registry.model.vo.UserPreferences;
 	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
@@ -62,7 +64,7 @@ package org.jbei.registry
 		private var _application:VectorEditor;
 		private var _actionStack:ActionStack;
 		private var _entryId:String;
-		private var _serverURL:String;
+		private var _sessionId:String;
 		private var _featuredSequence:FeaturedSequence;
 		private var _entry:Entry;
 		private var _orfMapper:ORFMapper;
@@ -90,14 +92,14 @@ package org.jbei.registry
 			_entryId = value;
 		}
 		
-		public function get serverURL():String
+		public function set sessionId(value:String):void
 		{
-			return _serverURL;
+			_sessionId = value;
 		}
 		
-		public function set serverURL(value:String):void
+		public function get sessionId():String
 		{
-			_serverURL = value;
+			return _sessionId;
 		}
 		
 		public function get actionStack():ActionStack
@@ -486,14 +488,22 @@ package org.jbei.registry
 		
 		public function entryFetched():void // Make it private
 		{
-			var plasmid:Plasmid = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).plasmid;
+			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).entry;
 			
-			if(!plasmid) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Plasmid is null");
+			if(!entry) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
+				
 				return;
 			}
 			
-			var featuredSequence:FeaturedSequence = plasmidToFeaturedSequence(plasmid);
+			var featuredSequence:FeaturedSequence;
+			if(entry.recordType == "plasmid") {
+				featuredSequence = plasmidToFeaturedSequence(entry as Plasmid);
+			} else if (entry.recordType == "strain") {
+				featuredSequence = strainToFeaturedSequence(entry as Strain);
+			} else if (entry.recordType == "part") {
+				featuredSequence = partToFeaturedSequence(entry as Part);
+			}
 			
 			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 			
@@ -504,7 +514,7 @@ package org.jbei.registry
 			
 			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
 			
-			ApplicationFacade.getInstance().entry = plasmid as Entry;
+			ApplicationFacade.getInstance().entry = entry;
 			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
 			ApplicationFacade.getInstance().orfMapper = orfMapper;
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
@@ -824,6 +834,8 @@ package org.jbei.registry
 		
 		private function plasmidToFeaturedSequence(plasmid:Plasmid):FeaturedSequence
 		{
+			// TODO refactor this method
+			
 			var dnaSequence:DNASequence = new DNASequence(plasmid.sequence.sequence);
 			
 			var featuredSequence:FeaturedSequence = new FeaturedSequence(plasmid.combinedName(), plasmid.circular, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
@@ -844,6 +856,64 @@ package org.jbei.registry
 			}
 			
 			featuredSequence.addFeatures(features, true);
+			}
+			
+			return featuredSequence;
+		}
+		
+		private function strainToFeaturedSequence(strain:Strain):FeaturedSequence
+		{
+			// TODO refactor this method
+			
+			var dnaSequence:DNASequence = new DNASequence(strain.sequence.sequence);
+			
+			var featuredSequence:FeaturedSequence = new FeaturedSequence(strain.combinedName(), false, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
+			
+			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			
+			if(strain.sequence.sequenceFeatures && strain.sequence.sequenceFeatures.length > 0) {
+				var features:Array = new Array();
+				for(var i:int = 0; i < strain.sequence.sequenceFeatures.length; i++) {
+					var sequenceFeature:SequenceFeature = strain.sequence.sequenceFeatures[i] as SequenceFeature;
+					var strand:int = sequenceFeature.strand;
+					
+					var notes:Array = new Array();
+					notes.push(new FeatureNote("label", sequenceFeature.feature.name));
+					
+					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.feature.genbankType, strand, notes);
+					features.push(feature);
+				}
+				
+				featuredSequence.addFeatures(features, true);
+			}
+			
+			return featuredSequence;
+		}
+		
+		private function partToFeaturedSequence(part:Part):FeaturedSequence
+		{
+			// TODO refactor this method
+			
+			var dnaSequence:DNASequence = new DNASequence(part.sequence.sequence);
+			
+			var featuredSequence:FeaturedSequence = new FeaturedSequence(part.combinedName(), false, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
+			
+			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			
+			if(part.sequence.sequenceFeatures && part.sequence.sequenceFeatures.length > 0) {
+				var features:Array = new Array();
+				for(var i:int = 0; i < part.sequence.sequenceFeatures.length; i++) {
+					var sequenceFeature:SequenceFeature = part.sequence.sequenceFeatures[i] as SequenceFeature;
+					var strand:int = sequenceFeature.strand;
+					
+					var notes:Array = new Array();
+					notes.push(new FeatureNote("label", sequenceFeature.feature.name));
+					
+					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.feature.genbankType, strand, notes);
+					features.push(feature);
+				}
+				
+				featuredSequence.addFeatures(features, true);
 			}
 			
 			return featuredSequence;

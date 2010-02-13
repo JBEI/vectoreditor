@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.Link")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.Link")]
 	public class Link
 	{
 		private var _id:int;

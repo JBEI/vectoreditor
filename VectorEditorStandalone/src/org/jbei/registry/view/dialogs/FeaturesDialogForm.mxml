@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AbstractDialogForm xmlns="org.jbei.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
+<AbstractDialogForm xmlns="org.jbei.lib.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -8,10 +8,10 @@
 			import mx.collections.SortField;
 			import mx.utils.StringUtil;
 			
-			import org.jbei.ApplicationFacade;
+			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.bio.data.Feature;
-			import org.jbei.ui.dialogs.ModalDialogEvent;
-			import org.jbei.ui.dialogs.ModalDialog;
+			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+			import org.jbei.lib.ui.dialogs.ModalDialog;
 			
 			[Bindable]
 			private var filteredFeatures:ArrayCollection = new ArrayCollection();

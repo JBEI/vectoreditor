@@ -2,6 +2,7 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
+	import org.jbei.registry.model.vo.Entry;
 	import org.jbei.registry.model.vo.Feature;
 	import org.jbei.registry.model.vo.Link;
 	import org.jbei.registry.model.vo.Name;
@@ -14,7 +15,7 @@ package org.jbei.registry.utils
 	
 	public class StandaloneUtils
 	{
-		public static function standalonePlasmid():Plasmid
+		public static function standaloneEntry():Entry
 		{
 			var plasmid:Plasmid = new Plasmid();
 			plasmid.alias = "Standalone Alias";
@@ -42,7 +43,6 @@ package org.jbei.registry.utils
 			plasmid.shortDescription = "Short Description";
 			plasmid.status = "public";
 			plasmid.versionId = "12345678-12345678-12345678-123456781111";
-			plasmid.visibility = 5;
 			
 			var sequence:Sequence = new Sequence();
 			sequence.fwdHash = "";
@@ -73,7 +73,7 @@ package org.jbei.registry.utils
 			return plasmid;
 		}
 		
-		public static function standalonePlasmid3():Plasmid
+		public static function standaloneEntry3():Entry
 		{
 			var plasmid:Plasmid = new Plasmid();
 			plasmid.alias = "Standalone Alias";
@@ -102,7 +102,6 @@ package org.jbei.registry.utils
 			plasmid.shortDescription = "Short Description";
 			plasmid.status = "public";
 			plasmid.versionId = "12345678-12345678-12345678-123456781111";
-			plasmid.visibility = 5;
 			
 			var sequence:Sequence = new Sequence();
 			sequence.fwdHash = "";
@@ -119,7 +118,7 @@ package org.jbei.registry.utils
 			return plasmid;
 		}
 		
-		public static function standalonePlasmid2():Plasmid
+		public static function standaloneEntry2():Entry
 		{
 			var plasmid:Plasmid = new Plasmid();
 			plasmid.alias = "Standalone Alias";
@@ -148,7 +147,6 @@ package org.jbei.registry.utils
 			plasmid.shortDescription = "Short Description";
 			plasmid.status = "public";
 			plasmid.versionId = "12345678-12345678-12345678-123456781111";
-			plasmid.visibility = 5;
 			
 			var sequence:Sequence = new Sequence();
 			sequence.fwdHash = "";

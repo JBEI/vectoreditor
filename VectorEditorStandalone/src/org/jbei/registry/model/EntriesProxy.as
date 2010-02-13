@@ -6,7 +6,7 @@ package org.jbei.registry.model
 	import mx.rpc.remoting.RemoteObject;
 	
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.model.vo.Plasmid;
+	import org.jbei.registry.model.vo.Entry;
 	import org.jbei.registry.utils.StandaloneUtils;
 	import org.jbei.utils.Logger;
 	import org.puremvc.as3.patterns.proxy.Proxy;
@@ -16,7 +16,7 @@ package org.jbei.registry.model
 		public static const NAME:String = "EntriesProxy";
 		private static const ENTRIES_SERVICE_NAME:String = "EntriesService";
 		
-		private var _plasmid:Plasmid;
+		private var _entry:Entry;
 		private var entriesService:RemoteObject;
 		
 		// Constructor
@@ -27,24 +27,24 @@ package org.jbei.registry.model
 			entriesService = new RemoteObject(ENTRIES_SERVICE_NAME);
 			entriesService.addEventListener(FaultEvent.FAULT, onEntriesServiceFault);
 			entriesService.addEventListener(InvokeEvent.INVOKE, onEntriesServiceInvoke);
-			entriesService.getPlasmid.addEventListener(ResultEvent.RESULT, onEntriesServiceGetPlasmidResult);
+			entriesService.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
 		}
 		
 		// Properties
-		public function get plasmid():Plasmid
+		public function get entry():Entry
 		{
-			return _plasmid;
+			return _entry;
 		}
 		
 		// Public Methods
-		public function fetchPlasmid(recordId:String):void
+		public function fetchEntry(authToken:String, recordId:String):void
 		{
 			CONFIG::standalone {
-				fetchStandalonePlasmid();
+				fetchStandaloneEntry();
 				return;
 			}
 			
-			entriesService.getPlasmid(recordId);
+			entriesService.getEntry(authToken, recordId);
 		}
 		
 		// Private Methods
@@ -58,7 +58,7 @@ package org.jbei.registry.model
 			sendNotification(Notifications.FETCHING_DATA, "Loading Entry...");
 		}
 		
-		private function onEntriesServiceGetPlasmidResult(event:ResultEvent):void
+		private function onEntriesServiceGetEntryResult(event:ResultEvent):void
 		{
 			if(!event.result) {
 				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch entry!");
@@ -67,21 +67,21 @@ package org.jbei.registry.model
 			
 			sendNotification(Notifications.DATA_FETCHED);
 			
-			updatePlasmid(event.result as Plasmid);
+			updateEntry(event.result as Entry);
 		}
 		
-		private function fetchStandalonePlasmid():void
+		private function fetchStandaloneEntry():void
 		{
-			updatePlasmid(StandaloneUtils.standalonePlasmid());
+			updateEntry(StandaloneUtils.standaloneEntry() as Entry);
 		}
 		
-		private function updatePlasmid(plasmid:Plasmid):void
+		private function updateEntry(entry:Entry):void
 		{
-			_plasmid = plasmid;
+			_entry = entry as Entry;
 			
 			sendNotification(Notifications.ENTRY_FETCHED);
 			
-			Logger.getInstance().info("Plasmid fetched successfully");
+			Logger.getInstance().info("Entry fetched successfully");
 		}
 	}
 }

@@ -2,6 +2,7 @@ package org.jbei.registry.view
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
+	import org.jbei.utils.Logger;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -53,6 +54,8 @@ package org.jbei.registry.view
 					
 					break;
 				case Notifications.FETCHING_DATA:
+					Logger.getInstance().info(notification.getBody() as String);
+					
 					ApplicationFacade.getInstance().application.lock();
 					
 					break;

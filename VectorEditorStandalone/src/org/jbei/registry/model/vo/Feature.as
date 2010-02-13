@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.Feature")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.Feature")]
 	public class Feature
 	{
 		private var _id:int;

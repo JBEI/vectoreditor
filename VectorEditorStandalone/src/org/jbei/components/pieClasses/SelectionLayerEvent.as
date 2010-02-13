@@ -1,4 +1,4 @@
-package org.jbei.components.sequence.pieClasses
+package org.jbei.components.pieClasses
 {
 	import flash.events.Event;
 	

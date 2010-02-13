@@ -2,12 +2,11 @@
 <AbstractDialogForm xmlns="org.jbei.lib.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 			import mx.controls.Alert;
 			import mx.events.ValidationResultEvent;
-			import mx.validators.ValidationResult;
-			import mx.collections.ArrayCollection;
+			
+			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 			
 			// Public Methods
 			public override function validate():void
@@ -33,12 +32,19 @@
 			{
 				nameTextInput.setFocus();
 			}
+			
+			private function onNameTextInputKeyDown(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.ENTER) {
+					dialog.close();
+				}
+			}
 		]]>
 	</mx:Script>
 	
 	<mx:StringValidator id="nameStringValidator" source="{ nameTextInput }" required="true" property="text" />
 	
 	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">
-		<mx:FormItem label="Name:" direction="horizontal"><mx:TextInput id="nameTextInput" /></mx:FormItem>
+		<mx:FormItem label="Name:" direction="horizontal"><mx:TextInput id="nameTextInput" keyDown="onNameTextInputKeyDown(event)"/></mx:FormItem>
 	</mx:Form>
 </AbstractDialogForm>

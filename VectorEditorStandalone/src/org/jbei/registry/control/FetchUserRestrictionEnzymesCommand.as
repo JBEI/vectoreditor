@@ -11,7 +11,7 @@ package org.jbei.registry.control
 		{
 			var userRestrictionEnzymesProxy:UserRestrictionEnzymesProxy = ApplicationFacade.getInstance().retrieveProxy(UserRestrictionEnzymesProxy.NAME) as UserRestrictionEnzymesProxy;
 			
-			userRestrictionEnzymesProxy.fetchUserRestrictionEnzymes("This IS USER TOKEN!");
+			userRestrictionEnzymesProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
 		}
 	}
 }

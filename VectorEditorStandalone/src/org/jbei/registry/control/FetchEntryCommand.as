@@ -11,12 +11,14 @@ package org.jbei.registry.control
 		{
 			var entriesProxy:EntriesProxy = ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy;
 			
-			entriesProxy.fetchPlasmid(randomSequenceId());
+			//entriesProxy.fetchEntry(randomSequenceId());
+			entriesProxy.fetchEntry(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
 		}
 		
 		private function randomSequenceId():String
 		{
 			var sequencesList:Array = new Array();
+			
 			sequencesList.push("31912c13-4822-41d2-b1b2-0a2ea7829c6f");
 			sequencesList.push("4c876cb9-285e-446e-b974-348971eee448");
 			sequencesList.push("b7b1bdf8-ccc0-4249-9d91-327a7659fb4e");

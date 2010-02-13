@@ -683,9 +683,9 @@ package org.jbei.lib
 				var feature:Feature = features[i] as Feature;
 				
 				if(feature.strand == -1) {
-					genbankString += StringUtils.sprintf("\n     %-16scomplement(%d..%d)", feature.type, feature.start + 1, feature.end);
+					genbankString += StringUtils.sprintf("\n     %-16scomplement(%d..%d)", feature.type, feature.start + 1, feature.end + 1);
 				} else {
-					genbankString += StringUtils.sprintf("\n     %-16s%d..%d", feature.type, feature.start + 1, feature.end);
+					genbankString += StringUtils.sprintf("\n     %-16s%d..%d", feature.type, feature.start + 1, feature.end + 1);
 				}
 				
 				if(!feature.notes || feature.notes.length == 0) { continue; }

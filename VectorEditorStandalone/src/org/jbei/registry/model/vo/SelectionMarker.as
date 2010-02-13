@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.SelectionMarker")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.SelectionMarker")]
 	public class SelectionMarker
 	{
 		private var _id:int;

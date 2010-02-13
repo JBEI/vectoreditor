@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.services.blazeds.VectorEditor.vo.RestrictionEnzyme")]
+	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.RestrictionEnzyme")]
 	public class RestrictionEnzyme
 	{
 		private var _name:String;

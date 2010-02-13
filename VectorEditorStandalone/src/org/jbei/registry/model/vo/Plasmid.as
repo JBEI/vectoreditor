@@ -1,6 +1,6 @@
 package org.jbei.registry.model.vo
 {
-	[RemoteClass(alias="org.jbei.registry.lib.models.Plasmid")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.Plasmid")]
 	public class Plasmid extends Entry
 	{
 		private var _backbone:String;

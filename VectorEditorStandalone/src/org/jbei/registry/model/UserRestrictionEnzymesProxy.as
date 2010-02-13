@@ -51,6 +51,8 @@ package org.jbei.registry.model
 			}
 			
 			userRestrictionEnzymesService.saveUserRestrictionEnzymes(authToken, userRestrictionEnzymes);
+			
+			RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
 		}
 		
 		// Private Methods
@@ -92,9 +94,11 @@ package org.jbei.registry.model
 		
 		private function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
-			RestrictionEnzymeGroupManager.instance.userGroups = userRestrictionEnzymes.groups;
-			if(userRestrictionEnzymes.activeGroup.length > 0) {
-				RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
+			if(userRestrictionEnzymes) {
+				RestrictionEnzymeGroupManager.instance.userGroups = userRestrictionEnzymes.groups;
+				if(userRestrictionEnzymes.activeGroup.length > 0) {
+					RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
+				}
 			}
 			
 			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_FETCHED);

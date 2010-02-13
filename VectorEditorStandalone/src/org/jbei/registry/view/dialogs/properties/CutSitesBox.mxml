@@ -113,7 +113,7 @@
 			<mx:LinkButton id="preferencesLinkButton" label="Preferences" click="onPreferencesLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
 		</mx:HBox>
 		
-		<mx:LinkButton id="restrictionEnzymesManagerLinkButton" label="Manager Restriction Enzymes" click="onRestrictionEnzymesManagerLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
+		<mx:LinkButton id="restrictionEnzymesManagerLinkButton" label="Manage Restriction Enzymes" click="onRestrictionEnzymesManagerLinkButtonClick(event)" letterSpacing="0" cornerRadius="0" rollOverColor="#FFFFFF" selectionColor="#FFFFFF" textRollOverColor="#0000FF" color="#0000FF" fontWeight="normal" textDecoration="underline" paddingLeft="0" paddingBottom="0" paddingRight="0" paddingTop="0"/>
 	</mx:VBox>
 	
 </mx:Box>

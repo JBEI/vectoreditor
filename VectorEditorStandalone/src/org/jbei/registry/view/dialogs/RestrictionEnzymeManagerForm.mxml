@@ -18,9 +18,10 @@
 			import org.jbei.registry.model.UserRestrictionEnzymesProxy;
 			import org.jbei.registry.model.vo.RestrictionEnzyme;
 			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
-			import org.jbei.registry.model.vo.UserRestrictionEnzymes;
-			import org.jbei.lib.ui.dialogs.ModalDialogEvent; 
 			import org.jbei.lib.ui.dialogs.ModalDialog;
+			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+			import org.jbei.registry.model.vo.UserRestrictionEnzymes;
+			import org.jbei.utils.Logger;
 			
 			[Bindable]
 			private var systemREGroups:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzymeGroup */
@@ -43,10 +44,9 @@
 			// Public Methods
 			public override function validate():void
 			{
-				/*
-				import org.jbei.ui.dialogs.ModalDialog;
-				import org.jbei.ui.dialogs.ModalDialogEvent;
-				*/
+				/*import org.jbei.lib.ui.dialogs.ModalDialog;
+				import org.jbei.lib.ui.dialogs.ModalDialogEvent;*/
+				
 				isValid = true;
 				
 				var userRestrictionEnzymeGroup:UserRestrictionEnzymes = new UserRestrictionEnzymes();
@@ -58,7 +58,7 @@
 				userRestrictionEnzymeGroup.activeGroup.addAll(activeEnzymes);
 				
 				var userRestrictionEnzymesProxy:UserRestrictionEnzymesProxy = ApplicationFacade.getInstance().retrieveProxy(UserRestrictionEnzymesProxy.NAME) as UserRestrictionEnzymesProxy;
-				userRestrictionEnzymesProxy.saveUserRestrictionEnzymes("This IS USER TOKEN!", userRestrictionEnzymeGroup);
+				userRestrictionEnzymesProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymeGroup);
 			}
 			
 			// Event Handlers

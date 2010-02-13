@@ -2,7 +2,7 @@ package org.jbei.registry.model.vo
 {
 	import mx.collections.ArrayCollection;
 	
-	[RemoteClass(alias="org.jbei.registry.lib.models.Entry")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.Entry")]
 	public class Entry
 	{
 		private var _id:int;
@@ -15,7 +15,6 @@ package org.jbei.registry.model.vo
 		private var _creatorEmail:String;
 		private var _alias:String;
 		private var _keywords:String;
-		private var _visibility:int;
 		private var _status:String;
 		private var _shortDescription:String;
 		private var _longDescription:String;
@@ -27,6 +26,9 @@ package org.jbei.registry.model.vo
 		private var _links:ArrayCollection; /* of Link */
 		private var _names:ArrayCollection; /* of Name */
 		private var _partNumbers:ArrayCollection; /* of PartNumber */
+		private var _bioSafetyLevel:int;
+		private var _intellectualProperty:String;
+		private var _entryFundingSources:ArrayCollection; /* of FundingSource */
 		
 		// Constructor
 		public function Entry() {}
@@ -130,16 +132,6 @@ package org.jbei.registry.model.vo
 		public function set alias(value:String):void	
 		{
 			_alias = value;
-		}
-		
-		public function get visibility():int
-		{
-			return _visibility;
-		}
-		
-		public function set visibility(value:int):void	
-		{
-			_visibility = value;
 		}
 		
 		public function get status():String
@@ -262,6 +254,36 @@ package org.jbei.registry.model.vo
 			result = _names.toArray().join(delimiter);
 			
 			return result;
+		}
+		
+		public function get bioSafetyLevel():int
+		{
+			return _bioSafetyLevel;
+		}
+		
+		public function set bioSafetyLevel(value:int):void	
+		{
+			_bioSafetyLevel = value;
+		}
+		
+		public function get intellectualProperty():String
+		{
+			return _intellectualProperty;
+		}
+		
+		public function set intellectualProperty(value:String):void	
+		{
+			_intellectualProperty = value;
+		}
+		
+		public function get entryFundingSources():ArrayCollection
+		{
+			return _entryFundingSources;
+		}
+		
+		public function set entryFundingSources(value:ArrayCollection):void	
+		{
+			_entryFundingSources = value;
 		}
 	}
 }
