@@ -102,9 +102,15 @@ package org.jbei.components.common
 		
 		private function onRollOver(event:MouseEvent):void
 		{
-			var localPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
+			// Calculate tip position
+			var tipPoint:Point = localToGlobal(new Point(event.localX + 20, event.localY));
 			
-		    tip = ToolTipManager.createToolTip(tipText(), localPoint.x, localPoint.y) as ToolTip;
+			tip = ToolTipManager.createToolTip(tipText(), tipPoint.x, tipPoint.y) as ToolTip;
+			
+			if(tip.x + tip.width > stage.stageWidth) {
+				tip.x -= (tip.x + tip.width - stage.stageWidth);
+				tip.y += 20;
+			}
     	}
 		
 		private function onRollOut(event:MouseEvent):void
