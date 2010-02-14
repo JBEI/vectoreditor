@@ -35,6 +35,7 @@ package org.jbei.components
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
 		
+		private var _readOnly:Boolean = false;
 		private var _showCutSites:Boolean = true;
 		private var _showFeatures:Boolean = true;
 		private var _showCutSiteLabels:Boolean = true;
@@ -283,6 +284,16 @@ package org.jbei.components
 			}
 		}
 		
+		public function get readOnly():Boolean
+		{
+			return _readOnly;
+		}
+		
+		public function set readOnly(value:Boolean):void
+		{
+			_readOnly = value;
+		}
+		
 		// Public Methods
 		public function select(start:int, end:int):void
 		{
@@ -463,62 +474,6 @@ package org.jbei.components
 		}
 		
 		// Private Methods
-		private function createContentHolder():void
-		{
-			if(!contentHolder) {
-				contentHolder = new ContentHolder(this);
-				contentHolder.includeInLayout = false;
-				addChild(contentHolder);
-				
-				contentHolder.mask = maskShape;
-			}
-		}
-		
-		private function adjustScrollBars():void
-		{
-			verticalScrollPosition = 0;
-			horizontalScrollPosition = 0;
-			
-			setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
-			
-			if(verticalScrollBar) {
-				verticalScrollBar.lineScrollSize = 20;
-				verticalScrollBar.pageScrollSize = verticalScrollBar.lineScrollSize * 10;
-				
-				verticalScrollPosition = contentHolder.totalHeight - height;
-				contentHolder.y = -verticalScrollPosition;
-			}
-			
-			if(horizontalScrollBar) {
-				horizontalScrollPosition = contentHolder.horizontalCenter - width / 2;
-				contentHolder.x = -horizontalScrollPosition;
-			}
-		}
-		
-		private function doScroll(delta:int, speed:uint = 3):void
-		{
-			if (verticalScrollBar && verticalScrollBar.visible) {
-				var scrollDirection:int = delta <= 0 ? 1 : -1;
-				
-				var oldPosition:Number = verticalScrollPosition;
-				verticalScrollPosition += speed * scrollDirection;
-				
-				if(verticalScrollPosition < 0) {
-					verticalScrollPosition = 0;
-				}
-				
-				if(verticalScrollPosition > maxVerticalScrollPosition) {
-					verticalScrollPosition = maxVerticalScrollPosition;
-				}
-				
-				var scrollEvent:ScrollEvent = new ScrollEvent(ScrollEvent.SCROLL);
-				scrollEvent.direction = ScrollEventDirection.VERTICAL;
-				scrollEvent.position = verticalScrollPosition;
-				scrollEvent.delta = verticalScrollPosition - oldPosition;
-				dispatchEvent(scrollEvent);
-			}
-		}
-		
 		private function onResize(event:ResizeEvent):void
 		{
 			needsMeasurement = true;
@@ -583,6 +538,63 @@ package org.jbei.components
 			needsMeasurement = true;
 			
 			invalidateDisplayList();
+		}
+		
+		private function createContentHolder():void
+		{
+			if(!contentHolder) {
+				contentHolder = new ContentHolder(this);
+				contentHolder.includeInLayout = false;
+				contentHolder.readOnly = _readOnly;
+				addChild(contentHolder);
+				
+				contentHolder.mask = maskShape;
+			}
+		}
+		
+		private function adjustScrollBars():void
+		{
+			verticalScrollPosition = 0;
+			horizontalScrollPosition = 0;
+			
+			setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
+			
+			if(verticalScrollBar) {
+				verticalScrollBar.lineScrollSize = 20;
+				verticalScrollBar.pageScrollSize = verticalScrollBar.lineScrollSize * 10;
+				
+				verticalScrollPosition = contentHolder.totalHeight - height;
+				contentHolder.y = -verticalScrollPosition;
+			}
+			
+			if(horizontalScrollBar) {
+				horizontalScrollPosition = contentHolder.horizontalCenter - width / 2;
+				contentHolder.x = -horizontalScrollPosition;
+			}
+		}
+		
+		private function doScroll(delta:int, speed:uint = 3):void
+		{
+			if (verticalScrollBar && verticalScrollBar.visible) {
+				var scrollDirection:int = delta <= 0 ? 1 : -1;
+				
+				var oldPosition:Number = verticalScrollPosition;
+				verticalScrollPosition += speed * scrollDirection;
+				
+				if(verticalScrollPosition < 0) {
+					verticalScrollPosition = 0;
+				}
+				
+				if(verticalScrollPosition > maxVerticalScrollPosition) {
+					verticalScrollPosition = maxVerticalScrollPosition;
+				}
+				
+				var scrollEvent:ScrollEvent = new ScrollEvent(ScrollEvent.SCROLL);
+				scrollEvent.direction = ScrollEventDirection.VERTICAL;
+				scrollEvent.position = verticalScrollPosition;
+				scrollEvent.delta = verticalScrollPosition - oldPosition;
+				dispatchEvent(scrollEvent);
+			}
 		}
 	}
 }

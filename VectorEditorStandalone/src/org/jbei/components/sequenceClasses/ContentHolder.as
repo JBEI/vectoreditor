@@ -88,6 +88,7 @@ package org.jbei.components.sequenceClasses
 		private var _averageRowHeight:int = 0;
 		private var _totalHeight:int = 0;
 		private var _totalWidth:int = 0;
+		private var _readOnly:Boolean = true;
 		private var _showCutSites:Boolean = true;
 		private var _showComplementary:Boolean = true;
 		private var _showFeatures:Boolean = true;
@@ -468,6 +469,16 @@ package org.jbei.components.sequenceClasses
 		public function set safeEditing(value:Boolean):void
 		{
 			_safeEditing = value;
+		}
+		
+		public function get readOnly():Boolean
+		{
+			return _readOnly;
+		}
+		
+		public function set readOnly(value:Boolean):void
+		{
+			_readOnly = value;
 		}
 		
 		// Public Methods
@@ -854,9 +865,9 @@ package org.jbei.components.sequenceClasses
 		// Private Methods
 		private function disableSequence():void
 		{
-			caretPosition = 0;
-			
 			invalidSequence = true;
+			
+			caretPosition = 0;
 			
 			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -868,8 +879,10 @@ package org.jbei.components.sequenceClasses
 			
 			sequenceAnnotator.removeEventListener(Event.SELECT_ALL, onSelectAll);
 			sequenceAnnotator.removeEventListener(Event.COPY, onCopy);
-			sequenceAnnotator.removeEventListener(Event.CUT, onCut);
-			sequenceAnnotator.removeEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				sequenceAnnotator.removeEventListener(Event.CUT, onCut);
+				sequenceAnnotator.removeEventListener(Event.PASTE, onPaste);
+			}
 			
 			removeEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -888,8 +901,10 @@ package org.jbei.components.sequenceClasses
 			
 			sequenceAnnotator.addEventListener(Event.SELECT_ALL, onSelectAll);
 			sequenceAnnotator.addEventListener(Event.COPY, onCopy);
-			sequenceAnnotator.addEventListener(Event.CUT, onCut);
-			sequenceAnnotator.addEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				sequenceAnnotator.addEventListener(Event.CUT, onCut);
+				sequenceAnnotator.addEventListener(Event.PASTE, onPaste);
+			}
 			
 			addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -900,14 +915,16 @@ package org.jbei.components.sequenceClasses
 			
 			customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
 			customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-			customContextMenu.clipboardItems.paste = true;
+			customContextMenu.clipboardItems.paste = _readOnly ? false : true;
 			customContextMenu.clipboardItems.selectAll = true;
 			
 			contextMenu = customContextMenu;
 			
 			customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
 			
-			createCustomContextMenuItems();
+			if(! _readOnly) {
+				createCustomContextMenuItems();
+			}
         }
         
         private function createCustomContextMenuItems():void
@@ -1379,7 +1396,7 @@ package org.jbei.components.sequenceClasses
         {
         	if(event.start >= 0 && event.end >= 0) {
         		customContextMenu.clipboardItems.copy = true;
-        		customContextMenu.clipboardItems.cut = true;
+				customContextMenu.clipboardItems.cut = _readOnly ? false : true;
         	} else {
         		customContextMenu.clipboardItems.copy = false;
         		customContextMenu.clipboardItems.cut = false;
@@ -1719,17 +1736,23 @@ package org.jbei.components.sequenceClasses
 		
 		private function doDeleteSequence(start:int, end:int):void
 		{
-			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_DELETE, new Array(start, end)));
+			if(! _readOnly) {
+				dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_DELETE, new Array(start, end)));
+			}
 		}
 		
 		private function doInsertSequence(dnaSequence:DNASequence, position:int):void
 		{
-			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
+			if(! _readOnly) {
+				dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
+			}
 		}
 		
 		private function doInsertFeaturedSequence(currentFeaturedSequence:FeaturedSequence, position:int):void
 		{
-			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
+			if(! _readOnly) {
+				dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
+			}
 		}
 	}
 }

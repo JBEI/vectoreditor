@@ -100,6 +100,7 @@ package org.jbei.components.pieClasses
 		private var cutSitesToRendererMap:Dictionary = new Dictionary(); /* [CutSite] = CutSiteRenderer  */
 		private var _totalHeight:int = 0;
 		private var _totalWidth:int = 0;
+		private var _readOnly:Boolean = true;
 		private var _showFeatures:Boolean = true;
 		private var _showCutSites:Boolean = true;
 		private var _showFeatureLabels:Boolean = true;
@@ -370,6 +371,16 @@ package org.jbei.components.pieClasses
 		public function get featureTextRenderer():TextRenderer
 		{
 			return _featureTextRenderer;
+		}
+		
+		public function get readOnly():Boolean
+		{
+			return _readOnly;
+		}
+		
+		public function set readOnly(value:Boolean):void
+		{
+			_readOnly = value;
 		}
 		
 		// Public Methods
@@ -676,8 +687,10 @@ package org.jbei.components.pieClasses
 			
 			pie.removeEventListener(Event.SELECT_ALL, onSelectAll);
 			pie.removeEventListener(Event.COPY, onCopy);
-			pie.removeEventListener(Event.CUT, onCut);
-			pie.removeEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				pie.removeEventListener(Event.CUT, onCut);
+				pie.removeEventListener(Event.PASTE, onPaste);
+			}
 			
 			removeEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -705,8 +718,10 @@ package org.jbei.components.pieClasses
 			
 			pie.addEventListener(Event.SELECT_ALL, onSelectAll);
 			pie.addEventListener(Event.COPY, onCopy);
-			pie.addEventListener(Event.CUT, onCut);
-			pie.addEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				pie.addEventListener(Event.CUT, onCut);
+				pie.addEventListener(Event.PASTE, onPaste);
+			}
 			
 			addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -717,14 +732,16 @@ package org.jbei.components.pieClasses
 			
 			customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
 			customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-			customContextMenu.clipboardItems.paste = true;
+			customContextMenu.clipboardItems.paste = _readOnly ? false : true;
 			customContextMenu.clipboardItems.selectAll = true;
 			
 			contextMenu = customContextMenu;
 			
 			customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
 			
-			createCustomContextMenuItems();
+			if(! _readOnly) {
+				createCustomContextMenuItems();
+			}
         }
         
         private function createCustomContextMenuItems():void
@@ -1036,7 +1053,7 @@ package org.jbei.components.pieClasses
         {
         	if(event.start >= 0 && event.end >= 0) {
         		customContextMenu.clipboardItems.copy = true;
-        		customContextMenu.clipboardItems.cut = true;
+				customContextMenu.clipboardItems.cut = _readOnly ? false : true;
         	} else {
         		customContextMenu.clipboardItems.copy = false;
         		customContextMenu.clipboardItems.cut = false;

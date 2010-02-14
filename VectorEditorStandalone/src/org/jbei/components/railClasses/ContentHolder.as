@@ -84,6 +84,7 @@ package org.jbei.components.railClasses
 		private var _totalHeight:int = 0;
 		private var _totalWidth:int = 0;
 		private var _bpWidth:Number = 0;
+		private var _readOnly:Boolean = true;
 		private var _showFeatures:Boolean = true;
 		private var _showCutSites:Boolean = true;
 		private var _showFeatureLabels:Boolean = true;
@@ -373,6 +374,16 @@ package org.jbei.components.railClasses
 		public function get featureTextRenderer():TextRenderer
 		{
 			return _featureTextRenderer;
+		}
+		
+		public function get readOnly():Boolean
+		{
+			return _readOnly;
+		}
+		
+		public function set readOnly(value:Boolean):void
+		{
+			_readOnly = value;
 		}
 		
 		// Public Methods
@@ -669,14 +680,16 @@ package org.jbei.components.railClasses
 			
 			customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
 			customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-			customContextMenu.clipboardItems.paste = true;
+			customContextMenu.clipboardItems.paste = _readOnly ? false : true;
 			customContextMenu.clipboardItems.selectAll = true;
 			
 			contextMenu = customContextMenu;
 			
 			customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
 			
-			createCustomContextMenuItems();
+			if(! _readOnly) {
+				createCustomContextMenuItems();
+			}
 		}
 		
 		private function createCustomContextMenuItems():void
@@ -790,8 +803,10 @@ package org.jbei.components.railClasses
 			
 			rail.removeEventListener(Event.SELECT_ALL, onSelectAll);
 			rail.removeEventListener(Event.COPY, onCopy);
-			rail.removeEventListener(Event.CUT, onCut);
-			rail.removeEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				rail.removeEventListener(Event.CUT, onCut);
+				rail.removeEventListener(Event.PASTE, onPaste);
+			}
 			
 			removeEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -819,8 +834,10 @@ package org.jbei.components.railClasses
 			
 			rail.addEventListener(Event.SELECT_ALL, onSelectAll);
 			rail.addEventListener(Event.COPY, onCopy);
-			rail.addEventListener(Event.CUT, onCut);
-			rail.addEventListener(Event.PASTE, onPaste);
+			if(!_readOnly) {
+				rail.addEventListener(Event.CUT, onCut);
+				rail.addEventListener(Event.PASTE, onPaste);
+			}
 			
 			addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
 		}
@@ -1002,7 +1019,7 @@ package org.jbei.components.railClasses
 		{
 			if(event.start >= 0 && event.end >= 0) {
 				customContextMenu.clipboardItems.copy = true;
-				customContextMenu.clipboardItems.cut = true;
+				customContextMenu.clipboardItems.cut = _readOnly ? false : true;
 			} else {
 				customContextMenu.clipboardItems.copy = false;
 				customContextMenu.clipboardItems.cut = false;

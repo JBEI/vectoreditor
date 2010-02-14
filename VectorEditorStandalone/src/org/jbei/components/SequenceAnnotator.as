@@ -45,6 +45,7 @@ package org.jbei.components
 		
 		private var contentHolder:ContentHolder;
 		
+		private var _readOnly:Boolean = false;
 		private var _showCutSites:Boolean = true;
 		private var _showComplementarySequence:Boolean = true;
 		private var _showFeatures:Boolean = true;
@@ -423,6 +424,16 @@ package org.jbei.components
 			}
 		}
 		
+		public function get readOnly():Boolean
+		{
+			return _readOnly;
+		}
+		
+		public function set readOnly(value:Boolean):void
+		{
+			_readOnly = value;
+		}
+		
 	    // Public Methods
 		public function scrollToSelection():void
 		{
@@ -468,14 +479,7 @@ package org.jbei.components
 		{
 			super.createChildren();
 			
-	        if(!contentHolder) {
-	            contentHolder = new ContentHolder(this);
-	            contentHolder.includeInLayout = false;
-            	addChild(contentHolder);
-	            // Make content fit into ScrollControlBase control
-	            // Hide invisible portion of the content
-	            contentHolder.mask = maskShape;
-	        }
+			createContentHolder();
 		}
 		
 		protected override function commitProperties():void
@@ -769,6 +773,19 @@ package org.jbei.components
 			
 			invalidateProperties();
         }
+		
+		private function createContentHolder():void
+		{
+			if(!contentHolder) {
+				contentHolder = new ContentHolder(this);
+				contentHolder.includeInLayout = false;
+				contentHolder.readOnly = _readOnly;
+				addChild(contentHolder);
+				// Make content fit into ScrollControlBase control
+				// Hide invisible portion of the content
+				contentHolder.mask = maskShape;
+			}
+		}
 		
 		private function adjustScrollBars():void
 		{

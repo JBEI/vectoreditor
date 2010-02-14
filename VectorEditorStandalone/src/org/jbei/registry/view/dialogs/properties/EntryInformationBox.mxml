@@ -14,6 +14,7 @@
 			import org.jbei.registry.model.vo.Part;
 			import org.jbei.registry.model.vo.PartNumber;
 			import org.jbei.registry.model.vo.Plasmid;
+			import org.jbei.registry.model.vo.SelectionMarker;
 			import org.jbei.registry.model.vo.Strain;
 			
 			// Event Handlers
@@ -65,7 +66,14 @@
 				if(entry is Plasmid) {
 					var plasmid:Plasmid = entry as Plasmid;
 					
-					entryInfo += '<br /><b>Selection Markers:</b>  ' + plasmid.selectionMarkers ? plasmid.selectionMarkers.toArray().join(", ") : "";
+					var selectionMarkers1:String = "";
+					if(plasmid.selectionMarkers != null) {
+						for(var i:int = 0; i < plasmid.selectionMarkers.length; i++) {
+							selectionMarkers1 += (plasmid.selectionMarkers.getItemAt(i) as SelectionMarker).name + ((i + 1 < plasmid.selectionMarkers.length) ? ", " : "");
+						}
+					}
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + selectionMarkers1;
 					entryInfo += '<br /><b>Backbone:</b>  ' + (plasmid.backbone ? plasmid.backbone : '');
 					entryInfo += '<br /><b>Origin Of Replication:</b>  ' + (plasmid.originOfReplication ? plasmid.originOfReplication : '');
 					entryInfo += '<br /><b>Promoters:</b>  ' + (plasmid.promoters ? plasmid.promoters : '');
@@ -73,7 +81,14 @@
 				} else if(entry is Strain) {
 					var strain:Strain = entry as Strain;
 					
-					entryInfo += '<br /><b>Selection Markers:</b>  ' + strain.selectionMarkers ? strain.selectionMarkers.toArray().join(", ") : "";
+					var selectionMarkers2:String = "";
+					if(strain.selectionMarkers != null) {
+						for(var j:int = 0; j < strain.selectionMarkers.length; j++) {
+							selectionMarkers2 += (strain.selectionMarkers.getItemAt(j) as SelectionMarker).name + ((j + 1 < strain.selectionMarkers.length) ? ", " : "");
+						}
+					}
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + selectionMarkers2;
 					entryInfo += '<br /><b>Host:</b>  ' + strain.host;
 					entryInfo += '<br /><b>Genotype/Phenotype:</b>  ' + strain.genotypePhenotype;
 					entryInfo += '<br /><b>Plasmids:</b>  ' + strain.plasmids;
