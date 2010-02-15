@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application
+	layout="horizontal" 
+	width="100%" 
+	height="100%" 
+	styleName="plain" 
+	verticalScrollPolicy="off"
+	backgroundGradientColors="[#ffffff, #ffffff]"
+	creationComplete="onCreationComplete(event)"
+	applicationComplete="onApplicationComplete(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ui="org.jbei.registry.view.ui.*"
+	xmlns:maps="org.jbei.registry.maps.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
+			import org.jbei.registry.utils.SystemUtils;
+			import org.jbei.registry.view.ApplicationMediator;
+			import org.jbei.utils.Logger;
+			import org.jbei.utils.LoggerEvent;
+			
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
+			
+			private var mouseWheelSupport:ExternalMouseWheelSupport = null;
+			
+			// Public Methods
+			public function disableApplication(message:String = null):void
+			{
+				if(message) {
+					lock();
+					
+					Alert.show(message);
+				}
+			}
+			
+			public function lock():void
+			{
+				applicationBox.enabled = false;
+			}
+			
+			public function unlock():void
+			{
+				applicationBox.enabled = true;
+			}
+			
+			// Event Handlers
+			private function onCreationComplete(event:Event):void
+			{
+				Logger.getInstance().addEventListener(LoggerEvent.LOG, onLogMessage);
+				
+				Logger.getInstance().info("Build #: " + SystemUtils.applicationVersion());
+				
+				facade.initializeApplication(this);
+				
+				facade.registerMediator(new ApplicationMediator());
+				
+				processParameters();
+			}
+			
+			private function onApplicationComplete(event:Event):void
+			{
+				if(org.jbei.utils.SystemUtils.isMacOS()) { // We need this only for Mac in order to make mouse wheel to work in browser
+					mouseWheelSupport = ExternalMouseWheelSupport.getInstance(stage);
+					mouseWheelSupport.dispatchingObjectDeterminationMethod = ExternalMouseWheelSupport.COPY_MOUSEMOVE_EVENTS;
+				}
+			}
+			
+			private function onLogMessage(event:LoggerEvent):void
+			{
+				loggerTextArea.text += event.message + "\n";
+			}
+			
+			// Private Methods
+			private function processParameters():void
+			{
+				if(Application.application.parameters.entryId && (Application.application.parameters.entryId as String).length > 0) {
+					facade.entryId = Application.application.parameters.entryId;
+				} else {
+					CONFIG::release {
+						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter entryId is mandatory!");
+						
+						Logger.getInstance().info("Missing mandatory parameter 'entryId'");
+						
+						return;
+					}
+				}
+				
+				if(Application.application.parameters.sessionId && (Application.application.parameters.sessionId as String).length > 0) {
+					facade.sessionId = Application.application.parameters.sessionId;
+				} else {
+					CONFIG::release {
+						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
+						
+						Logger.getInstance().info("Missing mandatory parameter 'sessionId'");
+						
+						return;
+					}
+				}
+				
+				Logger.getInstance().info("Entry ID: " + facade.entryId);
+				Logger.getInstance().info("Session ID: " + facade.sessionId);
+				
+				facade.sendNotification(Notifications.INITIALIZATION, this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VDividedBox width="100%" height="100%" borderThickness="0" dividerThickness="0.5" dividerAffordance="3" verticalGap="3" paddingBottom="0" paddingTop="0" paddingLeft="0" paddingRight="0">
+		<mx:VBox id="applicationBox" width="100%" height="100%" verticalGap="0">
+			<ui:MainControlBar id="mainControlBar" />
+			
+			<ui:MainPanel id="mainPanel" />
+			
+			<ui:FindPanel id="findPanel" width="100%" paddingBottom="2" paddingTop="2" visible="false" includeInLayout="false" />
+			
+			<ui:StatusBar id="statusBar" />
+		</mx:VBox>
+		
+		<mx:TextArea id="loggerTextArea" height="0" width="100%"/>
+	</mx:VDividedBox>
+</mx:Application>

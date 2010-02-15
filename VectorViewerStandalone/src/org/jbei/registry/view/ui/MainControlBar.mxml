@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar dock="true" backgroundColor="#FFFFFF" width="100%" paddingTop="0" styleName="haloSilver" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Menu;
+			import mx.events.ItemClickEvent;
+			import mx.events.MenuEvent;
+			
+			public static const SHOW_RAIL_VIEW:String = "ShowRailView";
+			public static const SHOW_PIE_VIEW:String = "ShowPieView";
+			public static const SHOW_SEQUENCE_VIEW:String = "ShowSequenceView";
+			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
+			public static const SHOW_CUTSITES_STATE_CHANGED:String = "ShowCutSitesStateChanged";
+			public static const SHOW_ORFS_STATE_CHANGED:String = "ShowORFsStateChanged";
+			public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
+			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
+			public static const COPY:String = "Copy";
+			public static const PRINT:String = "Print";
+			
+			[Embed(source='../assets/icons/pie.png')]
+			[Bindable]
+			private var pieIcon:Class;
+			
+			[Embed(source='../assets/icons/rail.png')]
+			[Bindable]
+			private var railIcon:Class;
+			
+			[Embed(source='../assets/icons/sequence.png')]
+			[Bindable]
+			private var sequenceIcon:Class;
+			
+			[Embed(source='../assets/icons/print.png')]
+			[Bindable]
+			private var printIcon:Class;
+			
+			[Embed(source='../assets/icons/copy.png')]
+			[Bindable]
+			private var copyIcon:Class;
+			
+			[Embed(source='../assets/icons/copy_disabled.png')]
+			[Bindable]
+			private var copyDisabledIcon:Class;
+			
+			[Embed(source='../assets/icons/find.png')]
+			[Bindable]
+			private var findIcon:Class;
+			
+			[Embed(source='../assets/icons/properties.png')]
+			[Bindable]
+			private var propertiesIcon:Class;
+			
+			[Embed(source='../assets/icons/features.png')]
+			[Bindable]
+			private var featuresIcon:Class;
+			
+			[Embed(source='../assets/icons/cut_sites.png')]
+			[Bindable]
+			private var cutSitesIcon:Class;
+			
+			[Embed(source='../assets/icons/orf.png')]
+			[Bindable]
+			private var orfIcon:Class;
+			
+			// Event Handlers
+			private function onChangeViewButtonClick(event:ItemClickEvent):void
+			{
+				if(event.index == 0) { // Circular View
+					dispatchEvent(new Event(SHOW_PIE_VIEW));
+				} else if (event.index == 1) { // Linear View
+					dispatchEvent(new Event(SHOW_RAIL_VIEW));
+				} else if (event.index == 2) { // Sequence View
+					dispatchEvent(new Event(SHOW_SEQUENCE_VIEW));
+				}
+			}
+
+			public function updateCopyButtonState(active:Boolean):void
+			{
+				if(active) {
+					copyButton.enabled = true;
+					copyButton.setStyle("icon", copyIcon);
+				} else {
+					copyButton.enabled = false;
+					copyButton.setStyle("icon", copyDisabledIcon);
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:ToggleButtonBar 
+		id="viewToggleButtonBar"
+		toggleOnClick="false" 
+		itemClick="onChangeViewButtonClick(event)" 
+		backgroundColor="#FFFFFF" 
+		buttonWidth="32" 
+		buttonHeight="32"
+		paddingLeft="0" 
+		paddingRight="0" 
+		buttonStyleName="haloSilver"
+		>
+		
+        <mx:dataProvider>
+         	<mx:Object toolTip="Circular View" icon="{ pieIcon }" />
+			<mx:Object toolTip="Linear View" icon="{ railIcon }" />
+			<mx:Object toolTip="Sequence View" icon="{ sequenceIcon }" />
+        </mx:dataProvider>
+    </mx:ToggleButtonBar>
+    <mx:Spacer width="5" />
+	<mx:Button width="32" height="32" id="printPopupButton" icon="{ printIcon }" toolTip="Print" click="{ dispatchEvent(new Event(PRINT)) }"/>
+	<mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="copyButton" icon="{ copyDisabledIcon }" enabled="false" toolTip="Copy" click="{ dispatchEvent(new Event(COPY)) }" />
+    <mx:Spacer width="5" />
+	<mx:Button width="32" height="32" id="showFindPanelButton" icon="{ findIcon }" toolTip="Find ..." click="dispatchEvent(new Event(SHOW_FIND_PANEL));"/>
+	<mx:Spacer width="5" />
+	<mx:Button width="32" height="32" id="showFeaturesButton" icon="{ featuresIcon }" toolTip="Show Features" toggle="true" labelPlacement="left" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
+    <mx:Button width="32" height="32" id="showCutSitesButton" icon="{ cutSitesIcon }" toolTip="Show Cut Sites" toggle="true" labelPlacement="left" selected="false" change="dispatchEvent(new Event(SHOW_CUTSITES_STATE_CHANGED));"/>
+    <mx:Button width="32" height="32" id="showORFsButton" icon="{ orfIcon }" toolTip="Show ORF" toggle="true" labelPlacement="left" selected="false" change="dispatchEvent(new Event(SHOW_ORFS_STATE_CHANGED));"/>
+    <mx:Spacer width="5" />
+	<mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" click="dispatchEvent(new Event(SHOW_PROPERTIES_DIALOG));" />
+</mx:ApplicationControlBar>

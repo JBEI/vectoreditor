@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="CutSites"
+	initialize="onInitialize(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.jbei.bio.data.CutSite;
+			import org.jbei.lib.RestrictionEnzymeMapper;
+			import org.jbei.lib.ui.dialogs.SimpleDialog;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
+			
+			[Bindable]
+			public var parentDialog:SimpleDialog;
+			
+			[Embed(source='../../assets/icons/expand.png')]
+			[Bindable]
+			private var expandImage:Class;
+			
+			[Bindable]
+			private var cutSites:ArrayCollection = new ArrayCollection();
+			
+			// Event Handler
+			private function onInitialize(event:Event):void
+			{
+				var reMapper:RestrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
+				
+				maxCutOffsLabel.htmlText = "Max Cut Offs: <b>" + ((reMapper.maxRestrictionEnzymeCuts == -1) ? "unlimited" : String(reMapper.maxRestrictionEnzymeCuts)) + "</b>";
+				
+				for (var restrictionEnzyme:Object in reMapper.allCutSitesMap) {
+					var cuts:Array = reMapper.allCutSitesMap[restrictionEnzyme] as Array;					
+					
+					if(cuts.length > 0) {
+						for (var i:int = 0; i < cuts.length; i++) {
+							var cutSite:CutSite = cuts[i] as CutSite;
+							
+							cutSites.addItem(
+								{
+									name : restrictionEnzyme.name, 
+									nCuts : cutSite.numCuts, 
+									cutSite : cutSite, 
+									position : ((cutSite.start + 1) + " - " + (cutSite.end + 1)), 
+									strand : (cutSite.forward ? "+" : "-")
+								}
+							);
+						}
+					} else {
+						cutSites.addItem(
+							{
+								name : restrictionEnzyme.name, 
+								nCuts : 0, 
+								cutSite : null, 
+								position : "", 
+								strand : ""
+							}
+						);
+					} 
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:AdvancedDataGrid id="cutSitesDataGrid" initialize="groupCollection.refresh();" width="100%" height="100%" folderOpenIcon="{ expandImage }" folderClosedIcon="{ expandImage }">
+		<mx:dataProvider>
+			<mx:GroupingCollection id="groupCollection" source="{ cutSites }">
+				<mx:grouping>
+					<mx:Grouping>
+						<mx:GroupingField name="name">
+							<mx:summaries>
+								<mx:SummaryRow summaryPlacement="group">
+									<mx:fields>
+										<mx:SummaryField dataField="nCuts" label="cuts" operation="MIN"/>
+									</mx:fields>
+								</mx:SummaryRow>
+							</mx:summaries>
+						</mx:GroupingField>
+					</mx:Grouping>
+				</mx:grouping>
+			</mx:GroupingCollection>
+		</mx:dataProvider>
+		
+		<mx:columns>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Name" />
+			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100"/>
+			<mx:AdvancedDataGridColumn dataField="position" headerText="Position" width="100"/>
+			<mx:AdvancedDataGridColumn dataField="strand" headerText="Strand" width="100"/>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	
+	<mx:Label id="maxCutOffsLabel" />
+	
+</mx:Box>

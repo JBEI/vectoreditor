@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box width="100%" height="20" paddingBottom="0" paddingTop="0" verticalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:HRule width="100%" strokeWidth="1" strokeColor="0xAAB3B3" shadowColor="0xAAB3B3" />
+	
+	<mx:HBox width="100%" paddingBottom="0" paddingTop="0">
+		<mx:Label id="statusLabel" text=""/>
+		<mx:Spacer width="100%" />
+		<mx:VRule height="100%" />
+		<mx:Label id="sequenceStatusLabel" text="Read only"/>
+		<mx:VRule height="100%" />
+		<mx:Label id="caretPositionLabel" text="  "/>
+		<mx:VRule height="100%" />
+		<mx:Label id="selectionPositionLabel" text="- : -"/>
+		<mx:VRule height="100%" />
+		<mx:Label id="sequenceLengthLabel" text=" "/>
+		<mx:Spacer width="10" />
+	</mx:HBox>
+</mx:Box>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<mx:Canvas 
+		width="100%" 
+		height="100%" 
+		xmlns:components="org.jbei.components.*" 
+		xmlns:mx="http://www.adobe.com/2006/mxml" 
+		xmlns:ui="org.jbei.registry.view.ui.*" 
+		xmlns:print="org.jbei.registry.view.print.*">
+	
+	<mx:HDividedBox width="100%" height="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0">
+		<components:Pie 
+			id="pie"
+			showORFs="false"
+			showCutSites="false"
+			readOnly="true"
+			width="100%" 
+			height="100%" />
+		
+		<components:Rail 
+			id="rail"
+			visible="false"
+			includeInLayout="false"
+			showORFs="false"
+			showCutSites="false"
+			readOnly="true"
+			width="100%" 
+			height="100%" />
+		
+		<components:SequenceAnnotator 
+			id="sequenceAnnotator"
+			visible="false"
+			includeInLayout="false"
+			showORFs="false"
+			showCutSites="false"
+			showAminoAcids1="false"
+			showAminoAcids3="false"
+			readOnly="true"
+			width="100%" 
+			height="100%" />
+		
+	</mx:HDividedBox>
+	
+	<mx:HBox includeInLayout="true" visible="true">
+		<components:Pie 
+			id="printingPie"
+			includeInLayout="false"
+			visible="false"
+			width="400" 
+			height="400" />
+		
+		<components:SequenceAnnotator 
+			id="printingSequenceAnnotator"
+			includeInLayout="false"
+			visible="false"
+			width="400" 
+			height="400" />
+		
+		<components:Rail 
+			id="printingRail"
+			includeInLayout="false"
+			visible="false"
+			width="400" 
+			height="400" />
+		
+		<print:PrintView
+			id="printView"
+			includeInLayout="false"
+			visible="false" />
+	</mx:HBox>
+</mx:Canvas>

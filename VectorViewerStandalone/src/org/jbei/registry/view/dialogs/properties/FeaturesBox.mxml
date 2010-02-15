@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+	label="Features"
+	width="400" 
+	height="300" 
+	initialize="onInitialize(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridItemRenderer;
+			import mx.utils.StringUtil;
+			
+			import org.jbei.bio.data.Feature;
+			import org.jbei.lib.ui.dialogs.ModalDialog;
+			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Notifications;
+			
+			[Bindable]
+			private var filteredFeatures:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var query:String;
+			
+			private var features:ArrayCollection;
+			
+			private function onInitialize(event:Event):void
+			{
+				if(! ApplicationFacade.getInstance().featuredSequence) return;
+				
+				features = ApplicationFacade.getInstance().featuredSequence.features;
+				
+				searchTextInput.setFocus();
+				
+				updateFeaturesList();
+			}
+			
+			private function onSearchTextInputChange(event:Event):void
+			{
+				query = searchTextInput.text;
+				
+				updateFeaturesList();
+			}
+			
+			private function onSearchTextInputKeyDown(event:KeyboardEvent):void
+			{
+				if(event.keyCode == Keyboard.DOWN) {
+					featuresDataGrid.setFocus();
+					
+					if(filteredFeatures.length > 0 && featuresDataGrid.selectedIndex == -1) {
+						featuresDataGrid.selectedIndex = 0;
+					}
+				}
+			}
+			
+			private function updateFeaturesList():void
+			{
+				filteredFeatures.removeAll();
+				
+				for(var i:int = 0; i < features.length; i++) {
+					var feature:Feature = features[i] as Feature;
+					
+					var searchQuery:String = StringUtil.trim(query).toLowerCase();
+					
+					var strand:String = "";
+					if(feature.strand == 1) {
+						strand = "+";
+					} else if(feature.strand == -1) {
+						strand = "-";
+					}
+					
+					if(searchQuery == "") {
+						filteredFeatures.addItem({name : feature.label, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+					} else {
+						if(feature.label.toLowerCase().search(searchQuery) >= 0 || feature.type.toLowerCase().search(searchQuery) >= 0) {
+							filteredFeatures.addItem({name : feature.label, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+						}
+					}
+				}
+			}
+			
+			private function onFocusIn(event:FocusEvent):void
+			{
+				if(searchTextInput.text == "Enter Name or Type") {
+					searchTextInput.text = "";
+					searchTextInput.setStyle("color", "#000000");
+				}
+			}
+			
+			private function onFocusOut(event:FocusEvent):void
+			{
+				if(searchTextInput.text == "") {
+					searchTextInput.text = "Enter Name or Type";
+					searchTextInput.setStyle("color", "#808080");
+				}
+			}
+			
+			public function doCaselessSortForField(field:String):Function
+			{
+				return function(obj1:Object, obj2:Object):int
+				{
+					return mx.utils.ObjectUtil.stringCompare(obj1[field],obj2[field],true);
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" paddingBottom="1" paddingTop="1" paddingLeft="1" paddingRight="1">
+		<mx:TextInput id="searchTextInput" width="200" change="onSearchTextInputChange(event)" keyDown="onSearchTextInputKeyDown(event)" focusIn="onFocusIn(event)" focusOut="onFocusOut(event)" />
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:DataGrid 
+				id="featuresDataGrid" 
+				dataProvider="{ filteredFeatures }" 
+				allowMultipleSelection="true" 
+				doubleClickEnabled="true" 
+				height="100%" 
+				width="100%">
+				
+				<mx:columns>
+					<mx:DataGridColumn dataField="name" headerText="Name" width="150" sortCompareFunction="doCaselessSortForField('name')"/>
+					<mx:DataGridColumn dataField="type" headerText="Type" sortCompareFunction="doCaselessSortForField('type')"/>
+					<mx:DataGridColumn dataField="position" headerText="Position" />
+					<mx:DataGridColumn dataField="strand" headerText="Strand" width="50" />
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Box>

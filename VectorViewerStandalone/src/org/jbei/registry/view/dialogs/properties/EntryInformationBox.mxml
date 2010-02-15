@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="Entry"
+	creationComplete="onCreationComplete(event)"
+	paddingBottom="1"
+	paddingTop="1"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Constants;
+			import org.jbei.registry.model.vo.Entry;
+			import org.jbei.registry.model.vo.Part;
+			import org.jbei.registry.model.vo.PartNumber;
+			import org.jbei.registry.model.vo.Plasmid;
+			import org.jbei.registry.model.vo.SelectionMarker;
+			import org.jbei.registry.model.vo.Strain;
+			
+			// Event Handlers
+			private function onCreationComplete(event:Event):void
+			{
+				var entry:Entry = ApplicationFacade.getInstance().entry;
+				
+				if(!entry) { return; }
+				
+				var entryInfo:String;
+				
+				entryInfo = buildEntryInfo(entry);
+				
+				entryInfoTextArea.htmlText = '<p>' + entryInfo + "</p>";
+			}
+			
+			// Private Methods
+			private function buildEntryInfo(entry:Entry):String
+			{
+				var partNumbers:String = entry.partNumbers ? entry.partNumbers.toArray().join(", ") : "";
+				var names:String = entry.names ? entry.names.toArray().join(", ") : "";
+				var links:String = entry.links ? entry.links.toArray().join(", ") : "";
+				
+				var entryInfo:String = (entry.partNumbers && entry.partNumbers.length >= 1) ? '<b>ID:</b>  <font color="#0000FF"><u><a href="' + Constants.ENTRY_REGISTRY_URL + (entry.partNumbers[0] as PartNumber) + '/" target="_blank">' + partNumbers + '</a></u></font>' : "";
+				entryInfo += '<br /><b>Name:</b>  ' + names;
+				entryInfo += '<br /><b>Alias:</b>  ' + (entry.alias ? entry.alias : '');
+				entryInfo += '<br /><b>Type:</b>  ' + entry.recordType;
+				
+				entryInfo += '<br /><b>Owner:</b>  ';
+				
+				if(entry.owner && entry.owner != '') {
+					if(entry.ownerEmail && entry.ownerEmail != '') {
+						entryInfo += '<font color="#0000FF"><u><a href="mailto:' + entry.ownerEmail + '">' + entry.owner + '</a></u></font>';
+					} else {
+						entryInfo += entry.owner;
+					}
+				}
+				
+				entryInfo += '<br /><b>Creator:</b>  ';
+				
+				if(entry.creator && entry.creator != '') {
+					if(entry.creatorEmail && entry.creatorEmail != '') {
+						entryInfo += '<font color="#0000FF"><u><a href="mailto:' + entry.creatorEmail + '">' + entry.creator + '</a></u></font>';
+					} else {
+						entryInfo += entry.creator;
+					}
+				}
+				
+				if(entry is Plasmid) {
+					var plasmid:Plasmid = entry as Plasmid;
+					
+					var selectionMarkers1:String = "";
+					if(plasmid.selectionMarkers != null) {
+						for(var i:int = 0; i < plasmid.selectionMarkers.length; i++) {
+							selectionMarkers1 += (plasmid.selectionMarkers.getItemAt(i) as SelectionMarker).name + ((i + 1 < plasmid.selectionMarkers.length) ? ", " : "");
+						}
+					}
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + selectionMarkers1;
+					entryInfo += '<br /><b>Backbone:</b>  ' + (plasmid.backbone ? plasmid.backbone : '');
+					entryInfo += '<br /><b>Origin Of Replication:</b>  ' + (plasmid.originOfReplication ? plasmid.originOfReplication : '');
+					entryInfo += '<br /><b>Promoters:</b>  ' + (plasmid.promoters ? plasmid.promoters : '');
+					entryInfo += '<br /><b>Circular:</b>  ' + (plasmid.circular ? 'Yes' : 'No');
+				} else if(entry is Strain) {
+					var strain:Strain = entry as Strain;
+					
+					var selectionMarkers2:String = "";
+					if(strain.selectionMarkers != null) {
+						for(var j:int = 0; j < strain.selectionMarkers.length; j++) {
+							selectionMarkers2 += (strain.selectionMarkers.getItemAt(j) as SelectionMarker).name + ((j + 1 < strain.selectionMarkers.length) ? ", " : "");
+						}
+					}
+					
+					entryInfo += '<br /><b>Selection Markers:</b>  ' + selectionMarkers2;
+					entryInfo += '<br /><b>Host:</b>  ' + strain.host;
+					entryInfo += '<br /><b>Genotype/Phenotype:</b>  ' + strain.genotypePhenotype;
+					entryInfo += '<br /><b>Plasmids:</b>  ' + strain.plasmids;
+				} else if(entry is Part) {
+					var part:Part = entry as Part;
+					
+					entryInfo += '<br /><b>Package Format:</b>  ' + part.packageFormat;
+				}
+				
+				entryInfo += '<br /><b>Links:</b>  ' + links;
+				entryInfo += '<br /><b>Keywords:</b>  ' + (entry.keywords ? entry.keywords : '');
+				entryInfo += '<br /><b>Status:</b>  ' + (entry.status ? entry.status : '');
+				entryInfo += '<br /><b>Summary:</b>  ' + (entry.shortDescription ? entry.shortDescription : '');
+				entryInfo += '<br /><b>Notes:</b>  ' + (entry.longDescription ? entry.longDescription : '');
+				entryInfo += '<br /><b>References:</b>  ' + (entry.references ? entry.references : '');
+				entryInfo += '<br /><b>Bio Safety Level:</b>  ' + (entry.bioSafetyLevel ? entry.bioSafetyLevel : '');
+				entryInfo += '<br /><b>Intellectual Property:</b>  ' + (entry.intellectualProperty ? entry.intellectualProperty : '');
+				entryInfo += '<br /><b>Created:</b>  ' + (entry.creationTime ? entry.creationTime.toString() : '');
+				entryInfo += '<br /><b>Modified:</b>  ' + (entry.modificationTime ? entry.modificationTime.toString() : '');
+				
+				return entryInfo;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea 
+		id="entryInfoTextArea" 
+		editable="false"
+		width="100%"
+		height="100%"/>
+	
+</mx:Box>
