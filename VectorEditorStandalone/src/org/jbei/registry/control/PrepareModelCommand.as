@@ -1,8 +1,8 @@
 package org.jbei.registry.control
 {
-	import org.jbei.registry.model.EntriesProxy;
-	import org.jbei.registry.model.UserPreferencesProxy;
-	import org.jbei.registry.model.UserRestrictionEnzymesProxy;
+	import org.jbei.registry.proxies.EntriesProxy;
+	import org.jbei.registry.proxies.UserPreferencesProxy;
+	import org.jbei.registry.proxies.UserRestrictionEnzymesProxy;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 

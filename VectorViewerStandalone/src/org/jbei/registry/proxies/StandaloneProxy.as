@@ -1,4 +1,4 @@
-package org.jbei.registry.model
+package org.jbei.registry.proxies
 {
 	import mx.collections.ArrayCollection;
 	import mx.rpc.events.ResultEvent;

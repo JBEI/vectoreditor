@@ -1,14 +1,13 @@
-package org.jbei.registry.model.vo
+package org.jbei.registry.model
 {
-	[RemoteClass(alias="org.jbei.ice.lib.models.Name")]
-	public class Name
+	[RemoteClass(alias="org.jbei.ice.lib.models.SelectionMarker")]
+	public class SelectionMarker
 	{
 		private var _id:int;
 		private var _name:String;
-		private var _entry:Entry;
 		
 		// Constructor
-		public function Name(name:String = null)
+		public function SelectionMarker(name:String = null)	
 		{
 			_name = name;
 		}
@@ -24,7 +23,7 @@ package org.jbei.registry.model.vo
 			_id = value;
 		}
 		
-		public function get name():String
+		public function get name():String	
 		{
 			return _name;
 		}
@@ -32,16 +31,6 @@ package org.jbei.registry.model.vo
 		public function set name(value:String):void	
 		{
 			_name = value;
-		}
-		
-		public function get entry():Entry
-		{
-			return _entry;
-		}
-		
-		public function set entry(value:Entry):void	
-		{
-			_entry = value;
 		}
 		
 		// Public Methods

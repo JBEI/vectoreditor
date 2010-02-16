@@ -1,4 +1,4 @@
-package org.jbei.registry.model.vo
+package org.jbei.registry.model
 {
 	[RemoteClass(alias="org.jbei.ice.lib.models.Plasmid")]
 	public class Plasmid extends Entry

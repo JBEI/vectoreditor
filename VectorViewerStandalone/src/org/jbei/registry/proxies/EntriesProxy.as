@@ -1,14 +1,14 @@
-package org.jbei.registry.model
+package org.jbei.registry.proxies
 {
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.InvokeEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
 	
-	import org.jbei.registry.Notifications;
-	import org.jbei.registry.model.vo.Entry;
-	import org.jbei.registry.utils.StandaloneUtils;
 	import org.jbei.lib.utils.Logger;
+	import org.jbei.registry.Notifications;
+	import org.jbei.registry.model.Entry;
+	import org.jbei.registry.utils.StandaloneUtils;
 	import org.puremvc.as3.patterns.proxy.Proxy;
 
 	public class EntriesProxy extends Proxy

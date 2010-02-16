@@ -1,4 +1,4 @@
-package org.jbei.registry.model.vo
+package org.jbei.registry.model
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.UserPreferences")]
