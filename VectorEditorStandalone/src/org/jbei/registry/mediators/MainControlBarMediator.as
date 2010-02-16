@@ -1,7 +1,8 @@
-package org.jbei.registry.view
+package org.jbei.registry.mediators
 {
 	import flash.events.Event;
 	
+	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainControlBar;
 	import org.puremvc.as3.interfaces.INotification;
@@ -22,13 +23,17 @@ package org.jbei.registry.view
 			
 			controlBar.addEventListener(MainControlBar.SHOW_RAIL_VIEW, onShowRailView);
 			controlBar.addEventListener(MainControlBar.SHOW_PIE_VIEW, onShowPieView);
-			controlBar.addEventListener(MainControlBar.SHOW_SEQUENCE_VIEW, onShowSequenceView);
 			controlBar.addEventListener(MainControlBar.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_CUTSITES_STATE_CHANGED, onShowCutSitesStateChanged);
+			controlBar.addEventListener(MainControlBar.SAFE_EDITING_CHANGED, onSafeEditingChanged);
 			controlBar.addEventListener(MainControlBar.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
+			controlBar.addEventListener(MainControlBar.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
 			controlBar.addEventListener(MainControlBar.SHOW_FIND_PANEL, onShowFindPanel);
+			controlBar.addEventListener(MainControlBar.UNDO, onUndo);
+			controlBar.addEventListener(MainControlBar.REDO, onRedo);
 			controlBar.addEventListener(MainControlBar.COPY, onCopy);
-			controlBar.addEventListener(MainControlBar.PRINT, onPrint);
+			controlBar.addEventListener(MainControlBar.CUT, onCut);
+			controlBar.addEventListener(MainControlBar.PASTE, onPaste);
 			controlBar.addEventListener(MainControlBar.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
 		}
 		
@@ -36,11 +41,12 @@ package org.jbei.registry.view
 		{
 			return [Notifications.SHOW_RAIL
 				, Notifications.SHOW_PIE
-				, Notifications.SHOW_SEQUENCE
 				, Notifications.SHOW_FEATURES
 				, Notifications.SHOW_CUTSITES
 				, Notifications.SHOW_ORFS
+				, Notifications.ACTION_STACK_CHANGED
 				, Notifications.SELECTION_CHANGED
+				, Notifications.SAFE_EDITING_CHANGED
 			];
 		}
 		
@@ -53,9 +59,6 @@ package org.jbei.registry.view
 				case Notifications.SHOW_RAIL:
 					controlBar.viewToggleButtonBar.selectedIndex = 1;
 					break;
-				case Notifications.SHOW_SEQUENCE:
-					controlBar.viewToggleButtonBar.selectedIndex = 2;
-					break;
 				case Notifications.SHOW_FEATURES:
 					controlBar.showFeaturesButton.selected = (notification.getBody() as Boolean);
 					break;
@@ -65,14 +68,21 @@ package org.jbei.registry.view
 				case Notifications.SHOW_ORFS:
 					controlBar.showORFsButton.selected = (notification.getBody() as Boolean);
 					break;
+				case Notifications.ACTION_STACK_CHANGED:
+					controlBar.updateUndoButtonState(!ApplicationFacade.getInstance().actionStack.undoStackIsEmpty);
+					controlBar.updateRedoButtonState(!ApplicationFacade.getInstance().actionStack.redoStackIsEmpty);
+					break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
 					if(selectionPositions.length == 2 && selectionPositions[0] > -1 && selectionPositions[1] > -1) {
-						controlBar.updateCopyButtonState(true);
+						controlBar.updateCopyAndCutButtonState(true);
 					} else {
-						controlBar.updateCopyButtonState(false);
+						controlBar.updateCopyAndCutButtonState(false);
 					}
+					break;
+				case Notifications.SAFE_EDITING_CHANGED:
+					controlBar.safeEditingButton.selected = (notification.getBody() as Boolean);
 					break;
 			}
 		}
@@ -93,14 +103,34 @@ package org.jbei.registry.view
 			sendNotification(Notifications.SHOW_ORFS, controlBar.showORFsButton.selected);
 		}
 		
+		private function onShowRestrictionEnzymesManagerDialog(event:Event):void
+		{
+			sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
+		}
+		
+		private function onUndo(event:Event):void
+		{
+			sendNotification(Notifications.UNDO);
+		}
+		
+		private function onRedo(event:Event):void
+		{
+			sendNotification(Notifications.REDO);
+		}
+		
 		private function onCopy(event:Event):void
 		{
 			sendNotification(Notifications.COPY);
 		}
 		
-		private function onPrint(event:Event):void
+		private function onCut(event:Event):void
 		{
-			sendNotification(Notifications.PRINT_CURRENT);
+			sendNotification(Notifications.CUT);
+		}
+		
+		private function onPaste(event:Event):void
+		{
+			sendNotification(Notifications.PASTE);
 		}
 		
 		private function onShowFindPanel(event:Event):void
@@ -113,6 +143,11 @@ package org.jbei.registry.view
 			sendNotification(Notifications.SHOW_PROPERTIES_DIALOG);
 		}
 		
+		private function onSafeEditingChanged(event:Event):void
+		{
+			sendNotification(Notifications.SAFE_EDITING_CHANGED, controlBar.safeEditingButton.selected);
+		}
+		
 		private function onShowRailView(event:Event):void
 		{
 			sendNotification(Notifications.SHOW_RAIL);
@@ -121,11 +156,6 @@ package org.jbei.registry.view
 		private function onShowPieView(event:Event):void
 		{
 			sendNotification(Notifications.SHOW_PIE);
-		}
-		
-		private function onShowSequenceView(event:Event):void
-		{
-			sendNotification(Notifications.SHOW_SEQUENCE);
 		}
 	}
 }

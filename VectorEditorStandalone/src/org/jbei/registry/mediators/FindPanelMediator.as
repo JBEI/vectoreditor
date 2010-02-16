@@ -1,4 +1,4 @@
-package org.jbei.registry.view
+package org.jbei.registry.mediators
 {
 	import flash.events.Event;
 	

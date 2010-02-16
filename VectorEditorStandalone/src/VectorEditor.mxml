@@ -22,7 +22,7 @@
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.Constants;
 			import org.jbei.registry.Notifications;
-			import org.jbei.registry.view.ApplicationMediator;
+			import org.jbei.registry.mediators.ApplicationMediator;
 			
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
 			

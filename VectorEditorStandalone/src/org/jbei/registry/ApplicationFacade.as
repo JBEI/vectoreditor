@@ -34,10 +34,10 @@ package org.jbei.registry
 	import org.jbei.lib.utils.SystemUtils;
 	import org.jbei.registry.control.ActionStack;
 	import org.jbei.registry.control.ActionStackEvent;
-	import org.jbei.registry.control.FetchEntryCommand;
-	import org.jbei.registry.control.FetchUserPreferencesCommand;
-	import org.jbei.registry.control.FetchUserRestrictionEnzymesCommand;
-	import org.jbei.registry.control.InitializationCommand;
+	import org.jbei.registry.commands.FetchEntryCommand;
+	import org.jbei.registry.commands.FetchUserPreferencesCommand;
+	import org.jbei.registry.commands.FetchUserRestrictionEnzymesCommand;
+	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.Part;

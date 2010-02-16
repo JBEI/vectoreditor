@@ -1,4 +1,4 @@
-package org.jbei.registry.control
+package org.jbei.registry.commands
 {
 	import org.jbei.registry.proxies.EntriesProxy;
 	import org.puremvc.as3.interfaces.INotification;

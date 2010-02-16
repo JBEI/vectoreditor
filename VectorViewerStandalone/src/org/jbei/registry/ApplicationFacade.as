@@ -24,8 +24,8 @@ package org.jbei.registry
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.ui.dialogs.SimpleDialog;
-	import org.jbei.registry.control.FetchEntryCommand;
-	import org.jbei.registry.control.InitializationCommand;
+	import org.jbei.registry.commands.FetchEntryCommand;
+	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.Part;

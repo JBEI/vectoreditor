@@ -1,10 +1,9 @@
-package org.jbei.registry.control
+package org.jbei.registry.commands
 {
-	import org.jbei.registry.view.FindPanelMediator;
-	import org.jbei.registry.view.MainControlBarMediator;
-	import org.jbei.registry.view.MainMenuMediator;
-	import org.jbei.registry.view.MainPanelMediator;
-	import org.jbei.registry.view.StatusBarMediator;
+	import org.jbei.registry.mediators.FindPanelMediator;
+	import org.jbei.registry.mediators.MainControlBarMediator;
+	import org.jbei.registry.mediators.MainPanelMediator;
+	import org.jbei.registry.mediators.StatusBarMediator;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 
@@ -13,10 +12,9 @@ package org.jbei.registry.control
 		// Public Methods
 		public override function execute(notification:INotification):void
 		{
-			var application:VectorEditor = notification.getBody() as VectorEditor;
+			var application:VectorViewer = notification.getBody() as VectorViewer;
 			
 			facade.registerMediator(new MainControlBarMediator(application.mainControlBar));
-			facade.registerMediator(new MainMenuMediator(application.mainMenu));
 			facade.registerMediator(new MainPanelMediator(application.mainPanel));
 			facade.registerMediator(new StatusBarMediator(application.statusBar));
 			facade.registerMediator(new FindPanelMediator(application.findPanel));

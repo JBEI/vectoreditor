@@ -1,4 +1,4 @@
-package org.jbei.registry.view
+package org.jbei.registry.mediators
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
