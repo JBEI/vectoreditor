@@ -7,7 +7,7 @@ package org.jbei.registry.proxies
 	
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.model.Entry;
+	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.utils.StandaloneUtils;
 	import org.puremvc.as3.patterns.proxy.Proxy;
 

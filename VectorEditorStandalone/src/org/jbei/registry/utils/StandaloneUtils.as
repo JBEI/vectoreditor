@@ -2,16 +2,16 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.registry.model.Entry;
-	import org.jbei.registry.model.Feature;
-	import org.jbei.registry.model.Link;
-	import org.jbei.registry.model.Name;
-	import org.jbei.registry.model.PartNumber;
-	import org.jbei.registry.model.Plasmid;
-	import org.jbei.registry.model.Sequence;
-	import org.jbei.registry.model.SequenceFeature;
-	import org.jbei.registry.model.UserPreferences;
-	import org.jbei.registry.model.UserRestrictionEnzymes;
+	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Feature;
+	import org.jbei.registry.models.Link;
+	import org.jbei.registry.models.Name;
+	import org.jbei.registry.models.PartNumber;
+	import org.jbei.registry.models.Plasmid;
+	import org.jbei.registry.models.Sequence;
+	import org.jbei.registry.models.SequenceFeature;
+	import org.jbei.registry.models.UserPreferences;
+	import org.jbei.registry.models.UserRestrictionEnzymes;
 	
 	public class StandaloneUtils
 	{

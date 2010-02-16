@@ -1,4 +1,4 @@
-package org.jbei.registry.model
+package org.jbei.registry.models
 {
 	[RemoteClass(alias="org.jbei.ice.lib.models.Part")]
 	public class Part extends Entry

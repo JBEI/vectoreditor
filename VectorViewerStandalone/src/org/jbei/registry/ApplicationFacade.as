@@ -27,11 +27,11 @@ package org.jbei.registry
 	import org.jbei.registry.control.FetchEntryCommand;
 	import org.jbei.registry.control.InitializationCommand;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.model.Entry;
-	import org.jbei.registry.model.Part;
-	import org.jbei.registry.model.Plasmid;
-	import org.jbei.registry.model.SequenceFeature;
-	import org.jbei.registry.model.Strain;
+	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Part;
+	import org.jbei.registry.models.Plasmid;
+	import org.jbei.registry.models.SequenceFeature;
+	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.proxies.EntriesProxy;
 	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;

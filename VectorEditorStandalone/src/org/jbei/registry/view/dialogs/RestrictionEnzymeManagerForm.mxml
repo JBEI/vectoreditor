@@ -17,7 +17,7 @@
 			import org.jbei.bio.data.RestrictionEnzymeGroup;
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-			import org.jbei.registry.model.UserRestrictionEnzymes;
+			import org.jbei.registry.models.UserRestrictionEnzymes;
 			import org.jbei.registry.proxies.UserRestrictionEnzymesProxy;
 			import org.jbei.lib.ui.dialogs.ModalDialog;
 			import org.jbei.lib.ui.dialogs.ModalDialogEvent;

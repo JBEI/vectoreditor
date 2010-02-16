@@ -8,7 +8,7 @@ package org.jbei.registry.proxies
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.model.UserRestrictionEnzymes;
+	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
 	import org.puremvc.as3.patterns.proxy.Proxy;
 

@@ -1,4 +1,4 @@
-package org.jbei.registry.model
+package org.jbei.registry.models
 {
 	import mx.collections.ArrayCollection;
 	

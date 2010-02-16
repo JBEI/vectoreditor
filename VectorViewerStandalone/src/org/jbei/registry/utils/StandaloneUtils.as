@@ -2,16 +2,14 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.registry.model.Entry;
-	import org.jbei.registry.model.Feature;
-	import org.jbei.registry.model.Link;
-	import org.jbei.registry.model.Name;
-	import org.jbei.registry.model.PartNumber;
-	import org.jbei.registry.model.Plasmid;
-	import org.jbei.registry.model.Sequence;
-	import org.jbei.registry.model.SequenceFeature;
-	import org.jbei.registry.model.UserPreferences;
-	import org.jbei.registry.model.UserRestrictionEnzymes;
+	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Feature;
+	import org.jbei.registry.models.Link;
+	import org.jbei.registry.models.Name;
+	import org.jbei.registry.models.PartNumber;
+	import org.jbei.registry.models.Plasmid;
+	import org.jbei.registry.models.Sequence;
+	import org.jbei.registry.models.SequenceFeature;
 	
 	public class StandaloneUtils
 	{
@@ -186,21 +184,6 @@ package org.jbei.registry.utils
 			plasmid.sequence = sequence;
 			
 			return plasmid;
-		}
-		
-		public static function standaloneUserPreferences():UserPreferences
-		{
-			var userPreferences:UserPreferences = new UserPreferences();
-			userPreferences.bpPerRow = -1;
-			userPreferences.orfMinimumLength = 300;
-			userPreferences.sequenceFontSize = 11;
-			
-			return userPreferences;
-		}
-		
-		public static function standaloneUserRestrictionEnzymes():UserRestrictionEnzymes
-		{
-			return new UserRestrictionEnzymes();
 		}
 	}
 }

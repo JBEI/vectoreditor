@@ -13,7 +13,7 @@
 			import mx.events.ValidationResultEvent;
 			
 			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.model.UserPreferences;
+			import org.jbei.registry.models.UserPreferences;
 			import org.jbei.registry.proxies.UserPreferencesProxy;
 			
 			private var changed:Boolean = false;

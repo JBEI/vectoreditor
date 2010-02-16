@@ -10,12 +10,12 @@
 		<![CDATA[
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.Constants;
-			import org.jbei.registry.model.Entry;
-			import org.jbei.registry.model.Part;
-			import org.jbei.registry.model.PartNumber;
-			import org.jbei.registry.model.Plasmid;
-			import org.jbei.registry.model.SelectionMarker;
-			import org.jbei.registry.model.Strain;
+			import org.jbei.registry.models.Entry;
+			import org.jbei.registry.models.Part;
+			import org.jbei.registry.models.PartNumber;
+			import org.jbei.registry.models.Plasmid;
+			import org.jbei.registry.models.SelectionMarker;
+			import org.jbei.registry.models.Strain;
 			
 			// Event Handlers
 			private function onCreationComplete(event:Event):void
