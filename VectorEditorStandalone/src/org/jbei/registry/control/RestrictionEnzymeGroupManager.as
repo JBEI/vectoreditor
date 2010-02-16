@@ -2,9 +2,8 @@ package org.jbei.registry.control
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.registry.model.vo.RestrictionEnzyme;
-	import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
-	import org.jbei.registry.model.vo.UserRestrictionEnzymes;
+	import org.jbei.bio.data.RestrictionEnzyme;
+	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	
 	public final class RestrictionEnzymeGroupManager
 	{

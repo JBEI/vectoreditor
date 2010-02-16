@@ -5,8 +5,8 @@
 			import mx.controls.Alert;
 			import mx.events.ValidationResultEvent;
 			
+			import org.jbei.bio.data.RestrictionEnzymeGroup;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-			import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 			
 			// Public Methods
 			public override function validate():void

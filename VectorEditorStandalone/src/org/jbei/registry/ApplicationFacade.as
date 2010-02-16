@@ -11,6 +11,7 @@ package org.jbei.registry
 	import org.jbei.bio.data.DNASequence;
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.FeatureNote;
+	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Pie;
@@ -42,7 +43,6 @@ package org.jbei.registry
 	import org.jbei.registry.model.vo.Entry;
 	import org.jbei.registry.model.vo.Part;
 	import org.jbei.registry.model.vo.Plasmid;
-	import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
 	import org.jbei.registry.model.vo.SequenceFeature;
 	import org.jbei.registry.model.vo.Strain;
 	import org.jbei.registry.model.vo.UserPreferences;
