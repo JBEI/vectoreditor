@@ -44,7 +44,6 @@ package org.jbei.registry.mediators
 				, Notifications.CLEAR_HIGHLIGHT
 				
 				, Notifications.SHOW_PROPERTIES_DIALOG
-				, Notifications.SHOW_ABOUT_DIALOG
 				
 				, Notifications.ENTRY_FETCHED
 				
@@ -106,10 +105,6 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.SHOW_PROPERTIES_DIALOG:
 					ApplicationFacade.getInstance().showPropertiesDialog();
-					
-					break;
-				case Notifications.SHOW_ABOUT_DIALOG:
-					ApplicationFacade.getInstance().showAboutDialog();
 					
 					break;
 				case Notifications.COPY:

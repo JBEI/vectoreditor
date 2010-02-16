@@ -34,7 +34,6 @@ package org.jbei.registry
 	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.proxies.EntriesProxy;
 	import org.jbei.registry.utils.Finder;
-	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
@@ -280,13 +279,6 @@ package org.jbei.registry
 			var propertiesDialog:SimpleDialog = new SimpleDialog(mainPanel, PropertiesDialogForm);
 			propertiesDialog.title = "Properties";
 			propertiesDialog.open();
-		}
-		
-		public function showAboutDialog():void
-		{
-			var aboutDialog:SimpleDialog = new SimpleDialog(mainPanel, AboutDialogForm);
-			aboutDialog.title = "About";
-			aboutDialog.open();
 		}
 		
 		public function copyToClipboard():void

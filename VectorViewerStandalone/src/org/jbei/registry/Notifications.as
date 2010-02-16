@@ -37,7 +37,6 @@ package org.jbei.registry
 		public static const FIND_MATCH_NOT_FOUND:String = "FindMatchNotFound";
 		
 		public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
-		public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 		
 		public static const PRINT_CURRENT:String = "PrintCurrent";
 		public static const PRINT_SEQUENCE:String = "PrintSequence";
