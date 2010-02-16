@@ -1,4 +1,4 @@
-package org.jbei.lib
+package org.jbei.lib.mappers
 {
 	import flash.events.Event;
 

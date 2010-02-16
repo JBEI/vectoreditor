@@ -1,4 +1,4 @@
-package org.jbei.utils
+package org.jbei.lib.utils
 {
 	import flash.external.ExternalInterface;
 	import flash.net.navigateToURL;
@@ -42,6 +42,15 @@ package org.jbei.utils
 			if (ExternalInterface.available) {
 				ExternalInterface.call("window.open", url, "_blank", "");
 			} 
+		}
+		
+		public static function applicationVersion(majorVersion:String):String
+		{
+			var versionDate:Date = new Date();
+			
+			var version:String = majorVersion + "." + String(versionDate.getFullYear()).substr(2, 2) + "." + String(versionDate.getMonth() + 1) + "." + String(versionDate.getDate());
+			
+			return version;
 		}
 	}
 }

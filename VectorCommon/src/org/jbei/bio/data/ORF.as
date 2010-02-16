@@ -1,9 +1,7 @@
 package org.jbei.bio.data
 {
-	public class ORF implements IAnnotation
+	public class ORF extends Segment
 	{
-		private var _start:int;
-		private var _end:int;
 		private var _startCodons:Array /* of int */;
 		private var _frame:int;
 		private var _isComplement:Boolean;
@@ -11,33 +9,13 @@ package org.jbei.bio.data
 		// Constructor
 		public function ORF(start:int, end:int, startCodons:Array, isComplement:Boolean = false)
 		{
-			_start = start;
-			_end = end;
+			super(start, end);
+			
 			_startCodons = startCodons;
 			_isComplement = isComplement;
 		}
 		
 		// Properties
-		public function get start():int
-		{
-			return _start;
-		}
-		
-		public function set start(value:int):void
-		{
-			_start = value;
-		}
-		
-		public function get end():int
-		{
-			return _end;
-		}
-		
-		public function set end(value:int):void
-		{
-			_end = value;
-		}
-		
 		public function get startCodons():Array /* of int */
 		{
 			return _startCodons;

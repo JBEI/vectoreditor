@@ -1,6 +1,6 @@
 package org.jbei.bio.data
 {
-	public class Segment
+	public class Segment implements IAnnotation
 	{
 		private var _start:int;
 		private var _end:int;

@@ -1,44 +1,22 @@
 package org.jbei.bio.data
 {
-	public class CutSite implements IAnnotation
+	public class CutSite extends Segment
 	{
 		private var _restrictionEnzyme:RestrictionEnzyme;
-		private var _start:int;
-		private var _end:int;
 		private var _forward:Boolean;
 		private var _numCuts:int;
 		
 		// Constructor
 		public function CutSite(restrictionEnzyme:RestrictionEnzyme, start:int, end:int, forward:Boolean = true, numCuts:int = 0)
 		{
+			super(start, end);
+			
 			_restrictionEnzyme = restrictionEnzyme;
-			_start = start;
-			_end = end;
 			_forward = forward;
 			_numCuts = numCuts;
 		}
 		
 		// Properties
-		public function get start():int
-		{
-			return _start;
-		}
-		
-		public function set start(value:int):void
-		{
-			_start = value;
-		}
-		
-		public function get end():int
-		{
-			return _end;
-		}
-		
-		public function set end(value:int):void
-		{
-			_end = value;
-		}
-		
 		public function get restrictionEnzyme():RestrictionEnzyme
 		{
 			return _restrictionEnzyme;

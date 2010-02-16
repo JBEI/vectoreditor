@@ -16,10 +16,10 @@ package org.jbei.components
 	import org.jbei.components.pieClasses.ContentHolder;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
-	import org.jbei.lib.ORFMapper;
-	import org.jbei.lib.ORFMapperEvent;
-	import org.jbei.lib.RestrictionEnzymeMapper;
-	import org.jbei.lib.RestrictionEnzymeMapperEvent;
+	import org.jbei.lib.mappers.ORFMapper;
+	import org.jbei.lib.mappers.ORFMapperEvent;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapperEvent;
 	
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]

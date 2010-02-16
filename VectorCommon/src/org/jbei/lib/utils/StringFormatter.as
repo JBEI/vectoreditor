@@ -25,9 +25,9 @@
 *  DEALINGS IN THE SOFTWARE.  
 */
 
-package org.jbei.utils
+package org.jbei.lib.utils
 {
-	public class StringUtils
+	public class StringFormatter
 	{
 		/*  sprintf(3) implementation in ActionScript 3.0.
 		*

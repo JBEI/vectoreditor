@@ -9,7 +9,6 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.bio.data.IAnnotation;
 	import org.jbei.bio.data.ORF;
 	import org.jbei.components.common.Alignment;
-	import org.jbei.utils.Logger;
 	
 	public class RowMapper
 	{
@@ -229,11 +228,11 @@ package org.jbei.components.sequenceClasses
 							if(rows[z] as Array != null) {
 								(rows[z] as Array).push(annotation);
 								if(annotation is CutSite) {
-									Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
+									//Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 								}
 							} else {
 								if(annotation is CutSite) {
-									Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
+									//Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 								}
 							}
 						}

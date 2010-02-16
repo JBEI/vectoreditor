@@ -33,11 +33,11 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.TextRenderer;
-    import org.jbei.lib.AAMapper;
+    import org.jbei.lib.mappers.AAMapper;
     import org.jbei.lib.FeaturedSequence;
-    import org.jbei.lib.ORFMapper;
-    import org.jbei.lib.RestrictionEnzymeMapper;
-    import org.jbei.utils.SystemUtils;
+    import org.jbei.lib.mappers.ORFMapper;
+    import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+    import org.jbei.lib.utils.SystemUtils;
 	
 	public class ContentHolder extends UIComponent implements IContentHolder
 	{

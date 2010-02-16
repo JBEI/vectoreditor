@@ -1,4 +1,4 @@
-package org.jbei.lib
+package org.jbei.lib.mappers
 {
 	import flash.events.EventDispatcher;
 	
@@ -8,6 +8,8 @@ package org.jbei.lib
 	import org.jbei.bio.data.ORF;
 	import org.jbei.bio.utils.ORFUtils;
 	import org.jbei.bio.utils.SequenceUtils;
+	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.FeaturedSequenceEvent;
 	
 	public class ORFMapper extends EventDispatcher
 	{

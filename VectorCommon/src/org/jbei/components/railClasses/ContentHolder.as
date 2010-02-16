@@ -40,8 +40,8 @@ package org.jbei.components.railClasses
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.components.common.TextRenderer;
 	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.ORFMapper;
-	import org.jbei.lib.RestrictionEnzymeMapper;
+	import org.jbei.lib.mappers.ORFMapper;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	
 	public class ContentHolder extends UIComponent implements IContentHolder
 	{

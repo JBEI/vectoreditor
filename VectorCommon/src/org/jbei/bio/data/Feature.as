@@ -2,11 +2,9 @@ package org.jbei.bio.data
 {
 	import mx.collections.ArrayCollection;
 	
-	public class Feature implements IAnnotation
+	public class Feature extends Segment
 	{
 		// Variables
-		private var _start:int;
-		private var _end:int;
 		private var _type:String;
 		private var _notes:Array /* of FeatureNote */;
 		private var _strand:int;
@@ -19,10 +17,8 @@ package org.jbei.bio.data
 		// Constructor
 		public function Feature(start:int = 0, end:int = 0, type:String = "", strand:int = Feature.UNKNOWN, notes:Array /* of FeatureNote */ = null)
 		{
-			super();
+			super(start, end);
 			
-			_start = start;
-			_end = end;
 			_type = type;
 			_strand = strand;
 			
@@ -33,26 +29,6 @@ package org.jbei.bio.data
 		}
 		
 		// Properties
-		public function get start():int
-		{
-			return _start;
-		}
-		
-		public function set start(value:int):void
-		{
-			_start = value;
-		}
-		
-		public function get end():int
-		{
-			return _end;
-		}
-		
-		public function set end(value:int):void
-		{
-			_end = value;
-		}
-		
 		public function get type():String
 		{
 			return _type;
@@ -105,7 +81,7 @@ package org.jbei.bio.data
 		// Public Methods
 		public function clone():Feature
 		{
-			var clonedFeature:Feature = new Feature(_start, _end, _type, _strand);
+			var clonedFeature:Feature = new Feature(start, end, _type, _strand);
 			
 			if(_notes && _notes.length > 0) {
 				var clonedNotes:Array = new Array();
@@ -123,7 +99,7 @@ package org.jbei.bio.data
 		public function toString():String
 		{
 			var result:String = _type;
-			result += "\n\t\t" + start.toString() + ".." + end.toString();
+			result += "\n\t\t" + start + ".." + end;
 			
 			for each (var note:FeatureNote in _notes) {
 				result += "\n\t\t/" + note.toString();

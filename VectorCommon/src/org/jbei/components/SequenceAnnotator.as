@@ -13,13 +13,13 @@ package org.jbei.components
     import org.jbei.components.common.CommonEvent;
     import org.jbei.components.common.PrintableContent;
     import org.jbei.components.sequenceClasses.ContentHolder;
-    import org.jbei.lib.AAMapper;
-    import org.jbei.lib.AAMapperEvent;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.FeaturedSequenceEvent;
-    import org.jbei.lib.ORFMapper;
-    import org.jbei.lib.ORFMapperEvent;
-    import org.jbei.lib.RestrictionEnzymeMapper;
+    import org.jbei.lib.mappers.AAMapper;
+    import org.jbei.lib.mappers.AAMapperEvent;
+    import org.jbei.lib.mappers.ORFMapper;
+    import org.jbei.lib.mappers.ORFMapperEvent;
+    import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]

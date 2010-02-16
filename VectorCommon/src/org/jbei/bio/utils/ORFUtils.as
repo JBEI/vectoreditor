@@ -75,14 +75,6 @@ package org.jbei.bio.utils
 					if(AminoAcidsHelper.instance.evaluatePossibleStop(codonSeq)) {
 						possibleStopCodon = true;
 					}
-					
-					/*startIndex = -1;
-					endIndex = -1;
-					startCodonIndexes = null;
-					
-					index += 3;
-					
-					continue;*/
 				}
 				
 				if(!possibleStopCodon && AminoAcidsHelper.instance.isStartCodon(codonSeq)) {
