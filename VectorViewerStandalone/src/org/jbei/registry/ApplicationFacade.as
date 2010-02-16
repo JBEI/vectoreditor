@@ -18,11 +18,11 @@ package org.jbei.registry
 	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
-	import org.jbei.lib.AAMapper;
+	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
-	import org.jbei.lib.ORFMapper;
-	import org.jbei.lib.RestrictionEnzymeMapper;
+	import org.jbei.lib.mappers.ORFMapper;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.ui.dialogs.SimpleDialog;
 	import org.jbei.registry.control.FetchEntryCommand;
 	import org.jbei.registry.control.InitializationCommand;

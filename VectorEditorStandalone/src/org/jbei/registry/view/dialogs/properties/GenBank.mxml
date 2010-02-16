@@ -8,7 +8,7 @@
 		<![CDATA[
 			import org.jbei.lib.FeaturedSequence;
 			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.utils.SystemUtils;
+			import org.jbei.lib.utils.SystemUtils;
 			
 			private function onInitialize(event:Event):void
 			{

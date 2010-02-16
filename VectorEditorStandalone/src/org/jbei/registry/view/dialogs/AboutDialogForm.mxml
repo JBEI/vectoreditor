@@ -7,7 +7,8 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.registry.utils.SystemUtils;
+			import org.jbei.lib.utils.SystemUtils;
+			import org.jbei.registry.Constants;
 			
 			[Embed(source='../assets/icons/jbei-logo.gif')]
 			[Bindable]
@@ -18,6 +19,6 @@
 	<mx:VBox id="mainBox" width="100%" height="100%" horizontalAlign="center">
 		<mx:Image source="{ logoImage }" horizontalAlign="center" />
 		<mx:Spacer />
-		<mx:Text width="400" selectable="false" htmlText="Version: { SystemUtils.applicationVersion() }" />
+		<mx:Text width="400" selectable="false" htmlText="Version: { SystemUtils.applicationVersion(Constants.MAJOR_VERSION) }" />
 	</mx:VBox>
 </SimpleDialogForm>

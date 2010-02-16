@@ -9,7 +9,7 @@ package org.jbei.registry.model
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.model.vo.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
-	import org.jbei.utils.Logger;
+	import org.jbei.lib.utils.Logger;
 	import org.puremvc.as3.patterns.proxy.Proxy;
 
 	public class UserRestrictionEnzymesProxy extends Proxy

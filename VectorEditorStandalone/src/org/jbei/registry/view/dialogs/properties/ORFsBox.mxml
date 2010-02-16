@@ -12,7 +12,7 @@
 			import mx.controls.dataGridClasses.DataGridItemRenderer;
 			
 			import org.jbei.bio.data.ORF;
-			import org.jbei.lib.ORFMapper;
+			import org.jbei.lib.mappers.ORFMapper;
 			import org.jbei.lib.ui.dialogs.SimpleDialog;
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.Notifications;

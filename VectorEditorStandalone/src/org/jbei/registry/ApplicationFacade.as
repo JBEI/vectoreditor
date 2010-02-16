@@ -22,15 +22,16 @@ package org.jbei.registry
 	import org.jbei.components.common.EditingEvent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
-	import org.jbei.lib.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.FeaturedSequenceMemento;
-	import org.jbei.lib.ORFMapper;
-	import org.jbei.lib.RestrictionEnzymeMapper;
+	import org.jbei.lib.mappers.AAMapper;
+	import org.jbei.lib.mappers.ORFMapper;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.ui.dialogs.ModalDialog;
 	import org.jbei.lib.ui.dialogs.ModalDialogEvent;
 	import org.jbei.lib.ui.dialogs.SimpleDialog;
+	import org.jbei.lib.utils.SystemUtils;
 	import org.jbei.registry.control.ActionStack;
 	import org.jbei.registry.control.ActionStackEvent;
 	import org.jbei.registry.control.FetchEntryCommand;
@@ -56,7 +57,6 @@ package org.jbei.registry
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.dialogs.editingPromptDialog.EditingPromptDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
-	import org.jbei.utils.SystemUtils;
 	import org.puremvc.as3.patterns.facade.Facade;
 
 	public class ApplicationFacade extends Facade

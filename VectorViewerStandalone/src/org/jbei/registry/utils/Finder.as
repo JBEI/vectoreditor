@@ -2,7 +2,7 @@ package org.jbei.registry.utils
 {
 	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.utils.SequenceUtils;
-	import org.jbei.lib.AAMapper;
+	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FindUtils;
 

@@ -9,10 +9,9 @@
 			import mx.collections.ArrayCollection;
 			
 			import org.jbei.bio.data.CutSite;
-			import org.jbei.lib.RestrictionEnzymeMapper;
+			import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 			import org.jbei.lib.ui.dialogs.SimpleDialog;
 			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			public var parentDialog:SimpleDialog;

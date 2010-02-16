@@ -16,12 +16,13 @@
 			import mx.controls.Alert;
 			
 			import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
+			import org.jbei.lib.utils.Logger;
+			import org.jbei.lib.utils.LoggerEvent;
+			import org.jbei.lib.utils.SystemUtils;
 			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.Constants;
 			import org.jbei.registry.Notifications;
-			import org.jbei.registry.utils.SystemUtils;
 			import org.jbei.registry.view.ApplicationMediator;
-			import org.jbei.utils.Logger;
-			import org.jbei.utils.LoggerEvent;
 			
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance();
 			
@@ -52,7 +53,7 @@
 			{
 				Logger.getInstance().addEventListener(LoggerEvent.LOG, onLogMessage);
 				
-				Logger.getInstance().info("Build #: " + SystemUtils.applicationVersion());
+				Logger.getInstance().info("Build #: " + SystemUtils.applicationVersion(Constants.MAJOR_VERSION));
 				
 				facade.initializeApplication(this);
 				
@@ -63,7 +64,7 @@
 			
 			private function onApplicationComplete(event:Event):void
 			{
-				if(org.jbei.utils.SystemUtils.isMacOS()) { // We need this only for Mac in order to make mouse wheel to work in browser
+				if(SystemUtils.isMacOS()) { // We need this only for Mac in order to make mouse wheel to work in browser
 					mouseWheelSupport = ExternalMouseWheelSupport.getInstance(stage);
 					mouseWheelSupport.dispatchingObjectDeterminationMethod = ExternalMouseWheelSupport.COPY_MOUSEMOVE_EVENTS;
 				}
