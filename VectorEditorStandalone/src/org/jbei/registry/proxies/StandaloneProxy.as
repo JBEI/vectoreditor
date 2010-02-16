@@ -8,11 +8,11 @@ package org.jbei.registry.proxies
 	import org.jbei.bio.data.DNASequence;
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.FeatureNote;
-	import org.jbei.registry.model.vo.RestrictionEnzyme;
-	import org.jbei.registry.model.vo.RestrictionEnzymeGroup;
+	import org.jbei.bio.data.RestrictionEnzyme;
+	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.model.vo.Plasmid;
+	import org.jbei.registry.models.Plasmid;
 
 	public class StandaloneProxy extends WebService
 	{
