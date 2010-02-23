@@ -78,7 +78,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:AdvancedDataGrid id="cutSitesDataGrid" initialize="groupCollection.refresh();" width="100%" height="100%" folderOpenIcon="{ expandImage }" folderClosedIcon="{ expandImage }">
+	<mx:AdvancedDataGrid id="cutSitesDataGrid" initialize="groupCollection.refresh();" width="100%" height="100%" folderOpenIcon="{ expandImage }" folderClosedIcon="{ expandImage }" sortableColumns="true" draggableColumns="false" sortExpertMode="true">
 		<mx:dataProvider>
 			<mx:GroupingCollection id="groupCollection" source="{ cutSites }">
 				<mx:grouping>
@@ -98,10 +98,10 @@
 		</mx:dataProvider>
 		
 		<mx:columns>
-			<mx:AdvancedDataGridColumn dataField="name" headerText="Name" />
-			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100"/>
-			<mx:AdvancedDataGridColumn dataField="position" headerText="Position" width="100"/>
-			<mx:AdvancedDataGridColumn dataField="strand" headerText="Strand" width="100"/>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="Name" sortable="true"/>
+			<mx:AdvancedDataGridColumn dataField="cuts" headerText="# Cuts" width="100" sortable="true"/>
+			<mx:AdvancedDataGridColumn dataField="position" headerText="Position" width="100" sortable="false"/>
+			<mx:AdvancedDataGridColumn dataField="strand" headerText="Strand" width="100" sortable="false"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
 	
