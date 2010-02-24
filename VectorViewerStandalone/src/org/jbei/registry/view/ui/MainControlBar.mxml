@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ApplicationControlBar dock="true" backgroundColor="#FFFFFF" width="100%" paddingTop="0" styleName="haloSilver" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:ApplicationControlBar dock="true" backgroundColor="#FFFFFF" width="100%" paddingTop="0" styleName="haloSilver" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml" cornerRadius="0">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Menu;

@@ -1,5 +1,8 @@
 package org.jbei.registry.mediators
 {
+	import org.jbei.components.Pie;
+	import org.jbei.components.Rail;
+	import org.jbei.components.SequenceAnnotator;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainPanel;
@@ -29,8 +32,6 @@ package org.jbei.registry.mediators
 				, Notifications.SHOW_FEATURES
 				, Notifications.SHOW_CUTSITES
 				, Notifications.SHOW_ORFS
-				, Notifications.SHOW_AA1
-				, Notifications.SHOW_AA1_REVCOM
 				
 				, Notifications.COPY
 				, Notifications.SELECT_ALL
@@ -79,14 +80,6 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.SHOW_ORFS:
 					ApplicationFacade.getInstance().displayORF(notification.getBody() as Boolean);
-					
-					break;
-				case Notifications.SHOW_AA1:
-					ApplicationFacade.getInstance().displayAA1(notification.getBody() as Boolean);
-					
-					break;
-				case Notifications.SHOW_AA1_REVCOM:
-					ApplicationFacade.getInstance().displayAA1RevCom(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.CARET_POSITION_CHANGED:
@@ -150,11 +143,11 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.PRINT_CURRENT:
-					if((viewComponent as MainPanel).pie.visible) {
+					if(ApplicationFacade.getInstance().activeSequenceComponent is Pie) {
 						sendNotification(Notifications.PRINT_PIE);
-					} else if((viewComponent as MainPanel).rail.visible) {
+					} else if(ApplicationFacade.getInstance().activeSequenceComponent is Rail) {
 						sendNotification(Notifications.PRINT_RAIL);
-					} else if((viewComponent as MainPanel).sequenceAnnotator.visible) {
+					} else if(ApplicationFacade.getInstance().activeSequenceComponent is SequenceAnnotator) {
 						sendNotification(Notifications.PRINT_SEQUENCE);
 					}
 					

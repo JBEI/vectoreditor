@@ -23,9 +23,6 @@ package org.jbei.registry
 		public static const SHOW_FEATURES:String = "ShowFeatures";
 		public static const SHOW_CUTSITES:String = "ShowCutSites";
 		public static const SHOW_ORFS:String = "ShowORFs";
-		public static const SHOW_AA1:String = "ShowAA1";
-		public static const SHOW_AA1_REVCOM:String = "ShowAA1RevCom";
-		public static const SHOW_SPACES:String = "ShowSpaces";
 		
 		public static const SHOW_FIND_PANEL:String = "ShowFindPanel";
 		public static const HIDE_FIND_PANEL:String = "HideFindPanel";

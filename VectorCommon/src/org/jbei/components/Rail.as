@@ -10,6 +10,7 @@ package org.jbei.components
 	import mx.events.ScrollEventDirection;
 	import mx.managers.IFocusManagerComponent;
 	
+	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.railClasses.ContentHolder;
 	import org.jbei.lib.FeaturedSequence;
@@ -23,7 +24,7 @@ package org.jbei.components
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
 	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
 	
-	public class Rail extends ScrollControlBase implements IFocusManagerComponent
+	public class Rail extends ScrollControlBase implements IFocusManagerComponent, ISequenceComponent
 	{
 		private const MIN_LABEL_FONT_SIZE:int = 9;
 		private const MAX_LABEL_FONT_SIZE:int = 14;

@@ -11,6 +11,7 @@ package org.jbei.components
     import mx.managers.IFocusManagerComponent;
     
     import org.jbei.components.common.CommonEvent;
+    import org.jbei.components.common.ISequenceComponent;
     import org.jbei.components.common.PrintableContent;
     import org.jbei.components.sequenceClasses.ContentHolder;
     import org.jbei.lib.FeaturedSequence;
@@ -28,7 +29,7 @@ package org.jbei.components
 	[Event(name="beforeUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	[Event(name="afterUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	
-	public class SequenceAnnotator extends ScrollControlBase implements IFocusManagerComponent
+	public class SequenceAnnotator extends ScrollControlBase implements IFocusManagerComponent, ISequenceComponent
 	{
 		private const DEFAULT_BP_PER_ROW:int = 60;
 		private const LIVE_SCROLL_SPEED:Number = 10;

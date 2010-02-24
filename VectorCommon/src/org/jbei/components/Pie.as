@@ -1,9 +1,7 @@
 package org.jbei.components
 {
-	import flash.display.BitmapData;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
 	
 	import mx.core.ScrollControlBase;
 	import mx.core.ScrollPolicy;
@@ -12,6 +10,7 @@ package org.jbei.components
 	import mx.events.ScrollEventDirection;
 	import mx.managers.IFocusManagerComponent;
 	
+	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.pieClasses.ContentHolder;
 	import org.jbei.lib.FeaturedSequence;
@@ -25,7 +24,7 @@ package org.jbei.components
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
 	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
 	
-	public class Pie extends ScrollControlBase implements IFocusManagerComponent
+	public class Pie extends ScrollControlBase implements IFocusManagerComponent, ISequenceComponent
 	{
 		private const MIN_LABEL_FONT_SIZE:int = 9;
 		private const MAX_LABEL_FONT_SIZE:int = 14;

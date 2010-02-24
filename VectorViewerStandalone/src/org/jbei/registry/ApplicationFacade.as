@@ -16,6 +16,7 @@ package org.jbei.registry
 	import org.jbei.components.Rail;
 	import org.jbei.components.SequenceAnnotator;
 	import org.jbei.components.common.CaretEvent;
+	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.FeaturedSequence;
@@ -47,6 +48,8 @@ package org.jbei.registry
 		private var _entry:Entry;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _activeSequenceComponent:ISequenceComponent;
+		
 		private var controlsInitialized:Boolean = false;
 		
 		private var sequenceAnnotator:SequenceAnnotator;
@@ -124,6 +127,11 @@ package org.jbei.registry
 			_restrictionEnzymeMapper = value;
 		}
 		
+		public function get activeSequenceComponent():ISequenceComponent
+		{
+			return _activeSequenceComponent;
+		}
+		
 		// System Public Methods
 		public static function getInstance():ApplicationFacade
 		{
@@ -151,6 +159,7 @@ package org.jbei.registry
 				initializeEventHandlers();
 				
 				controlsInitialized = true;
+				_activeSequenceComponent = pie;
 			}
 		}
 		
@@ -168,6 +177,8 @@ package org.jbei.registry
 			sequenceAnnotator.visible = false;
 			sequenceAnnotator.includeInLayout = false;
 			sequenceAnnotator.featuredSequence = null;
+			
+			_activeSequenceComponent = pie;
 		}
 		
 		public function showRail():void
@@ -183,6 +194,8 @@ package org.jbei.registry
 			sequenceAnnotator.visible = false;
 			sequenceAnnotator.includeInLayout = false;
 			sequenceAnnotator.featuredSequence = null;
+			
+			_activeSequenceComponent = rail;
 		}
 		
 		public function showSequence():void
@@ -198,6 +211,8 @@ package org.jbei.registry
 			sequenceAnnotator.visible = true;
 			sequenceAnnotator.includeInLayout = true;
 			sequenceAnnotator.featuredSequence = featuredSequence;
+			
+			_activeSequenceComponent = sequenceAnnotator;
 		}
 		
 		public function displayFeatures(showFeatures:Boolean):void
@@ -219,45 +234,6 @@ package org.jbei.registry
 			sequenceAnnotator.showORFs = showORFs;
 			pie.showORFs = showORFs;
 			rail.showORFs = showORFs;
-		}
-		
-		public function displayComplementarySequence(showComplementarySequence:Boolean):void
-		{
-			sequenceAnnotator.showComplementarySequence = showComplementarySequence;
-		}
-		
-		public function displayAA1(showAA1:Boolean):void
-		{
-			sequenceAnnotator.showAminoAcids1 = showAA1;
-			sequenceAnnotator.showAminoAcids3 = false;
-		}
-		
-		public function displayAA3(showAA3:Boolean):void
-		{
-			sequenceAnnotator.showAminoAcids1 = false;
-			sequenceAnnotator.showAminoAcids3 = showAA3;
-		}
-		
-		public function displayAA1RevCom(showAA1RevCom:Boolean):void
-		{
-			sequenceAnnotator.showAminoAcids1RevCom = showAA1RevCom;
-		}
-		
-		public function displaySpaces(showSpaces:Boolean):void
-		{
-			sequenceAnnotator.showSpaceEvery10Bp = showSpaces;
-		}
-		
-		public function displayFeaturesLabel(showFeatureLabels:Boolean):void
-		{
-			pie.showFeatureLabels = showFeatureLabels;
-			rail.showFeatureLabels = showFeatureLabels;
-		}
-		
-		public function displayCutSitesLabel(showCutSiteLabels:Boolean):void
-		{
-			pie.showCutSiteLabels = showCutSiteLabels;
-			rail.showCutSiteLabels = showCutSiteLabels;
 		}
 		
 		public function moveCaretToPosition(position:int):void
@@ -284,23 +260,23 @@ package org.jbei.registry
 		public function copyToClipboard():void
 		{
 			// Broadcasting COPY event
-			sequenceAnnotator.dispatchEvent(new Event(Event.COPY, true, true));
+			activeSequenceComponent.dispatchEvent(new Event(Event.COPY, true, true));
 		}
 		
 		public function selectAll():void
 		{
 			// Broadcasting SELECT_ALL event
-			sequenceAnnotator.dispatchEvent(new Event(Event.SELECT_ALL, true, true));
+			activeSequenceComponent.dispatchEvent(new Event(Event.SELECT_ALL, true, true));
 		}
 		
 		public function find(expression:String, dataType:String, searchType:String):void
 		{
-			findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition);
+			findAt(expression, dataType, searchType, activeSequenceComponent.caretPosition);
 		}
 		
 		public function findNext(expression:String, dataType:String, searchType:String):void
 		{
-			findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition + 1);
+			findAt(expression, dataType, searchType, activeSequenceComponent.caretPosition + 1);
 		}
 		
 		public function findAt(expression:String, dataType:String, searchType:String, position:int):void
@@ -473,6 +449,7 @@ package org.jbei.registry
 				mainPanel.printingSequenceAnnotator.showSpaceEvery10Bp = sequenceAnnotator.showSpaceEvery10Bp;
 				mainPanel.printingSequenceAnnotator.floatingWidth = true;
 				mainPanel.printingSequenceAnnotator.width = printableWidth;
+				mainPanel.printingSequenceAnnotator.readOnly = sequenceAnnotator.readOnly;
 				mainPanel.printingSequenceAnnotator.removeMask();
 				mainPanel.printingSequenceAnnotator.validateNow();
 				
@@ -508,6 +485,7 @@ package org.jbei.registry
 				mainPanel.printingPie.showCutSiteLabels = pie.showCutSiteLabels;
 				mainPanel.printingPie.showORFs = pie.showORFs;
 				mainPanel.printingPie.labelFontSize = pie.labelFontSize;
+				mainPanel.printingPie.readOnly = pie.readOnly;
 				mainPanel.printingPie.width = printableWidth;
 				mainPanel.printingPie.removeMask();
 				mainPanel.printingPie.validateNow();
@@ -544,6 +522,7 @@ package org.jbei.registry
 				mainPanel.printingRail.showCutSiteLabels = rail.showCutSiteLabels;
 				mainPanel.printingRail.showORFs = rail.showORFs;
 				mainPanel.printingRail.labelFontSize = rail.labelFontSize;
+				mainPanel.printingRail.readOnly = rail.readOnly;
 				mainPanel.printingRail.width = printableWidth;
 				mainPanel.printingRail.removeMask();
 				mainPanel.printingRail.validateNow();

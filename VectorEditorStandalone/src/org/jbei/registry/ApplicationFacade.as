@@ -740,6 +740,7 @@ package org.jbei.registry
 				mainPanel.printingSequenceAnnotator.labelFontSize = sequenceAnnotator.labelFontSize;
 				mainPanel.printingSequenceAnnotator.sequenceFontSize = sequenceAnnotator.sequenceFontSize;
 				mainPanel.printingSequenceAnnotator.showSpaceEvery10Bp = sequenceAnnotator.showSpaceEvery10Bp;
+				mainPanel.printingSequenceAnnotator.readOnly = sequenceAnnotator.readOnly;
 				mainPanel.printingSequenceAnnotator.floatingWidth = true;
 				mainPanel.printingSequenceAnnotator.width = printableWidth;
 				mainPanel.printingSequenceAnnotator.removeMask();
@@ -777,6 +778,7 @@ package org.jbei.registry
 				mainPanel.printingPie.showCutSiteLabels = pie.showCutSiteLabels;
 				mainPanel.printingPie.showORFs = pie.showORFs;
 				mainPanel.printingPie.labelFontSize = pie.labelFontSize;
+				mainPanel.printingPie.readOnly = pie.readOnly;
 				mainPanel.printingPie.width = printableWidth;
 				mainPanel.printingPie.removeMask();
 				mainPanel.printingPie.validateNow();
@@ -813,6 +815,7 @@ package org.jbei.registry
 				mainPanel.printingRail.showCutSiteLabels = rail.showCutSiteLabels;
 				mainPanel.printingRail.showORFs = rail.showORFs;
 				mainPanel.printingRail.labelFontSize = rail.labelFontSize;
+				mainPanel.printingRail.readOnly = rail.readOnly;
 				mainPanel.printingRail.width = printableWidth;
 				mainPanel.printingRail.removeMask();
 				mainPanel.printingRail.validateNow();
