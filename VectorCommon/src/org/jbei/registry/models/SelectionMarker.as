@@ -5,6 +5,7 @@ package org.jbei.registry.models
 	{
 		private var _id:int;
 		private var _name:String;
+		private var _entry:Entry;
 		
 		// Constructor
 		public function SelectionMarker(name:String = null)	
@@ -31,6 +32,16 @@ package org.jbei.registry.models
 		public function set name(value:String):void	
 		{
 			_name = value;
+		}
+		
+		public function get entry():Entry	
+		{
+			return _entry;
+		}
+		
+		public function set entry(value:Entry):void	
+		{
+			_entry = value;
 		}
 		
 		// Public Methods

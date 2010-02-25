@@ -10,9 +10,10 @@ package org.jbei.registry.models
 		private var _uuid:String;
 		private var _autoFind:int;
 		private var _genbankType:String;
+		private var _featureDna:FeatureDNA;
 		
 		// Constructor
-		public function Feature(name:String = null, description:String = null, identification:String = null, uuid:String = null, autoFind:int = 0, genbankType:String = null)
+		public function Feature(name:String = null, description:String = null, identification:String = null, uuid:String = null, autoFind:int = 0, genbankType:String = null, featureDNA:FeatureDNA = null)
 		{
 			_name = name;
 			_description = description;
@@ -20,6 +21,7 @@ package org.jbei.registry.models
 			_uuid = uuid
 			_autoFind = autoFind;
 			_genbankType = genbankType;
+			_featureDna = featureDna;
 		}
 		
 		// Properties
@@ -91,6 +93,16 @@ package org.jbei.registry.models
 		public function set genbankType(value:String):void	
 		{
 			_genbankType = value;
+		}
+		
+		public function get featureDna():FeatureDNA
+		{
+			return _featureDna;
+		}
+		
+		public function set featureDna(value:FeatureDNA):void	
+		{
+			_featureDna = value;
 		}
 	}
 }

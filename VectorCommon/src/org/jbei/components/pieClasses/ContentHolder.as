@@ -992,28 +992,41 @@ package org.jbei.components.pieClasses
 				
 				if(clipboardObject != null) {
 					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
+					var pasteSequence1:String = pasteFeaturedSequence.sequence.sequence;
 					
-					if(!isValidPasteSequence(pasteFeaturedSequence.sequence.sequence)) { return; }
+					if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
+						showInvalidPasteSequenceAlert();
+						
+						return;
+					} else {
+						pasteSequence1 = SequenceUtils.purifyCompatibleSequence(pasteSequence1);
+					}
 					
 					if(_safeEditing) {
 						doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
 					} else {
 						_featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
 						
-						tryMoveCaretToPosition(_caretPosition + pasteFeaturedSequence.sequence.sequence.length);
+						tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
 					}				
 				}
 			} else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-				var pasteSequence:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
+				var pasteSequence2:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
 				
-				if(!isValidPasteSequence(pasteSequence)) { return; }
+				if(!SequenceUtils.isCompatibleSequence(pasteSequence2)) {
+					showInvalidPasteSequenceAlert();
+					
+					return;
+				} else {
+					pasteSequence2 = SequenceUtils.purifyCompatibleSequence(pasteSequence2);
+				}
 				
 				if(_safeEditing) {
-					doInsertSequence(new DNASequence(pasteSequence), _caretPosition);
+					doInsertSequence(new DNASequence(pasteSequence2), _caretPosition);
 				} else {
-					_featuredSequence.insertSequence(new DNASequence(pasteSequence), _caretPosition);
+					_featuredSequence.insertSequence(new DNASequence(pasteSequence2), _caretPosition);
 					
-					tryMoveCaretToPosition(_caretPosition + pasteSequence.length);
+					tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
 				}				
 			}
 		}
@@ -1717,18 +1730,9 @@ package org.jbei.components.pieClasses
 			tryMoveCaretToPosition(_caretPosition);
 		}
 		
-		private function isValidPasteSequence(sequence:String):Boolean
+		private function showInvalidPasteSequenceAlert():void
 		{
-			var result:Boolean = true;
-			
-			for(var j:int = 0; j < sequence.length; j++) {
-				if(SequenceUtils.SYMBOLS.indexOf(sequence.charAt(j)) == -1) {
-					Alert.show("Paste DNA Sequence contains invalid characters at position " + j + "!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
-					return result;
-				}
-			}
-			
-			return result;
+			Alert.show("Paste DNA Sequence contains invalid characters!\nAllowed only these \"ATGCUYRSWKMBVDHN\"");
 		}
 		
 		private function doSelect(start:int, end:int):void

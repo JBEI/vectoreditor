@@ -21,6 +21,7 @@ package org.jbei.registry.mediators
 		{
 			return [Notifications.USER_PREFERENCES_FETCHED
 				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
+				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.APPLICATION_FAILURE
 				
 				, Notifications.DATA_FETCHED
@@ -42,6 +43,10 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.USER_RESTRICTION_ENZYMES_FETCHED:
+					sendNotification(Notifications.FETCH_ENTRY_PERMISSIONS);
+					
+					break;
+				case Notifications.ENTRY_PERMISSIONS_FETCHED:
 					sendNotification(Notifications.FETCH_ENTRY);
 					
 					break;

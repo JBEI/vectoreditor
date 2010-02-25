@@ -2,6 +2,7 @@ package org.jbei.registry.mediators
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
+	import org.jbei.registry.proxies.EntriesProxy;
 	import org.jbei.registry.view.ui.StatusBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -28,7 +29,9 @@ package org.jbei.registry.mediators
 				
 				, Notifications.FETCHING_DATA
 				, Notifications.DATA_FETCHED
+				
 				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.ENTRY_PERMISSIONS_FETCHED
 			];
 		}
 		
@@ -64,6 +67,10 @@ package org.jbei.registry.mediators
 					} else {
 						statusBar.caretPositionLabel.text = "  ";
 					}
+					
+					break;
+				case Notifications.ENTRY_PERMISSIONS_FETCHED:
+					statusBar.sequenceStatusLabel.text = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).isEntryWritable ? "Writable" : "Read Only";
 					
 					break;
 				case Notifications.FETCHING_DATA:

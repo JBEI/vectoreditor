@@ -1,5 +1,7 @@
 package org.jbei.registry.mediators
 {
+	import mx.controls.Alert;
+	
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainMenu;
@@ -52,6 +54,8 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
+			mainMenu.addEventListener(MainMenu.SAVE_ENTRY, onSaveEntry);
+			mainMenu.addEventListener(MainMenu.SHOW_ENTRY_IN_REGISTRY, onShowEntryInRegistry);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -279,6 +283,16 @@ package org.jbei.registry.mediators
 		private function onPrintPie(event:MenuItemEvent):void
 		{
 			sendNotification(Notifications.PRINT_PIE);
+		}
+		
+		private function onShowEntryInRegistry(event:MenuItemEvent):void
+		{
+			sendNotification(Notifications.SHOW_ENTRY_IN_REGISTRY);
+		}
+		
+		private function onSaveEntry(event:MenuItemEvent):void
+		{
+			sendNotification(Notifications.SAVE_ENTRY);
 		}
 	}
 }

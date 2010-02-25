@@ -27,7 +27,7 @@ package org.jbei.registry.proxies
 			userRestrictionEnzymesService = new RemoteObject(USER_RESTRICTION_ENZYMES_SERVICE_NAME);
 			userRestrictionEnzymesService.addEventListener(FaultEvent.FAULT, onUserRestrictionEnzymesServiceFault);
 			userRestrictionEnzymesService.addEventListener(InvokeEvent.INVOKE, onUserRestrictionEnzymesServiceInvoke);
-			userRestrictionEnzymesService.fetchUserRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onUserRestrictionEnzymesServiceFetchResult);
+			userRestrictionEnzymesService.getUserRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onUserRestrictionEnzymesServiceFetchResult);
 			userRestrictionEnzymesService.saveUserRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onUserRestrictionEnzymesServiceSaveResult);
 		}
 		
@@ -39,7 +39,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			userRestrictionEnzymesService.fetchUserRestrictionEnzymes(authToken);
+			userRestrictionEnzymesService.getUserRestrictionEnzymes(authToken);
 		}
 		
 		public function saveUserRestrictionEnzymes(authToken:String, userRestrictionEnzymes:UserRestrictionEnzymes):void

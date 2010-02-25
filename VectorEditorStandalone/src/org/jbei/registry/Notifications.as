@@ -18,6 +18,8 @@ package org.jbei.registry
 		public static const FETCH_USER_RESTRICTION_ENZYMES:String = "FetchRestrictionEnzymes";
 		public static const USER_RESTRICTION_ENZYMES_FETCHED:String = "UserRestrictionEnzymesFetched";
 		public static const USER_RESTRICTION_ENZYMES_CHANGED:String = "UserRestrictionEnzymesChanged"
+		public static const FETCH_ENTRY_PERMISSIONS:String = "FetchEntryPermissions";
+		public static const ENTRY_PERMISSIONS_FETCHED:String = "EntryPermissionsFetched";
 		public static const FETCH_ENTRY:String = "FetchEntry";
 		public static const ENTRY_FETCHED:String = "EntryFetched";
 		
@@ -64,5 +66,8 @@ package org.jbei.registry
 		public static const PRINT_SEQUENCE:String = "PrintSequence";
 		public static const PRINT_RAIL:String = "PrintRail";
 		public static const PRINT_PIE:String = "PrintPie";
+		
+		public static const SAVE_ENTRY:String = "SaveEntry";
+		public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
 	}
 }

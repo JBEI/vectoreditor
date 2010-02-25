@@ -7,6 +7,27 @@
 			import org.jbei.registry.view.ui.menu.MenuItem;
 			import org.jbei.registry.view.ui.menu.MenuItemEvent;
 			
+			// File
+			public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
+			public static const SAVE_ENTRY:String = "SaveEntry";
+			public static const PRINT_SEQUENCE:String = "PrintSequence";
+			public static const PRINT_PIE:String = "PrintPie";
+			public static const PRINT_RAIL:String = "PrintRail";
+			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
+			
+			// Edit
+			public static const COPY:String = "Copy";
+			public static const CUT:String = "Cut";
+			public static const PASTE:String = "Paste";
+			public static const SELECT_ALL:String = "SelectAll";
+			public static const UNDO:String = "Undo";
+			public static const REDO:String = "Redo";
+			public static const SHOW_SELECT_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
+			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
+			public static const SHOW_FIND_DIALOG:String = "ShowFindDialog";
+			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
+			
+			// View
 			public static const SHOW_RAIL:String = "ShowRail";
 			public static const SHOW_PIE:String = "ShowPie";
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
@@ -19,26 +40,16 @@
 			public static const SHOW_SPACES_STATE_CHANGED:String = "ShowSpacesStateChanged";
 			public static const SHOW_FEATURE_LABELS_STATE_CHANGED:String = "ShowFeatureLabelsStateChanged";
 			public static const SHOW_CUT_SITE_LABELS_STATE_CHANGED:String = "ShowCutSiteLabelsStateChanged";
-			public static const SHOW_SELECT_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
-			public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
-			public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
-			public static const PRINT_SEQUENCE:String = "PrintSequence";
-			public static const PRINT_PIE:String = "PrintPie";
-			public static const PRINT_RAIL:String = "PrintRail";
-			public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
+			
+			// Tools
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
-			public static const SHOW_GOTO_DIALOG:String = "ShowGoToDialog";
-			public static const SHOW_FIND_DIALOG:String = "ShowFindDialog";
-			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
+			public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
+			
+			// About
 			public static const GO_REPORT_BUG_WEB_LINK:String = "GoReportBugWebLink";
 			public static const GO_SUGGEST_FEATURE_WEB_LINK:String = "GoSuggestFeatureWebLink";
-			public static const COPY:String = "Copy";
-			public static const CUT:String = "Cut";
-			public static const PASTE:String = "Paste";
-			public static const SELECT_ALL:String = "SelectAll";
-			public static const UNDO:String = "Undo";
-			public static const REDO:String = "Redo";
+			public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 			
 			private var menuItemsMap:Dictionary = new Dictionary();
 			
@@ -64,18 +75,16 @@
 				var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
             	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
-            	var cloneMenuItem:MenuItem = new MenuItem("cloneMenuItem", "Clone ...");
-            	var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Export");
 				var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
-            	//fileMenuItem.addSubItem(saveMenuItem);
-            	//fileMenuItem.addSubItem(cloneMenuItem);
+				var showEntryInRegistryMenuItem:MenuItem = new MenuItem("showEntryInRegistryMenuItem", "Show in Registry");
+				//fileMenuItem.addSubItem(saveMenuItem);
 				//fileMenuItem.addSubItem(separatorMenuItem);
-				fileMenuItem.addSubItem(printMenuItem);
-            	fileMenuItem.addSubItem(separatorMenuItem);
+				fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
 				fileMenuItem.addSubItem(propertiesMenuItem);
-				//fileMenuItem.addSubItem(exportMenuItem);
+            	fileMenuItem.addSubItem(separatorMenuItem);
+				fileMenuItem.addSubItem(printMenuItem);
             	
             	// Edit
             	var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
@@ -87,8 +96,8 @@
 				var safeEditingMenuItem:MenuItem = new MenuItem("safeEditingMenuItem", "Safe Editing", "check", true);
             	var selectMenuItem:MenuItem = new MenuItem("selectMenuItem", "Select...");
             	var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
-				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To");
 				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
+				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To...");
             	editMenuItem.addSubItem(undoMenuItem);
             	editMenuItem.addSubItem(redoMenuItem);
             	editMenuItem.addSubItem(separatorMenuItem);
@@ -164,9 +173,8 @@
             	// File
             	menuItemsMap["fileMenuItem"] = fileMenuItem;
             	menuItemsMap["printMenuItem"] = printMenuItem;
-            	menuItemsMap["exportMenuItem"] = exportMenuItem;
-            	menuItemsMap["saveMenuItem"] = saveMenuItem;
-            	menuItemsMap["cloneMenuItem"] = cloneMenuItem;
+				menuItemsMap["saveMenuItem"] = saveMenuItem;
+				menuItemsMap["showEntryInRegistryMenuItem"] = showEntryInRegistryMenuItem;
 				menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
             	
             	// Edit
@@ -282,6 +290,10 @@
 					dispatchEvent(new MenuItemEvent(GO_REPORT_BUG_WEB_LINK, menuItem));
 				} else if(menuItem.id == "suggestFeatureMenuItem") {
 					dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
+				} else if(menuItem.id == "saveMenuItem") {
+					dispatchEvent(new MenuItemEvent(SAVE_ENTRY, menuItem));
+				} else if(menuItem.id == "showEntryInRegistryMenuItem") {
+					dispatchEvent(new MenuItemEvent(SHOW_ENTRY_IN_REGISTRY, menuItem));
             	}
             }
 		]]>

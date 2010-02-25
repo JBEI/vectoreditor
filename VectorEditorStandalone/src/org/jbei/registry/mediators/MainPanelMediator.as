@@ -5,6 +5,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
+	import org.puremvc.as3.patterns.observer.Notification;
 
 	public class MainPanelMediator extends Mediator
 	{
@@ -61,12 +62,16 @@ package org.jbei.registry.mediators
 				, Notifications.GO_SUGGEST_FEATURE
 				
 				, Notifications.ENTRY_FETCHED
+				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.USER_PREFERENCES_CHANGED
 				, Notifications.USER_RESTRICTION_ENZYMES_CHANGED
 				
 				, Notifications.PRINT_PIE
 				, Notifications.PRINT_RAIL
 				, Notifications.PRINT_SEQUENCE
+				
+				, Notifications.SHOW_ENTRY_IN_REGISTRY
+				, Notifications.SAVE_ENTRY
 			];
 		}
 		
@@ -129,6 +134,10 @@ package org.jbei.registry.mediators
 					var selectionArray:Array = notification.getBody() as Array;
 					
 					ApplicationFacade.getInstance().select(selectionArray[0], selectionArray[1]);
+					
+					break;
+				case Notifications.ENTRY_PERMISSIONS_FETCHED:
+					ApplicationFacade.getInstance().entryPermissionsFetched();
 					
 					break;
 				case Notifications.ENTRY_FETCHED:
@@ -243,6 +252,14 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.PRINT_PIE:
 					ApplicationFacade.getInstance().printPie();
+					
+					break;
+				case Notifications.SHOW_ENTRY_IN_REGISTRY:
+					ApplicationFacade.getInstance().showEntryInRegistry();
+					
+					break;
+				case Notifications.SAVE_ENTRY:
+					ApplicationFacade.getInstance().saveEntry();
 					
 					break;
 			}

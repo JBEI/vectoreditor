@@ -27,7 +27,7 @@ package org.jbei.registry.proxies
 			userPreferencesService = new RemoteObject(USER_PREFERENCES_SERVICE_NAME);
 			userPreferencesService.addEventListener(FaultEvent.FAULT, onUserPreferencesServiceFault);
 			userPreferencesService.addEventListener(InvokeEvent.INVOKE, onUserPreferencesServiceInvoke);
-			userPreferencesService.fetchUserPreferences.addEventListener(ResultEvent.RESULT, onUserPreferencesServiceFetchResult);
+			userPreferencesService.getUserPreferences.addEventListener(ResultEvent.RESULT, onUserPreferencesServiceFetchResult);
 			userPreferencesService.saveUserPreferences.addEventListener(ResultEvent.RESULT, onUserPreferencesServiceSaveResult);
 		}
 		
@@ -45,7 +45,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			userPreferencesService.fetchUserPreferences(authToken);
+			userPreferencesService.getUserPreferences(authToken);
 		}
 		
 		public function saveUserPreferences(authToken:String, userPreferences:UserPreferences):void

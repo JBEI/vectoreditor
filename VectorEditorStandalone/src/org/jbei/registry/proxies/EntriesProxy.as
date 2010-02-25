@@ -17,6 +17,7 @@ package org.jbei.registry.proxies
 		private static const ENTRIES_SERVICE_NAME:String = "EntriesService";
 		
 		private var _entry:Entry;
+		private var _isEntryWritable:Boolean;
 		private var entriesService:RemoteObject;
 		
 		// Constructor
@@ -28,6 +29,8 @@ package org.jbei.registry.proxies
 			entriesService.addEventListener(FaultEvent.FAULT, onEntriesServiceFault);
 			entriesService.addEventListener(InvokeEvent.INVOKE, onEntriesServiceInvoke);
 			entriesService.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
+			entriesService.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onEntriesServiceHasWritablePermissionsResult);
+			entriesService.saveEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceSaveEntryResult);
 		}
 		
 		// Properties
@@ -36,15 +39,32 @@ package org.jbei.registry.proxies
 			return _entry;
 		}
 		
+		public function get isEntryWritable():Boolean
+		{
+			return _isEntryWritable;
+		}
+		
 		// Public Methods
 		public function fetchEntry(authToken:String, recordId:String):void
 		{
 			CONFIG::standalone {
-				fetchStandaloneEntry();
+				updateEntry(StandaloneUtils.standaloneEntry() as Entry);
+				
 				return;
 			}
 			
 			entriesService.getEntry(authToken, recordId);
+		}
+		
+		public function hasWritablePermissions(authToken:String, recordId:String):void
+		{
+			CONFIG::standalone {
+				updateEntryStandalonePermissions(true);
+				
+				return;
+			}
+			
+			entriesService.hasWritablePermissions(authToken, recordId);
 		}
 		
 		// Private Methods
@@ -61,7 +81,8 @@ package org.jbei.registry.proxies
 		private function onEntriesServiceGetEntryResult(event:ResultEvent):void
 		{
 			if(!event.result) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch entry!");
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch entry! Invalid response result type!");
+				
 				return;
 			}
 			
@@ -70,9 +91,24 @@ package org.jbei.registry.proxies
 			updateEntry(event.result as Entry);
 		}
 		
-		private function fetchStandaloneEntry():void
-		{
-			updateEntry(StandaloneUtils.standaloneEntry() as Entry);
+		private function onEntriesServiceHasWritablePermissionsResult(event:ResultEvent):void {
+			if(event.result == null) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch entry permissions! Invalid response result type!");
+				
+				return;
+			}
+			
+			updateEntryStandalonePermissions(event.result);
+		}
+		
+		private function onEntriesServiceSaveEntryResult(event:ResultEvent):void {
+			trace("got result after safe");
+		}
+		
+		private function updateEntryStandalonePermissions(isWritable:Boolean):void {
+			_isEntryWritable = isWritable;
+			
+			sendNotification(Notifications.ENTRY_PERMISSIONS_FETCHED);
 		}
 		
 		private function updateEntry(entry:Entry):void
