@@ -1,7 +1,7 @@
 package org.jbei.registry.commands
 {
 	import org.jbei.registry.ApplicationFacade;
-	import org.jbei.registry.proxies.EntriesProxy;
+	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 	
@@ -9,7 +9,7 @@ package org.jbei.registry.commands
 	{
 		public override function execute(notification:INotification):void
 		{
-			var entriesProxy:EntriesProxy = ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy;
+			var entriesProxy:EntriesServiceProxy = ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy;
 			
 			//entriesProxy.fetchEntry(randomSequenceId());
 			entriesProxy.fetchEntry(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);

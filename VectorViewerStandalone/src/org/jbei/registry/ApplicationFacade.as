@@ -34,7 +34,7 @@ package org.jbei.registry
 	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.models.SequenceFeature;
 	import org.jbei.registry.models.Strain;
-	import org.jbei.registry.proxies.EntriesProxy;
+	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
@@ -336,7 +336,7 @@ package org.jbei.registry
 		
 		public function entryFetched():void // Make it private
 		{
-			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).entry;
+			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
 			if(!entry) {
 				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
