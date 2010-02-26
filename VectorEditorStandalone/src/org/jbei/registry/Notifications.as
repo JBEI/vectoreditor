@@ -67,7 +67,7 @@ package org.jbei.registry
 		public static const PRINT_RAIL:String = "PrintRail";
 		public static const PRINT_PIE:String = "PrintPie";
 		
-		public static const SAVE_ENTRY:String = "SaveEntry";
+		public static const SAVE:String = "Save";
 		public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
 	}
 }

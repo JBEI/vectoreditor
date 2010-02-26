@@ -41,15 +41,14 @@ package org.jbei.registry
 	import org.jbei.registry.control.ActionStackEvent;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
-	import org.jbei.registry.models.Part;
 	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.models.SequenceFeature;
-	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.models.UserPreferences;
-	import org.jbei.registry.proxies.EntriesProxy;
-	import org.jbei.registry.proxies.UserPreferencesProxy;
+	import org.jbei.registry.proxies.EntriesServiceProxy;
+	import org.jbei.registry.proxies.MainServiceProxy;
 	import org.jbei.registry.utils.Finder;
+	import org.jbei.registry.utils.LightSequenceUtils;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.FeatureDialogForm;
 	import org.jbei.registry.view.dialogs.GoToDialogForm;
@@ -348,7 +347,7 @@ package org.jbei.registry
 		
 		public function userPreferencesUpdated():void
 		{
-			var userPreferences:UserPreferences = (ApplicationFacade.getInstance().retrieveProxy(UserPreferencesProxy.NAME) as UserPreferencesProxy).userPreferences;
+			var userPreferences:UserPreferences = (ApplicationFacade.getInstance().retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy).userPreferences;
 			
 			pie.orfMapper.minORFSize = userPreferences.orfMinimumLength;
 			pie.restrictionEnzymeMapper.maxRestrictionEnzymeCuts = userPreferences.maxResitrictionEnzymesCuts;
@@ -490,7 +489,7 @@ package org.jbei.registry
 		
 		public function entryFetched():void // Make it private
 		{
-			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesProxy.NAME) as EntriesProxy).entry;
+			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
 			if(!entry) {
 				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
@@ -551,9 +550,10 @@ package org.jbei.registry
 			goToUrl("/entry/view/" + entry.id);
 		}
 		
-		public function saveEntry():void
+		public function save():void
 		{
-			//
+			var mainServiceProxy:MainServiceProxy = retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
+			mainServiceProxy.saveLightSequence(sessionId, entry.recordId, LightSequenceUtils.featuredSequenceToLightSequence(featuredSequence));
 		}
 		
 		// Protected Methods

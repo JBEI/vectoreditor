@@ -3,34 +3,25 @@ package org.jbei.registry.proxies
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.InvokeEvent;
 	import mx.rpc.events.ResultEvent;
-	import mx.rpc.remoting.RemoteObject;
 	
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.utils.StandaloneUtils;
-	import org.puremvc.as3.patterns.proxy.Proxy;
 
-	public class EntriesProxy extends Proxy
+	public class EntriesServiceProxy extends AbstractServiceProxy
 	{
-		public static const NAME:String = "EntriesProxy";
+		public static const NAME:String = "EntriesServiceProxy";
 		private static const ENTRIES_SERVICE_NAME:String = "EntriesService";
 		
 		private var _entry:Entry;
 		private var _isEntryWritable:Boolean;
-		private var entriesService:RemoteObject;
 		
 		// Constructor
-		public function EntriesProxy()
+		public function EntriesServiceProxy()
 		{
-			super(NAME);
-			
-			entriesService = new RemoteObject(ENTRIES_SERVICE_NAME);
-			entriesService.addEventListener(FaultEvent.FAULT, onEntriesServiceFault);
-			entriesService.addEventListener(InvokeEvent.INVOKE, onEntriesServiceInvoke);
-			entriesService.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
-			entriesService.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onEntriesServiceHasWritablePermissionsResult);
-			entriesService.saveEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceSaveEntryResult);
+			super(NAME, ENTRIES_SERVICE_NAME);
 		}
 		
 		// Properties
@@ -53,7 +44,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			entriesService.getEntry(authToken, recordId);
+			service.getEntry(authToken, recordId);
 		}
 		
 		public function hasWritablePermissions(authToken:String, recordId:String):void
@@ -64,20 +55,28 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			entriesService.hasWritablePermissions(authToken, recordId);
+			service.hasWritablePermissions(authToken, recordId);
+		}
+		
+		// Protected Methods
+		protected override function onServiceFault(event:FaultEvent):void
+		{
+			sendNotification(Notifications.APPLICATION_FAILURE, serviceName + " failed!");
+		}
+		
+		protected override function onServiceInvoke(event:InvokeEvent):void
+		{
+			sendNotification(Notifications.FETCHING_DATA, "Calling " + serviceName + "...");
+		}
+		
+		protected override function registerServiceOperations():void
+		{
+			// Entry
+			service.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
+			service.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onEntriesServiceHasWritablePermissionsResult);
 		}
 		
 		// Private Methods
-		private function onEntriesServiceFault(event:FaultEvent):void
-		{
-			sendNotification(Notifications.APPLICATION_FAILURE, "EntriesService failed!");
-		}
-		
-		private function onEntriesServiceInvoke(event:InvokeEvent):void
-		{
-			sendNotification(Notifications.FETCHING_DATA, "Loading Entry...");
-		}
-		
 		private function onEntriesServiceGetEntryResult(event:ResultEvent):void
 		{
 			if(!event.result) {
@@ -99,10 +98,6 @@ package org.jbei.registry.proxies
 			}
 			
 			updateEntryStandalonePermissions(event.result);
-		}
-		
-		private function onEntriesServiceSaveEntryResult(event:ResultEvent):void {
-			trace("got result after safe");
 		}
 		
 		private function updateEntryStandalonePermissions(isWritable:Boolean):void {

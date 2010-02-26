@@ -21,6 +21,7 @@ package org.jbei.registry.mediators
 			
 			controlBar = viewComponent as MainControlBar;
 			
+			controlBar.addEventListener(MainControlBar.SAVE, onSave);
 			controlBar.addEventListener(MainControlBar.SHOW_RAIL_VIEW, onShowRailView);
 			controlBar.addEventListener(MainControlBar.SHOW_PIE_VIEW, onShowPieView);
 			controlBar.addEventListener(MainControlBar.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
@@ -156,6 +157,11 @@ package org.jbei.registry.mediators
 		private function onShowPieView(event:Event):void
 		{
 			sendNotification(Notifications.SHOW_PIE);
+		}
+		
+		private function onSave(event:Event):void
+		{
+			sendNotification(Notifications.SAVE);
 		}
 	}
 }

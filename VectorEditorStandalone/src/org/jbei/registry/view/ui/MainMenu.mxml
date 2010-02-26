@@ -9,7 +9,7 @@
 			
 			// File
 			public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
-			public static const SAVE_ENTRY:String = "SaveEntry";
+			public static const SAVE:String = "Save";
 			public static const PRINT_SEQUENCE:String = "PrintSequence";
 			public static const PRINT_PIE:String = "PrintPie";
 			public static const PRINT_RAIL:String = "PrintRail";
@@ -79,8 +79,8 @@
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
 				var showEntryInRegistryMenuItem:MenuItem = new MenuItem("showEntryInRegistryMenuItem", "Show in Registry");
-				//fileMenuItem.addSubItem(saveMenuItem);
-				//fileMenuItem.addSubItem(separatorMenuItem);
+				fileMenuItem.addSubItem(saveMenuItem);
+				fileMenuItem.addSubItem(separatorMenuItem);
 				fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
 				fileMenuItem.addSubItem(propertiesMenuItem);
             	fileMenuItem.addSubItem(separatorMenuItem);
@@ -291,7 +291,7 @@
 				} else if(menuItem.id == "suggestFeatureMenuItem") {
 					dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
 				} else if(menuItem.id == "saveMenuItem") {
-					dispatchEvent(new MenuItemEvent(SAVE_ENTRY, menuItem));
+					dispatchEvent(new MenuItemEvent(SAVE, menuItem));
 				} else if(menuItem.id == "showEntryInRegistryMenuItem") {
 					dispatchEvent(new MenuItemEvent(SHOW_ENTRY_IN_REGISTRY, menuItem));
             	}

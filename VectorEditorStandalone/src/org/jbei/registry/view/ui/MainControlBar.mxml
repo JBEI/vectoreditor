@@ -4,6 +4,7 @@
 		<![CDATA[
 			import mx.events.ItemClickEvent;
 			
+			public static const SAVE:String = "Save";
 			public static const SHOW_RAIL_VIEW:String = "ShowRailView";
 			public static const SHOW_PIE_VIEW:String = "ShowPieView";
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
@@ -18,6 +19,14 @@
 			public static const PASTE:String = "Paste";
 			public static const UNDO:String = "Undo";
 			public static const REDO:String = "Redo";
+			
+			[Embed(source='../assets/icons/save.png')]
+			[Bindable]
+			private var saveIcon:Class;
+			
+			[Embed(source='../assets/icons/save_disabled.png')]
+			[Bindable]
+			private var saveDisabledIcon:Class;
 			
 			[Embed(source='../assets/icons/pie.png')]
 			[Bindable]
@@ -92,6 +101,17 @@
 			private var orfIcon:Class;
 			
 			// Public Methods
+			public function updateSaveButtonState(active:Boolean):void
+			{
+				if(active) {
+					saveButton.enabled = true;
+					saveButton.setStyle("icon", saveIcon);
+				} else {
+					saveButton.enabled = false;
+					saveButton.setStyle("icon", saveDisabledIcon);
+				}
+			}
+			
 			public function updateUndoButtonState(active:Boolean):void
 			{
 				if(active) {
@@ -141,6 +161,8 @@
 		]]>
 	</mx:Script>
 	
+	<mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" enabled="true" toolTip="Save" click="{ dispatchEvent(new Event(SAVE)) }" />
+	<mx:Spacer width="5" />
 	<mx:ToggleButtonBar 
 		id="viewToggleButtonBar"
 		toggleOnClick="false" 

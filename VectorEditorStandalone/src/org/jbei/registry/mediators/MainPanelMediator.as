@@ -71,7 +71,7 @@ package org.jbei.registry.mediators
 				, Notifications.PRINT_SEQUENCE
 				
 				, Notifications.SHOW_ENTRY_IN_REGISTRY
-				, Notifications.SAVE_ENTRY
+				, Notifications.SAVE
 			];
 		}
 		
@@ -258,8 +258,8 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().showEntryInRegistry();
 					
 					break;
-				case Notifications.SAVE_ENTRY:
-					ApplicationFacade.getInstance().saveEntry();
+				case Notifications.SAVE:
+					ApplicationFacade.getInstance().save();
 					
 					break;
 			}

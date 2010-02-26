@@ -54,7 +54,7 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
-			mainMenu.addEventListener(MainMenu.SAVE_ENTRY, onSaveEntry);
+			mainMenu.addEventListener(MainMenu.SAVE, onSave);
 			mainMenu.addEventListener(MainMenu.SHOW_ENTRY_IN_REGISTRY, onShowEntryInRegistry);
 		}
 		
@@ -290,9 +290,9 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.SHOW_ENTRY_IN_REGISTRY);
 		}
 		
-		private function onSaveEntry(event:MenuItemEvent):void
+		private function onSave(event:MenuItemEvent):void
 		{
-			sendNotification(Notifications.SAVE_ENTRY);
+			sendNotification(Notifications.SAVE);
 		}
 	}
 }
