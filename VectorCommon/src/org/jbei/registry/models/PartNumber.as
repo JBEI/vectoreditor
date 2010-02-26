@@ -1,5 +1,6 @@
 package org.jbei.registry.models
 {
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.PartNumber")]
 	public class PartNumber
 	{
@@ -8,6 +9,12 @@ package org.jbei.registry.models
 		private var _entry:Entry;
 		
 		// Constructor
+		public function PartNumber(partNumber:String = null)	
+		{
+			_partNumber = partNumber;
+		}
+		
+		// Properties
 		public function get id():int
 		{
 			return _id;
@@ -18,12 +25,6 @@ package org.jbei.registry.models
 			_id = value;
 		}
 		
-		public function PartNumber(partNumber:String = null)	
-		{
-			_partNumber = partNumber;
-		}
-		
-		// Properties
 		public function get partNumber():String	
 		{
 			return _partNumber;

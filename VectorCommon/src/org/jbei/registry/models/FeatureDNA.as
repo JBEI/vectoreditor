@@ -1,5 +1,6 @@
 package org.jbei.registry.models
 {
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.FeatureDNA")]
 	public class FeatureDNA
 	{
@@ -9,8 +10,10 @@ package org.jbei.registry.models
 		private var _feature:Feature;
 		
 		// Constructor
-		public function FeatureDNA()
+		public function FeatureDNA(hash:String = null, sequence:String = null)
 		{
+			_hash = hash;
+			_sequence = sequence;
 		}
 		
 		// Properties

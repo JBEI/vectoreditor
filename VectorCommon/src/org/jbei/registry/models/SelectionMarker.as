@@ -1,5 +1,6 @@
 package org.jbei.registry.models
 {
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.SelectionMarker")]
 	public class SelectionMarker
 	{

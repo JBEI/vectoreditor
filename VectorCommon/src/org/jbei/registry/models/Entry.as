@@ -2,6 +2,7 @@ package org.jbei.registry.models
 {
 	import mx.collections.ArrayCollection;
 	
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Entry")]
 	public class Entry
 	{
@@ -28,7 +29,7 @@ package org.jbei.registry.models
 		private var _partNumbers:ArrayCollection; /* of PartNumber */
 		private var _bioSafetyLevel:int;
 		private var _intellectualProperty:String;
-		private var _entryFundingSources:ArrayCollection; /* of FundingSource */
+		private var _entryFundingSources:ArrayCollection; /* of EntryFundingSource */
 		
 		// Constructor
 		public function Entry() {}
@@ -244,18 +245,6 @@ package org.jbei.registry.models
 			_partNumbers = value;
 		}
 		
-		// Public Methods
-		public function combinedName(delimiter:String = ", "):String
-		{
-			var result:String = "";
-			
-			if(! _names) return result;
-			
-			result = _names.toArray().join(delimiter);
-			
-			return result;
-		}
-		
 		public function get bioSafetyLevel():int
 		{
 			return _bioSafetyLevel;
@@ -276,14 +265,32 @@ package org.jbei.registry.models
 			_intellectualProperty = value;
 		}
 		
-		public function get entryFundingSources():ArrayCollection
+		public function get entryFundingSources():ArrayCollection /* of EntryFundingSource*/
 		{
 			return _entryFundingSources;
 		}
 		
-		public function set entryFundingSources(value:ArrayCollection):void	
+		public function set entryFundingSources(value:ArrayCollection /* of EntryFundingSource*/):void	
 		{
 			_entryFundingSources = value;
+		}
+		
+		// Public Methods
+		public function combinedName(delimiter:String = ", "):String
+		{
+			var result:String = "";
+			
+			if(! _names) return result;
+			
+			for(var i:int = 0; i < _names.length; i++) {
+				result += (_names[i] as Name).name;
+				
+				if(i < _names.length - 1) {
+					result += delimiter;
+				}
+			}
+			
+			return result;
 		}
 	}
 }

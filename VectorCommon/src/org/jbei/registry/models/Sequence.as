@@ -2,6 +2,7 @@ package org.jbei.registry.models
 {
 	import mx.collections.ArrayCollection;
 	
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Sequence")]
 	public class Sequence
 	{

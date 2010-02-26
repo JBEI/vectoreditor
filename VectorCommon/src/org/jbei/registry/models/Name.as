@@ -1,5 +1,6 @@
 package org.jbei.registry.models
 {
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Name")]
 	public class Name
 	{
@@ -8,7 +9,7 @@ package org.jbei.registry.models
 		private var _entry:Entry;
 		
 		// Constructor
-		public function Name(name:String = null)
+		public function Name(name:String = "")
 		{
 			_name = name;
 		}

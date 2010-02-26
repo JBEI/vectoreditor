@@ -1,5 +1,8 @@
 package org.jbei.registry.models
 {
+	import mx.collections.ArrayCollection;
+
+	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.FundingSource")]
 	public class FundingSource
 	{
@@ -9,9 +12,14 @@ package org.jbei.registry.models
 		
 		private var _principalInvestigator:String;
 		
+		private var _entryFundingSources:ArrayCollection; /* EntryFundingSource */
+		
 		// Constructor
-		public function FundingSource()
+		public function FundingSource(fundingSource:String = null, principalInvestigator:String = null, entryFundingSources:ArrayCollection = null)
 		{
+			_fundingSource = fundingSource;
+			_principalInvestigator = principalInvestigator;
+			_entryFundingSources = entryFundingSources;
 		}
 		
 		// Properties
@@ -43,6 +51,16 @@ package org.jbei.registry.models
 		public function set fundingSource(value:String):void	
 		{
 			_fundingSource = value;
+		}
+		
+		public function get entryFundingSources():ArrayCollection
+		{
+			return _entryFundingSources;
+		}
+		
+		public function set entryFundingSources(value:ArrayCollection):void	
+		{
+			_entryFundingSources = value;
 		}
 	}
 }
