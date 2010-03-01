@@ -50,7 +50,7 @@ package org.jbei.registry.proxies
 		public function hasWritablePermissions(authToken:String, recordId:String):void
 		{
 			CONFIG::standalone {
-				updateEntryStandalonePermissions(true);
+				updateEntryPermissions(true);
 				
 				return;
 			}
@@ -71,7 +71,6 @@ package org.jbei.registry.proxies
 		
 		protected override function registerServiceOperations():void
 		{
-			// Entry
 			service.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
 			service.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onEntriesServiceHasWritablePermissionsResult);
 		}
@@ -97,11 +96,13 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			updateEntryStandalonePermissions(event.result);
+			updateEntryPermissions(event.result);
 		}
 		
-		private function updateEntryStandalonePermissions(isWritable:Boolean):void {
+		private function updateEntryPermissions(isWritable:Boolean):void {
 			_isEntryWritable = isWritable;
+			
+			sendNotification(Notifications.DATA_FETCHED);
 			
 			sendNotification(Notifications.ENTRY_PERMISSIONS_FETCHED);
 		}

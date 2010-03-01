@@ -2,6 +2,7 @@ package org.jbei.registry
 {
 	import flash.display.BitmapData;
 	import flash.events.Event;
+	import flash.external.ExternalInterface;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
@@ -62,6 +63,8 @@ package org.jbei.registry
 
 	public class ApplicationFacade extends Facade
 	{
+		private const EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION:String = "updateSavedStateTitle";
+		
 		private var _application:VectorEditor;
 		private var _actionStack:ActionStack;
 		private var _entryId:String;
@@ -70,8 +73,10 @@ package org.jbei.registry
 		private var _entry:Entry;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+		private var _isSequenceInitialized:Boolean = false;
 		private var controlsInitialized:Boolean = false;
 		
+		private var browserSavedState:Boolean = true;
 		private var sequenceAnnotator:SequenceAnnotator;
 		private var pie:Pie;
 		private var rail:Rail;
@@ -150,6 +155,11 @@ package org.jbei.registry
 		public function set restrictionEnzymeMapper(value:RestrictionEnzymeMapper):void
 		{
 			_restrictionEnzymeMapper = value;
+		}
+		
+		public function get isSequenceInitialized():Boolean
+		{
+			return _isSequenceInitialized;
 		}
 		
 		// System Public Methods
@@ -538,11 +548,6 @@ package org.jbei.registry
 			sendNotification(Notifications.USER_PREFERENCES_CHANGED);
 		}
 		
-		public function entryPermissionsFetched():void
-		{
-			trace("do something here! ApplicationFacade.entryPermissionsFetched()"); 
-		}
-		
 		public function showEntryInRegistry():void
 		{
 			// TODO: add context root here
@@ -552,8 +557,25 @@ package org.jbei.registry
 		
 		public function save():void
 		{
-			var mainServiceProxy:MainServiceProxy = retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
-			mainServiceProxy.saveLightSequence(sessionId, entry.recordId, LightSequenceUtils.featuredSequenceToLightSequence(featuredSequence));
+			CONFIG::standalone {
+				return;
+			}
+			
+			if((ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).isEntryWritable) {
+				var mainServiceProxy:MainServiceProxy = retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
+				mainServiceProxy.saveLightSequence(sessionId, entry.recordId, LightSequenceUtils.featuredSequenceToLightSequence(featuredSequence));
+			} else {
+				Alert.show("You don't have permissions to save this sequence!");
+			}
+		}
+		
+		public function updateBrowserSaveTitleState(isSaved:Boolean):void
+		{
+			if(isSaved != browserSavedState) {
+				browserSavedState = isSaved;
+				
+				ExternalInterface.call(EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION, isSaved ? "true" : "false");
+			}
 		}
 		
 		// Protected Methods
@@ -564,8 +586,8 @@ package org.jbei.registry
 			registerCommand(Notifications.INITIALIZATION, InitializationCommand);
 			registerCommand(Notifications.FETCH_USER_PREFERENCES, FetchUserPreferencesCommand);
 			registerCommand(Notifications.FETCH_USER_RESTRICTION_ENZYMES, FetchUserRestrictionEnzymesCommand);
-			registerCommand(Notifications.FETCH_ENTRY_PERMISSIONS, FetchEntryPermissionsCommand);
 			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
+			registerCommand(Notifications.FETCH_ENTRY_PERMISSIONS, FetchEntryPermissionsCommand);
 		}
 		
 		// Private Methods
@@ -604,6 +626,10 @@ package org.jbei.registry
 		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
 		{
 			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
+			
+			if(!_isSequenceInitialized) {
+				_isSequenceInitialized = true;
+			}
 		}
 		
 		private function onEditing(event:EditingEvent):void

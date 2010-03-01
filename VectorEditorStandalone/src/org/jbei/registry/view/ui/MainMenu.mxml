@@ -74,7 +74,7 @@
             	var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
 				var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
-            	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
+            	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save", "", false, false, false);
 				var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");

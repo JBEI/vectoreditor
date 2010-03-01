@@ -1,8 +1,8 @@
 package org.jbei.registry.mediators
 {
+	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.lib.utils.Logger;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -21,8 +21,10 @@ package org.jbei.registry.mediators
 		{
 			return [Notifications.USER_PREFERENCES_FETCHED
 				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
-				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.APPLICATION_FAILURE
+				, Notifications.ENTRY_FETCHED
+				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_SAVED
 				
 				, Notifications.DATA_FETCHED
 				, Notifications.FETCHING_DATA
@@ -43,11 +45,11 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.USER_RESTRICTION_ENZYMES_FETCHED:
-					sendNotification(Notifications.FETCH_ENTRY_PERMISSIONS);
+					sendNotification(Notifications.FETCH_ENTRY);
 					
 					break;
-				case Notifications.ENTRY_PERMISSIONS_FETCHED:
-					sendNotification(Notifications.FETCH_ENTRY);
+				case Notifications.ENTRY_FETCHED:
+					sendNotification(Notifications.FETCH_ENTRY_PERMISSIONS);
 					
 					break;
 				case Notifications.UNDO:
@@ -66,6 +68,16 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.DATA_FETCHED:
 					ApplicationFacade.getInstance().application.unlock();
+					
+					break;
+				case Notifications.FEATURED_SEQUENCE_CHANGED:
+					if(ApplicationFacade.getInstance().isSequenceInitialized) {
+						ApplicationFacade.getInstance().updateBrowserSaveTitleState(false);
+					}
+					
+					break;
+				case Notifications.SEQUENCE_SAVED:
+					ApplicationFacade.getInstance().updateBrowserSaveTitleState(true);
 					
 					break;
 			}

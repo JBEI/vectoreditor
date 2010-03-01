@@ -71,7 +71,7 @@ package org.jbei.registry.mediators
 				, Notifications.PRINT_SEQUENCE
 				
 				, Notifications.SHOW_ENTRY_IN_REGISTRY
-				, Notifications.SAVE
+				, Notifications.SAVE_SEQUENCE
 			];
 		}
 		
@@ -134,10 +134,6 @@ package org.jbei.registry.mediators
 					var selectionArray:Array = notification.getBody() as Array;
 					
 					ApplicationFacade.getInstance().select(selectionArray[0], selectionArray[1]);
-					
-					break;
-				case Notifications.ENTRY_PERMISSIONS_FETCHED:
-					ApplicationFacade.getInstance().entryPermissionsFetched();
 					
 					break;
 				case Notifications.ENTRY_FETCHED:
@@ -258,7 +254,7 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().showEntryInRegistry();
 					
 					break;
-				case Notifications.SAVE:
+				case Notifications.SAVE_SEQUENCE:
 					ApplicationFacade.getInstance().save();
 					
 					break;

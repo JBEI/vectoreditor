@@ -2,6 +2,7 @@
 <mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.events.ItemClickEvent;
 			
 			public static const SAVE:String = "Save";
@@ -161,7 +162,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" enabled="true" toolTip="Save" click="{ dispatchEvent(new Event(SAVE)) }" />
+	<mx:Button width="32" height="32" id="saveButton" icon="{ saveDisabledIcon }" enabled="false" toolTip="Save" click="{ dispatchEvent(new Event(SAVE)) }" />
 	<mx:Spacer width="5" />
 	<mx:ToggleButtonBar 
 		id="viewToggleButtonBar"

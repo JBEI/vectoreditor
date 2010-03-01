@@ -167,10 +167,9 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			trace(event);
-			
 			sendNotification(Notifications.DATA_FETCHED);
-			//updateUserRestrictionEnzymes(event.result as UserRestrictionEnzymes);
+			
+			sendNotification(Notifications.SEQUENCE_SAVED);
 		}
 		
 		private function onUserRestrictionEnzymesServiceSaveResult(event:ResultEvent):void
