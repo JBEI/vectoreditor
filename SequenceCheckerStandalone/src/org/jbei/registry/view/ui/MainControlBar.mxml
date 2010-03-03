@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar dock="true" backgroundColor="#FFFFFF" width="100%" paddingTop="0" styleName="haloSilver" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml" cornerRadius="0">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Menu;
+			import mx.events.ItemClickEvent;
+			import mx.events.MenuEvent;
+			
+			public static const SHOW_RAIL_VIEW:String = "ShowRailView";
+			public static const SHOW_PIE_VIEW:String = "ShowPieView";
+			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
+			
+			[Embed(source='../assets/icons/pie.png')]
+			[Bindable]
+			private var pieIcon:Class;
+			
+			[Embed(source='../assets/icons/rail.png')]
+			[Bindable]
+			private var railIcon:Class;
+			
+			[Embed(source='../assets/icons/features.png')]
+			[Bindable]
+			private var featuresIcon:Class;
+			
+			// Event Handlers
+			private function onChangeViewButtonClick(event:ItemClickEvent):void
+			{
+				if(event.index == 0) { // Circular View
+					dispatchEvent(new Event(SHOW_PIE_VIEW));
+				} else if (event.index == 1) { // Linear View
+					dispatchEvent(new Event(SHOW_RAIL_VIEW));
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:ToggleButtonBar 
+		id="viewToggleButtonBar"
+		toggleOnClick="false" 
+		itemClick="onChangeViewButtonClick(event)" 
+		backgroundColor="#FFFFFF" 
+		buttonWidth="32" 
+		buttonHeight="32"
+		paddingLeft="0" 
+		paddingRight="0" 
+		buttonStyleName="haloSilver"
+		>
+		
+        <mx:dataProvider>
+         	<mx:Object toolTip="Circular View" icon="{ pieIcon }" />
+			<mx:Object toolTip="Linear View" icon="{ railIcon }" />
+        </mx:dataProvider>
+    </mx:ToggleButtonBar>
+    <mx:Spacer width="5" />
+	<mx:Button width="32" height="32" id="showFeaturesButton" icon="{ featuresIcon }" toolTip="Show Features" toggle="true" labelPlacement="left" selected="true" change="dispatchEvent(new Event(SHOW_FEATURES_STATE_CHANGED));"/>
+</mx:ApplicationControlBar>
