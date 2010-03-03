@@ -1,6 +1,6 @@
 package org.jbei.registry
 {
-	public class Notifications
+	public final class Notifications
 	{
 		public static const INITIALIZATION:String = "Initialization";
 		public static const APPLICATION_FAILURE:String = "ApplicationFailure";
