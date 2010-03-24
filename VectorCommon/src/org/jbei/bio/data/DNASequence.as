@@ -9,6 +9,10 @@ package org.jbei.bio.data
 		// Constructor
 		public function DNASequence(sequence:String, skipValidation:Boolean = false)
 		{
+			if(sequence == null) {
+				sequence = "";
+			}
+			
 			sequence = sequence.toUpperCase();
 			
 			if(!skipValidation) {

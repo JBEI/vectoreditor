@@ -6,14 +6,13 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.lib.models.Sequence")]
 	public class Sequence
 	{
-		public var entry:Object;
-		
 		private var _id:int;
 		private var _sequence:String;
 		private var _sequenceUser:String;
 		private var _fwdHash:String;
 		private var _revHash:String;
 		private var _sequenceFeatures:ArrayCollection; /* of SequenceFeature */
+		private var _entry:Entry;
 		
 		// Constructor
 		public function Sequence(sequence:String = null, fwdHash:String = null, revHash:String = null, sequenceFeatures:ArrayCollection /* of SequenceFeature */ = null)
@@ -83,6 +82,16 @@ package org.jbei.registry.models
 		public function set sequenceFeatures(value:ArrayCollection /* of SequenceFeature */):void
 		{
 			_sequenceFeatures = value;
+		}
+		
+		public function get entry():Entry	
+		{
+			return _entry;
+		}
+		
+		public function set entry(value:Entry):void	
+		{
+			_entry = value;
 		}
 	}
 }

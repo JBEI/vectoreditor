@@ -22,7 +22,6 @@ package org.jbei.registry.models
 		private var _references:String;
 		private var _creationTime:Date;
 		private var _modificationTime:Date;
-		private var _sequence:Sequence;
 		private var _selectionMarkers:ArrayCollection; /* of SelectionMarker */
 		private var _links:ArrayCollection; /* of Link */
 		private var _names:ArrayCollection; /* of Name */
@@ -193,16 +192,6 @@ package org.jbei.registry.models
 		public function set modificationTime(value:Date):void	
 		{
 			_modificationTime = value;
-		}
-		
-		public function get sequence():Sequence
-		{
-			return _sequence;
-		}
-		
-		public function set sequence(value:Sequence):void	
-		{
-			_sequence = value;
 		}
 		
 		public function get selectionMarkers():ArrayCollection /* of SelectionMarker */
