@@ -9,9 +9,10 @@ package org.jbei.registry
 		public static const FETCHING_DATA:String = "FetchingData";
 		public static const DATA_FETCHED:String = "DataFetched";
 		public static const FEATURED_SEQUENCE_CHANGED:String = "FeaturedSequenceChanged";
-		
 		public static const FETCH_ENTRY:String = "FetchEntry";
+		public static const FETCH_SEQUENCE:String = "FetchSequence";
 		public static const ENTRY_FETCHED:String = "EntryFetched";
+		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		
 		public static const COPY:String = "Copy";
 		public static const SELECT_ALL:String = "SelectAll";

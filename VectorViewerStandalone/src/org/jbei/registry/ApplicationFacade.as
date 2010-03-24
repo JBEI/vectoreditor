@@ -26,6 +26,7 @@ package org.jbei.registry
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.ui.dialogs.SimpleDialog;
 	import org.jbei.registry.commands.FetchEntryCommand;
+	import org.jbei.registry.commands.FetchSequenceCommand;
 	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
@@ -334,7 +335,7 @@ package org.jbei.registry
 			mainPanel.callLater(doPrintPie);
 		}
 		
-		public function entryFetched():void // Make it private
+		public function entryFetched():void // TODO: Make it private
 		{
 			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
@@ -343,8 +344,20 @@ package org.jbei.registry
 				
 				return;
 			}
+		}
+		
+		public function sequenceFetched():void
+		{
+			var sequence:Sequence = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).sequence;
+			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
-			var featuredSequence:FeaturedSequence = entryToFeaturedSequence(entry);
+			if(!sequence) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Sequence is null");
+				
+				return;
+			}
+			
+			var featuredSequence:FeaturedSequence = sequenceToFeaturedSequence(entry, sequence);
 			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 			
 			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
@@ -390,6 +403,7 @@ package org.jbei.registry
 			
 			registerCommand(Notifications.INITIALIZATION, InitializationCommand);
 			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
+			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
 		}
 		
 		// Private Methods
@@ -535,9 +549,9 @@ package org.jbei.registry
 			printJob.send();
 		}
 		
-		private function entryToFeaturedSequence(entry:Entry):FeaturedSequence
+		private function sequenceToFeaturedSequence(entry:Entry, sequence:Sequence): FeaturedSequence
 		{
-			var sequence:Sequence = entry.sequence;
+			var sequence:Sequence = sequence;
 			
 			if(!sequence) {
 				sequence = new Sequence();

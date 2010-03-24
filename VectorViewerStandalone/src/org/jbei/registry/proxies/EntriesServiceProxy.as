@@ -7,6 +7,7 @@ package org.jbei.registry.proxies
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.utils.StandaloneUtils;
 
 	public class EntriesServiceProxy extends AbstractServiceProxy
@@ -15,6 +16,7 @@ package org.jbei.registry.proxies
 		private static const ENTRIES_SERVICE_NAME:String = "EntriesService";
 		
 		private var _entry:Entry;
+		private var _sequence:Sequence;
 		
 		// Constructor
 		public function EntriesServiceProxy()
@@ -28,6 +30,11 @@ package org.jbei.registry.proxies
 			return _entry;
 		}
 		
+		public function get sequence():Sequence
+		{
+			return _sequence;
+		}
+		
 		// Public Methods
 		public function fetchEntry(authToken:String, recordId:String):void
 		{
@@ -38,6 +45,17 @@ package org.jbei.registry.proxies
 			}
 			
 			service.getEntry(authToken, recordId);
+		}
+		
+		public function fetchSequence(authToken:String, recordId:String):void
+		{
+			CONFIG::standalone {
+				updateSequence(StandaloneUtils.standaloneSequence() as Sequence);
+				
+				return;
+			}
+			
+			service.getSequence(authToken, recordId);
 		}
 		
 		// Protected Methods
@@ -54,6 +72,7 @@ package org.jbei.registry.proxies
 		protected override function registerServiceOperations():void
 		{
 			service.getEntry.addEventListener(ResultEvent.RESULT, onEntriesServiceGetEntryResult);
+			service.getSequence.addEventListener(ResultEvent.RESULT, onEntriesServiceGetSequenceResult);
 		}
 		
 		// Private Methods
@@ -69,6 +88,19 @@ package org.jbei.registry.proxies
 			updateEntry(event.result as Entry);
 		}
 		
+		private function onEntriesServiceGetSequenceResult(event:ResultEvent):void
+		{
+			if(!event.result) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch sequence! Invalid response result type!");
+				
+				return;
+			}
+			
+			sendNotification(Notifications.DATA_FETCHED);
+			
+			updateSequence(event.result as Sequence);
+		}
+		
 		private function updateEntry(entry:Entry):void
 		{
 			_entry = entry as Entry;
@@ -76,6 +108,15 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.ENTRY_FETCHED);
 			
 			Logger.getInstance().info("Entry fetched successfully");
+		}
+		
+		private function updateSequence(sequence:Sequence):void
+		{
+			_sequence = sequence as Sequence;
+			
+			sendNotification(Notifications.SEQUENCE_FETCHED);
+			
+			Logger.getInstance().info("Sequence fetched successfully");
 		}
 	}
 }

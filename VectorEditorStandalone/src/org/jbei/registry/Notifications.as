@@ -21,7 +21,9 @@ package org.jbei.registry
 		public static const FETCH_ENTRY_PERMISSIONS:String = "FetchEntryPermissions";
 		public static const ENTRY_PERMISSIONS_FETCHED:String = "EntryPermissionsFetched";
 		public static const FETCH_ENTRY:String = "FetchEntry";
+		public static const FETCH_SEQUENCE:String = "FetchSequence";
 		public static const ENTRY_FETCHED:String = "EntryFetched";
+		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		
 		public static const UNDO:String = "Undo";
 		public static const REDO:String = "Redo";

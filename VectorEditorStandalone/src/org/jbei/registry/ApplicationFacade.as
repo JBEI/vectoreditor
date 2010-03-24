@@ -35,6 +35,7 @@ package org.jbei.registry
 	import org.jbei.lib.utils.SystemUtils;
 	import org.jbei.registry.commands.FetchEntryCommand;
 	import org.jbei.registry.commands.FetchEntryPermissionsCommand;
+	import org.jbei.registry.commands.FetchSequenceCommand;
 	import org.jbei.registry.commands.FetchUserPreferencesCommand;
 	import org.jbei.registry.commands.FetchUserRestrictionEnzymesCommand;
 	import org.jbei.registry.commands.InitializationCommand;
@@ -496,23 +497,24 @@ package org.jbei.registry
 		{
 			mainPanel.callLater(doPrintPie);
 		}
-		
-		public function entryFetched():void // Make it private
+
+		public function sequenceFetched():void
 		{
+			var sequence:Sequence = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).sequence;
 			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
-			if(!entry) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
+			if(!sequence) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Sequence is null");
 				
 				return;
 			}
 			
-			var featuredSequence:FeaturedSequence = entryToFeaturedSequence(entry);
+			var featuredSequence:FeaturedSequence = sequenceToFeaturedSequence(entry, sequence);
 			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 			
 			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
 			for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
-			restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
+				restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
 			}
 			
 			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
@@ -546,6 +548,17 @@ package org.jbei.registry
 			}
 			
 			sendNotification(Notifications.USER_PREFERENCES_CHANGED);
+		}
+		
+		public function entryFetched():void // TODO: Make it private
+		{
+			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
+			
+			if(!entry) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
+				
+				return;
+			}
 		}
 		
 		public function showEntryInRegistry():void
@@ -587,6 +600,7 @@ package org.jbei.registry
 			registerCommand(Notifications.FETCH_USER_PREFERENCES, FetchUserPreferencesCommand);
 			registerCommand(Notifications.FETCH_USER_RESTRICTION_ENZYMES, FetchUserRestrictionEnzymesCommand);
 			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
+			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
 			registerCommand(Notifications.FETCH_ENTRY_PERMISSIONS, FetchEntryPermissionsCommand);
 		}
 		
@@ -873,9 +887,9 @@ package org.jbei.registry
 			printJob.send();
 		}
 		
-		private function entryToFeaturedSequence(entry:Entry):FeaturedSequence
+		private function sequenceToFeaturedSequence(entry:Entry, sequence:Sequence): FeaturedSequence
 		{
-			var sequence:Sequence = entry.sequence;
+			var sequence:Sequence = sequence;
 			
 			if(!sequence) {
 				sequence = new Sequence();

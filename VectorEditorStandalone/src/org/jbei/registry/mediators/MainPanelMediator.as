@@ -62,6 +62,7 @@ package org.jbei.registry.mediators
 				, Notifications.GO_SUGGEST_FEATURE
 				
 				, Notifications.ENTRY_FETCHED
+				, Notifications.SEQUENCE_FETCHED
 				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.USER_PREFERENCES_CHANGED
 				, Notifications.USER_RESTRICTION_ENZYMES_CHANGED
@@ -138,6 +139,10 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.ENTRY_FETCHED:
 					ApplicationFacade.getInstance().entryFetched();
+					
+					break;
+				case Notifications.SEQUENCE_FETCHED:
+					ApplicationFacade.getInstance().sequenceFetched();
 					
 					break;
 				case Notifications.SHOW_SELECTION_BY_RANGE_DIALOG:

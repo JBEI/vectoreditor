@@ -23,6 +23,7 @@ package org.jbei.registry.mediators
 				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
 				, Notifications.APPLICATION_FAILURE
 				, Notifications.ENTRY_FETCHED
+				, Notifications.SEQUENCE_FETCHED
 				, Notifications.FEATURED_SEQUENCE_CHANGED
 				, Notifications.SEQUENCE_SAVED
 				
@@ -49,6 +50,10 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.ENTRY_FETCHED:
+					sendNotification(Notifications.FETCH_SEQUENCE);
+					
+					break;
+				case Notifications.SEQUENCE_FETCHED:
 					sendNotification(Notifications.FETCH_ENTRY_PERMISSIONS);
 					
 					break;

@@ -47,6 +47,7 @@ package org.jbei.registry.mediators
 				, Notifications.SHOW_PROPERTIES_DIALOG
 				
 				, Notifications.ENTRY_FETCHED
+				, Notifications.SEQUENCE_FETCHED
 				
 				, Notifications.PRINT_CURRENT
 				, Notifications.PRINT_PIE
@@ -94,6 +95,10 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.ENTRY_FETCHED:
 					ApplicationFacade.getInstance().entryFetched();
+					
+					break;
+				case Notifications.SEQUENCE_FETCHED:
+					ApplicationFacade.getInstance().sequenceFetched();
 					
 					break;
 				case Notifications.SHOW_PROPERTIES_DIALOG:

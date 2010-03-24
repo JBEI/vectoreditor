@@ -21,6 +21,7 @@ package org.jbei.registry.mediators
 		{
 			return [Notifications.APPLICATION_FAILURE
 				, Notifications.DATA_FETCHED
+				, Notifications.ENTRY_FETCHED
 				, Notifications.FETCHING_DATA];
 		}
 		
@@ -29,6 +30,10 @@ package org.jbei.registry.mediators
 			switch(notification.getName()) {
 				case Notifications.APPLICATION_FAILURE:
 					ApplicationFacade.getInstance().application.disableApplication(notification.getBody() as String);
+					
+					break;
+				case Notifications.ENTRY_FETCHED:
+					sendNotification(Notifications.FETCH_SEQUENCE);
 					
 					break;
 				case Notifications.FETCHING_DATA:
