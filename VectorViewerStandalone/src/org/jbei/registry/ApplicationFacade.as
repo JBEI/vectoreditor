@@ -30,11 +30,9 @@ package org.jbei.registry
 	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
-	import org.jbei.registry.models.Part;
 	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.models.SequenceFeature;
-	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
@@ -47,6 +45,7 @@ package org.jbei.registry
 		private var _entryId:String;
 		private var _sessionId:String;
 		private var _featuredSequence:FeaturedSequence;
+		private var _sequence:Sequence;
 		private var _entry:Entry;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
@@ -107,6 +106,16 @@ package org.jbei.registry
 		public function set entry(value:Entry):void
 		{
 			_entry = value;
+		}
+		
+		public function get sequence():Sequence
+		{
+			return _sequence;
+		}
+		
+		public function set sequence(value:Sequence):void
+		{
+			_sequence = value;
 		}
 		
 		public function get orfMapper():ORFMapper
@@ -351,12 +360,6 @@ package org.jbei.registry
 			var sequence:Sequence = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).sequence;
 			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
 			
-			if(!sequence) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Sequence is null");
-				
-				return;
-			}
-			
 			var featuredSequence:FeaturedSequence = sequenceToFeaturedSequence(entry, sequence);
 			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 			
@@ -368,6 +371,7 @@ package org.jbei.registry
 			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
 			
 			ApplicationFacade.getInstance().entry = entry;
+			ApplicationFacade.getInstance().sequence = sequence;
 			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
 			ApplicationFacade.getInstance().orfMapper = orfMapper;
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;

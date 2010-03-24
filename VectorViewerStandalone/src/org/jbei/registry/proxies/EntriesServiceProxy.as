@@ -90,15 +90,9 @@ package org.jbei.registry.proxies
 		
 		private function onEntriesServiceGetSequenceResult(event:ResultEvent):void
 		{
-			if(!event.result) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch sequence! Invalid response result type!");
-				
-				return;
-			}
-			
 			sendNotification(Notifications.DATA_FETCHED);
 			
-			updateSequence(event.result as Sequence);
+			updateSequence(event.result == null ? null : event.result as Sequence);
 		}
 		
 		private function updateEntry(entry:Entry):void
