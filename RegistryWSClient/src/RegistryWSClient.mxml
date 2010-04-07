@@ -15,11 +15,11 @@
 			import services.registryapi.RegistryAPI;
 			
 			import valueObjects.BlastResult;
+			import valueObjects.DnaFeature;
+			import valueObjects.FeaturedDNASequence;
 			import valueObjects.Name;
 			import valueObjects.PartNumber;
 			import valueObjects.SearchResult;
-			import valueObjects.Sequence;
-			import valueObjects.SequenceFeature;
 			
 			private var sessionId:String;
 			
@@ -174,19 +174,19 @@
 					return;
 				}
 				
-				var sequence:Sequence = event.result as Sequence;
+				var featuredDNASequence:FeaturedDNASequence = event.result as FeaturedDNASequence;
 				
-				sequenceTextArea.text += sequence.sequence;
+				sequenceTextArea.text += featuredDNASequence.sequence;
 				
-				if(sequence.sequenceFeatures && sequence.sequenceFeatures.length > 0) {
-					for(var i:int = 0; i < sequence.sequenceFeatures.length; i++) {
-						var sequenceFeature:SequenceFeature = sequence.sequenceFeatures[i] as SequenceFeature;
+				if(featuredDNASequence.features && featuredDNASequence.features.length > 0) {
+					for(var i:int = 0; i < featuredDNASequence.features.length; i++) {
+						var dnaFeature:DnaFeature = featuredDNASequence.features[i] as DnaFeature;
 						
-						if(!sequenceFeature) {
+						if(!dnaFeature) {
 							continue;
 						}
 						
-						sequenceTextArea.text += sequenceFeature.start + " - " + sequenceFeature.end + "; " + sequenceFeature.feature.genbankType + "; " + sequenceFeature.feature.name + ": " + sequenceFeature.feature.featureDna.sequence;
+						sequenceTextArea.text += dnaFeature.start + " - " + dnaFeature.end + "; " + dnaFeature.type + "; " + dnaFeature.name;
 						sequenceTextArea.text += "\n";
 					}
 				}
