@@ -7,7 +7,7 @@ package org.jbei.registry.proxies
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.models.LightSequence;
+	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
@@ -77,13 +77,13 @@ package org.jbei.registry.proxies
 			RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
 		}
 		
-		public function saveLightSequence(authToken:String, entryId:String, lightSequence:LightSequence):void
+		public function saveFeaturedDNASequence(authToken:String, entryId:String, featuredDNASequence:FeaturedDNASequence):void
 		{
 			CONFIG::standalone {
 				return;
 			}
 			
-			service.saveLightSequence(authToken, entryId, lightSequence);
+			service.saveFeaturedDNASequence(authToken, entryId, featuredDNASequence);
 		}
 		
 		// Protected Methods
@@ -107,8 +107,8 @@ package org.jbei.registry.proxies
 			service.getUserRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onUserRestrictionEnzymesServiceFetchResult);
 			service.saveUserRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onUserRestrictionEnzymesServiceSaveResult);
 			
-			// Light Sequence
-			service.saveLightSequence.addEventListener(ResultEvent.RESULT, onSaveLightSequenceResult);
+			// FeaturedDNASequence
+			service.saveFeaturedDNASequence.addEventListener(ResultEvent.RESULT, onSaveFeaturedDNASequenceResult);
 		}
 		
 		// Private Methods
@@ -159,7 +159,7 @@ package org.jbei.registry.proxies
 			updateUserRestrictionEnzymes(event.result as UserRestrictionEnzymes);
 		}
 		
-		private function onSaveLightSequenceResult(event:ResultEvent):void
+		private function onSaveFeaturedDNASequenceResult(event:ResultEvent):void
 		{
 			if(event.result == false) {
 				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save sequence!");

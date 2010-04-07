@@ -1,7 +1,7 @@
 package org.jbei.registry.models
 {
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.LightFeature")]
-	public class LightFeature
+	[RemoteClass(alias="org.jbei.ice.lib.vo.DNAFeature")]
+	public class DNAFeature
 	{
 		private var _name:String;
 		private var _start:int;
@@ -11,7 +11,7 @@ package org.jbei.registry.models
 		private var _description:String;
 		
 		// Contructor
-		public function LightFeature(start:int, end:int, strand:int, name:String, description:String, type:String)
+		public function DNAFeature(start:int, end:int, strand:int, name:String, description:String, type:String)
 		{
 			_start = start;
 			_end = end;

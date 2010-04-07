@@ -49,8 +49,8 @@ package org.jbei.registry
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.proxies.MainServiceProxy;
+	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
 	import org.jbei.registry.utils.Finder;
-	import org.jbei.registry.utils.LightSequenceUtils;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.FeatureDialogForm;
 	import org.jbei.registry.view.dialogs.GoToDialogForm;
@@ -582,7 +582,8 @@ package org.jbei.registry
 			
 			if((ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).isEntryWritable) {
 				var mainServiceProxy:MainServiceProxy = retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
-				mainServiceProxy.saveLightSequence(sessionId, entry.recordId, LightSequenceUtils.featuredSequenceToLightSequence(featuredSequence));
+				
+				mainServiceProxy.saveFeaturedDNASequence(sessionId, entry.recordId, FeaturedDNASequenceUtils.featuredSequenceToFeaturedDNASequence(featuredSequence));
 			} else {
 				Alert.show("You don't have permissions to save this sequence!");
 			}

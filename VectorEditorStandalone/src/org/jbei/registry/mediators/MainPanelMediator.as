@@ -63,7 +63,6 @@ package org.jbei.registry.mediators
 				
 				, Notifications.ENTRY_FETCHED
 				, Notifications.SEQUENCE_FETCHED
-				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.USER_PREFERENCES_CHANGED
 				, Notifications.USER_RESTRICTION_ENZYMES_CHANGED
 				
