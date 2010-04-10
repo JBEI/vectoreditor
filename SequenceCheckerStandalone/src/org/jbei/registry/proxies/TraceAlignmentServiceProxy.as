@@ -1,12 +1,12 @@
 package org.jbei.registry.proxies
 {
+	import mx.collections.ArrayCollection;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.InvokeEvent;
 	import mx.rpc.events.ResultEvent;
 	
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.models.TraceAlignment;
 	import org.jbei.registry.utils.StandaloneUtils;
 
 	public class TraceAlignmentServiceProxy extends AbstractServiceProxy
@@ -14,7 +14,7 @@ package org.jbei.registry.proxies
 		public static const NAME:String = "TraceAlignmentServiceProxy";
 		private static const TRACE_ALIGNMENT_SERVICE_NAME:String = "TraceAlignmentService";
 		
-		private var _traceAlignment:TraceAlignment;
+		private var _traces:ArrayCollection /* TraceSequence */;
 		
 		// Constructor
 		public function TraceAlignmentServiceProxy()
@@ -23,21 +23,21 @@ package org.jbei.registry.proxies
 		}
 		
 		// Properties
-		public function get traceAlignment():TraceAlignment
+		public function get traces():ArrayCollection /* of TraceSequence */
 		{
-			return _traceAlignment;
+			return _traces;
 		}
 		
 		// Public Methods
-		public function fetchTraceAlignment(authToken:String, entryId:String):void
+		public function fetchTraces(authToken:String, entryId:String):void
 		{
 			CONFIG::standalone {
-				updateTraceAlignment(StandaloneUtils.standaloneTraceAlignment() as TraceAlignment);
+				updateTraces(StandaloneUtils.standaloneTraces() as ArrayCollection);
 				
 				return;
 			}
 			
-			//service.getEntry(authToken, recordId);
+			service.getTraces(authToken, recordId);
 		}
 		
 		// Protected Methods
@@ -67,16 +67,16 @@ package org.jbei.registry.proxies
 			
 			sendNotification(Notifications.DATA_FETCHED);
 			
-			updateTraceAlignment(event.result as TraceAlignment);
+			updateTraces(event.result as ArrayCollection);
 		}
 		
-		private function updateTraceAlignment(traceAlignment:TraceAlignment):void
+		private function updateTraces(traces:ArrayCollection):void
 		{
-			_traceAlignment = traceAlignment as TraceAlignment;
+			_traces = traces;
 			
-			sendNotification(Notifications.TRACE_ALIGNMENT_FETCHED);
+			sendNotification(Notifications.TRACES_FETCHED);
 			
-			Logger.getInstance().info("Trace alignment fetched successfully");
+			Logger.getInstance().info("Traces fetched successfully");
 		}
 	}
 }
