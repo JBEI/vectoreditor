@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="20%" creationComplete="onCreationComplete(event)">
+	<mx:Script>
+		<![CDATA[
+			private function onCreationComplete(event:Event):void
+			{
+				var style:StyleSheet = new StyleSheet();
+				
+				var mismatch:Object = new Object();
+				mismatch.fontWeight = "bold";
+				mismatch.color = "#FF0000";
+
+				style.setStyle(".mismatch", mismatch);
+				
+				traceSequenceAlignmentTextArea.styleSheet = style;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea id="traceSequenceAlignmentTextArea" fontSize="12" wordWrap="false" width="100%" height="100%" editable="false"></mx:TextArea>	
+</mx:Canvas>

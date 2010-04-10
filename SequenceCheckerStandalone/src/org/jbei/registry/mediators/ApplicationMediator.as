@@ -21,7 +21,11 @@ package org.jbei.registry.mediators
 		{
 			return [Notifications.APPLICATION_FAILURE
 				, Notifications.DATA_FETCHED
-				, Notifications.FETCHING_DATA];
+				, Notifications.FETCHING_DATA
+				
+				, Notifications.ENTRY_FETCHED
+				, Notifications.SEQUENCE_FETCHED
+			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
@@ -39,6 +43,14 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.DATA_FETCHED:
 					ApplicationFacade.getInstance().application.unlock();
+					
+					break;
+				case Notifications.ENTRY_FETCHED:
+					sendNotification(Notifications.FETCH_SEQUENCE);
+					
+					break;
+				case Notifications.SEQUENCE_FETCHED:
+					sendNotification(Notifications.FETCH_TRACES);
 					
 					break;
 			}

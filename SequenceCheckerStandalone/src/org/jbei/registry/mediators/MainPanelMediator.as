@@ -1,8 +1,5 @@
 package org.jbei.registry.mediators
 {
-	import org.jbei.components.Pie;
-	import org.jbei.components.Rail;
-	import org.jbei.components.SequenceAnnotator;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainPanel;
@@ -30,7 +27,8 @@ package org.jbei.registry.mediators
 				
 				, Notifications.SHOW_FEATURES
 				
-				//, Notifications.ENTRY_FETCHED
+				, Notifications.SEQUENCE_FETCHED
+				, Notifications.TRACES_FETCHED
 			];
 		}
 		
@@ -49,10 +47,14 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().displayFeatures(notification.getBody() as Boolean);
 					
 					break;
-				/*case Notifications.ENTRY_FETCHED:
-					ApplicationFacade.getInstance().entryFetched();
+				case Notifications.SEQUENCE_FETCHED:
+					ApplicationFacade.getInstance().sequenceFetched();
 					
-					break;*/
+					break;
+				case Notifications.TRACES_FETCHED:
+					ApplicationFacade.getInstance().tracesFetched();
+					
+					break;
 			}
 		}
 	}
