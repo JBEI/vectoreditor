@@ -12,6 +12,15 @@ package org.jbei.registry
 		
 		public static const SHOW_FEATURES:String = "ShowFeatures";
 		
-		public static const TRACE_ALIGNMENT_FETCHED:String = "TraceAlignmentFetched";
+		public static const FETCH_ENTRY:String = "FetchEntry";
+		public static const ENTRY_FETCHED:String = "EntryFetched";
+
+		public static const FETCH_SEQUENCE:String = "FetchSequence";
+		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
+		
+		public static const FETCH_TRACES:String = "FetchTraces";
+		public static const TRACES_FETCHED:String = "TraceAlignmentFetched";
+		
+		public static const TRACE_SEQUENCE_SELECTION_CHANGED:String = "TraceSequenceSelectionChanged";
 	}
 }

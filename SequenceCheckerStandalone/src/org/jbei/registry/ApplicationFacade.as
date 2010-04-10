@@ -1,7 +1,15 @@
 package org.jbei.registry
 {
+	import mx.collections.ArrayCollection;
+	
 	import org.jbei.components.common.ISequenceComponent;
+	import org.jbei.registry.commands.FetchEntryCommand;
+	import org.jbei.registry.commands.FetchSequenceCommand;
+	import org.jbei.registry.commands.FetchTracesCommand;
 	import org.jbei.registry.commands.InitializationCommand;
+	import org.jbei.registry.models.Sequence;
+	import org.jbei.registry.proxies.EntriesServiceProxy;
+	import org.jbei.registry.proxies.TraceAlignmentServiceProxy;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
 	
@@ -15,6 +23,9 @@ package org.jbei.registry
 		private var controlsInitialized:Boolean = false;
 		
 		private var mainPanel:MainPanel;
+		
+		private var _sequence:Sequence;
+		private var _traces:ArrayCollection;
 		
 		// Properties
 		public function get application():SequenceChecker
@@ -32,14 +43,24 @@ package org.jbei.registry
 			_entryId = value;
 		}
 		
+		public function get sessionId():String
+		{
+			return _sessionId;
+		}
+		
 		public function set sessionId(value:String):void
 		{
 			_sessionId = value;
 		}
 		
-		public function get sessionId():String
+		public function get sequence():Sequence
 		{
-			return _sessionId;
+			return _sequence;
+		}
+		
+		public function get traces():ArrayCollection
+		{
+			return _traces;
 		}
 		
 		// System Public Methods
@@ -103,13 +124,29 @@ package org.jbei.registry
 			rail.showFeatures = showFeatures;*/
 		}
 		
+		public function sequenceFetched():void
+		{
+			var entriesServiceProxy:EntriesServiceProxy = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy);
+			
+			_sequence = entriesServiceProxy.sequence;
+		}
+		
+		public function tracesFetched():void
+		{
+			var traceAlignmentServiceProxy:TraceAlignmentServiceProxy = (ApplicationFacade.getInstance().retrieveProxy(TraceAlignmentServiceProxy.NAME) as TraceAlignmentServiceProxy);
+			
+			_traces = traceAlignmentServiceProxy.traces;
+		}
+		
 		// Protected Methods
 		protected override function initializeController():void
 		{
 			super.initializeController();
 			
 			registerCommand(Notifications.INITIALIZATION, InitializationCommand);
-			//registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
+			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
+			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
+			registerCommand(Notifications.FETCH_TRACES, FetchTracesCommand);
 		}
 		
 		// Private Methods
