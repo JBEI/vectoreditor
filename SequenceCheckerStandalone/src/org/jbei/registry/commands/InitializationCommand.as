@@ -10,7 +10,7 @@ package org.jbei.registry.commands
 			addSubCommand(PrepareModelCommand);
 			addSubCommand(PrepareViewCommand);
 			
-			addSubCommand(FetchTraceAlignmentCommand);
+			addSubCommand(FetchEntryCommand);
 		}
 	}
 }
