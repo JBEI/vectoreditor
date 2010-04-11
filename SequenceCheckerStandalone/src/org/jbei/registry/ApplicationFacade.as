@@ -7,7 +7,9 @@ package org.jbei.registry
 	import org.jbei.bio.utils.SequenceUtils;
 	import org.jbei.components.Pie;
 	import org.jbei.components.Rail;
+	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.ISequenceComponent;
+	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.mappers.TraceMapper;
@@ -98,6 +100,8 @@ package org.jbei.registry
 				
 				pie = mainPanel.pie;
 				rail = mainPanel.rail;
+				
+				initializeEventHandlers();
 				
 				controlsInitialized = true;
 				_activeSequenceComponent = pie;
@@ -192,7 +196,7 @@ package org.jbei.registry
 			
 			var featuredSequence:FeaturedSequence = new FeaturedSequence(entry.combinedName(), ((entry is Plasmid) ? (entry as Plasmid).circular : false), dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
 			
-			//featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
 			
 			if(sequence.sequenceFeatures && sequence.sequenceFeatures.length > 0) {
 				var features:Array = new Array();
@@ -212,6 +216,30 @@ package org.jbei.registry
 			}
 			
 			return featuredSequence;
+		}
+		
+		private function initializeEventHandlers():void
+		{
+			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			
+			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+		}
+		
+		private function onSelectionChanged(event:SelectionEvent):void
+		{
+			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
+		}
+		
+		private function onCaretPositionChanged(event:CaretEvent):void
+		{
+			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
+		}
+		
+		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		{
+			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
 		}
 	}
 }

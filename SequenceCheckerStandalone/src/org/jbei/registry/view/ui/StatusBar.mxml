@@ -5,6 +5,11 @@
 	<mx:HBox width="100%" paddingBottom="0" paddingTop="0">
 		<mx:Label id="statusLabel" text=""/>
 		<mx:Spacer width="100%" />
+		<mx:VRule height="100%" />
+		<mx:Label id="caretPositionLabel" text="  "/>
+		<mx:VRule height="100%" />
+		<mx:Label id="selectionPositionLabel" text="- : -"/>
+		<mx:VRule height="100%" />
 		<mx:Label id="sequenceLengthLabel" text=" "/>
 		<mx:Spacer width="10" />
 	</mx:HBox>
