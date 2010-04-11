@@ -17,5 +17,5 @@
 		]]>
 	</mx:Script>
 	
-	<mx:TextArea id="traceSequenceAlignmentTextArea" fontSize="12" wordWrap="false" width="100%" height="100%" editable="false"></mx:TextArea>	
+	<mx:TextArea id="traceSequenceAlignmentTextArea" wordWrap="false" width="100%" height="100%" editable="false"></mx:TextArea>	
 </mx:Canvas>

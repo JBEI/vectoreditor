@@ -19,7 +19,7 @@ package org.jbei.registry
 		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		
 		public static const FETCH_TRACES:String = "FetchTraces";
-		public static const TRACES_FETCHED:String = "TraceAlignmentFetched";
+		public static const TRACES_FETCHED:String = "TracesFetched";
 		
 		public static const TRACE_SEQUENCE_SELECTION_CHANGED:String = "TraceSequenceSelectionChanged";
 	}

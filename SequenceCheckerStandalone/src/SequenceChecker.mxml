@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application	layout="horizontal" 
-				width="100%" 
-				height="100%" 
+				width="700" 
+				height="600" 
 				styleName="plain" 
 				verticalScrollPolicy="off"
 				backgroundGradientColors="[#ffffff, #ffffff]"

@@ -21,8 +21,6 @@ package org.jbei.registry.mediators
 			super(NAME, viewComponent);
 			
 			alignmentPanel = viewComponent as AlignmentPanel;
-			
-			alignmentPanel.traceSequenceAlignmentTextArea.setStyle("fontFamily", SystemUtils.getSystemMonospaceFontFamily());
 		}
 		
 		// Public Methods
@@ -46,6 +44,7 @@ package org.jbei.registry.mediators
 		// Private Methods
 		private function updateAlignment(traceSequence:TraceSequence):void {
 			alignmentPanel.traceSequenceAlignmentTextArea.htmlText = "";
+			alignmentPanel.traceSequenceAlignmentTextArea.verticalScrollPosition = 0;
 			
 			if(traceSequence == null) {
 				return;
@@ -65,7 +64,7 @@ package org.jbei.registry.mediators
 			
 			var numberOfLines:int = subjectAlignmentString.length / NUCLEOTIDES_ALIGNMENT_PER_ROW;
 			
-			var output:String = "";
+			var output:String = "<font face=\"" + SystemUtils.getSystemMonospaceFontFamily() + "\" size=\"12\" letterspacing=\"1\" kerning=\"0\">";
 			
 			for(var i:int = 0; i < numberOfLines; i++) {
 				var rowStart:int = i * NUCLEOTIDES_ALIGNMENT_PER_ROW;
@@ -78,9 +77,9 @@ package org.jbei.registry.mediators
 				var highlightedSubjectRowSequence:String = highlightMismatches(subjectRowSequence, queryRowSequence);
 				
 				if(i == 0) {
-					output += "<b>Query  " + StringFormatter.sprintf("%6d", traceSequence.traceSequenceAlignment.queryStart) + ": </b>";
+					output += "<b>Query  " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.queryStart) + ": </b>";
 				} else {
-					output += "               ";
+					output += "              ";
 				}
 				
 				output += highlightedQueryRowSequence;
@@ -92,9 +91,9 @@ package org.jbei.registry.mediators
 				output += "\n";
 				
 				if(i == 0) {
-					output += "<b>Subject" + StringFormatter.sprintf("%6d", traceSequence.traceSequenceAlignment.subjectStart) + ": </b>";
+					output += "<b>Subject" + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.subjectStart) + ": </b>";
 				} else {
-					output += "               ";
+					output += "              ";
 				}
 				
 				output += highlightedSubjectRowSequence;
@@ -106,7 +105,7 @@ package org.jbei.registry.mediators
 				output += "\n\n";
 			}
 			
-			output += ""
+			output += "</font>"
 			
 			alignmentPanel.traceSequenceAlignmentTextArea.htmlText = output;
 		}

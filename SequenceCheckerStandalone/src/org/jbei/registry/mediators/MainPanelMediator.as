@@ -27,6 +27,7 @@ package org.jbei.registry.mediators
 				
 				, Notifications.SHOW_FEATURES
 				
+				, Notifications.ENTRY_FETCHED
 				, Notifications.SEQUENCE_FETCHED
 				, Notifications.TRACES_FETCHED
 			];
@@ -47,8 +48,14 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().displayFeatures(notification.getBody() as Boolean);
 					
 					break;
+				case Notifications.ENTRY_FETCHED:
+					sendNotification(Notifications.FETCH_SEQUENCE);
+					
+					break;
 				case Notifications.SEQUENCE_FETCHED:
 					ApplicationFacade.getInstance().sequenceFetched();
+					
+					sendNotification(Notifications.FETCH_TRACES);
 					
 					break;
 				case Notifications.TRACES_FETCHED:
