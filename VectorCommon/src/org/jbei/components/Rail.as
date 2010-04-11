@@ -19,6 +19,8 @@ package org.jbei.components
 	import org.jbei.lib.mappers.ORFMapperEvent;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapperEvent;
+	import org.jbei.lib.mappers.TraceMapper;
+	import org.jbei.lib.mappers.TraceMapperEvent;
 	
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
@@ -33,6 +35,7 @@ package org.jbei.components
 		
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
+		private var _traceMapper:TraceMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
 		
@@ -42,18 +45,21 @@ package org.jbei.components
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showFeatureLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
+		private var _showTraces:Boolean = true;
 		private var _safeEditing:Boolean = true;
 		private var _labelFontSize:int = 10;
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
+		private var traceMapperChanged:Boolean = false;
 		private var highlightsChanged:Boolean = false;
 		
 		private var needsMeasurement:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
 		private var showCutSitesChanged:Boolean = false;
 		private var showORFsChanged:Boolean = false;
+		private var showTracesChanged:Boolean = false;
 		private var showFeatureLabelsChanged:Boolean = false;
 		private var showCutSiteLabelsChanged:Boolean = false;
 		private var labelFontSizeChanged:Boolean = false;
@@ -138,6 +144,23 @@ package org.jbei.components
 			invalidateProperties();
 		}
 		
+		public function get traceMapper():TraceMapper
+		{
+			return _traceMapper;
+		}
+		
+		public function set traceMapper(value:TraceMapper):void
+		{
+			_traceMapper = value;
+			
+			traceMapperChanged = true;
+			if(_traceMapper) {
+				_traceMapper.addEventListener(TraceMapperEvent.TRACE_MAPPER_UPDATED, onTraceMapperUpdated);
+			}
+			
+			invalidateProperties();
+		}
+		
 		public function get highlights():Array /* of Segment */
 		{
 			return _highlights;
@@ -195,6 +218,22 @@ package org.jbei.components
 				_showORFs = value;
 				
 				showORFsChanged = true;
+				
+				invalidateProperties();
+			}
+		}
+		
+		public function get showTraces():Boolean
+		{
+			return _showTraces;
+		}
+		
+		public function set showTraces(value:Boolean):void
+		{
+			if(_showTraces != value) {
+				_showTraces = value;
+				
+				showTracesChanged = true;
 				
 				invalidateProperties();
 			}
@@ -380,6 +419,16 @@ package org.jbei.components
 				invalidateDisplayList();
 			}
 			
+			if(traceMapperChanged) {
+				traceMapperChanged = false;
+				
+				needsMeasurement = true;
+				
+				contentHolder.traceMapper = _traceMapper;
+				
+				invalidateDisplayList();
+			}
+			
 			if(highlightsChanged) {
 				highlightsChanged = false;
 				
@@ -434,6 +483,16 @@ package org.jbei.components
 				needsMeasurement = true;
 				
 				contentHolder.showORFs = _showORFs;
+				
+				invalidateDisplayList();
+			}
+			
+			if(showTracesChanged) {
+				showTracesChanged = false;
+				
+				needsMeasurement = true;
+				
+				contentHolder.showTraces = _showTraces;
 				
 				invalidateDisplayList();
 			}
@@ -596,6 +655,13 @@ package org.jbei.components
 				scrollEvent.delta = verticalScrollPosition - oldPosition;
 				dispatchEvent(scrollEvent);
 			}
+		}
+		
+		private function onTraceMapperUpdated(event:ORFMapperEvent):void
+		{
+			needsMeasurement = true;
+			
+			invalidateDisplayList();
 		}
 	}
 }

@@ -28,6 +28,7 @@ package org.jbei.components.pieClasses
     import org.jbei.bio.data.IAnnotation;
     import org.jbei.bio.data.ORF;
     import org.jbei.bio.data.Segment;
+    import org.jbei.bio.data.TraceAnnotation;
     import org.jbei.bio.utils.SegmentUtils;
     import org.jbei.bio.utils.SequenceUtils;
     import org.jbei.components.Pie;
@@ -43,6 +44,7 @@ package org.jbei.components.pieClasses
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.mappers.ORFMapper;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+    import org.jbei.lib.mappers.TraceMapper;
 	
 	public class ContentHolder extends UIComponent implements IContentHolder
 	{
@@ -73,6 +75,7 @@ package org.jbei.components.pieClasses
 		
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
+		private var _traceMapper:TraceMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _highlights:Array /* of Segment */;
 		private var _labelFontSize:int = 10;
@@ -91,6 +94,7 @@ package org.jbei.components.pieClasses
 		private var featureRenderers:Array = new Array(); /* of FeatureRenderer */
 		private var cutSiteRenderers:Array = new Array(); /* of CutSiteRenderer */
 		private var orfRenderers:Array = new Array(); /* of ORFRenderer */
+		private var traceRenderers:Array = new Array(); /* of TraceRenderer */
 		private var labelBoxes:Array /* of LabelBox */  = new Array();
 		private var leftTopLabels:Array /* of LabelBox */ = new Array();
 		private var leftBottomLabels:Array /* of LabelBox */ = new Array();
@@ -106,6 +110,7 @@ package org.jbei.components.pieClasses
 		private var _showFeatureLabels:Boolean = true;
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
+		private var _showTraces:Boolean = true;
 		private var _safeEditing:Boolean = true;
 		
 		private var mouseIsDown:Boolean = false;
@@ -118,10 +123,12 @@ package org.jbei.components.pieClasses
 		
 		private var featuredSequenceChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
+		private var traceMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
 		private var highlightsChanged:Boolean = false;
 		private var featuresAlignmentChanged:Boolean = false;
 		private var orfsAlignmentChanged:Boolean = false;
+		private var tracesAlignmentChanged:Boolean = false;
 		private var needsMeasurement:Boolean = false;
 		private var richSequenceChanged:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
@@ -129,11 +136,14 @@ package org.jbei.components.pieClasses
 		private var showFeatureLabelsChanged:Boolean = false;
 		private var showCutSiteLabelsChanged:Boolean = false;
 		private var showORFsChanged:Boolean = false;
+		private var showTracesChanged:Boolean = false;
 		private var labelFontSizeChanged:Boolean = false;
 		
 		private var featureAlignmentMap:Dictionary;
 		private var orfAlignmentMap:Dictionary;
+		private var tracesAlignmentMap:Dictionary;
 		private var maxORFAlignmentRow:int;
+		private var maxTracesAlignmentRow:int;
 		
 		// Contructor
 		public function ContentHolder(pie:Pie)
@@ -194,6 +204,20 @@ package org.jbei.components.pieClasses
 			invalidateProperties();
 			
 			orfMapperChanged = true;
+		}
+		
+		public function get traceMapper():TraceMapper
+		{
+			return _traceMapper;
+		}
+		
+		public function set traceMapper(value:TraceMapper):void
+		{
+			_traceMapper = value;
+			
+			invalidateProperties();
+			
+			traceMapperChanged = true;
 		}
 		
 		public function get highlights():Array /* of Segment */
@@ -287,6 +311,22 @@ package org.jbei.components.pieClasses
 				invalidateProperties();
 				
 				showORFsChanged = true;
+			}
+		}
+		
+		public function get showTraces():Boolean
+		{
+			return _showTraces;
+		}
+		
+		public function set showTraces(value:Boolean):void
+		{
+			if(_showTraces != value) {
+				_showTraces = value;
+				
+				invalidateProperties();
+				
+				showTracesChanged = true;
 			}
 		}
 		
@@ -538,6 +578,15 @@ package org.jbei.components.pieClasses
 				invalidateDisplayList();
 			}
 			
+			if(traceMapperChanged) {
+				traceMapperChanged = false;
+				
+				needsMeasurement = true;
+				tracesAlignmentChanged = true;
+				
+				invalidateDisplayList();
+			}
+			
 			if(showFeaturesChanged) {
 				showFeaturesChanged = false;
 				
@@ -579,6 +628,15 @@ package org.jbei.components.pieClasses
 	        	
 	        	invalidateDisplayList();
 	        }
+			
+			if(showTracesChanged) {
+				showTracesChanged = false;
+				
+				needsMeasurement = true;
+				tracesAlignmentChanged = true;
+				
+				invalidateDisplayList();
+			}
 	 	}
 	 	
 		protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
@@ -590,6 +648,8 @@ package org.jbei.components.pieClasses
 				removeFeatureRenderers();
 				removeCutSiteRenderers();
 				removeORFRenderers();
+				removeTraceRenderers();
+				
 				
 				_totalHeight = parentHeight;
 				_totalWidth = parentWidth;
@@ -614,6 +674,12 @@ package org.jbei.components.pieClasses
 		        rebuildORFsAlignment();
 	        }
 	        
+			if(tracesAlignmentChanged) {
+				tracesAlignmentChanged = false;
+				
+				rebuildTraceAlignment();
+			}
+			
 			if(highlightsChanged && !needsMeasurement) {
 				highlightsChanged = false;
 				
@@ -629,12 +695,14 @@ package org.jbei.components.pieClasses
 	        	loadFeatureRenderers();
 				loadCutSiteRenderers();
 				loadORFRenderers();
+				loadTraceRenderers();
 	        	loadLabels();
 		        
 		        renderLabels();
 		        renderFeatures();
 				renderCutSites();
 				renderORFs();
+				renderTraces();
 		        
 		        // update children metrics
 				railBox.updateMetrics();
@@ -674,6 +742,7 @@ package org.jbei.components.pieClasses
 			
 			featureAlignmentMap = null;
 			orfAlignmentMap = null;
+			tracesAlignmentMap = null;
 			
 			caretPosition = 0;
 			
@@ -701,6 +770,7 @@ package org.jbei.components.pieClasses
 			
 			featuresAlignmentChanged = true;
 			orfsAlignmentChanged = true;
+			tracesAlignmentChanged = true;
 			
 			if(selectionLayer.selected) {
 				doDeselect();
@@ -1168,6 +1238,19 @@ package org.jbei.components.pieClasses
 			}
 		}
 		
+		private function removeTraceRenderers():void
+		{
+			if(! traceRenderers) { return; }
+			
+			while(traceRenderers.length > 0) {
+				var removedTraceRenderer:TraceRenderer = traceRenderers.pop() as TraceRenderer;
+				
+				if(contains(removedTraceRenderer)) {
+					removeChild(removedTraceRenderer);
+				}
+			}
+		}
+		
 		private function renderLabels():void
 		{
 			// Apply display settings to labelBoxes
@@ -1388,6 +1471,21 @@ package org.jbei.components.pieClasses
 			}
 		}
 		
+		private function renderTraces():void
+		{
+			if(! traceRenderers) { return; }
+			
+			for(var i:int = 0; i < traceRenderers.length; i++) {
+				var traceRenderer:TraceRenderer = traceRenderers[i] as TraceRenderer;
+				
+				traceRenderer.visible = _showTraces;
+				
+				if(_showTraces) {
+					traceRenderer.update(_railRadius, _center, tracesAlignmentMap);
+				}
+			}
+		}
+		
 		private function loadFeatureRenderers():void
 		{
 			removeFeatureRenderers();
@@ -1440,6 +1538,23 @@ package org.jbei.components.pieClasses
 				addChild(orfRenderer);
 				
 				orfRenderers.push(orfRenderer);
+			}
+		}
+		
+		private function loadTraceRenderers():void
+		{
+			removeTraceRenderers();
+			
+			if(!showTraces || !featuredSequence || !_traceMapper || !_traceMapper.traceAnnotations) { return; }
+			
+			for(var i:int = 0; i < _traceMapper.traceAnnotations.length; i++) {
+				var traceAnnotation:TraceAnnotation = _traceMapper.traceAnnotations[i] as TraceAnnotation;
+				
+				var traceRenderer:TraceRenderer = new TraceRenderer(this, traceAnnotation);
+				
+				addChild(traceRenderer);
+				
+				traceRenderers.push(traceRenderer);
 			}
 		}
 		
@@ -1697,6 +1812,27 @@ package org.jbei.components.pieClasses
 			}
 		}
 		
+		private function rebuildTraceAlignment():void
+		{
+			tracesAlignmentMap = new Dictionary();
+			
+			maxTracesAlignmentRow = 0;
+			
+			if(!showTraces || !_traceMapper || _traceMapper.traceAnnotations.length == 0) { return; }
+			
+			var tracesAlignment:Alignment = new Alignment(_traceMapper.traceAnnotations.toArray(), _featuredSequence);
+			maxTracesAlignmentRow = tracesAlignment.numberOfRows;
+			for(var k:int = 0; k < tracesAlignment.rows.length; k++) {
+				var tracesRow:Array = tracesAlignment.rows[k];
+				
+				for(var l:int = 0; l < tracesRow.length; l++) {
+					var traceAnnotation:TraceAnnotation = tracesRow[l] as TraceAnnotation;
+					
+					tracesAlignmentMap[traceAnnotation] = k;
+				}
+			}
+		}
+		
 		private function tryMoveCaretToPosition(newPosition:int):void
 		{
 			if(invalidSequence) { return; }
@@ -1785,6 +1921,16 @@ package org.jbei.components.pieClasses
 					
 					if(SegmentUtils.contains(selectionSegment, new Segment(orf.start, orf.end))) {
 						selectedAnnotations.push(orf);
+					}
+				}
+			}
+			
+			if(_showTraces) {
+				for(var i4:int = 0; i4 < traceMapper.traceAnnotations.length; i4++) {
+					var traceAnnotation:TraceAnnotation = traceMapper.traceAnnotations[i4] as TraceAnnotation;
+					
+					if(SegmentUtils.contains(selectionSegment, new Segment(traceAnnotation.start, traceAnnotation.end))) {
+						selectedAnnotations.push(traceAnnotation);
 					}
 				}
 			}
