@@ -70,55 +70,82 @@ package org.jbei.components.pieClasses
 			
 			// render matches
 			g.lineStyle(2, MATCH_COLOR);
-			for(var i1:int = 0; i1 < matches.length; i1++) {
-				var matchSegment:Segment = matches[i1] as Segment;
-				
-				var matchAngle1:Number = matchSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-				var matchAngle2:Number = (matchSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-				
-				g.moveTo(center.x + traceAnnotationRadius * Math.sin(matchAngle1), center.y - traceAnnotationRadius * Math.cos(matchAngle1));
-				GraphicUtils.drawArc(g, center, traceAnnotationRadius, matchAngle1, matchAngle2);
-			}
+			
+			var matchAngle1:Number = traceAnnotation.traceSequence.traceSequenceAlignment.queryStart * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			var matchAngle2:Number = (traceAnnotation.traceSequence.traceSequenceAlignment.queryEnd + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			
+			g.moveTo(center.x + traceAnnotationRadius * Math.sin(matchAngle1), center.y - traceAnnotationRadius * Math.cos(matchAngle1));
+			GraphicUtils.drawArc(g, center, traceAnnotationRadius, matchAngle1, matchAngle2);
 			
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
 					var mismatchSegment:Segment = mismatches[i2] as Segment;
 					
 					var mismatchAngle1:Number = mismatchSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var mismatchAngle2:Number = (mismatchSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					g.moveTo(center.x + traceAnnotationRadius * Math.sin(mismatchAngle1), center.y - traceAnnotationRadius * Math.cos(mismatchAngle1));
-					GraphicUtils.drawArc(g, center, traceAnnotationRadius, mismatchAngle1, mismatchAngle2);
+					if(mismatchSegment.start == mismatchSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						var mismatchX:Number = center.x + traceAnnotationRadius * Math.sin(mismatchAngle1);
+						var mismatchY:Number = center.y - traceAnnotationRadius * Math.cos(mismatchAngle1);
+						
+						g.drawCircle(mismatchX, mismatchY, 1);
+					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
+						g.moveTo(center.x + traceAnnotationRadius * Math.sin(mismatchAngle1), center.y - traceAnnotationRadius * Math.cos(mismatchAngle1));
+						GraphicUtils.drawArc(g, center, traceAnnotationRadius, mismatchAngle1, mismatchAngle2);
+					}
 				}
 			}
 			
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
 					var deletionSegment:Segment = deletions[i3] as Segment;
 					
 					var deletionAngle1:Number = deletionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var deletionAngle2:Number = (deletionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					g.moveTo(center.x + traceAnnotationRadius * Math.sin(deletionAngle1), center.y - traceAnnotationRadius * Math.cos(deletionAngle1));
-					GraphicUtils.drawArc(g, center, traceAnnotationRadius, deletionAngle1, deletionAngle2);
+					if(deletionSegment.start == deletionSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						var deletionX:Number = center.x + traceAnnotationRadius * Math.sin(deletionAngle1);
+						var deletionY:Number = center.y - traceAnnotationRadius * Math.cos(deletionAngle1);
+						
+						g.drawCircle(deletionX, deletionY, 1);
+					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
+						g.moveTo(center.x + traceAnnotationRadius * Math.sin(deletionAngle1), center.y - traceAnnotationRadius * Math.cos(deletionAngle1));
+						GraphicUtils.drawArc(g, center, traceAnnotationRadius, deletionAngle1, deletionAngle2);
+					}
 				}
 			}
 			
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
 					var insertionSegment:Segment = insertions[i4] as Segment;
 					
 					var insertionAngle1:Number = insertionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var insertionAngle2:Number = (insertionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					g.moveTo(center.x + traceAnnotationRadius * Math.sin(insertionAngle1), center.y - traceAnnotationRadius * Math.cos(insertionAngle1));
-					GraphicUtils.drawArc(g, center, traceAnnotationRadius, insertionAngle1, insertionAngle2);
+					if(insertionSegment.start == insertionSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						var insertionX:Number = center.x + traceAnnotationRadius * Math.sin(insertionAngle1);
+						var insertionY:Number = center.y - traceAnnotationRadius * Math.cos(insertionAngle1);
+						
+						g.drawCircle(insertionX, insertionY, 1);
+					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
+						g.moveTo(center.x + traceAnnotationRadius * Math.sin(insertionAngle1), center.y - traceAnnotationRadius * Math.cos(insertionAngle1));
+						GraphicUtils.drawArc(g, center, traceAnnotationRadius, insertionAngle1, insertionAngle2);
+					}
 				}
 			}
 		}

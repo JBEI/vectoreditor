@@ -65,24 +65,15 @@ package org.jbei.components.railClasses
 			
 			// render matches
 			g.lineStyle(2, MATCH_COLOR);
-			for(var i1:int = 0; i1 < matches.length; i1++) {
-				var matchSegment:Segment = matches[i1] as Segment;
-				
-				var matchStartPosition:Number = railMetrics.x + bpWidth * matchSegment.start;
-				var matchEndPosition:Number = railMetrics.x + bpWidth * matchSegment.end;
-				
-				if(matchStartPosition == matchEndPosition) {
-					matchStartPosition -= bpWidth / 2;
-					matchEndPosition += bpWidth / 2;
-				}
-				
-				g.moveTo(matchStartPosition, yPosition);
-				g.lineTo(matchEndPosition, yPosition);
-			}
+			
+			var matchStartPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryStart;
+			var matchEndPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryEnd;
+			
+			g.moveTo(matchStartPosition, yPosition);
+			g.lineTo(matchEndPosition, yPosition);
 			
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
 					var mismatchSegment:Segment = mismatches[i2] as Segment;
 					
@@ -94,6 +85,8 @@ package org.jbei.components.railClasses
 						
 						g.drawCircle(mismatchStartPosition, yPosition, 1);
 					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
 						g.moveTo(mismatchStartPosition, yPosition);
 						g.lineTo(mismatchEndPosition, yPosition);
 					}
@@ -102,7 +95,6 @@ package org.jbei.components.railClasses
 			
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
 					var deletionSegment:Segment = deletions[i3] as Segment;
 					
@@ -114,6 +106,8 @@ package org.jbei.components.railClasses
 						
 						g.drawCircle(deletionStartPosition, yPosition, 1);
 					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
 						g.moveTo(deletionStartPosition, yPosition);
 						g.lineTo(deletionEndPosition, yPosition);
 					}
@@ -122,7 +116,6 @@ package org.jbei.components.railClasses
 			
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
-				g.lineStyle(4, MISMATCH_COLOR);
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
 					var insertionSegment:Segment = insertions[i4] as Segment;
 					
@@ -134,6 +127,8 @@ package org.jbei.components.railClasses
 						
 						g.drawCircle(insertionStartPosition, yPosition, 1);
 					} else {
+						g.lineStyle(4, MISMATCH_COLOR);
+						
 						g.moveTo(insertionStartPosition, yPosition);
 						g.lineTo(insertionEndPosition, yPosition);
 					}
