@@ -1,7 +1,7 @@
 package org.jbei.registry.commands
 {
 	import org.jbei.registry.ApplicationFacade;
-	import org.jbei.registry.proxies.TraceAlignmentServiceProxy;
+	import org.jbei.registry.proxies.SequenceCheckerServiceProxy;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 	
@@ -10,9 +10,9 @@ package org.jbei.registry.commands
 		// Public Methods
 		public override function execute(notification:INotification):void
 		{
-			var traceAlignmentServiceProxy:TraceAlignmentServiceProxy = ApplicationFacade.getInstance().retrieveProxy(TraceAlignmentServiceProxy.NAME) as TraceAlignmentServiceProxy;
+			var sequenceCheckerServiceProxy:SequenceCheckerServiceProxy = ApplicationFacade.getInstance().retrieveProxy(SequenceCheckerServiceProxy.NAME) as SequenceCheckerServiceProxy;
 			
-			traceAlignmentServiceProxy.fetchTraces(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+			sequenceCheckerServiceProxy.fetchTraces(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
 		}
 	}
 }

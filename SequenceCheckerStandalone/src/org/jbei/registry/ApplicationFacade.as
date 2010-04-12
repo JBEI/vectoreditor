@@ -22,7 +22,7 @@ package org.jbei.registry
 	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.models.SequenceFeature;
 	import org.jbei.registry.proxies.EntriesServiceProxy;
-	import org.jbei.registry.proxies.TraceAlignmentServiceProxy;
+	import org.jbei.registry.proxies.SequenceCheckerServiceProxy;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
 	
@@ -76,6 +76,11 @@ package org.jbei.registry
 		public function get traces():ArrayCollection
 		{
 			return _traces;
+		}
+		
+		public function get activeSequenceComponent():ISequenceComponent
+		{
+			return _activeSequenceComponent;
 		}
 		
 		// System Public Methods
@@ -162,9 +167,9 @@ package org.jbei.registry
 		
 		public function tracesFetched():void
 		{
-			var traceAlignmentServiceProxy:TraceAlignmentServiceProxy = (ApplicationFacade.getInstance().retrieveProxy(TraceAlignmentServiceProxy.NAME) as TraceAlignmentServiceProxy);
+			var sequenceCheckerServiceProxy:SequenceCheckerServiceProxy = (ApplicationFacade.getInstance().retrieveProxy(SequenceCheckerServiceProxy.NAME) as SequenceCheckerServiceProxy);
 			
-			_traces = traceAlignmentServiceProxy.traces;
+			_traces = sequenceCheckerServiceProxy.traces;
 			
 			var traceMapper:TraceMapper = new TraceMapper(featuredSequence, _traces);
 			

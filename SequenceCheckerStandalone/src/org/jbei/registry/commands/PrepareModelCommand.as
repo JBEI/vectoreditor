@@ -1,7 +1,7 @@
 package org.jbei.registry.commands
 {
 	import org.jbei.registry.proxies.EntriesServiceProxy;
-	import org.jbei.registry.proxies.TraceAlignmentServiceProxy;
+	import org.jbei.registry.proxies.SequenceCheckerServiceProxy;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 
@@ -11,7 +11,7 @@ package org.jbei.registry.commands
 		public override function execute(notification:INotification):void
 		{
 			facade.registerProxy(new EntriesServiceProxy());
-			facade.registerProxy(new TraceAlignmentServiceProxy());
+			facade.registerProxy(new SequenceCheckerServiceProxy());
 		}
 	}
 }

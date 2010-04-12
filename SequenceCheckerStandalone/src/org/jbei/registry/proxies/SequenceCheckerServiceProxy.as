@@ -9,17 +9,17 @@ package org.jbei.registry.proxies
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.utils.StandaloneUtils;
 
-	public class TraceAlignmentServiceProxy extends AbstractServiceProxy
+	public class SequenceCheckerServiceProxy extends AbstractServiceProxy
 	{
-		public static const NAME:String = "TraceAlignmentServiceProxy";
-		private static const TRACE_ALIGNMENT_SERVICE_NAME:String = "TraceAlignmentService";
+		public static const NAME:String = "SequenceCheckerServiceProxy";
+		private static const SEQUENCE_CHECKER_SERVICE_NAME:String = "SequenceCheckerService";
 		
 		private var _traces:ArrayCollection /* TraceSequence */;
 		
 		// Constructor
-		public function TraceAlignmentServiceProxy()
+		public function SequenceCheckerServiceProxy()
 		{
-			super(NAME, TRACE_ALIGNMENT_SERVICE_NAME);
+			super(NAME, SEQUENCE_CHECKER_SERVICE_NAME);
 		}
 		
 		// Properties
@@ -37,7 +37,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			service.getTraces(authToken, recordId);
+			service.getTraces(authToken, entryId);
 		}
 		
 		// Protected Methods
@@ -53,14 +53,14 @@ package org.jbei.registry.proxies
 		
 		protected override function registerServiceOperations():void
 		{
-			service.getTraceAlignment.addEventListener(ResultEvent.RESULT, onTraceAlignmentServiceGetTraceAlignmentResult);
+			service.getTraces.addEventListener(ResultEvent.RESULT, onSequenceCheckerServiceGetTracesResult);
 		}
 		
 		// Private Methods
-		private function onTraceAlignmentServiceGetTraceAlignmentResult(event:ResultEvent):void
+		private function onSequenceCheckerServiceGetTracesResult(event:ResultEvent):void
 		{
 			if(!event.result) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch trace alignment!");
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch traces!");
 				
 				return;
 			}

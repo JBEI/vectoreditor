@@ -46,7 +46,7 @@ package org.jbei.registry.mediators
 			alignmentPanel.traceSequenceAlignmentTextArea.htmlText = "";
 			alignmentPanel.traceSequenceAlignmentTextArea.verticalScrollPosition = 0;
 			
-			if(traceSequence == null) {
+			if(traceSequence == null || traceSequence.traceSequenceAlignment == null || traceSequence.traceSequenceAlignment.queryAlignment == null || traceSequence.traceSequenceAlignment.queryAlignment.length == 0) {
 				return;
 			}
 			
@@ -62,7 +62,15 @@ package org.jbei.registry.mediators
 			var subjectAlignmentLength:int = subjectAlignmentString.length;
 			var queryAlignmentLength:int = queryAlignmentString.length;
 			
-			var numberOfLines:int = subjectAlignmentString.length / NUCLEOTIDES_ALIGNMENT_PER_ROW;
+			var numberOfLines:int;
+			
+			if(subjectAlignmentString.length < NUCLEOTIDES_ALIGNMENT_PER_ROW) {
+				numberOfLines = 1;
+			} else if(subjectAlignmentString.length % NUCLEOTIDES_ALIGNMENT_PER_ROW == 0) {
+				numberOfLines = subjectAlignmentString.length / NUCLEOTIDES_ALIGNMENT_PER_ROW;
+			} else {
+				numberOfLines = subjectAlignmentString.length / NUCLEOTIDES_ALIGNMENT_PER_ROW + 1;
+			}
 			
 			var output:String = "<font face=\"" + SystemUtils.getSystemMonospaceFontFamily() + "\" size=\"12\" letterspacing=\"1\" kerning=\"0\">";
 			
