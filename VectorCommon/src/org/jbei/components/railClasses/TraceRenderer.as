@@ -89,13 +89,14 @@ package org.jbei.components.railClasses
 					var mismatchStartPosition:Number = railMetrics.x + bpWidth * mismatchSegment.start;
 					var mismatchEndPosition:Number = railMetrics.x + bpWidth * mismatchSegment.end;
 					
-					if(mismatchStartPosition == mismatchEndPosition) {
-						mismatchStartPosition -= bpWidth / 2;
-						mismatchEndPosition += bpWidth / 2;
+					if(mismatchSegment.start == mismatchSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						g.drawCircle(mismatchStartPosition, yPosition, 1);
+					} else {
+						g.moveTo(mismatchStartPosition, yPosition);
+						g.lineTo(mismatchEndPosition, yPosition);
 					}
-					
-					g.moveTo(mismatchStartPosition, yPosition);
-					g.lineTo(mismatchEndPosition, yPosition);
 				}
 			}
 			
@@ -108,13 +109,14 @@ package org.jbei.components.railClasses
 					var deletionStartPosition:Number = railMetrics.x + bpWidth * deletionSegment.start;
 					var deletionEndPosition:Number = railMetrics.x + bpWidth * deletionSegment.end;
 					
-					if(deletionStartPosition == deletionEndPosition) {
-						deletionStartPosition -= bpWidth / 2;
-						deletionEndPosition += bpWidth / 2;
+					if(deletionSegment.start == deletionSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						g.drawCircle(deletionStartPosition, yPosition, 1);
+					} else {
+						g.moveTo(deletionStartPosition, yPosition);
+						g.lineTo(deletionEndPosition, yPosition);
 					}
-					
-					g.moveTo(deletionStartPosition, yPosition);
-					g.lineTo(deletionEndPosition, yPosition);
 				}
 			}
 			
@@ -127,13 +129,14 @@ package org.jbei.components.railClasses
 					var insertionStartPosition:Number = railMetrics.x + bpWidth * insertionSegment.start;
 					var insertionEndPosition:Number = railMetrics.x + bpWidth * insertionSegment.end;
 					
-					if(insertionStartPosition == insertionEndPosition) {
-						insertionStartPosition -= bpWidth / 2;
-						insertionEndPosition += bpWidth / 2;
+					if(insertionSegment.start == insertionSegment.end) {
+						g.lineStyle(2, MISMATCH_COLOR);
+						
+						g.drawCircle(insertionStartPosition, yPosition, 1);
+					} else {
+						g.moveTo(insertionStartPosition, yPosition);
+						g.lineTo(insertionEndPosition, yPosition);
 					}
-					
-					g.moveTo(insertionStartPosition, yPosition);
-					g.lineTo(insertionEndPosition, yPosition);
 				}
 			}
 		}
