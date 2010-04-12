@@ -1,11 +1,10 @@
 package org.jbei.registry.models
 {
-	import mx.collections.ArrayCollection;
-
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.SequenceChecker.vo.TraceSequenceAlignment")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.TraceSequenceAlignment")]
 	public class TraceSequenceAlignment
 	{
 		private var _score:int;
+		private var _strand:int;
 		private var _queryStart:int;
 		private var _queryEnd:int;
 		private var _subjectStart:int;
@@ -14,11 +13,12 @@ package org.jbei.registry.models
 		private var _subjectAlignment:String;
 		
 		// Constructor
-		public function TraceSequenceAlignment(score:int, queryStart:int, queryEnd:int, subjectStart:int, subjectEnd:int, queryAlignment:String, subjectAlignment:String)
+		public function TraceSequenceAlignment(score:int = 0, strand:int = 0, queryStart:int = 0, queryEnd:int = 0, subjectStart:int = 0, subjectEnd:int = 0, queryAlignment:String = "", subjectAlignment:String = "")
 		{
 			super();
 			
 			_score = score;
+			_strand = strand;
 			_queryStart = queryStart;
 			_queryEnd = queryEnd;
 			_subjectStart = subjectStart;
@@ -36,6 +36,16 @@ package org.jbei.registry.models
 		public function set score(value:int):void
 		{
 			_score = value;
+		}
+		
+		public function get strand():int
+		{
+			return _strand;
+		}
+		
+		public function set strand(value:int):void
+		{
+			_strand = value;
 		}
 		
 		public function get queryStart():int

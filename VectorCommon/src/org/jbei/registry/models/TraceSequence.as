@@ -1,6 +1,6 @@
 package org.jbei.registry.models
 {
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.SequenceChecker.vo.TraceSequence")]
+	[RemoteClass(alias="org.jbei.ice.lib.models.TraceSequence")]
 	public class TraceSequence
 	{
 		private var _filename:String;
@@ -9,7 +9,7 @@ package org.jbei.registry.models
 		private var _traceSequenceAlignment:TraceSequenceAlignment;
 		
 		// Constructor
-		public function TraceSequence(filename:String, depositor:String, sequence:String, traceSequenceAlignment:TraceSequenceAlignment) {
+		public function TraceSequence(filename:String = "", depositor:String = "", sequence:String = "", traceSequenceAlignment:TraceSequenceAlignment = null) {
 			super();
 			
 			_filename = filename;
