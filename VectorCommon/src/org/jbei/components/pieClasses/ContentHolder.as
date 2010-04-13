@@ -110,7 +110,7 @@ package org.jbei.components.pieClasses
 		private var _showFeatureLabels:Boolean = true;
 		private var _showCutSiteLabels:Boolean = true;
 		private var _showORFs:Boolean = true;
-		private var _showTraces:Boolean = true;
+		private var _showTraces:Boolean = false;
 		private var _safeEditing:Boolean = true;
 		
 		private var mouseIsDown:Boolean = false;

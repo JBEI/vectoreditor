@@ -47,9 +47,9 @@ package org.jbei.components
 		private var contentHolder:ContentHolder;
 		
 		private var _readOnly:Boolean = false;
-		private var _showCutSites:Boolean = true;
+		private var _showCutSites:Boolean = false;
 		private var _showComplementarySequence:Boolean = true;
-		private var _showFeatures:Boolean = true;
+		private var _showFeatures:Boolean = false;
 		private var _bpPerRow:int = DEFAULT_BP_PER_ROW;
 		private var _sequenceFontSize:int = 11;
 		private var _labelFontSize:int = 10;
