@@ -106,11 +106,11 @@ package org.jbei.components.pieClasses
 		private var _totalWidth:int = 0;
 		private var _readOnly:Boolean = true;
 		private var _showFeatures:Boolean = true;
-		private var _showCutSites:Boolean = true;
+		private var _showCutSites:Boolean = false;
+		private var _showORFs:Boolean = false;
+		private var _showTraces:Boolean = false;
 		private var _showFeatureLabels:Boolean = true;
 		private var _showCutSiteLabels:Boolean = true;
-		private var _showORFs:Boolean = true;
-		private var _showTraces:Boolean = false;
 		private var _safeEditing:Boolean = true;
 		
 		private var mouseIsDown:Boolean = false;
@@ -1905,7 +1905,7 @@ package org.jbei.components.pieClasses
 				}
 			}
 			
-			if(_showCutSites) {
+			if(_showCutSites && restrictionEnzymeMapper != null) {
 				for(var i2:int = 0; i2 < restrictionEnzymeMapper.cutSites.length; i2++) {
 					var cutSite:CutSite = restrictionEnzymeMapper.cutSites[i2] as CutSite;
 					
@@ -1915,7 +1915,7 @@ package org.jbei.components.pieClasses
 				}
 			}
 			
-			if(_showORFs) {
+			if(_showORFs && orfMapper != null) {
 				for(var i3:int = 0; i3 < orfMapper.orfs.length; i3++) {
 					var orf:ORF = orfMapper.orfs[i3] as ORF;
 					
@@ -1925,7 +1925,7 @@ package org.jbei.components.pieClasses
 				}
 			}
 			
-			if(_showTraces) {
+			if(_showTraces && traceMapper != null) {
 				for(var i4:int = 0; i4 < traceMapper.traceAnnotations.length; i4++) {
 					var traceAnnotation:TraceAnnotation = traceMapper.traceAnnotations[i4] as TraceAnnotation;
 					

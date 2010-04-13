@@ -89,9 +89,10 @@ package org.jbei.components.sequenceClasses
 		private var _totalHeight:int = 0;
 		private var _totalWidth:int = 0;
 		private var _readOnly:Boolean = true;
-		private var _showCutSites:Boolean = true;
 		private var _showComplementary:Boolean = true;
-		private var _showFeatures:Boolean = true;
+		private var _showFeatures:Boolean = false;
+		private var _showCutSites:Boolean = false;
+		private var _showORFs:Boolean = false;
 		private var _sequenceFontSize:int = 11;
 		private var _labelFontSize:int = 10;
 		private var _caretPosition:int = 0;
@@ -99,7 +100,6 @@ package org.jbei.components.sequenceClasses
 		private var _showAminoAcids1:Boolean = false;
 		private var _showAminoAcids1RevCom:Boolean = false;
 		private var _showAminoAcids3:Boolean = false;
-		private var _showORFs:Boolean = false;
 		private var _safeEditing:Boolean = true;
 		
 		private var parentWidth:Number = 0;
