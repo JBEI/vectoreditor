@@ -4,7 +4,6 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.lib.models.SequenceFeature")]
 	public class SequenceFeature
 	{
-		private var _id:int;
 		private var _name:String;
 		private var _start:int;
 		private var _end:int;
@@ -23,16 +22,6 @@ package org.jbei.registry.models
 		}
 		
 		// Properties
-		public function get id():int
-		{
-			return _id;
-		}
-		
-		public function set id(value:int):void	
-		{
-			_id = value;
-		}
-		
 		public function get name():String
 		{
 			return _name;

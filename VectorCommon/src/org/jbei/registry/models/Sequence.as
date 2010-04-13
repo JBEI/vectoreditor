@@ -6,7 +6,6 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.lib.models.Sequence")]
 	public class Sequence
 	{
-		private var _id:int;
 		private var _sequence:String;
 		private var _sequenceUser:String;
 		private var _fwdHash:String;
@@ -24,16 +23,6 @@ package org.jbei.registry.models
 		}
 		
 		// Properties
-		public function get id():int
-		{
-			return _id;
-		}
-		
-		public function set id(value:int):void	
-		{
-			_id = value;
-		}
-		
 		public function get sequence():String
 		{
 			return _sequence;

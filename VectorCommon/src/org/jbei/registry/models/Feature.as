@@ -4,38 +4,27 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.lib.models.Feature")]
 	public class Feature
 	{
-		private var _id:int;
 		private var _name:String;
 		private var _description:String;
 		private var _identification:String;
-		private var _uuid:String;
 		private var _autoFind:int;
 		private var _genbankType:String;
-		private var _featureDna:FeatureDNA;
+		private var _sequence:String;
+		private var _hash:String;
 		
 		// Constructor
-		public function Feature(name:String = null, description:String = null, identification:String = null, uuid:String = null, autoFind:int = 0, genbankType:String = null, featureDNA:FeatureDNA = null)
+		public function Feature(name:String = null, description:String = null, identification:String = null, autoFind:int = 0, genbankType:String = null, sequence:String = null, hash:String = "")
 		{
 			_name = name;
 			_description = description;
 			_identification = identification;
-			_uuid = uuid
 			_autoFind = autoFind;
 			_genbankType = genbankType;
-			_featureDna = featureDna;
+			_hash = hash;
+			_sequence = sequence;
 		}
 		
 		// Properties
-		public function get id():int
-		{
-			return _id;
-		}
-		
-		public function set id(value:int):void	
-		{
-			_id = value;
-		}
-		
 		public function get name():String
 		{
 			return _name;
@@ -66,14 +55,14 @@ package org.jbei.registry.models
 			_identification = value;
 		}
 		
-		public function get uuid():String
+		public function get hash():String
 		{
-			return _uuid;
+			return _hash;
 		}
 		
-		public function set uuid(value:String):void	
+		public function set hash(value:String):void	
 		{
-			_uuid = value;
+			_hash = value;
 		}
 		
 		public function get autoFind():int
@@ -96,14 +85,14 @@ package org.jbei.registry.models
 			_genbankType = value;
 		}
 		
-		public function get featureDna():FeatureDNA
+		public function get sequence():String
 		{
-			return _featureDna;
+			return _sequence;
 		}
 		
-		public function set featureDna(value:FeatureDNA):void	
+		public function set sequence(value:String):void	
 		{
-			_featureDna = value;
+			_sequence = value;
 		}
 	}
 }
