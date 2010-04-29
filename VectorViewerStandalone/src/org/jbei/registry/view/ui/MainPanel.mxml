@@ -10,8 +10,7 @@
 	<mx:HDividedBox width="100%" height="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0">
 		<components:Pie 
 			id="pie"
-			showORFs="false"
-			showCutSites="false"
+			showFeatures="true"
 			readOnly="true"
 			width="100%" 
 			height="100%" />
@@ -20,8 +19,7 @@
 			id="rail"
 			visible="false"
 			includeInLayout="false"
-			showORFs="false"
-			showCutSites="false"
+			showFeatures="true"
 			readOnly="true"
 			width="100%" 
 			height="100%" />
@@ -30,10 +28,7 @@
 			id="sequenceAnnotator"
 			visible="false"
 			includeInLayout="false"
-			showORFs="false"
-			showCutSites="false"
-			showAminoAcids1="false"
-			showAminoAcids3="false"
+			showFeatures="true"
 			readOnly="true"
 			width="100%" 
 			height="100%" />
