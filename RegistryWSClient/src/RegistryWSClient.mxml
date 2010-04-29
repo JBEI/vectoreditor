@@ -161,9 +161,13 @@
 				
 				var registryApi:RegistryAPI = new RegistryAPI();
 				
-				var asyncToken:AsyncToken = registryApi.getSequence(sessionId, entryIdTextInput.text);
+				var asyncToken1:AsyncToken = registryApi.getSequence(sessionId, entryIdTextInput.text);
+				asyncToken1.addResponder(new AsyncResponder(onGetSequenceResult, onRegistryApiFault));
 				
-				asyncToken.addResponder(new AsyncResponder(onGetSequenceResult, onRegistryApiFault));
+				logMessage("Getting original genbank sequence for '" + entryIdTextInput.text + "' ...");
+				
+				var asyncToken2:AsyncToken = registryApi.getOriginalGenBankSequence(sessionId, entryIdTextInput.text);
+				asyncToken2.addResponder(new AsyncResponder(onGetOriginalGenBankSequenceResult, onRegistryApiFault));
 			}
 			
 			private function onGetSequenceResult(event:ResultEvent, token:Object):void
@@ -190,6 +194,19 @@
 						sequenceTextArea.text += "\n";
 					}
 				}
+			}
+			
+			private function onGetOriginalGenBankSequenceResult(event:ResultEvent, token:Object):void
+			{
+				if(event.result == null) {
+					logMessage("No original genbank sequence found!");
+					
+					return;
+				}
+				
+				var genbankSequence:String = event.result as String;
+				
+				genbankSequenceTextArea.text = genbankSequence;
 			}
 			
 			private function onRegistryApiFault(event:FaultEvent, token:Object):void {
@@ -266,7 +283,10 @@
 					<s:TextInput id="entryIdTextInput" width="40%"/>
 					<s:Button id="getSequenceButton" label="Get Sequence By EntryId" click="onGetSequenceButtonClick(event)"/>
 				</mx:HBox>
-				<mx:TextArea id="sequenceTextArea" width="100%" height="100%"/>
+				<mx:HDividedBox width="100%" height="100%">
+					<mx:TextArea id="sequenceTextArea" width="50%" height="100%"/>
+					<mx:TextArea id="genbankSequenceTextArea" width="50%" height="100%"/>
+				</mx:HDividedBox>
 			</mx:VBox>
 		</mx:VBox>
 		<s:TextArea id="loggerTextArea" height="100" width="100%"/>
