@@ -2,7 +2,8 @@ package org.jbei.components.railClasses
 {
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
-	import flash.geom.Matrix;
+	
+	import mx.utils.StringUtil;
 	
 	import org.jbei.bio.data.CutSite;
 	import org.jbei.bio.data.IAnnotation;
@@ -22,6 +23,10 @@ package org.jbei.components.railClasses
 			this.contentHolder = contentHolder;
 			
 			cutSite = relatedAnnotation as CutSite;
+			
+			if(cutSite.label == null || cutSite.label == "" || StringUtil.trim(cutSite.label) == "") {
+				visible = false;
+			}
 		}
 		
 		// Protected Methods

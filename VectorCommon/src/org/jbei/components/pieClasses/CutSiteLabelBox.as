@@ -3,6 +3,8 @@ package org.jbei.components.pieClasses
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	
+	import mx.utils.StringUtil;
+	
 	import org.jbei.bio.data.CutSite;
 	import org.jbei.bio.data.IAnnotation;
 	import org.jbei.components.common.LabelBox;
@@ -21,6 +23,10 @@ package org.jbei.components.pieClasses
 			this.contentHolder = contentHolder;
 			
 			cutSite = relatedAnnotation as CutSite;
+			
+			if(cutSite.label == null || cutSite.label == "" || StringUtil.trim(cutSite.label) == "") {
+				visible = false;
+			}
 		}
 		
 		// Protected Methods

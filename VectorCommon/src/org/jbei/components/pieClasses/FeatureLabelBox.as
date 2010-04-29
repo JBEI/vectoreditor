@@ -3,6 +3,8 @@ package org.jbei.components.pieClasses
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	
+	import mx.utils.StringUtil;
+	
 	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.IAnnotation;
 	import org.jbei.components.common.LabelBox;
@@ -21,6 +23,10 @@ package org.jbei.components.pieClasses
 			this.contentHolder = contentHolder;
 			
 			_feature = relatedAnnotation as Feature;
+			
+			if(_feature.label == null || _feature.label == "" || StringUtil.trim(_feature.label) == "") {
+				visible = false;
+			}
 		}
 		
 		// Properties
