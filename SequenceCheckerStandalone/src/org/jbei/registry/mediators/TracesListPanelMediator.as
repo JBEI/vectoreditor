@@ -15,6 +15,7 @@ package org.jbei.registry.mediators
 		private const NAME:String = "TracesListPanelMediator";
 		
 		private var tracesListPanel:TracesListPanel;
+		private var traces:ArrayCollection; /* TraceSequence */
 		
 		// Constructor
 		public function TracesListPanelMediator(viewComponent:Object=null)
@@ -31,6 +32,7 @@ package org.jbei.registry.mediators
 		{
 			return [
 				Notifications.TRACES_FETCHED
+				, Notifications.SELECTION_CHANGED
 			];
 		}
 		
@@ -41,12 +43,36 @@ package org.jbei.registry.mediators
 					populateDataGrid();
 					
 					break;
+				case Notifications.SELECTION_CHANGED:
+					if(notification.getBody() != null) {
+						var selection:Array = notification.getBody() as Array;
+						
+						for(var i:int = 0; i < traces.length; i++) {
+							var traceSequence:TraceSequence = (traces[i] as TraceSequence);
+							
+							if(traceSequence.traceSequenceAlignment == null) {
+								continue;
+							}
+							
+							if(selection[0] == traceSequence.traceSequenceAlignment.queryStart - 1 && selection[1] == traceSequence.traceSequenceAlignment.queryEnd) {
+								if(tracesListPanel.tracesDataGrid.selectedIndex != i) {
+									tracesListPanel.tracesDataGrid.selectedIndex = i;
+									
+									sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, traceSequence);
+								}
+								
+								break;
+							}
+						}
+					}
+					
+					break;
 			}
 		}
 		
 		// Private Methods
 		private function populateDataGrid():void {
-			var traces:ArrayCollection = ApplicationFacade.getInstance().traces;
+			traces = ApplicationFacade.getInstance().traces;
 			
 			tracesListPanel.tracesDataGrid.dataProvider = null;
 			
