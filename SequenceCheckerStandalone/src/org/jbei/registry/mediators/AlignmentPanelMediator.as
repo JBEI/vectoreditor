@@ -85,9 +85,9 @@ package org.jbei.registry.mediators
 				var highlightedSubjectRowSequence:String = highlightMismatches(subjectRowSequence, queryRowSequence);
 				
 				if(i == 0) {
-					output += "<b>Query  " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.queryStart) + ": </b>";
+					output += "<b>Expected " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.queryStart) + ": </b>";
 				} else {
-					output += "              ";
+					output += "                ";
 				}
 				
 				output += highlightedQueryRowSequence;
@@ -99,9 +99,9 @@ package org.jbei.registry.mediators
 				output += "\n";
 				
 				if(i == 0) {
-					output += "<b>Subject" + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.subjectStart) + ": </b>";
+					output += "<b>Trace    " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.subjectStart) + ": </b>";
 				} else {
-					output += "              ";
+					output += "                ";
 				}
 				
 				output += highlightedSubjectRowSequence;
