@@ -1,5 +1,7 @@
 package org.jbei.registry.models
 {
+	import mx.collections.ArrayCollection;
+
 	[RemoteClass(alias="org.jbei.ice.lib.vo.DNAFeature")]
 	public class DNAFeature
 	{
@@ -8,16 +10,16 @@ package org.jbei.registry.models
 		private var _end:int;
 		private var _type:String;
 		private var _strand:int;
-		private var _description:String;
+		private var _notes:ArrayCollection /* of DNAFeatureNote */;
 		
 		// Contructor
-		public function DNAFeature(start:int, end:int, strand:int, name:String, description:String, type:String)
+		public function DNAFeature(start:int, end:int, strand:int, name:String, notes:ArrayCollection /* of DNAFeatureNote */, type:String)
 		{
 			_start = start;
 			_end = end;
 			_strand = strand;
 			_name = name;
-			_description = description;
+			_notes = notes;
 			_type = type;
 		}
 		
@@ -72,14 +74,14 @@ package org.jbei.registry.models
 			_strand = value;
 		}
 		
-		public function get description():String
+		public function get notes():ArrayCollection /* of DNAFeatureNote */
 		{
-			return _description;
+			return _notes;
 		}
 		
-		public function set description(value:String):void
+		public function set notes(value:ArrayCollection /* of DNAFeatureNote */):void
 		{
-			_description = value;
+			_notes = value;
 		}
 	}
 }
