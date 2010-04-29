@@ -4,8 +4,8 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.lib.models.Strain")]
 	public class Strain extends Entry
 	{
-		private var _host:String;
 		private var _genotypePhenotype:String;
+		private var _host:String;
 		private var _plasmids:String;
 		
 		// Properties

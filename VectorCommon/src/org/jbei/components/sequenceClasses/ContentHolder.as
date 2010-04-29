@@ -90,7 +90,7 @@ package org.jbei.components.sequenceClasses
 		private var _totalWidth:int = 0;
 		private var _readOnly:Boolean = true;
 		private var _showComplementary:Boolean = true;
-		private var _showFeatures:Boolean = false;
+		private var _showFeatures:Boolean = true;
 		private var _showCutSites:Boolean = false;
 		private var _showORFs:Boolean = false;
 		private var _sequenceFontSize:int = 11;

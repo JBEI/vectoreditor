@@ -5,7 +5,6 @@ package org.jbei.registry.models
 	public class PartNumber
 	{
 		private var _partNumber:String;
-		private var _entry:Entry;
 		
 		// Constructor
 		public function PartNumber(partNumber:String = null)	
@@ -22,16 +21,6 @@ package org.jbei.registry.models
 		public function set partNumber(value:String):void	
 		{
 			_partNumber = value;
-		}
-		
-		public function get entry():Entry
-		{
-			return _entry;
-		}
-		
-		public function set entry(value:Entry):void	
-		{
-			_entry = value;
 		}
 		
 		// Public Methods

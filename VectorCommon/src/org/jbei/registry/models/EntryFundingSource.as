@@ -5,7 +5,6 @@ package org.jbei.registry.models
 	public class EntryFundingSource
 	{
 		private var _fundingSource:FundingSource;
-		private var _entry:Entry;
 		
 		// Constructor
 		public function EntryFundingSource(fundingSource:FundingSource = null)
@@ -22,16 +21,6 @@ package org.jbei.registry.models
 		public function set fundingSource(value:FundingSource):void
 		{
 			_fundingSource = value;
-		}
-		
-		public function get entry():Entry
-		{
-			return _entry;
-		}
-		
-		public function set entry(value:Entry):void
-		{
-			_entry = value;
 		}
 	}
 }

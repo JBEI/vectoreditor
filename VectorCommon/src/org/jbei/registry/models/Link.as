@@ -6,7 +6,6 @@ package org.jbei.registry.models
 	{
 		private var _url:String;
 		private var _link:String;
-		private var _entry:Entry;
 		
 		// Constructor
 		public function Link(url:String = null, link:String = null)	
@@ -34,16 +33,6 @@ package org.jbei.registry.models
 		public function set link(value:String):void	
 		{
 			_link = value;
-		}
-		
-		public function get entry():Entry
-		{
-			return _entry;
-		}
-		
-		public function set entry(value:Entry):void	
-		{
-			_entry = value;
 		}
 		
 		// Public Methods
