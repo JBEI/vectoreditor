@@ -199,7 +199,12 @@ package org.jbei.registry
 			
 			var dnaSequence:DNASequence = new DNASequence(sequence.sequence);
 			
-			var featuredSequence:FeaturedSequence = new FeaturedSequence(entry.combinedName(), ((entry is Plasmid) ? (entry as Plasmid).circular : false), dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
+			var circular:Boolean = false;
+			if(entry is Plasmid) {
+				circular = (entry as Plasmid).circular;
+			}
+			
+			var featuredSequence:FeaturedSequence = new FeaturedSequence(entry.combinedName(), circular, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
 			
 			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
 			
@@ -211,9 +216,32 @@ package org.jbei.registry
 					var strand:int = sequenceFeature.strand;
 					
 					var notes:Array = new Array();
-					notes.push(new FeatureNote("label", sequenceFeature.feature.name));
+					notes.push(new FeatureNote("label", sequenceFeature.name));
 					
-					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.feature.genbankType, strand, notes);
+					if(sequenceFeature.description && sequenceFeature.description.length > 0) {
+						var noteLines:Array = sequenceFeature.description.split("\n");
+						
+						if (noteLines != null && noteLines.length > 0) {
+							for (var k:int = 0; k < noteLines.length; k++) {
+								var line:String = noteLines[k];
+								
+								var key:String = "";
+								var value:String = "";
+								for (var l:int = 0; l < line.length; l++) {
+									if (line.charAt(l) == '=') {
+										key = line.substring(0, l);
+										value = line.substring(l + 1, line.length);
+										
+										break;
+									}
+								}
+								
+								notes.push(new FeatureNote(key, value));
+							}
+						}
+					}
+					
+					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.genbankType, strand, notes);
 					features.push(feature);
 				}
 				

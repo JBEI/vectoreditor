@@ -2,7 +2,6 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.Feature;
 	import org.jbei.registry.models.Link;
 	import org.jbei.registry.models.Name;
@@ -10,6 +9,7 @@ package org.jbei.registry.utils
 	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.Sequence;
 	import org.jbei.registry.models.SequenceFeature;
+	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.models.TraceSequence;
 	import org.jbei.registry.models.TraceSequenceAlignment;
 	
@@ -62,7 +62,7 @@ package org.jbei.registry.utils
 			return traceSequence;
 		}
 		
-		public static function standaloneEntry():Entry
+		public static function standalonePlasmid():Plasmid
 		{
 			var plasmid:Plasmid = new Plasmid();
 			plasmid.alias = "Standalone Alias";
@@ -94,6 +94,37 @@ package org.jbei.registry.utils
 			return plasmid;
 		}
 		
+		public static function standaloneStrain():Strain
+		{
+			var strain:Strain = new Strain();
+			strain.alias = "Standalone Alias";
+			strain.host = "host";
+			strain.plasmids = "blaaaaplasmid";
+			strain.creationTime = new Date();
+			strain.creator = "Zinovii Dmytriv";
+			strain.creatorEmail = "zdmytriv@lbl.gov";
+			strain.keywords = null;
+			strain.links = new ArrayCollection();
+			strain.links.addItem(new Link("http://google.com", "JBEI:Standalone"));
+			strain.longDescription = "Standalone part long description";
+			strain.modificationTime = null;
+			strain.names = new ArrayCollection();
+			strain.names.addItem(new Name("pNJH-0006"));
+			strain.owner = "Zinovii Dmytriv";
+			strain.ownerEmail = "zdmytriv@lbl.gov";
+			strain.partNumbers = new ArrayCollection();
+			strain.partNumbers.addItem(new PartNumber("JBz_000001"));
+			strain.genotypePhenotype = "genopheno";
+			strain.recordId = "12345678-12345678-12345678-123456781111";
+			strain.recordType = "strain";
+			strain.references = "Standalone references";
+			strain.shortDescription = "Short Description";
+			strain.status = "public";
+			strain.versionId = "12345678-12345678-12345678-123456781111";
+			
+			return strain;
+		}
+		
 		public static function standaloneSequence():Sequence {
 			var sequence:Sequence = new Sequence();
 			
@@ -102,13 +133,23 @@ package org.jbei.registry.utils
 			sequence.sequence = "aagaaaccattattatcatgacattaacctataaaaataggcgtatcacgaggcagaatttcagataaaaaaaatccttagctttcgctaaggatgatttctggaattcaaaagatctagagaatataaaaagccagattattaatccggcttttttattatttggatctggtagacgtctagtaactggatctccgtattctttacactttatgcttccggctcgtatgttgtgtcgaccgagcggataacaattggatctattaaagaggagaaaggatctatgcgtaaaggagaagaacttttcactggagttgtcccaattcttgttgaattagatggtgatgttaatgggcacaaattttctgtcagtggagagggtgaaggtgatgcaacatacggaaaacttacccttaaatttatttgcactactggaaaactacctgttccatggccaacacttgtcactactttcggttatggtgttcaatgctttgcgagatacccagatcatatgaaacagcatgactttttcaagagtgccatgcccgaaggttatgtacaggaaagaactatatttttcaaagatgacgggaactacaagacacgtgctgaagtcaagtttgaaggtgatacccttgttaatagaatcgagttaaaaggtattgattttaaagaagatggaaacattcttggacacaaattggaatacaactataactcacacaatgtatacatcatggcagacaaacaaaagaatggaatcaaagttaacttcaaaattagacacaacattgaagatggaagcgttcaactagcagaccattatcaacaaaatactccaattggcgatggccctgtccttttaccagacaaccattacctgtccacacaatctgccctttcgaaagatcccaacgaaaagagagaccacatggtccttcttgagtttgtaaccgctgctgggattacacatggcatggatgaactatacaaataataaggatctagagaatataaaaagccagattattaatccggcttttttattatttggatcttccctatcagtgatagagattgacatccctatcagtgatagagatactgagcacggatctattaaagaggagaaaggatctatgcagggttctgtgacagagtttctaaaaccgcgcctggttgatatcgagcaagtgagttcgacgcacgccaaggtgacccttgagcctttagagcgtggctttggccatactctgggtaacgcactgcgccgtattctgctctcatcgatgccgggttgcgcggtgaccgaggttgagattgatggtgtactacatgagtacagcaccaaagaaggcgttcaggaagatatcctggaaatcctgctcaacctgaaagggctggcggtgagagttcagggcaaagatgaagttattcttaccttgaataaatctggcattggccctgtgactgcagccgatatcacccacgacggtgatgtcgaaatcgtcaagccgcagcacgtgatctgccacctgaccgatgagaacgcgtctattagcatgcgtatcaaagttcagcgcggtcgtggttatgtgccggcttctacccgtattcattcggaagaagatgagcgcccaatcggccgtctgctggtcgacgcatgctacagccctgtggagcgtattgcctacaatgttgaagcagcgcgtgtagaacagcgtaccgacctggacaagctggtcatcgaaatggaaaccaacggcacaatcgatcctgaagaggcgattcgtcgtgcggcaaccattctggctgaacaactggaagctttcgttgacttacgtgatgtacgtcagcctgaagtgaaagaagagaaaccagagggatctgccccgcgagtccggaccggatctctggaaccaggatctaaaccgtacaaatgtccggaatgtggtaaatccttctccactcatctggatctgattcgtcatcaacgtactcacactggatctaaaccgtacaaatgtccggaatgtggtaaatccttctcccaatcttcttctctggttcgtcatcaacgtactcacactggatctaaaccgtacaaatgtccggaatgtggtaaatccttctcccaaaactctaccctgactgaacatcaacgtactcacactggatctaaaccgtacaaatgtccggaatgtggtaaatccttctcctctcgtcgtacttgtcgtgcacatcaacgtactcacactggatctaaaccgtacaaatgtccggaatgtggtaaatccttctcccaactggctcatctgcgtgcacatcaacgtactcacactggatctaaaccgtacaaatgtccggaatgtggtaaatccttctccacttctggtcatctggtacgtcatcaacgtactcacactggatctaaaacctcttaataaggatctagagaatataaaaagccagattattaatccggcttttttattatttggatcctgactcgagtccggcaaaaaaacgggcaaggtgtcaccaccctgccctttttctttaaaaccgaaaagattacttcgcgttatgcaggcttcctcgctcactgactcgctgcgctcggtcgttcggctgcggcgagcggtatcagctcactcaaaggcggtaatacggttatccacagaatcaggggataacgcaggaaagaacatgtgagcaaaaggccagcaaaaggccaggaaccgtaaaaaggccgcgttgctggcgtttttccataggctccgcccccctgacgagcatcacaaaaatcgacgctcaagtcagaggtggcgaaacccgacaggactataaagataccaggcgtttccccctggaagctccctcgtgcgctctcctgttccgaccctgccgcttaccggatacctgtccgcctttctcccttcgggaagcgtggcgctttctcatagctcacgctgtaggtatctcagttcggtgtaggtcgttcgctccaagctgggctgtgtgcacgaaccccccgttcagcccgaccgctgcgccttatccggtaactatcgtcttgagtccaacccggtaagacacgacttatcgccactggcagcagccactggtaacaggattagcagagcgaggtatgtaggcggtgctacagagttcttgaagtggtggcctaactacggctacactagaaggacagtatttggtatctgcgctctgctgaagccagttaccttcggaaaaagagttggtagctcttgatccggcaaacaaaccaccgctggtagcggtggtttttttgtttgcaagcagcagattacgcgcagaaaaaaaggatctcaagaagatcctttgatcttttctacggggtctgacgctcagtggaacgaaaactcacgttaagggattttggtcatgagattatcaaaaaggatcttcacctagatccttttaaattaaaaatgaagttttaaatcaatctaaagtatatatgagtaaacttggtctgacagttaccaatgcttaatcagtgaggcacctatctcagcgatctgtctatttcgttcatccatagttgcctgactccccgtcgtgtagataactacgatacgggagggcttaccatctggccccagtgctgcaatgataccgcgagacccacgctcaccggctccagatttatcagcaataaaccagccagccggaagggccgagcgcagaagtggtcctgcaactttatccgcctccatccagtctattaattgttgccgggaagctagagtaagtagttcgccagttaatagtttgcgcaacgttgttgccattgctacaggcatcgtggtgtcacgctcgtcgtttggtatggcttcattcagctccggttcccaacgatcaaggcgagttacatgatcccccatgttgtgcaaaaaagcggttagctccttcggtcctccgatcgttgtcagaagtaagttggccgcagtgttatcactcatggttatggcagcactgcataattctcttactgtcatgccatccgtaagatgcttttctgtgactggtgagtactcaaccaagtcattctgagaatagtgtatgcggcgaccgagttgctcttgcccggcgtcaatacgggataataccgcgccacatagcagaactttaaaagtgctcatcattggaaaacgttcttcggggcgaaaactctcaaggatcttaccgctgttgagatccagttcgatgtaacccactcgtgcacccaactgatcttcagcatcttttactttcaccagcgtttctgggtgagcaaaaacaggaaggcaaaatgccgcaaaaaagggaataagggcgacacggaaatgttgaatactcatactcttcctttttcaatattattgaagcatttatcagggttattgtctcatgagcggatacatatttgaatgtatttagaaaaataaacaaataggggttccgcgcacatttccccgaaaagtgccacctgacgtct";
 			sequence.sequenceUser = "";
 			sequence.sequenceFeatures = new ArrayCollection();
-			sequence.sequenceFeatures.addItem(new SequenceFeature(1500, 1575, 1, new Feature("lacUV5 promoter", null, null, 0, "promoter")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(1516, 1579, 1, new Feature("lac operator", null, null, 0, "misc_binding")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(1595, 1614, 1, new Feature("RBS", null, null, 0, "RBS")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(1615, 3300, 1, new Feature("fadD", null, null, 0, "CDS")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(3321, 4097, 1, new Feature("atfA", null, null, 0, "CDS")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(3443, 3443, 1, new Feature("silentMut-removeBglII", null, null, 0, "misc_feature")));
-			sequence.sequenceFeatures.addItem(new SequenceFeature(49, 1131, -1, new Feature("lacI", null, null, 0, "CDS")));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(1500, 1575, 1, "lacUV5 promoter", new Feature("lacUV5 promoter", null, null, 0, "promoter"), null, "", "promoter"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(1516, 1579, 1, "lac operator", new Feature("lac operator", null, null, 0, "misc_binding"), null, "", "misc_binding"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(1595, 1614, 1, "RBS", new Feature("RBS", null, null, 0, "RBS"), null, "", "RBS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(1615, 3300, 1, "fadD", new Feature("fadD", null, null, 0, "CDS"), null, "", "CDS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(3321, 4697, 1, "atfA", new Feature("atfA", null, null, 0, "CDS"), null, "", "CDS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(3443, 3443, 1, "silentMut-removeBglII", new Feature("silentMut-removeBglII", null, null, 0, "misc_feature"), null, "", "misc_feature"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(4702, 4735, 1, "BBa_B1002_term", new Feature("BBa_B1002_term", null, null, 0, "terminator"), null, "", "terminator"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(4787, 4862, 1, "lacUV5 promoter", new Feature("lacUV5 promoter", null, null, 0, "promoter"), null, "", "promoter"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(4803, 4879, 1, "lac operator", new Feature("lac operator", null, null, 0, "misc_binding"), null, "", "misc_binding"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(4907, 6612, 1, "pdc", new Feature("pdc", null, null, 0, "CDS"), null, "", "CDS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(6646, 7797, 1, "adhB", new Feature("adhB", null, null, 0, "CDS"), null, "", "CDS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(7824, 8375, 1, "lTesA", new Feature("lTesA", null, null, 0, "CDS"), null, "", "CDS"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(8400, 8528, 1, "dbl term", new Feature("dbl term", null, null, 0, "terminator"), null, "", "terminator"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(9350, 9455, 1, "T0", new Feature("T0", null, null, 0, "terminator"), null, "", "terminator"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(8662, 9344, -1, "colE1", new Feature("colE1", null, null, 0, "rep_origin"), null, "", "rep_origin"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(9485, 10340, -1, "Amp", new Feature("Amp", null, null, 0, "misc_marker"), null, "", "misc_marker"));
+			sequence.sequenceFeatures.addItem(new SequenceFeature(49, 1131, -1, "lacI", new Feature("lacI", null, null, 0, "CDS"), null, "", "CDS"));
 			
 			return sequence;
 		}

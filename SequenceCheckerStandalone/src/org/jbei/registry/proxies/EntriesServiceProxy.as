@@ -7,7 +7,10 @@ package org.jbei.registry.proxies
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.models.Part;
+	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.Sequence;
+	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.utils.StandaloneUtils;
 
 	public class EntriesServiceProxy extends AbstractServiceProxy
@@ -39,7 +42,8 @@ package org.jbei.registry.proxies
 		public function fetchEntry(authToken:String, recordId:String):void
 		{
 			CONFIG::standalone {
-				updateEntry(StandaloneUtils.standaloneEntry() as Entry);
+				//updateEntry(StandaloneUtils.standalonePlasmid() as Plasmid);
+				updateEntry(StandaloneUtils.standaloneStrain() as Strain);
 				
 				return;
 			}
@@ -85,6 +89,19 @@ package org.jbei.registry.proxies
 			
 			sendNotification(Notifications.DATA_FETCHED);
 			
+			var entry:Entry = event.result as Entry;
+			
+			/* Don't remove this. It helps force compile Plasmid, Strain, Part classes so they can be used in AMF serialization/deserealization */
+			if(entry is Plasmid) {
+				Logger.getInstance().info("Plasmid fetched!");
+			} else if(entry is Strain) {
+				Logger.getInstance().info("Strain fetched!");
+			} else if(entry is Part) {
+				Logger.getInstance().info("Part fetched!");
+			} else {
+				Logger.getInstance().info("Unknown object fetched!");
+			}
+			
 			updateEntry(event.result as Entry);
 		}
 		
@@ -97,7 +114,7 @@ package org.jbei.registry.proxies
 		
 		private function updateEntry(entry:Entry):void
 		{
-			_entry = entry;
+			_entry = entry as Entry;
 			
 			sendNotification(Notifications.ENTRY_FETCHED);
 			
@@ -106,7 +123,7 @@ package org.jbei.registry.proxies
 		
 		private function updateSequence(sequence:Sequence):void
 		{
-			_sequence = sequence;
+			_sequence = sequence as Sequence;
 			
 			sendNotification(Notifications.SEQUENCE_FETCHED);
 			
