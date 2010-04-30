@@ -996,8 +996,8 @@ package org.jbei.components.railClasses
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), false);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence, false);
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), true);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence, true);
 			}
 		}
 		
@@ -1005,8 +1005,8 @@ package org.jbei.components.railClasses
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), false);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, false);
+				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
 				
 				if(_safeEditing) {
 					doDeleteSequence(selectionLayer.start, selectionLayer.end);

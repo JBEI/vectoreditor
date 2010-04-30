@@ -1,7 +1,8 @@
 package org.jbei.bio.data
 {
 	import mx.collections.ArrayCollection;
-	
+
+	[RemoteClass(alias="org.jbei.bio.data.Feature")]
 	public class Feature extends Segment
 	{
 		// Variables

@@ -2,30 +2,38 @@ package org.jbei.bio.data
 {
 	import org.jbei.bio.utils.SequenceUtils;
 	
+	[RemoteClass(alias="org.jbei.bio.data.DNASequence")]
 	public class DNASequence
 	{
 		private var _sequence:String;
 		
 		// Constructor
-		public function DNASequence(sequence:String, skipValidation:Boolean = false)
+		public function DNASequence(dnaSequence:String = null, skipValidation:Boolean = false)
 		{
-			if(sequence == null) {
-				sequence = "";
+			if(dnaSequence == null) {
+				_sequence = "";
+				
+				return;
 			}
 			
-			sequence = sequence.toUpperCase();
+			dnaSequence = dnaSequence.toUpperCase();
 			
 			if(!skipValidation) {
-				validate(sequence);
+				validate(dnaSequence);
 			}
 			
-			_sequence = sequence;
+			_sequence = dnaSequence;
 		}
 		
 		// Properties
 		public function get sequence():String
 		{
 			return _sequence;
+		}
+		
+		public function set sequence(value:String):void
+		{
+			_sequence = value;
 		}
 		
 		public function get length():uint

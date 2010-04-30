@@ -1,5 +1,6 @@
 package org.jbei.lib
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
 	import mx.collections.ArrayCollection;
@@ -12,7 +13,8 @@ package org.jbei.lib
 	import org.jbei.lib.common.IOriginator;
 	import org.jbei.lib.utils.StringFormatter;
 	
-	public class FeaturedSequence extends EventDispatcher implements IOriginator
+	[RemoteClass(alias="org.jbei.lib.FeaturedSequence")]
+	public class FeaturedSequence implements IOriginator
 	{
 		private var _name:String;
 		private var _circular:Boolean;
@@ -22,8 +24,10 @@ package org.jbei.lib
 		
 		private var _manualUpdateStarted:Boolean = false;
 		
+		private var dispatcher:EventDispatcher = new EventDispatcher();
+		
 		// Constructor
-		public function FeaturedSequence(name:String, circular:Boolean, sequence:DNASequence, oppositeSequence:DNASequence, features:ArrayCollection = null)
+		public function FeaturedSequence(name:String = null, circular:Boolean = false, sequence:DNASequence = null, oppositeSequence:DNASequence = null, features:ArrayCollection = null)
 		{
 			super();
 			
@@ -40,9 +44,19 @@ package org.jbei.lib
 			return _name;
 		}
 		
+		public function set name(value:String):void
+		{
+			_name = value;
+		}
+		
 		public function get circular():Boolean
 		{
 			return _circular;
+		}
+		
+		public function set circular(value:Boolean):void
+		{
+			_circular = value;
 		}
 		
 		public function get sequence():DNASequence
@@ -50,9 +64,19 @@ package org.jbei.lib
 			return _sequence;
 		}
 		
+		public function set sequence(value:DNASequence):void
+		{
+			_sequence = value;
+		}
+		
 		public function get oppositeSequence():DNASequence
 		{
 			return _oppositeSequence;
+		}
+		
+		public function set oppositeSequence(value:DNASequence):void
+		{
+			_oppositeSequence = value;
 		}
 		
 		public function get features():ArrayCollection /* of Feature */
@@ -60,6 +84,12 @@ package org.jbei.lib
 			return _features;
 		}
 		
+		public function set features(value:ArrayCollection):void
+		{
+			_features = value;
+		}
+		
+		[Transient]
 		public function get manualUpdateStarted():Boolean
 		{
 			return _manualUpdateStarted;
@@ -89,7 +119,23 @@ package org.jbei.lib
 			_oppositeSequence = featuredSequenceMemento.oppositeSequence;
 			_features = featuredSequenceMemento.features;
 			
-			dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SET_MEMENTO));
+			dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SET_MEMENTO));
+		}
+		
+		// Public Methods: EventDispatcher wrapped
+		public function addEventListener(type:String, listener:Function):void
+		{
+			dispatcher.addEventListener(type, listener);
+		}
+		
+		public function removeEventListener(type:String, listener:Function):void
+		{
+			dispatcher.removeEventListener(type, listener);
+		}
+		
+		public function dispatchEvent(event:Event):void
+		{
+			dispatcher.dispatchEvent(event);
 		}
 		
 		// Public Methods
@@ -171,13 +217,13 @@ package org.jbei.lib
 		public function addFeature(feature:Feature, quiet:Boolean = false):void
 		{
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_ADD, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_ADD, createMemento()));
 			}
 			
 			_features.addItem(feature);
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_ADD, feature));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_ADD, feature));
 			}
 		}
 		
@@ -186,7 +232,7 @@ package org.jbei.lib
 			if(!featuresToAdd || featuresToAdd.length == 0) { return; } 
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_ADD, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_ADD, createMemento()));
 			}
 			
 			for(var i:int = 0; i < featuresToAdd.length; i++) {
@@ -196,7 +242,7 @@ package org.jbei.lib
 			}
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_ADD, features));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_ADD, features));
 			}
 		}
 		
@@ -206,13 +252,13 @@ package org.jbei.lib
 			
 			if(index >= 0) {
 				if(!quiet && !_manualUpdateStarted) {
-					dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, createMemento()));
+					dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, createMemento()));
 				}
 				
 				_features.removeItemAt(index);
 				
 				if(!quiet && !_manualUpdateStarted) {
-					dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, feature));
+					dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, feature));
 				}
 			}
 		}
@@ -222,7 +268,7 @@ package org.jbei.lib
 			if(!featuresToRemove || featuresToRemove.length == 0) { return; } 
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, createMemento()));
 			}
 			
 			for(var i:int = 0; i < featuresToRemove.length; i++) {
@@ -232,7 +278,7 @@ package org.jbei.lib
 			}
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, features));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, features));
 			}
 		}
 		
@@ -244,7 +290,7 @@ package org.jbei.lib
 		public function insertFeaturedSequence(featuredSequence:FeaturedSequence, position:int, quiet:Boolean = false):void
 		{
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
 			}
 			
 			insertSequence(new DNASequence(featuredSequence.sequence.sequence), position, true);
@@ -259,7 +305,7 @@ package org.jbei.lib
 			}
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {featuredSequence : featuredSequence, position : position}));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {featuredSequence : featuredSequence, position : position}));
 			}
 		}
 		
@@ -268,7 +314,7 @@ package org.jbei.lib
 			if(position < 0 || position > sequence.length || insertSequence.length == 0) { return };
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
 			}
 			
 			_sequence.insert(insertSequence, position);
@@ -300,7 +346,7 @@ package org.jbei.lib
 			}
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {sequence : insertSequence, position : position}));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {sequence : insertSequence, position : position}));
 			}
 		}
 		
@@ -311,7 +357,7 @@ package org.jbei.lib
 			if(endIndex < 0 || startIndex < 0 || startIndex > sequenceLength || endIndex > sequenceLength || startIndex == endIndex) { return; }
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
 			}
 			
 			const DEBUG_MODE:Boolean = false;
@@ -571,7 +617,7 @@ package org.jbei.lib
 			}
 			
 			if(!quiet && !_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_REMOVE, {position : startIndex, length : length}));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_REMOVE, {position : startIndex, length : length}));
 			}
 		}
 		
@@ -633,14 +679,14 @@ package org.jbei.lib
 			if(!_manualUpdateStarted) {
 				_manualUpdateStarted = true;
 				
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, createMemento()));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, createMemento()));
 			}
 		}
 		
 		public function manualUpdateEnd():void
 		{
 			if(_manualUpdateStarted) {
-				dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, null));
+				dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, null));
 				
 				_manualUpdateStarted = false;
 			}
@@ -659,7 +705,7 @@ package org.jbei.lib
 			return clonedFeaturedSequence;
 		}
 		
-		public override function toString():String
+		public function toString():String
 		{
 			return _sequence.exportAsText(60, true, true);
 		}
