@@ -55,7 +55,12 @@ package org.jbei.components.sequenceClasses
 				
 				if(!contentHolder.isValidIndex(segment.start) || !contentHolder.isValidIndex(segment.end)) { return; }
 				
-				drawSelection(segment.start, segment.end);
+				if(segment.start > segment.end) {
+					drawSelection(0, segment.end);
+					drawSelection(segment.start, contentHolder.featuredSequence.sequence.length);
+				} else {
+					drawSelection(segment.start, segment.end);
+				}
 			}
 		}
 		
