@@ -4,69 +4,37 @@ package org.jbei.lib
 
 	public class FindUtils
 	{
-		public static function find(sequence:String, expression:String, start:int = 0):Segment
-		{
-			var result:Segment = null;
-			
-			if(expression.length == 0 || sequence.length == 0) { return result; }
-			
-			var expressionRegExp:RegExp = new RegExp(expression, "ig");
-			
-			var match:Object = expressionRegExp.exec(sequence);
-			while (match != null) {
-				if(match.index < start) {
-					match = expressionRegExp.exec(sequence);
-					continue;
-				}
-				
-				result = new Segment(match.index, match.index + String(match[0]).length);
-				break;
-			}
-			
-			return result;
-		}
-		
-		public static function findLast(sequence:String, expression:String, end:int):Segment
-		{
-			var result:Segment = null;
-			
-			if(expression.length == 0 || sequence.length == 0) { return result; }
-			
-			var expressionRegExp:RegExp = new RegExp(expression, "ig");
-			
-			var lastReverseStart:int = -1;
-			var lastReverseEnd:int = -1;
-			
-			var match:Object = expressionRegExp.exec(sequence);
-			while (match != null) {
-				if(match.index + String(match[0]).length > end) { break; }
-				
-				lastReverseStart = match.index;
-				lastReverseEnd = match.index + String(match[0]).length;
-				
-				match = expressionRegExp.exec(sequence);
-			}
-			
-			if(lastReverseStart > 0 && lastReverseEnd > 0) {
-				result = new Segment(sequence.length - lastReverseEnd, sequence.length - lastReverseStart);
-			}
-			
-			return result;
-		}
-		
-		public static function findAll(sequence:String, expression:String):Array /* of Segment */
+		public static function findAll(dnaSequence:String, expression:String, circular:Boolean = false):Array /* of Segment */
 		{
 			var result:Array = new Array();
 			
-			if(expression.length == 0 || sequence.length == 0) { return result; }
+			var sequenceLength:int = dnaSequence.length;
+			
+			if(expression.length == 0 || sequenceLength == 0) { return result; }
 			
 			var expressionRegExp:RegExp = new RegExp(expression, "ig");
 			
-			var match:Object = expressionRegExp.exec(sequence);
+			var extendedSequence:String = dnaSequence;
+			if(circular) { // double sequence for circular search
+				extendedSequence += extendedSequence;
+			}
+			
+			var match:Object = expressionRegExp.exec(extendedSequence);
 			while (match != null) {
-				result.push(new Segment(match.index, match.index + String(match[0]).length));
+				var matchStart:int = match.index;
+				var matchEnd:int = match.index + String(match[0]).length;
 				
-				match = expressionRegExp.exec(sequence);
+				if(circular) { // circular search
+					if (matchStart < sequenceLength && matchEnd <= sequenceLength) {
+						result.push(new Segment(matchStart, matchEnd));
+					} else if (matchStart < sequenceLength && matchEnd >= sequenceLength) {
+						result.push(new Segment(matchStart, matchEnd - sequenceLength));
+					}
+				} else {
+					result.push(new Segment(matchStart, matchEnd));
+				}
+				
+				match = expressionRegExp.exec(extendedSequence);
 			}
 			
 			return result;

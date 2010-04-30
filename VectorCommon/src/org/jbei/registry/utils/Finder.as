@@ -2,9 +2,9 @@ package org.jbei.registry.utils
 {
 	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.utils.SequenceUtils;
-	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FindUtils;
+	import org.jbei.lib.mappers.AAMapper;
 
 	public class Finder
 	{
@@ -29,21 +29,40 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceSegment:Segment = FindUtils.find(featuredSequence.sequence.sequence, expression, start);
-					var reverseComplementSegment:Segment = FindUtils.findLast(SequenceUtils.reverseSequence(featuredSequence.oppositeSequence).sequence, expression, featuredSequence.sequence.length - start);
+					var sequenceSegments:Array = FindUtils.findAll(featuredSequence.sequence.sequence, expression, featuredSequence.circular);
+					var reverseComplementSegment:Array = FindUtils.findAll(SequenceUtils.reverseSequence(featuredSequence.oppositeSequence).sequence, expression, featuredSequence.circular);
 					
-					if(sequenceSegment && reverseComplementSegment) {
-						if(sequenceSegment.start < reverseComplementSegment.start) {
-							resultSegment = sequenceSegment;
-						} else {
-							resultSegment = reverseComplementSegment;
+					for(var i1:int = 0; i1 < sequenceSegments.length; i1++) {
+						var segment1:Segment = sequenceSegments[i1] as Segment;
+						
+						if(segment1.start >= start) {
+							if(resultSegment == null) {
+								resultSegment = segment1;
+							} else {
+								if(resultSegment.start > segment1.start) {
+									resultSegment = segment1;
+								}
+							}
 						}
-					} else if(sequenceSegment && !reverseComplementSegment) {
-						resultSegment = sequenceSegment;
-					} else if(!sequenceSegment && reverseComplementSegment) {
-						resultSegment = reverseComplementSegment;
-					} else {
-						resultSegment = null;
+					}
+					
+					var sequenceLength:int = featuredSequence.sequence.sequence.length;
+					
+					for(var i2:int = 0; i2 < reverseComplementSegment.length; i2++) {
+						var segment2:Segment = reverseComplementSegment[i2] as Segment;
+						
+						var reverseStart:int = sequenceLength - segment2.end;
+						var reverseEnd:int = sequenceLength - segment2.start;
+						
+						if(reverseStart >= start) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(reverseStart, reverseEnd);
+							} else {
+								if(resultSegment.start > reverseStart) {
+									resultSegment = new Segment(reverseStart, reverseEnd);
+								}
+							}
+						}
 					}
 					
 					break;
@@ -64,99 +83,103 @@ package org.jbei.registry.utils
 					}
 					
 					var position2:int = 0;
-					if((featuredSequence.sequence.length - start - 1) % 3 == 0) {
-						position2 = (featuredSequence.sequence.length - start - 1 - 3) / 3;
-					} else if((featuredSequence.sequence.length - start - 1) % 3 == 1) {
-						position2 = ((featuredSequence.sequence.length - start - 1) - 2) / 3;
-					} else if((featuredSequence.sequence.length - start - 1) % 3 == 2) {
-						position2 = ((featuredSequence.sequence.length - start - 1) - 1) / 3;
+					if(start == 0) {
+						position2 = 0;
+					} else {
+						if(start % 3 == 0) {
+							position2 = start + 3;
+						} else if(start % 3 == 1) {
+							position2 = start + 2;
+						} else if(start % 3 == 2) {
+							position2 = start + 1;
+						}
 					}
 					
-					var sequenceSegmentFrame1:Segment = FindUtils.find(aaMapper.sequenceAA1Frame1, expression, position1);
-					var sequenceSegmentFrame2:Segment = FindUtils.find(aaMapper.sequenceAA1Frame2, expression, position1);
-					var sequenceSegmentFrame3:Segment = FindUtils.find(aaMapper.sequenceAA1Frame3, expression, position1);
+					var sequenceSegmentsFrame1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, false);
+					var sequenceSegmentsFrame2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, false);
+					var sequenceSegmentsFrame3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, false);
 					
-					var revComSegmentFrame1:Segment = FindUtils.findLast(aaMapper.revComAA1Frame1, expression, position2);
-					var revComSegmentFrame2:Segment = FindUtils.findLast(aaMapper.revComAA1Frame2, expression, position2);
-					var revComSegmentFrame3:Segment = FindUtils.findLast(aaMapper.revComAA1Frame3, expression, position2);
-					
-					var smallestStart:int = -1;
-					var frame:int = 0;
+					var revComSegmentsFrame1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, false);
+					var revComSegmentsFrame2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, false);
+					var revComSegmentsFrame3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, false);
 					
 					// sparse AA1 segments 
-					if(sequenceSegmentFrame1) {
-						sequenceSegmentFrame1.start = 3 * sequenceSegmentFrame1.start;
-						sequenceSegmentFrame1.end = 3 * sequenceSegmentFrame1.end;
+					for(var j1:int = 0; j1 < sequenceSegmentsFrame1.length; j1++) {
+						var segmentAA1:Segment = sequenceSegmentsFrame1[j1];
 						
-						smallestStart = sequenceSegmentFrame1.start;
-						frame = 1;
-					}
-					
-					if(sequenceSegmentFrame2) {
-						sequenceSegmentFrame2.start = 3 * sequenceSegmentFrame2.start + 1;
-						sequenceSegmentFrame2.end = 3 * sequenceSegmentFrame2.end + 1;
-						
-						if(frame == 0 || sequenceSegmentFrame2.start < smallestStart) {
-							smallestStart = sequenceSegmentFrame2.start;
-							
-							frame = 2;
+						if(position1 < segmentAA1.start) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(3 * segmentAA1.start, 3 * segmentAA1.end);
+							} else if(resultSegment.start > 3 * segmentAA1.start) {
+								resultSegment = new Segment(3 * segmentAA1.start, 3 * segmentAA1.end);
+							}
 						}
 					}
 					
-					if(sequenceSegmentFrame3) {
-						sequenceSegmentFrame3.start = 3 * sequenceSegmentFrame3.start + 2;
-						sequenceSegmentFrame3.end = 3 * sequenceSegmentFrame3.end + 2;
+					for(var j2:int = 0; j2 < sequenceSegmentsFrame2.length; j2++) {
+						var segmentAA2:Segment = sequenceSegmentsFrame2[j2];
 						
-						if(frame == 0 || sequenceSegmentFrame3.start < smallestStart) {
-							frame = 3;
+						if(position1 < segmentAA2.start) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(3 * segmentAA2.start + 1, 3 * segmentAA2.end + 1);
+							} else if(resultSegment.start > 3 * segmentAA2.start + 1) {
+								resultSegment = new Segment(3 * segmentAA2.start + 1, 3 * segmentAA2.end + 1);
+							}
 						}
 					}
 					
-					if(revComSegmentFrame1) {
-						revComSegmentFrame1.start = 3 * revComSegmentFrame1.start;
-						revComSegmentFrame1.end = 3 * revComSegmentFrame1.end;
+					for(var j3:int = 0; j3 < sequenceSegmentsFrame3.length; j3++) {
+						var segmentAA3:Segment = sequenceSegmentsFrame3[j3];
 						
-						if(frame == 0 || revComSegmentFrame1.start < smallestStart) {
-							smallestStart = revComSegmentFrame1.start;
-							
-							frame = -1;
+						if(position1 < segmentAA3.start) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(3 * segmentAA3.start + 2, 3 * segmentAA3.end + 2);
+							} else if(resultSegment.start > 3 * segmentAA3.start + 2) {
+								resultSegment = new Segment(3 * segmentAA3.start + 2, 3 * segmentAA3.end + 2);
+							}
 						}
 					}
 					
-					if(revComSegmentFrame2) {
-						revComSegmentFrame2.start = 3 * revComSegmentFrame2.start + 2;
-						revComSegmentFrame2.end = 3 * revComSegmentFrame2.end + 2;
+					for(var z1:int = 0; z1 < revComSegmentsFrame1.length; z1++) {
+						var revSegmentAA1:Segment = revComSegmentsFrame1[z1] as Segment;
+						var normalizedStart1:int = featuredSequence.sequence.length - 3 * revSegmentAA1.end;
+						var normalizedEnd1:int = featuredSequence.sequence.length - 3 * revSegmentAA1.start;
 						
-						if(frame == 0 || revComSegmentFrame2.start < smallestStart) {
-							smallestStart = revComSegmentFrame2.start;
-							
-							frame = -2;
+						if(position2 < normalizedStart1) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(normalizedStart1, normalizedEnd1);
+							} else if(resultSegment.start > normalizedStart1) {
+								resultSegment = new Segment(normalizedStart1, normalizedEnd1);
+							}
 						}
 					}
 					
-					if(revComSegmentFrame3) {
-						revComSegmentFrame3.start = 3 * revComSegmentFrame3.start + 1;
-						revComSegmentFrame3.end = 3 * revComSegmentFrame3.end + 1;
+					for(var z2:int = 0; z2 < revComSegmentsFrame2.length; z2++) {
+						var revSegmentAA2:Segment = revComSegmentsFrame2[z2] as Segment;
+						var normalizedStart2:int = featuredSequence.sequence.length - 3 * revSegmentAA2.end - 1;
+						var normalizedEnd2:int = featuredSequence.sequence.length - 3 * revSegmentAA2.start - 1;
 						
-						if(frame == 0 || revComSegmentFrame3.start < smallestStart) {
-							smallestStart = revComSegmentFrame3.start;
-							
-							frame = -3;
+						if(position2 < normalizedStart2) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(normalizedStart2, normalizedEnd2);
+							} else if(resultSegment.start > normalizedStart2) {
+								resultSegment = new Segment(normalizedStart2, normalizedEnd2);
+							}
 						}
 					}
 					
-					if(frame == 1) {
-						resultSegment = sequenceSegmentFrame1;
-					} else if(frame == 2) {
-						resultSegment = sequenceSegmentFrame2;
-					} else if(frame == 3) {
-						resultSegment = sequenceSegmentFrame3;
-					} else if(frame == -1) {
-						resultSegment = revComSegmentFrame1;
-					} else if(frame == -2) {
-						resultSegment = revComSegmentFrame2;
-					} else if(frame == -3) {
-						resultSegment = revComSegmentFrame3;
+					for(var z3:int = 0; z3 < revComSegmentsFrame3.length; z3++) {
+						var revSegmentAA3:Segment = revComSegmentsFrame3[z3] as Segment;
+						var normalizedStart3:int = featuredSequence.sequence.length - 3 * revSegmentAA3.end - 2;
+						var normalizedEnd3:int = featuredSequence.sequence.length - 3 * revSegmentAA3.start - 2;
+						
+						if(position2 < normalizedStart3) {
+							if(resultSegment == null) {
+								resultSegment = new Segment(normalizedStart3, normalizedEnd3);
+							} else if(resultSegment.start > normalizedStart3) {
+								resultSegment = new Segment(normalizedStart3, normalizedEnd3);
+							}
+						}
 					}
 					
 					break;
@@ -175,8 +198,8 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceSegments:Array = FindUtils.findAll(featuredSequence.sequence.sequence, expression);
-					var reverseComplementSegments:Array = FindUtils.findAll(SequenceUtils.reverseSequence(featuredSequence.oppositeSequence).sequence, expression);
+					var sequenceSegments:Array = FindUtils.findAll(featuredSequence.sequence.sequence, expression, featuredSequence.circular);
+					var reverseComplementSegments:Array = FindUtils.findAll(SequenceUtils.reverseSequence(featuredSequence.oppositeSequence).sequence, expression, featuredSequence.circular);
 					
 					result = new Array();
 					
@@ -194,12 +217,12 @@ package org.jbei.registry.utils
 					
 					expression = expression.toUpperCase();
 					
-					var segments1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression);
-					var segments2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression);
-					var segments3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression);
-					var revComSegments1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression);
-					var revComSegments2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression);
-					var revComSegments3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression);
+					var segments1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, featuredSequence.circular);
+					var segments2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, featuredSequence.circular);
+					var segments3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, featuredSequence.circular);
+					var revComSegments1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, featuredSequence.circular);
+					var revComSegments2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, featuredSequence.circular);
+					var revComSegments3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, featuredSequence.circular);
 					
 					result = new Array();
 					
@@ -225,24 +248,15 @@ package org.jbei.registry.utils
 					}
 					
 					for(var j1:int = 0; j1 < revComSegments1.length; j1++) {
-						(revComSegments1[j1] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).start;
-						(revComSegments1[j1] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).end;
-						
-						result.push((revComSegments1[j1] as Segment));
+						result.push(new Segment(featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).end, featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Segment).start));
 					}
 					
 					for(var j2:int = 0; j2 < revComSegments2.length; j2++) {
-						(revComSegments2[j2] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).start - 1;
-						(revComSegments2[j2] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).end - 1;
-						
-						result.push((revComSegments2[j2] as Segment));
+						result.push(new Segment(featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).end - 1, featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Segment).start - 1));
 					}
 					
 					for(var j3:int = 0; j3 < revComSegments3.length; j3++) {
-						(revComSegments3[j3] as Segment).start = featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).start - 2;
-						(revComSegments3[j3] as Segment).end = featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).end - 2;
-						
-						result.push((revComSegments3[j3] as Segment));
+						result.push(new Segment(featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).end - 2, featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Segment).start - 2));
 					}
 					break;
 			}
