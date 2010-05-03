@@ -68,6 +68,12 @@ package org.jbei.lib.ui.dialogs
 			closeDialog();
 		}
 		
+		// Protected Methods
+		protected function closeDialog():void
+		{
+			PopUpManager.removePopUp(this);
+		}
+		
 		// Event Handlers
 		private function onOkButtonClick(event:MouseEvent):void
 		{
@@ -122,11 +128,6 @@ package org.jbei.lib.ui.dialogs
 		private function cancel():void
 		{
 			closeDialog();
-		}
-		
-		private function closeDialog():void
-		{
-			PopUpManager.removePopUp(this);
 		}
 	}
 }
