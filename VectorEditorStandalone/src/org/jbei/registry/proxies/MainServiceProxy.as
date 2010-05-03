@@ -86,6 +86,15 @@ package org.jbei.registry.proxies
 			service.saveFeaturedDNASequence(authToken, entryId, featuredDNASequence);
 		}
 		
+		public function generateGenBank(authToken:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
+		{
+			CONFIG::standalone {
+				return;
+			}
+			
+			service.generateGenBank(authToken, featuredDNASequence, name, isCircular);
+		}
+		
 		// Protected Methods
 		protected override function onServiceFault(event:FaultEvent):void
 		{
@@ -109,6 +118,9 @@ package org.jbei.registry.proxies
 			
 			// FeaturedDNASequence
 			service.saveFeaturedDNASequence.addEventListener(ResultEvent.RESULT, onSaveFeaturedDNASequenceResult);
+			
+			// GenBank
+			service.generateGenBank.addEventListener(ResultEvent.RESULT, onGenerateGenBankResult);
 		}
 		
 		// Private Methods
@@ -170,6 +182,8 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.DATA_FETCHED);
 			
 			sendNotification(Notifications.SEQUENCE_SAVED);
+			
+			Logger.getInstance().info("Sequence saved successfully");
 		}
 		
 		private function onUserRestrictionEnzymesServiceSaveResult(event:ResultEvent):void
@@ -179,6 +193,21 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
 			
 			Logger.getInstance().info("User restriction enzymes saved successfully");
+		}
+		
+		private function onGenerateGenBankResult(event:ResultEvent):void
+		{
+			if(event.result == null) {
+				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save sequence!");
+				
+				return;
+			}
+			
+			sendNotification(Notifications.DATA_FETCHED);
+			
+			sendNotification(Notifications.GENBANK_FETCHED, event.result as String);
+			
+			Logger.getInstance().info("Genbank file generated and fetched successfully");
 		}
 		
 		private function fetchStandaloneUserRestrictionEnzymes():void

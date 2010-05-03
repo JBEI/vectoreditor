@@ -22,6 +22,8 @@ package org.jbei.registry
 		public static const ENTRY_PERMISSIONS_FETCHED:String = "EntryPermissionsFetched";
 		public static const FETCH_ENTRY:String = "FetchEntry";
 		public static const FETCH_SEQUENCE:String = "FetchSequence";
+		public static const GENERATE_AND_FETCH_GENBANK:String = "GenerateAndFetchGenbank";
+		public static const GENBANK_FETCHED:String = "GenbankFetched";
 		public static const ENTRY_FETCHED:String = "EntryFetched";
 		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		

@@ -1,6 +1,7 @@
 package org.jbei.registry.commands
 {
 	import org.jbei.registry.mediators.FindPanelMediator;
+	import org.jbei.registry.mediators.GenbankPropertyTabMediator;
 	import org.jbei.registry.mediators.MainControlBarMediator;
 	import org.jbei.registry.mediators.MainMenuMediator;
 	import org.jbei.registry.mediators.MainPanelMediator;

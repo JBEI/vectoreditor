@@ -33,6 +33,6 @@
 		<properties:FeaturesBox width="500" height="400" />
 		<properties:CutSitesBox width="500" height="400" parentDialog="{ parentDialog }" />
 		<properties:ORFsBox width="500" height="400" parentDialog="{ parentDialog }" />
-		<properties:GenBank width="500" height="400" />
+		<properties:GenBankBox width="500" height="400" />
 	</mx:TabNavigator>
 </SimpleDialogForm>

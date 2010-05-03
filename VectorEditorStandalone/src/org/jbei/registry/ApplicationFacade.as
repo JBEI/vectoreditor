@@ -60,6 +60,7 @@ package org.jbei.registry
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.dialogs.editingPromptDialog.EditingPromptDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
+	import org.jbei.registry.view.ui.PropertiesDialog;
 	import org.puremvc.as3.patterns.facade.Facade;
 
 	public class ApplicationFacade extends Facade
@@ -332,7 +333,7 @@ package org.jbei.registry
 		
 		public function showPropertiesDialog():void
 		{
-			var propertiesDialog:SimpleDialog = new SimpleDialog(mainPanel, PropertiesDialogForm);
+			var propertiesDialog:PropertiesDialog = new PropertiesDialog(mainPanel, PropertiesDialogForm);
 			propertiesDialog.title = "Properties";
 			propertiesDialog.open();
 		}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+	label="GenBank"
+	initialize="onInitialize(event)"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.jbei.registry.ApplicationFacade;
+			import org.jbei.registry.mediators.GenbankPropertyTabMediator;
+			import org.jbei.registry.proxies.MainServiceProxy;
+			import org.jbei.registry.utils.FeaturedDNASequenceUtils;
+			import org.jbei.lib.utils.SystemUtils;
+			
+			private function onInitialize(event:Event):void
+			{
+				if(!ApplicationFacade.getInstance().hasMediator(GenbankPropertyTabMediator.NAME)) {
+					ApplicationFacade.getInstance().registerMediator(new GenbankPropertyTabMediator(this));
+				}
+				
+				genbankTextArea.text = "";
+				
+				if (ApplicationFacade.getInstance().entry == null || ApplicationFacade.getInstance().featuredSequence == null) {
+					return;
+				}
+				
+				var mainProxy:MainServiceProxy = ApplicationFacade.getInstance().retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
+				
+				mainProxy.generateGenBank(ApplicationFacade.getInstance().sessionId, FeaturedDNASequenceUtils.featuredSequenceToFeaturedDNASequence(ApplicationFacade.getInstance().featuredSequence), ApplicationFacade.getInstance().featuredSequence.name, ApplicationFacade.getInstance().featuredSequence.circular);
+			}
+			
+			public function updateTextArea(genbankSequence:String):void
+			{
+				genbankTextArea.text = genbankSequence;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea
+		id="genbankTextArea"
+		width="100%"
+		height="100%"
+		fontFamily="{ SystemUtils.getSystemMonospaceFontFamily() }"
+		editable="false"
+		 />
+</mx:Box>
