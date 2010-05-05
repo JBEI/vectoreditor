@@ -25,5 +25,7 @@ package org.jbei.registry
 		public static const SELECTION_CHANGED:String = "SelectionChanged";
 		public static const CARET_POSITION_CHANGED:String = "CaretPositionChanged";
 		public static const FEATURED_SEQUENCE_CHANGED:String = "FeaturedSequenceChanged";
+		
+		public static const LOAD_SEQUENCE:String = "LoadSequence";
 	}
 }

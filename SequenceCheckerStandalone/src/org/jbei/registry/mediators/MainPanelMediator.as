@@ -1,5 +1,10 @@
 package org.jbei.registry.mediators
 {
+	import org.jbei.components.Pie;
+	import org.jbei.components.Rail;
+	import org.jbei.components.common.CaretEvent;
+	import org.jbei.components.common.SelectionEvent;
+	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.TraceSequence;
@@ -11,12 +16,17 @@ package org.jbei.registry.mediators
 	{
 		private const NAME:String = "MainPanelMediator"
 		
+		private var pie:Pie;
+		private var rail:Rail;
+		private var mainPanel:MainPanel;
+		private var controlsInitialized:Boolean = false;
+		
 		// Constructor
 		public function MainPanelMediator(viewComponent:Object=null)
 		{
 			super(NAME, viewComponent);
 			
-			ApplicationFacade.getInstance().initializeControls(viewComponent as MainPanel);
+			initializeControls(viewComponent as MainPanel);
 		}
 		
 		// Public Methods
@@ -28,9 +38,7 @@ package org.jbei.registry.mediators
 				
 				, Notifications.SHOW_FEATURES
 				
-				, Notifications.ENTRY_FETCHED
-				, Notifications.SEQUENCE_FETCHED
-				, Notifications.TRACES_FETCHED
+				, Notifications.LOAD_SEQUENCE
 				
 				, Notifications.TRACE_SEQUENCE_SELECTION_CHANGED
 			];
@@ -39,30 +47,20 @@ package org.jbei.registry.mediators
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
+				case Notifications.LOAD_SEQUENCE:
+					loadSequence();
+					
+					break;
 				case Notifications.SHOW_RAIL:
-					ApplicationFacade.getInstance().showRail();
+					showRail();
 					
 					break;
 				case Notifications.SHOW_PIE:
-					ApplicationFacade.getInstance().showPie();
+					showPie();
 					
 					break;
 				case Notifications.SHOW_FEATURES:
-					ApplicationFacade.getInstance().displayFeatures(notification.getBody() as Boolean);
-					
-					break;
-				case Notifications.ENTRY_FETCHED:
-					sendNotification(Notifications.FETCH_SEQUENCE);
-					
-					break;
-				case Notifications.SEQUENCE_FETCHED:
-					ApplicationFacade.getInstance().sequenceFetched();
-					
-					sendNotification(Notifications.FETCH_TRACES);
-					
-					break;
-				case Notifications.TRACES_FETCHED:
-					ApplicationFacade.getInstance().tracesFetched();
+					displayFeatures(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.TRACE_SEQUENCE_SELECTION_CHANGED:
@@ -70,12 +68,92 @@ package org.jbei.registry.mediators
 						var traceSequence:TraceSequence = notification.getBody() as TraceSequence;
 						
 						if(traceSequence.traceSequenceAlignment != null) {
-							ApplicationFacade.getInstance().activeSequenceComponent.select(traceSequence.traceSequenceAlignment.queryStart - 1, traceSequence.traceSequenceAlignment.queryEnd - 1); // -1 because our sequence starts from 0
+							var start:int = traceSequence.traceSequenceAlignment.queryStart - 1; // -1 because our sequence starts from 0
+							var end:int = traceSequence.traceSequenceAlignment.queryEnd - 1; // -1 because our sequence starts from 0
+							
+							pie.select(start, end);
+							rail.select(start, end);
 						}
 					}
 					
 					break;
 			}
+		}
+		
+		// Private Methods
+		private function initializeControls(mainPanel:MainPanel):void
+		{
+			if(! controlsInitialized) {
+				this.mainPanel = mainPanel;
+				
+				pie = mainPanel.pie;
+				rail = mainPanel.rail;
+				
+				initializeEventHandlers();
+				
+				controlsInitialized = true;
+			}
+		}
+		
+		private function showPie():void
+		{
+			pie.visible = true;
+			pie.includeInLayout = true;
+			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			
+			rail.visible = false;
+			rail.includeInLayout = false;
+			rail.featuredSequence = null;
+		}
+		
+		private function showRail():void
+		{
+			pie.visible = false;
+			pie.includeInLayout = false;
+			pie.featuredSequence = null;
+			
+			rail.visible = true;
+			rail.includeInLayout = true;
+			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+		}
+		
+		private function displayFeatures(showFeatures:Boolean):void
+		{
+			pie.showFeatures = showFeatures;
+			rail.showFeatures = showFeatures;
+		}
+		
+		private function initializeEventHandlers():void
+		{
+			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			
+			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+		}
+		
+		private function onSelectionChanged(event:SelectionEvent):void
+		{
+			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
+		}
+		
+		private function onCaretPositionChanged(event:CaretEvent):void
+		{
+			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
+		}
+		
+		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		{
+			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
+		}
+		
+		private function loadSequence():void
+		{
+			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			
+			pie.traceMapper = ApplicationFacade.getInstance().traceMapper;
+			rail.traceMapper = ApplicationFacade.getInstance().traceMapper;
 		}
 	}
 }

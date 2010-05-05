@@ -2,50 +2,37 @@ package org.jbei.registry
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.data.FeatureNote;
-	import org.jbei.bio.utils.SequenceUtils;
-	import org.jbei.components.Pie;
-	import org.jbei.components.Rail;
-	import org.jbei.components.common.CaretEvent;
-	import org.jbei.components.common.ISequenceComponent;
-	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.mappers.TraceMapper;
 	import org.jbei.registry.commands.FetchEntryCommand;
 	import org.jbei.registry.commands.FetchSequenceCommand;
 	import org.jbei.registry.commands.FetchTracesCommand;
 	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.models.Entry;
-	import org.jbei.registry.models.Plasmid;
-	import org.jbei.registry.models.Sequence;
-	import org.jbei.registry.models.SequenceFeature;
-	import org.jbei.registry.proxies.EntriesServiceProxy;
-	import org.jbei.registry.proxies.SequenceCheckerServiceProxy;
-	import org.jbei.registry.view.ui.MainPanel;
+	import org.jbei.registry.models.FeaturedDNASequence;
+	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.puremvc.as3.patterns.facade.Facade;
 	
 	public class ApplicationFacade extends Facade
 	{
 		private var _application:SequenceChecker;
 		private var _entryId:String;
+		private var _entry:Entry;
+		private var _sequence:FeaturedDNASequence;
 		private var _sessionId:String;
-		private var _activeSequenceComponent:ISequenceComponent;
-		
-		private var controlsInitialized:Boolean = false;
-		
-		private var mainPanel:MainPanel;
-		private var pie:Pie;
-		private var rail:Rail;
-		
 		private var _featuredSequence:FeaturedSequence;
 		private var _traces:ArrayCollection;
+		private var _traceMapper:TraceMapper;
 		
 		// Properties
 		public function get application():SequenceChecker
 		{
 			return _application;
+		}
+		
+		public function get registryServiceProxy():RegistryAPIProxy
+		{
+			return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
 		}
 		
 		public function get entryId():String
@@ -73,14 +60,49 @@ package org.jbei.registry
 			return _featuredSequence;
 		}
 		
+		public function set featuredSequence(value:FeaturedSequence):void
+		{
+			_featuredSequence = value;
+		}
+		
+		public function get entry():Entry
+		{
+			return _entry;
+		}
+		
+		public function set entry(value:Entry):void
+		{
+			_entry = value;
+		}
+		
+		public function get sequence():FeaturedDNASequence
+		{
+			return _sequence;
+		}
+		
+		public function set sequence(value:FeaturedDNASequence):void
+		{
+			_sequence = value;
+		}
+		
 		public function get traces():ArrayCollection
 		{
 			return _traces;
 		}
 		
-		public function get activeSequenceComponent():ISequenceComponent
+		public function set traces(value:ArrayCollection):void
 		{
-			return _activeSequenceComponent;
+			_traces = value;
+		}
+		
+		public function get traceMapper():TraceMapper
+		{
+			return _traceMapper;
+		}
+		
+		public function set traceMapper(value:TraceMapper):void
+		{
+			_traceMapper = value;
 		}
 		
 		// System Public Methods
@@ -98,85 +120,6 @@ package org.jbei.registry
 			_application = application;
 		}
 		
-		public function initializeControls(mainPanel:MainPanel):void
-		{
-			if(! controlsInitialized) {
-				this.mainPanel = mainPanel;
-				
-				pie = mainPanel.pie;
-				rail = mainPanel.rail;
-				
-				initializeEventHandlers();
-				
-				controlsInitialized = true;
-				_activeSequenceComponent = pie;
-			}
-		}
-		
-		// Public Methods
-		public function showPie():void
-		{
-			pie.visible = true;
-			pie.includeInLayout = true;
-			pie.featuredSequence = featuredSequence;
-			
-			rail.visible = false;
-			rail.includeInLayout = false;
-			rail.featuredSequence = null;
-			
-			_activeSequenceComponent = pie;
-		}
-		
-		public function showRail():void
-		{
-			pie.visible = false;
-			pie.includeInLayout = false;
-			pie.featuredSequence = null;
-			
-			rail.visible = true;
-			rail.includeInLayout = true;
-			rail.featuredSequence = featuredSequence;
-			
-			_activeSequenceComponent = rail;
-		}
-		
-		public function displayFeatures(showFeatures:Boolean):void
-		{
-			pie.showFeatures = showFeatures;
-			rail.showFeatures = showFeatures;
-		}
-		
-		public function sequenceFetched():void
-		{
-			var sequence:Sequence = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).sequence;
-			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
-			
-			_featuredSequence = sequenceToFeaturedSequence(entry, sequence);
-			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
-			
-			pie.featuredSequence = featuredSequence;
-			rail.featuredSequence = featuredSequence;
-			
-			if(featuredSequence.circular) {
-				sendNotification(Notifications.SHOW_PIE);
-			} else {
-				sendNotification(Notifications.SHOW_RAIL);
-			}
-		}
-		
-		public function tracesFetched():void
-		{
-			var sequenceCheckerServiceProxy:SequenceCheckerServiceProxy = (ApplicationFacade.getInstance().retrieveProxy(SequenceCheckerServiceProxy.NAME) as SequenceCheckerServiceProxy);
-			
-			_traces = sequenceCheckerServiceProxy.traces;
-			
-			var traceMapper:TraceMapper = new TraceMapper(featuredSequence, _traces);
-			
-			pie.traceMapper = traceMapper;
-			rail.traceMapper = traceMapper;
-		}
-		
 		// Protected Methods
 		protected override function initializeController():void
 		{
@@ -186,93 +129,6 @@ package org.jbei.registry
 			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
 			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
 			registerCommand(Notifications.FETCH_TRACES, FetchTracesCommand);
-		}
-		
-		// Private Methods
-		private function sequenceToFeaturedSequence(entry:Entry, sequence:Sequence): FeaturedSequence
-		{
-			var sequence:Sequence = sequence;
-			
-			if(!sequence) {
-				sequence = new Sequence();
-			}
-			
-			var dnaSequence:DNASequence = new DNASequence(sequence.sequence);
-			
-			var circular:Boolean = false;
-			if(entry is Plasmid) {
-				circular = (entry as Plasmid).circular;
-			}
-			
-			var featuredSequence:FeaturedSequence = new FeaturedSequence(entry.combinedName(), circular, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
-			
-			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
-			
-			if(sequence.sequenceFeatures && sequence.sequenceFeatures.length > 0) {
-				var features:Array = new Array();
-				
-				for(var i:int = 0; i < sequence.sequenceFeatures.length; i++) {
-					var sequenceFeature:SequenceFeature = sequence.sequenceFeatures[i] as SequenceFeature;
-					var strand:int = sequenceFeature.strand;
-					
-					var notes:Array = new Array();
-					notes.push(new FeatureNote("label", sequenceFeature.name));
-					
-					if(sequenceFeature.description && sequenceFeature.description.length > 0) {
-						var noteLines:Array = sequenceFeature.description.split("\n");
-						
-						if (noteLines != null && noteLines.length > 0) {
-							for (var k:int = 0; k < noteLines.length; k++) {
-								var line:String = noteLines[k];
-								
-								var key:String = "";
-								var value:String = "";
-								for (var l:int = 0; l < line.length; l++) {
-									if (line.charAt(l) == '=') {
-										key = line.substring(0, l);
-										value = line.substring(l + 1, line.length);
-										
-										break;
-									}
-								}
-								
-								notes.push(new FeatureNote(key, value));
-							}
-						}
-					}
-					
-					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.genbankType, strand, notes);
-					features.push(feature);
-				}
-				
-				featuredSequence.addFeatures(features, true);
-			}
-			
-			return featuredSequence;
-		}
-		
-		private function initializeEventHandlers():void
-		{
-			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			
-			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-		}
-		
-		private function onSelectionChanged(event:SelectionEvent):void
-		{
-			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
-		}
-		
-		private function onCaretPositionChanged(event:CaretEvent):void
-		{
-			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
-		}
-		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
-		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
 		}
 	}
 }
