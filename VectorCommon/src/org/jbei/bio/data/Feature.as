@@ -1,7 +1,5 @@
 package org.jbei.bio.data
 {
-	import mx.collections.ArrayCollection;
-
 	[RemoteClass(alias="org.jbei.bio.data.Feature")]
 	public class Feature extends Segment
 	{
@@ -9,6 +7,7 @@ package org.jbei.bio.data
 		private var _type:String;
 		private var _notes:Array /* of FeatureNote */;
 		private var _strand:int;
+		private var _name:String;
 		
 		// Static Constants
 		public static const POSITIVE:int = 1;
@@ -16,12 +15,13 @@ package org.jbei.bio.data
 		public static const UNKNOWN:int = 0;
 		
 		// Constructor
-		public function Feature(start:int = 0, end:int = 0, type:String = "", strand:int = Feature.UNKNOWN, notes:Array /* of FeatureNote */ = null)
+		public function Feature(start:int = 0, end:int = 0, name:String = "", type:String = "", strand:int = Feature.UNKNOWN, notes:Array /* of FeatureNote */ = null)
 		{
 			super(start, end);
 			
 			_type = type;
 			_strand = strand;
+			_name = name;
 			
 			_notes = notes;
 			if(_notes == null) {
@@ -60,29 +60,25 @@ package org.jbei.bio.data
 			_strand = value;
 		}
 		
+		public function get name():String
+		{
+			return _name;
+		}
+		
+		public function set name(value:String):void
+		{
+			_name = value;
+		}
+		
 		public function get label():String
 		{
-			var result:String = "";
-			
-			if(notes != null && notes.length > 0) {
-				for(var i:int = 0; i < notes.length; i++) {
-					var featureNote:FeatureNote = notes[i] as FeatureNote;
-					
-					if(featureNote.name == "label") {
-						result = featureNote.value;
-						
-						break;
-					}
-				}
-			}
-			
-			return result;
+			return _name;
 		}
 		
 		// Public Methods
 		public function clone():Feature
 		{
-			var clonedFeature:Feature = new Feature(start, end, _type, _strand);
+			var clonedFeature:Feature = new Feature(start, end, _name, _type, _strand);
 			
 			if(_notes && _notes.length > 0) {
 				var clonedNotes:Array = new Array();
