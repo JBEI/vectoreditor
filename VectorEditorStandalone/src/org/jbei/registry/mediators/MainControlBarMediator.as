@@ -4,7 +4,6 @@ package org.jbei.registry.mediators
 	
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.view.ui.MainControlBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -80,11 +79,12 @@ package org.jbei.registry.mediators
 					controlBar.updateSaveButtonState(false);
 					break;
 				case Notifications.FEATURED_SEQUENCE_CHANGED:
-					if((ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).isEntryWritable) {
+					if(ApplicationFacade.getInstance().isReadOnly) {
 						controlBar.updateSaveButtonState(true);
 					} else {
 						controlBar.updateSaveButtonState(false);
 					}
+					
 					break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;

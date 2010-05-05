@@ -2,7 +2,6 @@ package org.jbei.registry.mediators
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.view.ui.MainMenu;
 	import org.jbei.registry.view.ui.menu.MenuItem;
 	import org.jbei.registry.view.ui.menu.MenuItemEvent;
@@ -112,11 +111,12 @@ package org.jbei.registry.mediators
 					mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					break;
 				case Notifications.FEATURED_SEQUENCE_CHANGED:
-					if((ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).isEntryWritable) {
+					if(ApplicationFacade.getInstance().isReadOnly) {
 						mainMenu.menuItemByName("saveMenuItem").enabled = true;
 					} else {
 						mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					}
+					
 					break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;

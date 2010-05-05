@@ -2,7 +2,6 @@ package org.jbei.registry.mediators
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.proxies.EntriesServiceProxy;
 	import org.jbei.registry.view.ui.StatusBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -70,7 +69,7 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.ENTRY_PERMISSIONS_FETCHED:
-					statusBar.sequenceStatusLabel.text = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).isEntryWritable ? "Writable" : "Read Only";
+					statusBar.sequenceStatusLabel.text = ApplicationFacade.getInstance().isReadOnly ? "Read Only" : "Writable";
 					
 					break;
 				case Notifications.FETCHING_DATA:

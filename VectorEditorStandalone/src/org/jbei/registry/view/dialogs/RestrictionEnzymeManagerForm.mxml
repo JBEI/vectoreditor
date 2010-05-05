@@ -18,7 +18,7 @@
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 			import org.jbei.registry.models.UserRestrictionEnzymes;
-			import org.jbei.registry.proxies.MainServiceProxy;
+			import org.jbei.registry.proxies.RegistryAPIProxy;
 			import org.jbei.lib.ui.dialogs.ModalDialog;
 			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
 			
@@ -56,8 +56,7 @@
 				userRestrictionEnzymeGroup.activeGroup.removeAll();
 				userRestrictionEnzymeGroup.activeGroup.addAll(activeEnzymes);
 				
-				var mainServiceProxy:MainServiceProxy = ApplicationFacade.getInstance().retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
-				mainServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymeGroup);
+				ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymeGroup);
 			}
 			
 			// Event Handlers

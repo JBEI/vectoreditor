@@ -21,11 +21,14 @@ package org.jbei.registry
 		public static const FETCH_ENTRY_PERMISSIONS:String = "FetchEntryPermissions";
 		public static const ENTRY_PERMISSIONS_FETCHED:String = "EntryPermissionsFetched";
 		public static const FETCH_ENTRY:String = "FetchEntry";
+		public static const ENTRY_FETCHED:String = "EntryFetched";
 		public static const FETCH_SEQUENCE:String = "FetchSequence";
+		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		public static const GENERATE_AND_FETCH_GENBANK:String = "GenerateAndFetchGenbank";
 		public static const GENBANK_FETCHED:String = "GenbankFetched";
-		public static const ENTRY_FETCHED:String = "EntryFetched";
-		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
+		public static const FETCH_RESTRICTION_ENZYMES:String = "FetchRestrictionEnzymes";
+		public static const RESTRICTION_ENZYMES_FETCHED:String = "RestrictionEnzymesFetched";
+		public static const LOAD_SEQUENCE:String = "LoadSequence";
 		
 		public static const UNDO:String = "Undo";
 		public static const REDO:String = "Redo";

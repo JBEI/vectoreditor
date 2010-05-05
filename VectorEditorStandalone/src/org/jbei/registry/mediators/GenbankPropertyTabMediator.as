@@ -1,10 +1,7 @@
 package org.jbei.registry.mediators
 {
-	import mx.events.InvalidateRequestData;
-	
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.proxies.MainServiceProxy;
 	import org.jbei.registry.view.dialogs.properties.GenBankBox;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -31,8 +28,6 @@ package org.jbei.registry.mediators
 		{
 			switch(notification.getName()) {
 				case Notifications.GENBANK_FETCHED:
-					var mainProxy:MainServiceProxy = ApplicationFacade.getInstance().retrieveProxy(MainServiceProxy.NAME) as MainServiceProxy;
-					
 					var genbankBox:GenBankBox = (viewComponent as GenBankBox);
 					
 					if(notification.getBody()) {

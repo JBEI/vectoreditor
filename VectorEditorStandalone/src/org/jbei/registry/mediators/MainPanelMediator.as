@@ -1,22 +1,60 @@
 package org.jbei.registry.mediators
 {
+	import flash.display.BitmapData;
+	import flash.events.Event;
+	
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
+	import mx.printing.FlexPrintJob;
+	import mx.printing.FlexPrintJobScaleType;
+	
+	import org.jbei.bio.data.DNASequence;
+	import org.jbei.bio.data.Feature;
+	import org.jbei.bio.data.RestrictionEnzymeGroup;
+	import org.jbei.bio.data.Segment;
+	import org.jbei.components.Pie;
+	import org.jbei.components.Rail;
+	import org.jbei.components.SequenceAnnotator;
+	import org.jbei.components.common.CaretEvent;
+	import org.jbei.components.common.CommonEvent;
+	import org.jbei.components.common.EditingEvent;
+	import org.jbei.components.common.PrintableContent;
+	import org.jbei.components.common.SelectionEvent;
+	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+	import org.jbei.lib.ui.dialogs.ModalDialog;
+	import org.jbei.lib.ui.dialogs.ModalDialogEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
+	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+	import org.jbei.registry.models.UserPreferences;
+	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
+	import org.jbei.registry.utils.Finder;
+	import org.jbei.registry.view.dialogs.FeatureDialogForm;
+	import org.jbei.registry.view.dialogs.editingPromptDialog.EditingPromptDialogForm;
 	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
-	import org.puremvc.as3.patterns.observer.Notification;
 
 	public class MainPanelMediator extends Mediator
 	{
 		private const NAME:String = "MainPanelMediator"
+		
+		private var sequenceAnnotator:SequenceAnnotator;
+		private var pie:Pie;
+		private var rail:Rail;
+		private var mainPanel:MainPanel;
+		
+		private var controlsInitialized:Boolean = false;
+		private var isSequenceInitialized:Boolean = false;
 		
 		// Constructor
 		public function MainPanelMediator(viewComponent:Object=null)
 		{
 			super(NAME, viewComponent);
 			
-			ApplicationFacade.getInstance().initializeControls(viewComponent as MainPanel);
+			initializeControls(viewComponent as MainPanel);
 		}
 		
 		// Public Methods
@@ -40,7 +78,6 @@ package org.jbei.registry.mediators
 				, Notifications.COPY
 				, Notifications.CUT
 				, Notifications.PASTE
-				, Notifications.SHOW_SELECTION_BY_RANGE_DIALOG
 				, Notifications.SELECT_ALL
 				
 				, Notifications.SELECTION_CHANGED
@@ -52,17 +89,6 @@ package org.jbei.registry.mediators
 				, Notifications.HIGHLIGHT
 				, Notifications.CLEAR_HIGHLIGHT
 				
-				, Notifications.SHOW_PREFERENCES_DIALOG
-				, Notifications.SHOW_PROPERTIES_DIALOG
-				, Notifications.SHOW_ABOUT_DIALOG
-				, Notifications.SHOW_CREATE_NEW_FEATURE_DIALOG
-				, Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG
-				, Notifications.SHOW_GOTO_DIALOG
-				, Notifications.GO_REPORT_BUG
-				, Notifications.GO_SUGGEST_FEATURE
-				
-				, Notifications.ENTRY_FETCHED
-				, Notifications.SEQUENCE_FETCHED
 				, Notifications.USER_PREFERENCES_CHANGED
 				, Notifications.USER_RESTRICTION_ENZYMES_CHANGED
 				
@@ -70,138 +96,99 @@ package org.jbei.registry.mediators
 				, Notifications.PRINT_RAIL
 				, Notifications.PRINT_SEQUENCE
 				
-				, Notifications.SHOW_ENTRY_IN_REGISTRY
 				, Notifications.SAVE_SEQUENCE
+				
+				, Notifications.LOAD_SEQUENCE
 			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
+				case Notifications.LOAD_SEQUENCE:
+					loadSequence();
+					
+					break;
 				case Notifications.SHOW_RAIL:
-					ApplicationFacade.getInstance().showRail();
+					showRail();
 					
 					break;
 				case Notifications.SHOW_PIE:
-					ApplicationFacade.getInstance().showPie();
+					showPie();
 					
 					break;
 				case Notifications.SHOW_FEATURES:
-					ApplicationFacade.getInstance().displayFeatures(notification.getBody() as Boolean);
+					displayFeatures(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_CUTSITES:
-					ApplicationFacade.getInstance().displayCutSites(notification.getBody() as Boolean);
+					displayCutSites(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_ORFS:
-					ApplicationFacade.getInstance().displayORF(notification.getBody() as Boolean);
+					displayORF(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_COMPLEMENTARY:
-					ApplicationFacade.getInstance().displayComplementarySequence(notification.getBody() as Boolean);
+					displayComplementarySequence(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_AA1:
-					ApplicationFacade.getInstance().displayAA1(notification.getBody() as Boolean);
+					displayAA1(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_AA3:
-					ApplicationFacade.getInstance().displayAA3(notification.getBody() as Boolean);
+					displayAA3(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_AA1_REVCOM:
-					ApplicationFacade.getInstance().displayAA1RevCom(notification.getBody() as Boolean);
+					displayAA1RevCom(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_SPACES:
-					ApplicationFacade.getInstance().displaySpaces(notification.getBody() as Boolean);
+					displaySpaces(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_FEATURE_LABELS:
-					ApplicationFacade.getInstance().displayFeaturesLabel(notification.getBody() as Boolean);
+					displayFeaturesLabel(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.SHOW_CUT_SITE_LABELS:
-					ApplicationFacade.getInstance().displayCutSitesLabel(notification.getBody() as Boolean);
+					displayCutSitesLabel(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.CARET_POSITION_CHANGED:
-					ApplicationFacade.getInstance().moveCaretToPosition(notification.getBody() as int);
+					moveCaretToPosition(notification.getBody() as int);
 					
 					break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionArray:Array = notification.getBody() as Array;
 					
-					ApplicationFacade.getInstance().select(selectionArray[0], selectionArray[1]);
-					
-					break;
-				case Notifications.ENTRY_FETCHED:
-					ApplicationFacade.getInstance().entryFetched();
-					
-					break;
-				case Notifications.SEQUENCE_FETCHED:
-					ApplicationFacade.getInstance().sequenceFetched();
-					
-					break;
-				case Notifications.SHOW_SELECTION_BY_RANGE_DIALOG:
-					ApplicationFacade.getInstance().showSelectionDialog();
-					
-					break;
-				case Notifications.SHOW_PREFERENCES_DIALOG:
-					ApplicationFacade.getInstance().showPreferencesDialog();
-					
-					break;
-				case Notifications.SHOW_PROPERTIES_DIALOG:
-					ApplicationFacade.getInstance().showPropertiesDialog();
-					
-					break;
-				case Notifications.SHOW_CREATE_NEW_FEATURE_DIALOG:
-					ApplicationFacade.getInstance().showCreateNewFeatureDialog();
-					
-					break;
-				case Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:
-					ApplicationFacade.getInstance().showRestrictionEnzymesManagerDialog();
-					
-					break;
-				case Notifications.SHOW_GOTO_DIALOG:
-					ApplicationFacade.getInstance().showGoToDialog();
-					
-					break;
-				case Notifications.SHOW_ABOUT_DIALOG:
-					ApplicationFacade.getInstance().showAboutDialog();
+					select(selectionArray[0], selectionArray[1]);
 					
 					break;
 				case Notifications.USER_PREFERENCES_CHANGED:
-					ApplicationFacade.getInstance().userPreferencesUpdated();
+					userPreferencesUpdated();
 					
 					break;
 				case Notifications.USER_RESTRICTION_ENZYMES_CHANGED:
-					ApplicationFacade.getInstance().userRestrictionEnzymesUpdated();
+					userRestrictionEnzymesUpdated();
 					
 					break;
 				case Notifications.COPY:
-					ApplicationFacade.getInstance().copyToClipboard();
+					copyToClipboard();
 					
 					break;
 				case Notifications.CUT:
-					ApplicationFacade.getInstance().cutToClipboard();
+					cutToClipboard();
 					
 					break;
 				case Notifications.PASTE:
-					ApplicationFacade.getInstance().pasteFromClipboard();
+					pasteFromClipboard();
 					
 					break;
 				case Notifications.SELECT_ALL:
-					ApplicationFacade.getInstance().selectAll();
-					
-					break;
-				case Notifications.GO_REPORT_BUG:
-					ApplicationFacade.getInstance().reportBug();
-					
-					break;
-				case Notifications.GO_SUGGEST_FEATURE:
-					ApplicationFacade.getInstance().suggestFeature();
+					selectAll();
 					
 					break;
 				case Notifications.FIND:
@@ -211,7 +198,7 @@ package org.jbei.registry.mediators
 					var findDataType:String = findData[1] as String;
 					var findSearchType:String = findData[2] as String;
 					
-					ApplicationFacade.getInstance().find(findExpression, findDataType, findSearchType);
+					find(findExpression, findDataType, findSearchType);
 					
 					break;
 				case Notifications.FIND_NEXT:
@@ -221,11 +208,11 @@ package org.jbei.registry.mediators
 					var findNextDataType:String = findNextData[1] as String;
 					var findNextSearchType:String = findNextData[2] as String;
 					
-					ApplicationFacade.getInstance().findNext(findNextExpression, findNextDataType, findNextSearchType);
+					findNext(findNextExpression, findNextDataType, findNextSearchType);
 					
 					break;
 				case Notifications.CLEAR_HIGHLIGHT:
-					ApplicationFacade.getInstance().clearHighlight();
+					clearHighlight();
 					
 					break;
 				case Notifications.HIGHLIGHT:
@@ -235,34 +222,567 @@ package org.jbei.registry.mediators
 					var highlightDataType:String = highlightFindData[1] as String;
 					var highlightSearchType:String = highlightFindData[2] as String;
 					
-					ApplicationFacade.getInstance().highlight(highlightExpression, highlightDataType, highlightSearchType);
+					highlight(highlightExpression, highlightDataType, highlightSearchType);
 					
 					break;
 				case Notifications.SAFE_EDITING_CHANGED:
-					ApplicationFacade.getInstance().changeSafeEditingStage(notification.getBody() as Boolean);
+					changeSafeEditingStage(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.PRINT_SEQUENCE:
-					ApplicationFacade.getInstance().printSequence();
+					printSequence();
 					
 					break;
 				case Notifications.PRINT_RAIL:
-					ApplicationFacade.getInstance().printRail();
+					printRail();
 					
 					break;
 				case Notifications.PRINT_PIE:
-					ApplicationFacade.getInstance().printPie();
-					
-					break;
-				case Notifications.SHOW_ENTRY_IN_REGISTRY:
-					ApplicationFacade.getInstance().showEntryInRegistry();
+					printPie();
 					
 					break;
 				case Notifications.SAVE_SEQUENCE:
-					ApplicationFacade.getInstance().save();
+					save();
 					
 					break;
 			}
+		}
+		
+		// Private Methods
+		private function initializeControls(mainPanel:MainPanel):void
+		{
+			if(! controlsInitialized) {
+				this.mainPanel = mainPanel;
+				
+				pie = mainPanel.pie;
+				rail = mainPanel.rail;
+				sequenceAnnotator = mainPanel.sequenceAnnotator;
+				
+				initializeEventHandlers();
+				
+				controlsInitialized = true;
+			}
+		}
+		
+		private function initializeEventHandlers():void
+		{
+			sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+			
+			sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+			
+			sequenceAnnotator.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+			pie.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+			rail.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+			
+			sequenceAnnotator.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			pie.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			rail.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+			
+			sequenceAnnotator.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+			pie.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+			rail.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+			
+			sequenceAnnotator.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+			pie.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+			rail.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+		}
+		
+		private function onEditFeature(event:CommonEvent):void
+		{
+			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
+			featureDialog.title = "Edit Feature";
+			featureDialog.open();
+		}
+		
+		private function onRemoveFeature(event:CommonEvent):void
+		{
+			var feature:Feature = event.data as Feature;
+			
+			Alert.show("Are you sure you want to remove this feature?", "Remove Feature", Alert.YES | Alert.NO, null, function onRemoveFeatureDialogClose(event:CloseEvent):void
+			{
+				if (event.detail == Alert.YES) {
+					ApplicationFacade.getInstance().featuredSequence.removeFeature(feature);
+				}
+			});
+		}
+		
+		private function onCreateFeature(event:CommonEvent):void
+		{
+			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
+			featureDialog.title = "Selected as New Feature";
+			featureDialog.open();
+		}
+		
+		private function onGoToDialogSubmit(event:ModalDialogEvent):void
+		{
+			sendNotification(Notifications.CARET_POSITION_CHANGED, (event.data as int));
+			sequenceAnnotator.setFocus();
+		}
+		
+		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		{
+			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
+			
+			if(!isSequenceInitialized) {
+				isSequenceInitialized = true;
+			}
+		}
+		
+		private function onEditing(event:EditingEvent):void
+		{
+			var showDialog:Boolean = false;
+			
+			var featuredSequence:FeaturedSequence = ApplicationFacade.getInstance().featuredSequence;
+			var features:Array;
+			
+			if(event.kind == EditingEvent.KIND_DELETE) {
+				var start:int = (event.data as Array)[0] as int;
+				var end:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresByRange(start, end);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.removeSequence(start, end);
+					
+					sendNotification(Notifications.SELECTION_CHANGED, new Array(-1, -1));
+					sendNotification(Notifications.CARET_POSITION_CHANGED, start);
+				}
+			} else if(event.kind == EditingEvent.KIND_INSERT_SEQUENCE) {
+				var dnaSequence:DNASequence = (event.data as Array)[0] as DNASequence;
+				var position1:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresAt(position1);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.insertSequence(dnaSequence, position1);
+					sendNotification(Notifications.CARET_POSITION_CHANGED, position1 + dnaSequence.length);
+				}
+			} else if(event.kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+				var insertFeaturedSequence:FeaturedSequence = (event.data as Array)[0] as FeaturedSequence;
+				var position2:int = (event.data as Array)[1] as int;
+				
+				features = featuredSequence.featuresAt(position2);
+				if(features.length > 0) {
+					showDialog = true;
+				} else {
+					featuredSequence.insertFeaturedSequence(insertFeaturedSequence, position2);
+					sendNotification(Notifications.CARET_POSITION_CHANGED, position2 + insertFeaturedSequence.sequence.length);
+				}
+			}
+			
+			if(showDialog) {
+				var editingPromptDialog:ModalDialog = new ModalDialog(mainPanel, EditingPromptDialogForm, new Array(event.kind, event.data));
+				
+				editingPromptDialog.title = "Editing...";
+				editingPromptDialog.open();
+				editingPromptDialog.addEventListener(ModalDialogEvent.SUBMIT, onEditingPromptDialogSubmit);
+			}
+		}
+		
+		private function onEditingPromptDialogSubmit(event:ModalDialogEvent):void
+		{
+			var input:Array = event.data as Array;
+			var kind:String = input[0] as String;
+			var data:Array = input[1] as Array;
+			
+			if(kind == EditingEvent.KIND_DELETE) {
+				sendNotification(Notifications.SELECTION_CHANGED, new Array(-1, -1));
+				sendNotification(Notifications.CARET_POSITION_CHANGED, data[0] as int);
+			} else if(kind == EditingEvent.KIND_INSERT_SEQUENCE) {
+				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as DNASequence).sequence.length);
+			} else if(kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
+				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as FeaturedSequence).sequence.length);
+			}
+		}
+		
+		private function onSelectionChanged(event:SelectionEvent):void
+		{
+			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
+		}
+		
+		private function onCaretPositionChanged(event:CaretEvent):void
+		{
+			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
+		}
+		
+		public function save():void
+		{
+			CONFIG::standalone {
+				return;
+			}
+			
+			if(!ApplicationFacade.getInstance().isReadOnly) {
+				ApplicationFacade.getInstance().registryServiceProxy.saveSequence(sessionId, entry.recordId, FeaturedDNASequenceUtils.featuredSequenceToFeaturedDNASequence(featuredSequence));
+			} else {
+				Alert.show("You don't have permissions to save this sequence!");
+			}
+		}
+		
+		private function showPie():void
+		{
+			pie.visible = true;
+			pie.includeInLayout = true;
+			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			
+			rail.visible = false;
+			rail.includeInLayout = false;
+			rail.featuredSequence = null;
+		}
+		
+		private function showRail():void
+		{
+			pie.visible = false;
+			pie.includeInLayout = false;
+			pie.featuredSequence = null;
+			
+			rail.visible = true;
+			rail.includeInLayout = true;
+			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+		}
+		
+		private function displayFeatures(showFeatures:Boolean):void
+		{
+			sequenceAnnotator.showFeatures = showFeatures;
+			pie.showFeatures = showFeatures;
+			rail.showFeatures = showFeatures;
+		}
+		
+		private function displayCutSites(showCutSites:Boolean):void
+		{
+			sequenceAnnotator.showCutSites = showCutSites;
+			pie.showCutSites = showCutSites;
+			rail.showCutSites = showCutSites;
+		}
+		
+		private function displayORF(showORFs:Boolean):void
+		{
+			sequenceAnnotator.showORFs = showORFs;
+			pie.showORFs = showORFs;
+			rail.showORFs = showORFs;
+		}
+		
+		private function displayComplementarySequence(showComplementarySequence:Boolean):void
+		{
+			sequenceAnnotator.showComplementarySequence = showComplementarySequence;
+		}
+		
+		private function displayAA1(showAA1:Boolean):void
+		{
+			sequenceAnnotator.showAminoAcids1 = showAA1;
+			sequenceAnnotator.showAminoAcids3 = false;
+		}
+		
+		private function displayAA3(showAA3:Boolean):void
+		{
+			sequenceAnnotator.showAminoAcids1 = false;
+			sequenceAnnotator.showAminoAcids3 = showAA3;
+		}
+		
+		private function displayAA1RevCom(showAA1RevCom:Boolean):void
+		{
+			sequenceAnnotator.showAminoAcids1RevCom = showAA1RevCom;
+		}
+		
+		private function displaySpaces(showSpaces:Boolean):void
+		{
+			sequenceAnnotator.showSpaceEvery10Bp = showSpaces;
+		}
+		
+		private function displayFeaturesLabel(showFeatureLabels:Boolean):void
+		{
+			pie.showFeatureLabels = showFeatureLabels;
+			rail.showFeatureLabels = showFeatureLabels;
+		}
+		
+		private function displayCutSitesLabel(showCutSiteLabels:Boolean):void
+		{
+			pie.showCutSiteLabels = showCutSiteLabels;
+			rail.showCutSiteLabels = showCutSiteLabels;
+		}
+		private function moveCaretToPosition(position:int):void
+		{
+			sequenceAnnotator.caretPosition = position;
+			pie.caretPosition = position;
+			rail.caretPosition = position;
+			
+			ApplicationFacade.getInstance().caretPosition = position;
+		}
+		
+		private function select(start:int, end:int):void
+		{
+			pie.select(start, end);
+			sequenceAnnotator.select(start, end);
+			rail.select(start, end);
+			
+			ApplicationFacade.getInstance().selectionStart = start;
+			ApplicationFacade.getInstance().selectionEnd = end;
+		}
+		
+		
+		private function copyToClipboard():void
+		{
+			// Broadcasting COPY event
+			sequenceAnnotator.dispatchEvent(new Event(Event.COPY, true, true));
+		}
+		
+		private function cutToClipboard():void
+		{
+			// Broadcasting CUT event
+			sequenceAnnotator.dispatchEvent(new Event(Event.CUT, true, true));
+		}
+		
+		private function pasteFromClipboard():void
+		{
+			// Broadcasting PASTE event
+			//sequenceAnnotator.dispatchEvent(new Event(Event.PASTE, true, true));
+			Alert.show("To use the Paste command in this browser, please press Ctrl+V.");
+		}
+		
+		private function selectAll():void
+		{
+			// Broadcasting SELECT_ALL event
+			sequenceAnnotator.dispatchEvent(new Event(Event.SELECT_ALL, true, true));
+		}
+		
+		private function find(expression:String, dataType:String, searchType:String):void
+		{
+			findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition);
+		}
+		
+		private function findNext(expression:String, dataType:String, searchType:String):void
+		{
+			findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition + 1);
+		}
+		
+		private function findAt(expression:String, dataType:String, searchType:String, position:int):void
+		{
+			var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
+			
+			if(!findSegment) {
+				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);
+			}
+			
+			if(findSegment) {
+				sequenceAnnotator.select(findSegment.start, findSegment.end);
+				pie.select(findSegment.start, findSegment.end);
+				rail.select(findSegment.start, findSegment.end);
+				
+				sequenceAnnotator.caretPosition = findSegment.start;
+				pie.caretPosition = findSegment.start;
+				rail.caretPosition = findSegment.start;
+				
+				sendNotification(Notifications.FIND_MATCH_FOUND);
+			} else {
+				sequenceAnnotator.deselect();
+				pie.deselect();
+				rail.deselect();
+				
+				sendNotification(Notifications.FIND_MATCH_NOT_FOUND);
+			}
+		}
+		
+		private function clearHighlight():void
+		{
+			sequenceAnnotator.highlights = null;
+		}
+		
+		private function highlight(expression:String, dataType:String, searchType:String):void
+		{
+			var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType);
+			
+			sequenceAnnotator.highlights = segments;
+		}
+		
+		private function changeSafeEditingStage(safeEditing:Boolean):void
+		{
+			sequenceAnnotator.safeEditing = safeEditing;
+			pie.safeEditing = safeEditing;
+			rail.safeEditing = safeEditing;
+		}
+		
+		private function printSequence():void
+		{
+			mainPanel.callLater(doPrintSequence);
+		}
+		
+		private function printRail():void
+		{
+			mainPanel.callLater(doPrintRail);
+		}
+		
+		private function printPie():void
+		{
+			mainPanel.callLater(doPrintPie);
+		}
+		
+		private function doPrintSequence():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingSequenceAnnotator.featuredSequence = sequenceAnnotator.featuredSequence;
+				mainPanel.printingSequenceAnnotator.restrictionEnzymeMapper = sequenceAnnotator.restrictionEnzymeMapper;
+				mainPanel.printingSequenceAnnotator.orfMapper = sequenceAnnotator.orfMapper;
+				mainPanel.printingSequenceAnnotator.aaMapper = sequenceAnnotator.aaMapper;
+				mainPanel.printingSequenceAnnotator.showFeatures = sequenceAnnotator.showFeatures;
+				mainPanel.printingSequenceAnnotator.showCutSites = sequenceAnnotator.showCutSites;
+				mainPanel.printingSequenceAnnotator.showORFs = sequenceAnnotator.showORFs;
+				mainPanel.printingSequenceAnnotator.showAminoAcids1 = sequenceAnnotator.showAminoAcids1;
+				mainPanel.printingSequenceAnnotator.showAminoAcids3 = sequenceAnnotator.showAminoAcids3;
+				mainPanel.printingSequenceAnnotator.showAminoAcids1RevCom = sequenceAnnotator.showAminoAcids1RevCom;
+				mainPanel.printingSequenceAnnotator.labelFontSize = sequenceAnnotator.labelFontSize;
+				mainPanel.printingSequenceAnnotator.sequenceFontSize = sequenceAnnotator.sequenceFontSize;
+				mainPanel.printingSequenceAnnotator.showSpaceEvery10Bp = sequenceAnnotator.showSpaceEvery10Bp;
+				mainPanel.printingSequenceAnnotator.readOnly = sequenceAnnotator.readOnly;
+				mainPanel.printingSequenceAnnotator.floatingWidth = true;
+				mainPanel.printingSequenceAnnotator.width = printableWidth;
+				mainPanel.printingSequenceAnnotator.removeMask();
+				mainPanel.printingSequenceAnnotator.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingSequenceAnnotator.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
+		}
+		
+		private function doPrintPie():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingPie.featuredSequence = pie.featuredSequence;
+				mainPanel.printingPie.restrictionEnzymeMapper = pie.restrictionEnzymeMapper;
+				mainPanel.printingPie.orfMapper = pie.orfMapper;
+				mainPanel.printingPie.showFeatures = pie.showFeatures;
+				mainPanel.printingPie.showFeatureLabels = pie.showFeatureLabels;
+				mainPanel.printingPie.showCutSites = pie.showCutSites;
+				mainPanel.printingPie.showCutSiteLabels = pie.showCutSiteLabels;
+				mainPanel.printingPie.showORFs = pie.showORFs;
+				mainPanel.printingPie.labelFontSize = pie.labelFontSize;
+				mainPanel.printingPie.readOnly = pie.readOnly;
+				mainPanel.printingPie.width = printableWidth;
+				mainPanel.printingPie.removeMask();
+				mainPanel.printingPie.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingPie.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
+		}
+		
+		private function doPrintRail():void
+		{
+			var printJob:FlexPrintJob = new FlexPrintJob();
+			
+			if (printJob.start()) {
+				var printableWidth:Number = printJob.pageWidth;
+				var printableHeight:Number = printJob.pageHeight;
+				
+				mainPanel.printingRail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+				mainPanel.printingRail.restrictionEnzymeMapper = rail.restrictionEnzymeMapper;
+				mainPanel.printingRail.orfMapper = rail.orfMapper;
+				mainPanel.printingRail.showFeatures = rail.showFeatures;
+				mainPanel.printingRail.showFeatureLabels = rail.showFeatureLabels;
+				mainPanel.printingRail.showCutSites = rail.showCutSites;
+				mainPanel.printingRail.showCutSiteLabels = rail.showCutSiteLabels;
+				mainPanel.printingRail.showORFs = rail.showORFs;
+				mainPanel.printingRail.labelFontSize = rail.labelFontSize;
+				mainPanel.printingRail.readOnly = rail.readOnly;
+				mainPanel.printingRail.width = printableWidth;
+				mainPanel.printingRail.removeMask();
+				mainPanel.printingRail.validateNow();
+				
+				var printableContent:PrintableContent = mainPanel.printingRail.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
+				mainPanel.printView.width = printableWidth;
+				mainPanel.printView.height = printableHeight;
+				
+				if(printableContent.pages.length > 0) {
+					for(var i:int = 0; i < printableContent.pages.length; i++) {
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
+					}
+				}
+			}
+			
+			printJob.send();
+		}
+		
+		private function userPreferencesUpdated():void
+		{
+			var userPreferences:UserPreferences = ApplicationFacade.getInstance().userPreferences;
+			
+			pie.orfMapper.minORFSize = userPreferences.orfMinimumLength;
+			pie.restrictionEnzymeMapper.maxRestrictionEnzymeCuts = userPreferences.maxResitrictionEnzymesCuts;
+			pie.labelFontSize = userPreferences.labelsFontSize;
+			
+			rail.labelFontSize = userPreferences.labelsFontSize;
+			
+			sequenceAnnotator.orfMapper.minORFSize = userPreferences.orfMinimumLength;
+			sequenceAnnotator.sequenceFontSize = userPreferences.sequenceFontSize;
+			sequenceAnnotator.bpPerRow = userPreferences.bpPerRow;
+			sequenceAnnotator.floatingWidth = userPreferences.bpPerRow == -1;
+			sequenceAnnotator.labelFontSize = userPreferences.labelsFontSize;
+		}
+		
+		private function userRestrictionEnzymesUpdated():void
+		{
+			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
+			for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
+				restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
+			}
+			
+			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(ApplicationFacade.getInstance().featuredSequence, restrictionEnzymeGroup);
+			
+			sequenceAnnotator.restrictionEnzymeMapper = reMapper;
+			pie.restrictionEnzymeMapper = reMapper;
+			rail.restrictionEnzymeMapper = reMapper;
+		}
+		
+		private function loadSequence():void
+		{
+			sequenceAnnotator.aaMapper = ApplicationFacade.getInstance().aaMapper;
+			
+			sequenceAnnotator.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			
+			sequenceAnnotator.orfMapper = ApplicationFacade.getInstance().orfMapper;
+			pie.orfMapper = ApplicationFacade.getInstance().orfMapper;
+			rail.orfMapper = ApplicationFacade.getInstance().orfMapper;
+			
+			sequenceAnnotator.restrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
+			pie.restrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
+			rail.restrictionEnzymeMapper = ApplicationFacade.getInstance().restrictionEnzymeMapper;
 		}
 	}
 }

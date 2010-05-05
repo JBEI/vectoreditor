@@ -1,7 +1,7 @@
 package org.jbei.registry.models
 {
 	[Bindable]
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.UserPreferences")]
+	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.UserPreferences")]
 	public class UserPreferences
 	{
 		private var _bpPerRow:int = -1;
