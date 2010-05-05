@@ -2,7 +2,7 @@ package org.jbei.bio.data
 {
 	import mx.collections.ArrayCollection;
 	
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.RestrictionEnzymeGroup")]
+	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.RestrictionEnzymeGroup")]
 	public class RestrictionEnzymeGroup
 	{
 		private var _enzymes:ArrayCollection /* of RestrictionEnzyme */ = new ArrayCollection();
@@ -25,12 +25,12 @@ package org.jbei.bio.data
 			_name = value;
 		}
 		
-		public function get enzymes():ArrayCollection
+		public function get enzymes():ArrayCollection /* of RestrictionEnzyme */
 		{
 			return _enzymes;
 		}
 		
-		public function set enzymes(value:ArrayCollection):void
+		public function set enzymes(value:ArrayCollection /* of RestrictionEnzyme */):void
 		{
 			_enzymes = value;
 		}

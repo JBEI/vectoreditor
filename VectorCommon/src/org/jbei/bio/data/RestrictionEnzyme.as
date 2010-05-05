@@ -1,6 +1,6 @@
 package org.jbei.bio.data
 {
-	[RemoteClass(alias="org.jbei.ice.services.blazeds.VectorEditor.vo.RestrictionEnzyme")]
+	[RemoteClass(alias="org.jbei.ice.bio.enzymes.RestrictionEnzyme")]
 	public class RestrictionEnzyme
 	{
 		private var _name:String;
