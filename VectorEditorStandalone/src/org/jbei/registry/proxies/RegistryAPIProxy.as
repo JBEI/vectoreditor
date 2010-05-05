@@ -109,8 +109,6 @@ package org.jbei.registry.proxies
 			}
 			
 			service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
-			
-			RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
 		}
 		
 		public function generateGenBank(sessionId:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
@@ -125,7 +123,7 @@ package org.jbei.registry.proxies
 		public function fetchRestrictionEnzymes(sessionId:String):void
 		{
 			CONFIG::standalone {
-				updateRestrictionEnzymes(new ArrayCollection());
+				updateRestrictionEnzymes(StandaloneUtils.standaloneRestrictionEnzymes());
 				
 				return;
 			}

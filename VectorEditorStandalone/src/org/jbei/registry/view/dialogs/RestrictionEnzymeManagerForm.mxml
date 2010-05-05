@@ -17,10 +17,13 @@
 			import org.jbei.bio.data.RestrictionEnzymeGroup;
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+			import org.jbei.registry.models.UserRestrictionEnzymeGroup;
 			import org.jbei.registry.models.UserRestrictionEnzymes;
-			import org.jbei.registry.proxies.RegistryAPIProxy;
 			import org.jbei.lib.ui.dialogs.ModalDialog;
 			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+			
+			/*import org.jbei.lib.ui.dialogs.ModalDialog;
+			import org.jbei.lib.ui.dialogs.ModalDialogEvent;*/
 			
 			[Bindable]
 			private var systemREGroups:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzymeGroup */
@@ -43,20 +46,47 @@
 			// Public Methods
 			public override function validate():void
 			{
-				/*import org.jbei.lib.ui.dialogs.ModalDialog;
-				import org.jbei.lib.ui.dialogs.ModalDialogEvent;*/
-				
 				isValid = true;
 				
-				var userRestrictionEnzymeGroup:UserRestrictionEnzymes = new UserRestrictionEnzymes();
+				var userRestrictionEnzymes:UserRestrictionEnzymes = new UserRestrictionEnzymes();
 				
-				userRestrictionEnzymeGroup.groups.removeAll();
-				userRestrictionEnzymeGroup.groups.addAll(userGroups);
+				userRestrictionEnzymes.groups.removeAll();
+				if(userGroups && userGroups.length > 0) {
+					for(var i:int = 0; i < userGroups.length; i++) {
+						var userGroup:RestrictionEnzymeGroup = userGroups.getItemAt(i) as RestrictionEnzymeGroup;
+						
+						if(!userGroup) {
+							continue;
+						}
+						
+						var enzymeNames:ArrayCollection = new ArrayCollection() /* of String */;
+						for(var i1:int = 0; i1 < userGroup.enzymes.length; i1++) {
+							enzymeNames.addItem((userGroup.enzymes.getItemAt(i1) as RestrictionEnzyme).name);
+						}
+						
+						var userRestrictionEnzymeGroup:UserRestrictionEnzymeGroup = new UserRestrictionEnzymeGroup(userGroup.name, enzymeNames);
+						userRestrictionEnzymes.groups.addItem(userRestrictionEnzymeGroup);
+					}
+				}
 				
-				userRestrictionEnzymeGroup.activeGroup.removeAll();
-				userRestrictionEnzymeGroup.activeGroup.addAll(activeEnzymes);
+				userRestrictionEnzymes.activeEnzymeNames.removeAll();
+				if(activeEnzymes && activeEnzymes.length > 0) {
+					var activeEnzymeNames:ArrayCollection = new ArrayCollection() /* of String */;
+					
+					for(var j:int = 0; j < activeEnzymes.length; j++) {
+						var activeEnzyme:RestrictionEnzyme = activeEnzymes.getItemAt(j) as RestrictionEnzyme;
+						
+						if(!activeEnzyme) {
+							continue;
+						}
+						
+						userRestrictionEnzymes.activeEnzymeNames.addItem(activeEnzyme.name);
+					}
+				}
 				
-				ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymeGroup);
+				ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymes);
+				
+				RestrictionEnzymeGroupManager.instance.activeGroup = activeEnzymes;
 			}
 			
 			// Event Handlers
@@ -309,6 +339,8 @@
 				for(var l:int = 0; l < filteredEnzymes.length; l++) {
 					currentSystemRE.addItem(filteredEnzymes[l]);
 				}
+				
+				sortEnzymes(currentSystemRE);
 			}
 			
 			private function updateUserGroups():void

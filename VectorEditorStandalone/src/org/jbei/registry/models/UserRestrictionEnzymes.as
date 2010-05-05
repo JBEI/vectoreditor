@@ -6,8 +6,8 @@ package org.jbei.registry.models
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.UserRestrictionEnzymes")]
 	public class UserRestrictionEnzymes
 	{
-		private var _groups:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzymeGroup */
-		private var _activeGroup:ArrayCollection = new ArrayCollection(); /* of RestrictionEnzyme */
+		private var _groups:ArrayCollection = new ArrayCollection(); /* of UserRestrictionEnzymeGroup */
+		private var _activeEnzymeNames:ArrayCollection = new ArrayCollection(); /* of String */
 		
 		// Constructor
 		public function UserRestrictionEnzymes()
@@ -15,22 +15,22 @@ package org.jbei.registry.models
 		}
 		
 		// Properties
-		public function get activeGroup():ArrayCollection /* of RestrictionEnzyme */
+		public function get activeEnzymeNames():ArrayCollection /* of String */
 		{
-			return _activeGroup;
+			return _activeEnzymeNames;
 		}
 		
-		public function set activeGroup(value:ArrayCollection /* of RestrictionEnzyme */):void
+		public function set activeEnzymeNames(value:ArrayCollection /* of String */):void
 		{
-			_activeGroup = value;
+			_activeEnzymeNames = value;
 		}
 		
-		public function get groups():ArrayCollection /* of RestrictionEnzymeGroup */
+		public function get groups():ArrayCollection /* of UserRestrictionEnzymeGroup */
 		{
 			return _groups;
 		}
 		
-		public function set groups(value:ArrayCollection /* of RestrictionEnzymeGroup */):void
+		public function set groups(value:ArrayCollection /* of UserRestrictionEnzymeGroup */):void
 		{
 			_groups = value;
 		}

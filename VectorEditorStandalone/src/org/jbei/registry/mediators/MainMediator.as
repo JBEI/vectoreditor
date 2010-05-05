@@ -60,7 +60,7 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.RESTRICTION_ENZYMES_FETCHED:
-					ApplicationFacade.getInstance().restrictionEnzymes = notification.getBody() as ArrayCollection /* of RestrictionEnzyme */;
+					ApplicationFacade.getInstance().loadRestrictionEnzymes(notification.getBody() as ArrayCollection /* of RestrictionEnzyme */);
 					
 					sendNotification(Notifications.FETCH_USER_PREFERENCES);
 					
@@ -72,7 +72,7 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.USER_RESTRICTION_ENZYMES_FETCHED:
-					ApplicationFacade.getInstance().userRestrictionEnzymes = notification.getBody() as UserRestrictionEnzymes;
+					ApplicationFacade.getInstance().loadUserRestrictionEnzymes(notification.getBody() as UserRestrictionEnzymes);
 					
 					sendNotification(Notifications.FETCH_ENTRY);
 					

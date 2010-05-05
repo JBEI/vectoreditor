@@ -18,6 +18,7 @@ package org.jbei.registry
 	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.ActionStack;
 	import org.jbei.registry.control.ActionStackEvent;
+	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
@@ -40,9 +41,7 @@ package org.jbei.registry
 		private var _aaMapper:AAMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
 		private var _isReadOnly:Boolean = true;
-		private var _restrictionEnzymes:ArrayCollection /* of RestrictionEnzyme */;
 		private var _userPreferences:UserPreferences;
-		private var _userRestrictionEnzymes:UserRestrictionEnzymes;
 		private var _selectionStart:int = -1;
 		private var _selectionEnd:int = -1;
 		private var _caretPosition:int = -1;
@@ -120,16 +119,6 @@ package org.jbei.registry
 			return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
 		}
 		
-		public function get restrictionEnzymes():ArrayCollection /* RestrictionEnzyme */
-		{
-			return _restrictionEnzymes;
-		}
-		
-		public function set restrictionEnzymes(value:ArrayCollection /* RestrictionEnzyme */):void
-		{
-			_restrictionEnzymes = value;
-		}
-		
 		public function get userPreferences():UserPreferences
 		{
 			return _userPreferences;
@@ -138,16 +127,6 @@ package org.jbei.registry
 		public function set userPreferences(value:UserPreferences):void
 		{
 			_userPreferences = value;
-		}
-		
-		public function get userRestrictionEnzymes():UserRestrictionEnzymes
-		{
-			return _userRestrictionEnzymes;
-		}
-		
-		public function set userRestrictionEnzymes(value:UserRestrictionEnzymes):void
-		{
-			_userRestrictionEnzymes = value;
 		}
 		
 		public function get isReadOnly():Boolean
@@ -258,6 +237,16 @@ package org.jbei.registry
 					ExternalInterface.call(EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION, isSaved ? "true" : "false");
 				}
 			}
+		}
+		
+		public function loadRestrictionEnzymes(rebaseEnzymesCollection:ArrayCollection /* of RestrictionEnzyme */):void
+		{
+			RestrictionEnzymeGroupManager.instance.loadRebaseDatabase(rebaseEnzymesCollection);
+		}
+		
+		public function loadUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
+		{
+			RestrictionEnzymeGroupManager.instance.loadUserRestrictionEnzymes(userRestrictionEnzymes);
 		}
 		
 		// Protected Methods
