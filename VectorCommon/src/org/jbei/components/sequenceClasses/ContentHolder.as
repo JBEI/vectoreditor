@@ -1277,7 +1277,7 @@ package org.jbei.components.sequenceClasses
 	    		shiftKeyDown = true;
 				keysSelectionDirection = 0;
 	    	}
-	    	
+			
 	    	if(event.ctrlKey && event.keyCode == Keyboard.LEFT) {
 				tryMoveCaretToPosition((_caretPosition % 10 == 0) ? _caretPosition - 10 : int(_caretPosition / 10) * 10);
 	    	} else if(event.ctrlKey && event.keyCode == Keyboard.RIGHT) {
@@ -1310,7 +1310,7 @@ package org.jbei.components.sequenceClasses
 				} else {
 					tryMoveCaretToPosition(_caretPosition + numberOfVisibleRows * _bpPerRow);
 				}
-			} else if(!event.ctrlKey && !event.shiftKey && !event.altKey && _caretPosition != -1) {
+			} else if(!event.ctrlKey && !event.altKey && _caretPosition != -1) {
 				if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
 					if(_safeEditing) {
 						doInsertSequence(new DNASequence(keyCharacter), _caretPosition);
