@@ -92,7 +92,7 @@ package org.jbei.registry.control
 			// load user groups
 			_userGroups.removeAll();
 			
-			if(!userRestrictionEnzymes) {
+			if(!userRestrictionEnzymes || (userRestrictionEnzymes && userRestrictionEnzymes.activeEnzymeNames == null && userRestrictionEnzymes.groups == null)) {
 				return;
 			}
 			

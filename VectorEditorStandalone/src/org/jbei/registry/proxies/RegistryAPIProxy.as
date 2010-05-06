@@ -178,12 +178,6 @@ package org.jbei.registry.proxies
 		
 		private function onGetSequenceResult(event:ResultEvent):void
 		{
-			if(!event.result) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch sequence! Invalid response result type!");
-				
-				return;
-			}
-			
 			sendNotification(Notifications.DATA_FETCHED);
 			
 			updateSequence(event.result as FeaturedDNASequence);

@@ -36,7 +36,7 @@
 			private function onNameTextInputKeyDown(event:KeyboardEvent):void
 			{
 				if(event.keyCode == Keyboard.ENTER) {
-					dialog.close();
+					dialog.submit();
 				}
 			}
 		]]>

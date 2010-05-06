@@ -91,10 +91,12 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.SEQUENCE_FETCHED:
-					var sequence:FeaturedDNASequence = notification.getBody() as FeaturedDNASequence;
+					var sequence:FeaturedDNASequence;
 					
-					if(!sequence) {
-						sendNotification(Notifications.APPLICATION_FAILURE, "Sequence is null");
+					if(notification.getBody() == null) {
+						sequence = new FeaturedDNASequence("", new ArrayCollection());
+					} else {
+						sequence = notification.getBody() as FeaturedDNASequence;
 					}
 					
 					ApplicationFacade.getInstance().sequence = sequence;
