@@ -6,19 +6,10 @@ package org.jbei.registry
 	import mx.printing.FlexPrintJob;
 	import mx.printing.FlexPrintJobScaleType;
 	
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.data.Feature;
-	import org.jbei.bio.data.FeatureNote;
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.data.Segment;
-	import org.jbei.bio.utils.SequenceUtils;
-	import org.jbei.components.Pie;
-	import org.jbei.components.Rail;
-	import org.jbei.components.SequenceAnnotator;
-	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
-	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.mappers.AAMapper;
@@ -28,15 +19,11 @@ package org.jbei.registry
 	import org.jbei.registry.commands.FetchEntryCommand;
 	import org.jbei.registry.commands.FetchSequenceCommand;
 	import org.jbei.registry.commands.InitializationCommand;
-	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
-	import org.jbei.registry.models.Plasmid;
-	import org.jbei.registry.models.Sequence;
-	import org.jbei.registry.models.SequenceFeature;
-	import org.jbei.registry.proxies.EntriesServiceProxy;
+	import org.jbei.registry.models.FeaturedDNASequence;
+	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.jbei.registry.utils.Finder;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
-	import org.jbei.registry.view.ui.MainPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
 
 	public class ApplicationFacade extends Facade
@@ -45,23 +32,23 @@ package org.jbei.registry
 		private var _entryId:String;
 		private var _sessionId:String;
 		private var _featuredSequence:FeaturedSequence;
-		private var _sequence:Sequence;
 		private var _entry:Entry;
+		private var _sequence:FeaturedDNASequence;
 		private var _orfMapper:ORFMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
-		private var _activeSequenceComponent:ISequenceComponent;
-		
-		private var controlsInitialized:Boolean = false;
-		
-		private var sequenceAnnotator:SequenceAnnotator;
-		private var pie:Pie;
-		private var rail:Rail;
-		private var mainPanel:MainPanel;
+		private var _isReadOnly:Boolean = true;
+		private var _sequenceInitialized:Boolean = false;
+		private var _activeSequenceComponent:ISequenceComponent = null;
 		
 		// Properties
 		public function get application():VectorViewer
 		{
 			return _application;
+		}
+		
+		public function get registryServiceProxy():RegistryAPIProxy
+		{
+			return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
 		}
 		
 		public function get entryId():String
@@ -91,11 +78,7 @@ package org.jbei.registry
 		
 		public function set featuredSequence(value:FeaturedSequence):void
 		{
-			if(_featuredSequence != value) {
-				_featuredSequence = value;
-				
-				//_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGING, onSequenceChanging);
-			}
+			_featuredSequence = value;
 		}
 		
 		public function get entry():Entry
@@ -108,12 +91,12 @@ package org.jbei.registry
 			_entry = value;
 		}
 		
-		public function get sequence():Sequence
+		public function get sequence():FeaturedDNASequence
 		{
 			return _sequence;
 		}
 		
-		public function set sequence(value:Sequence):void
+		public function set sequence(value:FeaturedDNASequence):void
 		{
 			_sequence = value;
 		}
@@ -138,9 +121,24 @@ package org.jbei.registry
 			_restrictionEnzymeMapper = value;
 		}
 		
+		public function get sequenceInitialized():Boolean
+		{
+			return _sequenceInitialized;
+		}
+		
+		public function set sequenceInitialized(value:Boolean):void
+		{
+			_sequenceInitialized = value;
+		}
+		
 		public function get activeSequenceComponent():ISequenceComponent
 		{
 			return _activeSequenceComponent;
+		}
+		
+		public function set activeSequenceComponent(value:ISequenceComponent):void
+		{
+			_activeSequenceComponent = value;
 		}
 		
 		// System Public Methods
@@ -158,248 +156,6 @@ package org.jbei.registry
 			_application = application;
 		}
 		
-		public function initializeControls(mainPanel:MainPanel):void
-		{
-			if(! controlsInitialized) {
-				this.mainPanel = mainPanel;
-				
-				pie = mainPanel.pie;
-				rail = mainPanel.rail;
-				sequenceAnnotator = mainPanel.sequenceAnnotator;
-				
-				initializeEventHandlers();
-				
-				controlsInitialized = true;
-				_activeSequenceComponent = pie;
-			}
-		}
-		
-		// Public Methods
-		public function showPie():void
-		{
-			pie.visible = true;
-			pie.includeInLayout = true;
-			pie.featuredSequence = featuredSequence;
-			
-			rail.visible = false;
-			rail.includeInLayout = false;
-			rail.featuredSequence = null;
-			
-			sequenceAnnotator.visible = false;
-			sequenceAnnotator.includeInLayout = false;
-			sequenceAnnotator.featuredSequence = null;
-			
-			_activeSequenceComponent = pie;
-		}
-		
-		public function showRail():void
-		{
-			pie.visible = false;
-			pie.includeInLayout = false;
-			pie.featuredSequence = null;
-			
-			rail.visible = true;
-			rail.includeInLayout = true;
-			rail.featuredSequence = featuredSequence;
-			
-			sequenceAnnotator.visible = false;
-			sequenceAnnotator.includeInLayout = false;
-			sequenceAnnotator.featuredSequence = null;
-			
-			_activeSequenceComponent = rail;
-		}
-		
-		public function showSequence():void
-		{
-			pie.visible = false;
-			pie.includeInLayout = false;
-			pie.featuredSequence = null;
-			
-			rail.visible = false;
-			rail.includeInLayout = false;
-			rail.featuredSequence = null;
-			
-			sequenceAnnotator.visible = true;
-			sequenceAnnotator.includeInLayout = true;
-			sequenceAnnotator.featuredSequence = featuredSequence;
-			
-			_activeSequenceComponent = sequenceAnnotator;
-		}
-		
-		public function displayFeatures(showFeatures:Boolean):void
-		{
-			sequenceAnnotator.showFeatures = showFeatures;
-			pie.showFeatures = showFeatures;
-			rail.showFeatures = showFeatures;
-		}
-		
-		public function displayCutSites(showCutSites:Boolean):void
-		{
-			sequenceAnnotator.showCutSites = showCutSites;
-			pie.showCutSites = showCutSites;
-			rail.showCutSites = showCutSites;
-		}
-		
-		public function displayORF(showORFs:Boolean):void
-		{
-			sequenceAnnotator.showORFs = showORFs;
-			pie.showORFs = showORFs;
-			rail.showORFs = showORFs;
-		}
-		
-		public function moveCaretToPosition(position:int):void
-		{
-			sequenceAnnotator.caretPosition = position;
-			pie.caretPosition = position;
-			rail.caretPosition = position;
-		}
-		
-		public function select(start:int, end:int):void
-		{
-			pie.select(start, end);
-			sequenceAnnotator.select(start, end);
-			rail.select(start, end);
-		}
-		
-		public function showPropertiesDialog():void
-		{
-			var propertiesDialog:SimpleDialog = new SimpleDialog(mainPanel, PropertiesDialogForm);
-			propertiesDialog.title = "Properties";
-			propertiesDialog.open();
-		}
-		
-		public function copyToClipboard():void
-		{
-			// Broadcasting COPY event
-			activeSequenceComponent.dispatchEvent(new Event(Event.COPY, true, true));
-		}
-		
-		public function selectAll():void
-		{
-			// Broadcasting SELECT_ALL event
-			activeSequenceComponent.dispatchEvent(new Event(Event.SELECT_ALL, true, true));
-		}
-		
-		public function find(expression:String, dataType:String, searchType:String):void
-		{
-			findAt(expression, dataType, searchType, activeSequenceComponent.caretPosition);
-		}
-		
-		public function findNext(expression:String, dataType:String, searchType:String):void
-		{
-			findAt(expression, dataType, searchType, activeSequenceComponent.caretPosition + 1);
-		}
-		
-		public function findAt(expression:String, dataType:String, searchType:String, position:int):void
-		{
-			var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
-			
-			if(!findSegment) {
-				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);
-			}
-			
-			if(findSegment) {
-				sequenceAnnotator.select(findSegment.start, findSegment.end);
-				pie.select(findSegment.start, findSegment.end);
-				rail.select(findSegment.start, findSegment.end);
-				
-				sequenceAnnotator.caretPosition = findSegment.start;
-				pie.caretPosition = findSegment.start;
-				rail.caretPosition = findSegment.start;
-				
-				sendNotification(Notifications.FIND_MATCH_FOUND);
-			} else {
-				sequenceAnnotator.deselect();
-				pie.deselect();
-				rail.deselect();
-				
-				sendNotification(Notifications.FIND_MATCH_NOT_FOUND);
-			}
-		}
-		
-		public function clearHighlight():void
-		{
-			sequenceAnnotator.highlights = null;
-		}
-		
-		public function highlight(expression:String, dataType:String, searchType:String):void
-		{
-			var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType);
-			
-			sequenceAnnotator.highlights = segments;
-		}
-		
-		public function printSequence():void
-		{
-			mainPanel.callLater(doPrintSequence);
-		}
-		
-		public function printRail():void
-		{
-			mainPanel.callLater(doPrintRail);
-		}
-		
-		public function printPie():void
-		{
-			mainPanel.callLater(doPrintPie);
-		}
-		
-		public function entryFetched():void // TODO: Make it private
-		{
-			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
-			
-			if(!entry) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
-				
-				return;
-			}
-		}
-		
-		public function sequenceFetched():void
-		{
-			var sequence:Sequence = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).sequence;
-			var entry:Entry = (ApplicationFacade.getInstance().retrieveProxy(EntriesServiceProxy.NAME) as EntriesServiceProxy).entry;
-			
-			var featuredSequence:FeaturedSequence = sequenceToFeaturedSequence(entry, sequence);
-			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
-			
-			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
-			for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
-				restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
-			}
-			
-			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
-			
-			ApplicationFacade.getInstance().entry = entry;
-			ApplicationFacade.getInstance().sequence = sequence;
-			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
-			ApplicationFacade.getInstance().orfMapper = orfMapper;
-			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
-			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
-			
-			var aaMapper:AAMapper = new AAMapper(featuredSequence);
-			sequenceAnnotator.aaMapper = aaMapper;
-			
-			sequenceAnnotator.featuredSequence = featuredSequence;
-			pie.featuredSequence = featuredSequence;
-			rail.featuredSequence = featuredSequence;
-			
-			sequenceAnnotator.orfMapper = orfMapper;
-			pie.orfMapper = orfMapper;
-			rail.orfMapper = orfMapper;
-			
-			sequenceAnnotator.restrictionEnzymeMapper = reMapper;
-			pie.restrictionEnzymeMapper = reMapper;
-			rail.restrictionEnzymeMapper = reMapper;
-			
-			if(featuredSequence.circular) {
-				sendNotification(Notifications.SHOW_PIE);
-			} else {
-				sendNotification(Notifications.SHOW_RAIL);
-			}
-		}
-		
 		// Protected Methods
 		protected override function initializeController():void
 		{
@@ -408,206 +164,6 @@ package org.jbei.registry
 			registerCommand(Notifications.INITIALIZATION, InitializationCommand);
 			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
 			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
-		}
-		
-		// Private Methods
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
-		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
-		}
-		
-		private function onSelectionChanged(event:SelectionEvent):void
-		{
-			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
-		}
-		
-		private function onCaretPositionChanged(event:CaretEvent):void
-		{
-			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
-		}
-		
-		private function initializeEventHandlers():void
-		{
-			sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			
-			sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-		}
-		
-		private function doPrintSequence():void
-		{
-			var printJob:FlexPrintJob = new FlexPrintJob();
-			
-			if (printJob.start()) {
-				var printableWidth:Number = printJob.pageWidth;
-				var printableHeight:Number = printJob.pageHeight;
-				
-				mainPanel.printingSequenceAnnotator.featuredSequence = sequenceAnnotator.featuredSequence;
-				mainPanel.printingSequenceAnnotator.restrictionEnzymeMapper = sequenceAnnotator.restrictionEnzymeMapper;
-				mainPanel.printingSequenceAnnotator.orfMapper = sequenceAnnotator.orfMapper;
-				mainPanel.printingSequenceAnnotator.aaMapper = sequenceAnnotator.aaMapper;
-				mainPanel.printingSequenceAnnotator.showFeatures = sequenceAnnotator.showFeatures;
-				mainPanel.printingSequenceAnnotator.showCutSites = sequenceAnnotator.showCutSites;
-				mainPanel.printingSequenceAnnotator.showORFs = sequenceAnnotator.showORFs;
-				mainPanel.printingSequenceAnnotator.showAminoAcids1 = sequenceAnnotator.showAminoAcids1;
-				mainPanel.printingSequenceAnnotator.showAminoAcids3 = sequenceAnnotator.showAminoAcids3;
-				mainPanel.printingSequenceAnnotator.showAminoAcids1RevCom = sequenceAnnotator.showAminoAcids1RevCom;
-				mainPanel.printingSequenceAnnotator.labelFontSize = sequenceAnnotator.labelFontSize;
-				mainPanel.printingSequenceAnnotator.sequenceFontSize = sequenceAnnotator.sequenceFontSize;
-				mainPanel.printingSequenceAnnotator.showSpaceEvery10Bp = sequenceAnnotator.showSpaceEvery10Bp;
-				mainPanel.printingSequenceAnnotator.floatingWidth = true;
-				mainPanel.printingSequenceAnnotator.width = printableWidth;
-				mainPanel.printingSequenceAnnotator.readOnly = sequenceAnnotator.readOnly;
-				mainPanel.printingSequenceAnnotator.removeMask();
-				mainPanel.printingSequenceAnnotator.validateNow();
-				
-				var printableContent:PrintableContent = mainPanel.printingSequenceAnnotator.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
-				mainPanel.printView.width = printableWidth;
-				mainPanel.printView.height = printableHeight;
-				
-				if(printableContent.pages.length > 0) {
-					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
-						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
-					}
-				}
-			}
-			
-			printJob.send();
-		}
-		
-		private function doPrintPie():void
-		{
-			var printJob:FlexPrintJob = new FlexPrintJob();
-			
-			if (printJob.start()) {
-				var printableWidth:Number = printJob.pageWidth;
-				var printableHeight:Number = printJob.pageHeight;
-				
-				mainPanel.printingPie.featuredSequence = pie.featuredSequence;
-				mainPanel.printingPie.restrictionEnzymeMapper = pie.restrictionEnzymeMapper;
-				mainPanel.printingPie.orfMapper = pie.orfMapper;
-				mainPanel.printingPie.showFeatures = pie.showFeatures;
-				mainPanel.printingPie.showFeatureLabels = pie.showFeatureLabels;
-				mainPanel.printingPie.showCutSites = pie.showCutSites;
-				mainPanel.printingPie.showCutSiteLabels = pie.showCutSiteLabels;
-				mainPanel.printingPie.showORFs = pie.showORFs;
-				mainPanel.printingPie.labelFontSize = pie.labelFontSize;
-				mainPanel.printingPie.readOnly = pie.readOnly;
-				mainPanel.printingPie.width = printableWidth;
-				mainPanel.printingPie.removeMask();
-				mainPanel.printingPie.validateNow();
-				
-				var printableContent:PrintableContent = mainPanel.printingPie.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
-				mainPanel.printView.width = printableWidth;
-				mainPanel.printView.height = printableHeight;
-				
-				if(printableContent.pages.length > 0) {
-					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
-						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
-					}
-				}
-			}
-			
-			printJob.send();
-		}
-		
-		private function doPrintRail():void
-		{
-			var printJob:FlexPrintJob = new FlexPrintJob();
-			
-			if (printJob.start()) {
-				var printableWidth:Number = printJob.pageWidth;
-				var printableHeight:Number = printJob.pageHeight;
-				
-				mainPanel.printingRail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
-				mainPanel.printingRail.restrictionEnzymeMapper = rail.restrictionEnzymeMapper;
-				mainPanel.printingRail.orfMapper = rail.orfMapper;
-				mainPanel.printingRail.showFeatures = rail.showFeatures;
-				mainPanel.printingRail.showFeatureLabels = rail.showFeatureLabels;
-				mainPanel.printingRail.showCutSites = rail.showCutSites;
-				mainPanel.printingRail.showCutSiteLabels = rail.showCutSiteLabels;
-				mainPanel.printingRail.showORFs = rail.showORFs;
-				mainPanel.printingRail.labelFontSize = rail.labelFontSize;
-				mainPanel.printingRail.readOnly = rail.readOnly;
-				mainPanel.printingRail.width = printableWidth;
-				mainPanel.printingRail.removeMask();
-				mainPanel.printingRail.validateNow();
-				
-				var printableContent:PrintableContent = mainPanel.printingRail.printingContent(printableWidth, printableHeight - 100); // -100 for page margins
-				mainPanel.printView.width = printableWidth;
-				mainPanel.printView.height = printableHeight;
-				
-				if(printableContent.pages.length > 0) {
-					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
-						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
-					}
-				}
-			}
-			
-			printJob.send();
-		}
-		
-		private function sequenceToFeaturedSequence(entry:Entry, sequence:Sequence): FeaturedSequence
-		{
-			var sequence:Sequence = sequence;
-			
-			if(!sequence) {
-				sequence = new Sequence();
-			}
-			
-			var dnaSequence:DNASequence = new DNASequence(sequence.sequence);
-			
-			var featuredSequence:FeaturedSequence = new FeaturedSequence(entry.combinedName(), ((entry is Plasmid) ? (entry as Plasmid).circular : false), dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
-			
-			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
-			
-			if(sequence.sequenceFeatures && sequence.sequenceFeatures.length > 0) {
-				var features:Array = new Array();
-				
-				for(var i:int = 0; i < sequence.sequenceFeatures.length; i++) {
-					var sequenceFeature:SequenceFeature = sequence.sequenceFeatures[i] as SequenceFeature;
-					var strand:int = sequenceFeature.strand;
-					
-					var notes:Array = new Array();
-					notes.push(new FeatureNote("label", sequenceFeature.name));
-					
-					if(sequenceFeature.description && sequenceFeature.description.length > 0) {
-						var noteLines:Array = sequenceFeature.description.split("\n");
-						
-						if (noteLines != null && noteLines.length > 0) {
-							for (var k:int = 0; k < noteLines.length; k++) {
-								var line:String = noteLines[k];
-								
-								var key:String = "";
-								var value:String = "";
-								for (var l:int = 0; l < line.length; l++) {
-									if (line.charAt(l) == '=') {
-										key = line.substring(0, l);
-										value = line.substring(l + 1, line.length);
-										
-										break;
-									}
-								}
-								
-								notes.push(new FeatureNote(key, value));
-							}
-						}
-					}
-					
-					var feature:org.jbei.bio.data.Feature = new org.jbei.bio.data.Feature(sequenceFeature.start - 1, sequenceFeature.end - 1, sequenceFeature.genbankType, strand, notes);
-					features.push(feature);
-				}
-				
-				featuredSequence.addFeatures(features, true);
-			}
-			
-			return featuredSequence;
 		}
 	}
 }

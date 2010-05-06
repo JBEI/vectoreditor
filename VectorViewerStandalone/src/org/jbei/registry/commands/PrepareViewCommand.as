@@ -1,7 +1,9 @@
 package org.jbei.registry.commands
 {
+	import org.jbei.registry.mediators.ApplicationMediator;
 	import org.jbei.registry.mediators.FindPanelMediator;
 	import org.jbei.registry.mediators.MainControlBarMediator;
+	import org.jbei.registry.mediators.MainMediator;
 	import org.jbei.registry.mediators.MainPanelMediator;
 	import org.jbei.registry.mediators.StatusBarMediator;
 	import org.puremvc.as3.interfaces.INotification;
@@ -14,6 +16,7 @@ package org.jbei.registry.commands
 		{
 			var application:VectorViewer = notification.getBody() as VectorViewer;
 			
+			facade.registerMediator(new ApplicationMediator(application));
 			facade.registerMediator(new MainControlBarMediator(application.mainControlBar));
 			facade.registerMediator(new MainPanelMediator(application.mainPanel));
 			facade.registerMediator(new StatusBarMediator(application.statusBar));

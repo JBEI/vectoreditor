@@ -36,6 +36,8 @@ package org.jbei.registry
 		
 		public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
 		
+		public static const LOAD_SEQUENCE:String = "LoadSequence";
+		
 		public static const PRINT_CURRENT:String = "PrintCurrent";
 		public static const PRINT_SEQUENCE:String = "PrintSequence";
 		public static const PRINT_RAIL:String = "PrintRail";

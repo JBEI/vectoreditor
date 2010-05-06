@@ -1,8 +1,10 @@
 package org.jbei.registry.mediators
 {
-	import org.jbei.registry.ApplicationFacade;
+	import mx.core.Application;
+	
+	import org.jbei.lib.ui.dialogs.SimpleDialog;
 	import org.jbei.registry.Notifications;
-	import org.jbei.lib.utils.Logger;
+	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -10,43 +12,39 @@ package org.jbei.registry.mediators
 	{
 		private const NAME:String = "ApplicationMediator";
 		
+		private var application:Application;
+		
 		// Constructor
 		public function ApplicationMediator(viewComponent:Object=null)
 		{
 			super(NAME, viewComponent);
+			
+			application = viewComponent as Application;
 		}
 		
 		// Public Methods
 		public override function listNotificationInterests():Array
 		{
-			return [Notifications.APPLICATION_FAILURE
-				, Notifications.DATA_FETCHED
-				, Notifications.ENTRY_FETCHED
-				, Notifications.FETCHING_DATA];
+			return [
+				Notifications.SHOW_PROPERTIES_DIALOG
+			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case Notifications.APPLICATION_FAILURE:
-					ApplicationFacade.getInstance().application.disableApplication(notification.getBody() as String);
-					
-					break;
-				case Notifications.ENTRY_FETCHED:
-					sendNotification(Notifications.FETCH_SEQUENCE);
-					
-					break;
-				case Notifications.FETCHING_DATA:
-					Logger.getInstance().info(notification.getBody() as String);
-					
-					ApplicationFacade.getInstance().application.lock();
-					
-					break;
-				case Notifications.DATA_FETCHED:
-					ApplicationFacade.getInstance().application.unlock();
+				case Notifications.SHOW_PROPERTIES_DIALOG:
+					showPropertiesDialog();
 					
 					break;
 			}
+		}
+		
+		private function showPropertiesDialog():void
+		{
+			var propertiesDialog:SimpleDialog = new SimpleDialog(application, PropertiesDialogForm);
+			propertiesDialog.title = "Properties";
+			propertiesDialog.open();
 		}
 	}
 }
