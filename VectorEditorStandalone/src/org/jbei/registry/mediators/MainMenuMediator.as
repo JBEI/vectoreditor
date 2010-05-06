@@ -112,9 +112,9 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.FEATURED_SEQUENCE_CHANGED:
 					if(ApplicationFacade.getInstance().isReadOnly) {
-						mainMenu.menuItemByName("saveMenuItem").enabled = true;
-					} else {
 						mainMenu.menuItemByName("saveMenuItem").enabled = false;
+					} else {
+						mainMenu.menuItemByName("saveMenuItem").enabled = true;
 					}
 					
 					break;

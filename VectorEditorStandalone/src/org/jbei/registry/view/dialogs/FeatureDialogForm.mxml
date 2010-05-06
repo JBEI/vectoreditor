@@ -146,11 +146,12 @@
 				feature.type = typeComboBox.text;
 				feature.start = startNumericStepper.value - 1;
 				feature.end = endNumericStepper.value - 2;
+				feature.name = nameTextInput.text;
+				
 				feature.notes = new Array();
-				feature.notes.push(new FeatureNote("label", nameTextInput.text));
-				if(descriptionTextArea.text != "") {
+				/*if(descriptionTextArea.text != "") {
 					feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
-				}
+				}*/
 				
 				ApplicationFacade.getInstance().featuredSequence.addFeature(feature);
 			}
@@ -164,6 +165,7 @@
 					feature.type = typeComboBox.text;
 					feature.start = startNumericStepper.value - 1;
 					feature.end = endNumericStepper.value - 1;
+					feature.name = nameTextInput.text;
 					
 					if(!feature.notes) {
 						feature.notes = new Array();

@@ -326,13 +326,6 @@ package org.jbei.registry.proxies
 		
 		private function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
-			/*if(userRestrictionEnzymes) {
-			RestrictionEnzymeGroupManager.instance.userGroups = userRestrictionEnzymes.groups;
-			if(userRestrictionEnzymes.activeGroup.length > 0) {
-			RestrictionEnzymeGroupManager.instance.activeGroup = userRestrictionEnzymes.activeGroup;
-			}
-			}*/
-			
 			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_FETCHED, userRestrictionEnzymes);
 			
 			Logger.getInstance().info("User restriction enzymes fetched successfully");

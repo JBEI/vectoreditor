@@ -19,6 +19,7 @@
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 			import org.jbei.registry.models.UserRestrictionEnzymeGroup;
 			import org.jbei.registry.models.UserRestrictionEnzymes;
+			
 			import org.jbei.lib.ui.dialogs.ModalDialog;
 			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
 			
@@ -98,8 +99,17 @@
 				
 				updateCurrentSystemGroup();
 				
-				for(var j:int = 0; j < RestrictionEnzymeGroupManager.instance.activeGroup.length; j++) {
-					activeEnzymes.addItem(RestrictionEnzymeGroupManager.instance.activeGroup[j]);
+				if((RestrictionEnzymeGroupManager.instance.userGroups == null
+					|| RestrictionEnzymeGroupManager.instance.userGroups.length == 0)
+					&& (RestrictionEnzymeGroupManager.instance.activeGroup == null
+						|| RestrictionEnzymeGroupManager.instance.activeGroup.length == 0)) { // if user never saved enzymes then load common group
+					for(var z:int = 0; z < (RestrictionEnzymeGroupManager.instance.systemGroups.getItemAt(0) as RestrictionEnzymeGroup).enzymes.length; z++) {
+						activeEnzymes.addItem((RestrictionEnzymeGroupManager.instance.systemGroups.getItemAt(0) as RestrictionEnzymeGroup).enzymes.getItemAt(z) as RestrictionEnzyme);
+					}
+				} else {
+					for(var j:int = 0; j < RestrictionEnzymeGroupManager.instance.activeGroup.length; j++) {
+						activeEnzymes.addItem(RestrictionEnzymeGroupManager.instance.activeGroup[j]);
+					}
 				}
 				
 				sortEnzymes(activeEnzymes);

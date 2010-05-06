@@ -323,15 +323,6 @@ package org.jbei.registry.mediators
 			sequenceAnnotator.setFocus();
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
-		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
-			
-			if(!isSequenceInitialized) {
-				isSequenceInitialized = true;
-			}
-		}
-		
 		private function onEditing(event:EditingEvent):void
 		{
 			var showDialog:Boolean = false;

@@ -80,9 +80,9 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.FEATURED_SEQUENCE_CHANGED:
 					if(ApplicationFacade.getInstance().isReadOnly) {
-						controlBar.updateSaveButtonState(true);
-					} else {
 						controlBar.updateSaveButtonState(false);
+					} else {
+						controlBar.updateSaveButtonState(true);
 					}
 					
 					break;

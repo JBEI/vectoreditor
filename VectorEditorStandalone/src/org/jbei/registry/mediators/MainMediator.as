@@ -42,6 +42,7 @@ package org.jbei.registry.mediators
 				, Notifications.ENTRY_FETCHED
 				, Notifications.SEQUENCE_FETCHED
 				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.SEQUENCE_SAVED
 				
 				, Notifications.DATA_FETCHED
@@ -117,7 +118,7 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.ENTRY_PERMISSIONS_FETCHED:
-					ApplicationFacade.getInstance().sequence = notification.getBody() as FeaturedDNASequence;
+					ApplicationFacade.getInstance().isReadOnly = !(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.UNDO:
@@ -154,6 +155,7 @@ package org.jbei.registry.mediators
 		private function sequenceFetched():void
 		{
 			var featuredSequence:FeaturedSequence = FeaturedDNASequenceUtils.featuredDNASequenceToFeaturedSequence(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
 			
 			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
 			
@@ -172,6 +174,11 @@ package org.jbei.registry.mediators
 			ApplicationFacade.getInstance().orfMapper = orfMapper;
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 			ApplicationFacade.getInstance().aaMapper = aaMapper;
+		}
+		
+		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		{
+			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
 		}
 	}
 }

@@ -14,14 +14,11 @@
 			
 			import org.jbei.registry.ApplicationFacade;
 			import org.jbei.registry.models.UserPreferences;
-			import org.jbei.registry.proxies.RegistryAPIProxy;
 			
 			private var changed:Boolean = false;
 			
 			[Bindable]
 			private var userPreferences:UserPreferences;
-			
-			private var registryAPIProxy:RegistryAPIProxy;
 			
 			// Public Methods
 			public override function validate():void
@@ -43,7 +40,7 @@
 					userPreferences.labelsFontSize = labelsFontSizeNumericStepper.value;
 					userPreferences.maxResitrictionEnzymesCuts = setMaxCutOffCheckBox.selected ? -1 : maxResitrictionEnzymesCutsNumericStepper.value;
 					
-					registryAPIProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
+					ApplicationFacade.getInstance().registryServiceProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
 				}
 			}
 			
