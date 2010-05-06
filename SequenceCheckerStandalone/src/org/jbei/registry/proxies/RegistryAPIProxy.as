@@ -8,6 +8,9 @@ package org.jbei.registry.proxies
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
+	import org.jbei.registry.models.Part;
+	import org.jbei.registry.models.Plasmid;
+	import org.jbei.registry.models.Strain;
 	import org.jbei.registry.utils.StandaloneUtils;
 
 	public class RegistryAPIProxy extends AbstractServiceProxy
@@ -84,7 +87,18 @@ package org.jbei.registry.proxies
 			
 			sendNotification(Notifications.DATA_FETCHED);
 			
-			updateEntry(event.result as Entry);
+			var entry:Entry = event.result as Entry;
+			
+			// DO NOT REMOVE THESE LINES! It forces to compile Plasmid, Strain, Part classes
+			if(entry is Plasmid) {
+				Logger.getInstance().info("Plasmid");
+			} else if (entry is Strain) {
+				Logger.getInstance().info("Strain");
+			} else if (entry is Part) {
+				Logger.getInstance().info("Part");
+			}
+			
+			updateEntry(entry);
 		}
 		
 		private function onGetSequenceResult(event:ResultEvent):void
