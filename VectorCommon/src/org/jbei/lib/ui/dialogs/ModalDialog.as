@@ -73,6 +73,24 @@ package org.jbei.lib.ui.dialogs
 			}
 		}
 		
+		public function submit():void
+		{
+			dialogForm.validate();
+			
+			if(dialogForm.isValid) {
+				closeDialog();
+				
+				dispatchEvent(new ModalDialogEvent(ModalDialogEvent.SUBMIT, dialogForm.dataObject));
+			}
+		}
+		
+		public function cancel():void
+		{
+			closeDialog();
+			
+			dispatchEvent(new ModalDialogEvent(ModalDialogEvent.CANCEL));
+		}
+		
 		// Event Handlers
 		private function onKeyDown(event:KeyboardEvent):void
 		{
@@ -139,24 +157,6 @@ package org.jbei.lib.ui.dialogs
 			mainBox.addChild(buttonsBox);
 			
 			addChild(mainBox);
-		}
-		
-		private function submit():void
-		{
-			dialogForm.validate();
-			
-			if(dialogForm.isValid) {
-				closeDialog();
-				
-				dispatchEvent(new ModalDialogEvent(ModalDialogEvent.SUBMIT, dialogForm.dataObject));
-			}
-		}
-		
-		private function cancel():void
-		{
-			closeDialog();
-			
-			dispatchEvent(new ModalDialogEvent(ModalDialogEvent.CANCEL));
 		}
 		
 		private function closeDialog():void
