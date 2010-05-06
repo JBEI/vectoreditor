@@ -6,7 +6,7 @@ package org.jbei.registry.models
 		private var _name:String;
 		private var _value:String;
 		
-		public function DNAFeatureNote(name:String, aValue:String)
+		public function DNAFeatureNote(name:String = "", aValue:String = "")
 		{
 			_name = name;
 			_value = aValue;

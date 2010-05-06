@@ -40,7 +40,7 @@ package org.jbei.bio.utils
 		{
 			var cutSites:Array = new Array();
 			
-			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex, "g");
+			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex.toUpperCase(), "g");
 			
 			var numCuts:int = 0;
 			
@@ -71,7 +71,7 @@ package org.jbei.bio.utils
 		{
 			var cutSites:Array = new Array();
 			
-			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex, "g");
+			var forwardRegExpPattern:RegExp = new RegExp(restrictionEnzyme.forwardRegex.toUpperCase(), "g");
 			
 			var numCuts:int = 0;
 			

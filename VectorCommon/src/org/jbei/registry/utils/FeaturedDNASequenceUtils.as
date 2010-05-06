@@ -62,11 +62,11 @@ package org.jbei.registry.utils
 						for(var j:int = 0; j < dnaFeature.notes.length; j++) {
 							var dnaFeatureNote:DNAFeatureNote = dnaFeature.notes[j];
 							
-							featureNotes.addItem(new FeatureNote(dnaFeatureNote.name, dnaFeatureNote.value));
+							featureNotes.push(new FeatureNote(dnaFeatureNote.name, dnaFeatureNote.value));
 						}
 					}
 					
-					features.addItem(new Feature(dnaFeature.start, dnaFeature.end, dnaFeature.name, dnaFeature.type, dnaFeature.strand, featureNotes));
+					features.addItem(new Feature(dnaFeature.start - 1, dnaFeature.end - 1, dnaFeature.name, dnaFeature.type, dnaFeature.strand, featureNotes));
 				}
 			}
 			
