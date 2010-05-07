@@ -11,9 +11,10 @@ package org.jbei.registry.models
 		private var _type:String;
 		private var _strand:int;
 		private var _notes:ArrayCollection /* of DNAFeatureNote */;
+		private var _annotationType:String;
 		
 		// Contructor
-		public function DNAFeature(start:int = 0, end:int = 0, strand:int = 0, name:String = "", notes:ArrayCollection = null /* of DNAFeatureNote */, type:String = "")
+		public function DNAFeature(start:int = 0, end:int = 0, strand:int = 0, name:String = "", notes:ArrayCollection = null /* of DNAFeatureNote */, type:String = "", annotationType:String = null)
 		{
 			_start = start;
 			_end = end;
@@ -21,6 +22,7 @@ package org.jbei.registry.models
 			_name = name;
 			_notes = notes;
 			_type = type;
+			_annotationType = annotationType;
 		}
 		
 		// Properties
@@ -82,6 +84,16 @@ package org.jbei.registry.models
 		public function set notes(value:ArrayCollection /* of DNAFeatureNote */):void
 		{
 			_notes = value;
+		}
+		
+		public function get annotationType():String
+		{
+			return _annotationType;
+		}
+		
+		public function set annotationType(value:String):void
+		{
+			_annotationType = value;
 		}
 	}
 }

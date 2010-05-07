@@ -8,6 +8,7 @@ package org.jbei.bio.data
 		private var _notes:Array /* of FeatureNote */;
 		private var _strand:int;
 		private var _name:String;
+		private var _annotationType:String;
 		
 		// Static Constants
 		public static const POSITIVE:int = 1;
@@ -15,13 +16,14 @@ package org.jbei.bio.data
 		public static const UNKNOWN:int = 0;
 		
 		// Constructor
-		public function Feature(start:int = 0, end:int = 0, name:String = "", type:String = "", strand:int = Feature.UNKNOWN, notes:Array /* of FeatureNote */ = null)
+		public function Feature(start:int = 0, end:int = 0, name:String = "", type:String = "", strand:int = Feature.UNKNOWN, notes:Array /* of FeatureNote */ = null, annotationType:String = null)
 		{
 			super(start, end);
 			
 			_type = type;
 			_strand = strand;
 			_name = name;
+			_annotationType = annotationType;
 			
 			_notes = notes;
 			if(_notes == null) {
@@ -38,6 +40,16 @@ package org.jbei.bio.data
 		public function set type(value:String):void
 		{
 			_type = value;
+		}
+		
+		public function get annotationType():String
+		{
+			return _annotationType;
+		}
+		
+		public function set annotationType(value:String):void
+		{
+			_annotationType = value;
 		}
 		
 		public function get notes():Array /* of FeatureNote */
@@ -89,6 +101,8 @@ package org.jbei.bio.data
 				
 				clonedFeature._notes = clonedNotes;
 			}
+			
+			clonedFeature.annotationType = annotationType;
 			
 			return clonedFeature;
 		}
