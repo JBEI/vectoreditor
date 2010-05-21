@@ -7,7 +7,7 @@
 				var style:StyleSheet = new StyleSheet();
 				
 				var mismatch:Object = new Object();
-				mismatch.fontWeight = "bold";
+				//mismatch.fontWeight = "bold";
 				mismatch.color = "#FF0000";
 
 				style.setStyle(".mismatch", mismatch);

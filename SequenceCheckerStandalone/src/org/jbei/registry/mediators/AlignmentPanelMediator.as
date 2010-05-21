@@ -46,7 +46,10 @@ package org.jbei.registry.mediators
 			alignmentPanel.traceSequenceAlignmentTextArea.htmlText = "";
 			alignmentPanel.traceSequenceAlignmentTextArea.verticalScrollPosition = 0;
 			
-			if(traceSequence == null || traceSequence.traceSequenceAlignment == null || traceSequence.traceSequenceAlignment.queryAlignment == null || traceSequence.traceSequenceAlignment.queryAlignment.length == 0) {
+			if(traceSequence == null 
+                || traceSequence.traceSequenceAlignment == null 
+                || traceSequence.traceSequenceAlignment.queryAlignment == null 
+                || traceSequence.traceSequenceAlignment.queryAlignment.length == 0) {
 				return;
 			}
 			
@@ -85,7 +88,7 @@ package org.jbei.registry.mediators
 				var highlightedSubjectRowSequence:String = highlightMismatches(subjectRowSequence, queryRowSequence);
 				
 				if(i == 0) {
-					output += "<b>Expected " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.queryStart) + ": </b>";
+					output += "Expected " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.queryStart) + ": ";
 				} else {
 					output += "                ";
 				}
@@ -93,13 +96,13 @@ package org.jbei.registry.mediators
 				output += highlightedQueryRowSequence;
 				
 				if(i == numberOfLines - 1) {
-					output += "   <b>" + traceSequence.traceSequenceAlignment.queryEnd + "</b>";
+					output += "   " + traceSequence.traceSequenceAlignment.queryEnd;
 				}
 				
 				output += "\n";
 				
 				if(i == 0) {
-					output += "<b>Trace    " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.subjectStart) + ": </b>";
+					output += "Trace    " + StringFormatter.sprintf("%5d", traceSequence.traceSequenceAlignment.subjectStart) + ": ";
 				} else {
 					output += "                ";
 				}
@@ -107,7 +110,7 @@ package org.jbei.registry.mediators
 				output += highlightedSubjectRowSequence;
 				
 				if(i == numberOfLines - 1) {
-					output += "   <b>" + traceSequence.traceSequenceAlignment.subjectEnd + "</b>";
+					output += "   " + traceSequence.traceSequenceAlignment.subjectEnd;
 				}
 				
 				output += "\n\n";
