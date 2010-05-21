@@ -6,7 +6,6 @@ package org.jbei.registry.proxies
 	
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;

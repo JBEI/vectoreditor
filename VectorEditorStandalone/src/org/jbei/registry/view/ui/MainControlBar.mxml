@@ -168,7 +168,6 @@
 		id="viewToggleButtonBar"
 		toggleOnClick="false" 
 		itemClick="onChangeViewButtonClick(event)" 
-		backgroundColor="#FFFFFF" 
 		buttonWidth="32" 
 		buttonHeight="32"
 		paddingLeft="0" 

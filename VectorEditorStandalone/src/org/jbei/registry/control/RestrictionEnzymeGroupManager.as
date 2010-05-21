@@ -188,7 +188,7 @@ package org.jbei.registry.control
 		private function registerSystemGroups():void
 		{
 			// 1. Common
-			var commonGroup:RestrictionEnzymeGroup = createGroupByEnzymes("Common", new Array("AatII", "AvrII", "BamHI", "BglII", "BsgI", "EagI", "EcoRI", "EcoRV", "HindIII", "KpnI", "MseI", "NcoI", "NdeI", "NheI", "NotI", "PstI", "PvuI", "SacI", "SacII", "SalI", "SmaI", "SpeI", "SphI", "XbaI", "XhoI", "XmaI"));
+			var commonGroup:RestrictionEnzymeGroup = createGroupByEnzymes("Common", new Array("AatII", "AvrII", "BamHI", "BglII", "BsgI", "EagI", "EcoRI", "EcoRV", "HindIII", "KpnI", "NcoI", "NdeI", "NheI", "NotI", "PstI", "PvuI", "SacI", "SacII", "SalI", "SmaI", "SpeI", "SphI", "XbaI", "XhoI", "XmaI"));
 			_systemGroups.addItem(commonGroup);
 			
 			// 2. REBASE
