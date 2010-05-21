@@ -628,7 +628,7 @@ package org.jbei.components
 			}
 			
 			if(horizontalScrollBar) {
-				horizontalScrollPosition = contentHolder.horizontalCenter - width / 2;
+				horizontalScrollPosition = contentHolder.hCenter - width / 2;
 				contentHolder.x = -horizontalScrollPosition;
 			}
 		}

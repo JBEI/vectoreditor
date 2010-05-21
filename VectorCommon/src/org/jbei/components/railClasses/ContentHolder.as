@@ -77,7 +77,7 @@ package org.jbei.components.railClasses
 		private var _singleCutterCutSiteTextRenderer:TextRenderer;
 		private var _featureTextRenderer:TextRenderer;
 		
-		private var _horizontalCenter:Number;
+		private var _hCenter:Number;
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
 		private var _traceMapper:TraceMapper;
@@ -391,9 +391,9 @@ package org.jbei.components.railClasses
 			return endSelectionIndex;
 		}
 		
-		public function get horizontalCenter():Number
+		public function get hCenter():Number
 		{
-			return _horizontalCenter;
+			return _hCenter;
 		}
 		
 		public function get bpWidth():Number
@@ -695,7 +695,7 @@ package org.jbei.components.railClasses
 				
 				_bpWidth = _railMetrics.width / featuredSequence.sequence.length;
 				
-				_horizontalCenter = _railMetrics.x + _railMetrics.width / 2;
+				_hCenter = _railMetrics.x + _railMetrics.width / 2;
 				
 				_totalHeight = parentHeight;
 				_totalWidth = parentWidth;
@@ -1296,7 +1296,7 @@ package org.jbei.components.railClasses
 				}
 			}
 			
-			_horizontalCenter = _railMetrics.x + _railMetrics.width / 2;
+			_hCenter = _railMetrics.x + _railMetrics.width / 2;
 		}
 		
 		private function loadFeatureRenderers():void

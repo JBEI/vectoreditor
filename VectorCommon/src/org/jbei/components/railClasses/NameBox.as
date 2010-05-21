@@ -69,7 +69,7 @@ package org.jbei.components.railClasses
 		private function render():void
 		{
 			labelTextField.htmlText = '<p align="center"><font face="' + FONT_FACE + '" size="' + LABEL_FONT_SIZE + '" color="' + FONT_COLOR + '" letterspacing="0" kerning="0"><b>' + label + "</b></font>" + '<font face="' + FONT_FACE + '" size="' + LENGTH_FONT_SIZE + '" color="' + FONT_COLOR + '" letterspacing="0" kerning="0"> (' + String(numberOfBp) + " bp)" + "</font></p>";
-			labelTextField.x = contentHolder.horizontalCenter - labelTextField.width / 2;
+			labelTextField.x = contentHolder.hCenter - labelTextField.width / 2;
 			labelTextField.y = contentHolder.totalHeight - labelTextField.height - 20; // -20 for scrollbar
 		}
 	}

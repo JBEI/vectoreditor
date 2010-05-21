@@ -507,7 +507,7 @@ package org.jbei.components.sequenceClasses
 				
 				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, startIndex, endIndex));
 				
-				tryMoveCaretToPosition(endIndex);
+				tryMoveCaretToPosition(startIndex);
 			}
 		}
 		
