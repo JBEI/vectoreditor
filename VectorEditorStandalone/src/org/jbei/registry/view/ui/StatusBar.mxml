@@ -5,6 +5,7 @@
 	<mx:HBox width="100%" paddingBottom="0" paddingTop="0">
 		<mx:Label id="statusLabel" text=""/>
 		<mx:Spacer width="100%" />
+        <mx:Label id="temperatureLabel" text=""/>
 		<mx:VRule height="100%" />
 		<mx:Label id="sequenceStatusLabel" text="Read only"/>
 		<mx:VRule height="100%" />

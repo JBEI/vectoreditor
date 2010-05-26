@@ -1,5 +1,9 @@
 package org.jbei.registry.mediators
 {
+	import mx.utils.StringUtil;
+	
+	import org.jbei.bio.utils.TemperatureCalculator;
+	import org.jbei.lib.utils.StringFormatter;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.StatusBar;
@@ -40,11 +44,17 @@ package org.jbei.registry.mediators
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
-					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().featuredSequence) { return; }
+					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().featuredSequence) {
+                        statusBar.selectionPositionLabel.text = '- : -'
+                        statusBar.temperatureLabel.text = "";
+                        
+                        return;
+                    }
 					
 					var start:int = selectionPositions[0] as int;
 					var end:int = selectionPositions[1] as int;
 					
+                    // update positions
 					if(start > -1 && end > -1 && start != end) {
 						var selectionLength:int;
 						if (start < end) {
@@ -54,8 +64,10 @@ package org.jbei.registry.mediators
 						}
 						
 						statusBar.selectionPositionLabel.text = String(start + 1) + " : " + String(end) + " (" + String(selectionLength) + ")";
+                        statusBar.temperatureLabel.text = StringFormatter.sprintf('%.2f', String(TemperatureCalculator.calculateTemperature(ApplicationFacade.getInstance().featuredSequence.subSequence(start, end).sequence.toLowerCase()))) + "°C";
 					} else {
 						statusBar.selectionPositionLabel.text = '- : -';
+                        statusBar.temperatureLabel.text = "";
 					}
 					
 					break;
