@@ -13,6 +13,9 @@ package org.jbei.lib
 	import org.jbei.lib.common.IOriginator;
 	import org.jbei.lib.utils.StringFormatter;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	[RemoteClass(alias="org.jbei.lib.FeaturedSequence")]
 	public class FeaturedSequence implements IOriginator
 	{

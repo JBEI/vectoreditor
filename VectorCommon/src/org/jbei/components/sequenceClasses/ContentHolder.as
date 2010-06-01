@@ -24,11 +24,15 @@ package org.jbei.components.sequenceClasses
     import org.jbei.bio.data.DNASequence;
     import org.jbei.bio.data.Feature;
     import org.jbei.bio.data.ORF;
+    import org.jbei.bio.data.RestrictionEnzyme;
     import org.jbei.bio.utils.SequenceUtils;
     import org.jbei.components.SequenceAnnotator;
     import org.jbei.components.common.AnnotationRenderer;
     import org.jbei.components.common.CaretEvent;
     import org.jbei.components.common.CommonEvent;
+    import org.jbei.components.common.Constants;
+    import org.jbei.components.common.digestion.DigestionCutter;
+    import org.jbei.components.common.digestion.DigestionSequence;
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.SelectionEvent;
@@ -39,6 +43,9 @@ package org.jbei.components.sequenceClasses
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.utils.SystemUtils;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ContentHolder extends UIComponent implements IContentHolder
 	{
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
@@ -55,7 +62,6 @@ package org.jbei.components.sequenceClasses
 		private const SINGLE_CUTTER_CUTSITES_FONT_COLOR:int = 0xE57676;
 		private const AMINOACIDS_FONT_COLOR:int = 0x0066FF;
 		private const MINIMUM_BP_PER_ROW:int = 10;
-		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
 		
 		private var sequenceAnnotator:SequenceAnnotator;
 		private var selectionLayer:SelectionLayer;
@@ -66,6 +72,7 @@ package org.jbei.components.sequenceClasses
 		private var editFeatureContextMenuItem:ContextMenuItem;
 		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
+        private var copyDigestionFragmentContextMenuItem:ContextMenuItem;
 		
 		private var featureRenderers:Array = new Array(); /* of FeatureRenderer */
 		private var cutSiteRenderers:Array = new Array(); /* of CutSiteRenderer */
@@ -862,7 +869,421 @@ package org.jbei.components.sequenceClasses
 			validateCaret();
 		}
 		
-		// Private Methods
+		// Event Handlers
+        private function onCopyDigestionFragmentContextMenuItem(event:ContextMenuEvent):void
+        {
+            if(!_showCutSites
+                || !_restrictionEnzymeMapper
+                || !_restrictionEnzymeMapper.cutSites
+                || _restrictionEnzymeMapper.cutSites.length == 0
+                || !isValidIndex(startSelectionIndex)
+                || !isValidIndex(endSelectionIndex)) {
+                return;
+            }
+            
+            var digestionStart:int = -1;
+            var digestionEnd:int = -1;
+            var digestionStartCutSite:CutSite = null;
+            var digestionEndCutSite:CutSite = null;
+            
+            for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
+                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                
+                if(startSelectionIndex == cutSite.start) {
+                    digestionStart = startSelectionIndex;
+                    digestionStartCutSite = cutSite;
+                }
+                
+                if(endSelectionIndex == cutSite.end + 1) {
+                    digestionEnd = endSelectionIndex;
+                    digestionEndCutSite = cutSite;
+                }
+            }
+            
+            if(digestionStart == -1 || digestionEnd == -1) {
+                return;
+            }
+            
+            var subFeaturedSequence:FeaturedSequence = _featuredSequence.subFeaturedSequence(digestionStart, digestionEnd);
+            var digestionSequence:DigestionSequence = new DigestionSequence(subFeaturedSequence, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
+            
+            Clipboard.generalClipboard.clear();
+            Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
+            Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
+            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.sequence, true);
+        }
+        
+        private function onMouseDown(event:MouseEvent):void
+        {
+            if(event.target is AnnotationRenderer) { return; }
+            
+            if(selectionLayer.selected) { deselect(); }
+            
+            mouseIsDown = true;
+            
+            stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            
+            if(!startHandleResizing && !endHandleResizing) {
+                startSelectionIndex = bpAtPoint(new Point(event.localX, event.localY));
+                
+                selectionDirection = 0;
+            }
+            
+            tryMoveCaretToPosition(startSelectionIndex);
+        }
+        
+        private function onMouseMove(event:MouseEvent):void
+        {
+            if(mouseIsDown || startHandleResizing || endHandleResizing) {
+                var bpIndex:int = bpAtPoint(new Point(mouseX, mouseY));
+                
+                if(bpIndex == -1) { return; }
+                
+                if(startHandleResizing) {
+                    startSelectionIndex = bpIndex;
+                    
+                    selectionDirection = 1; // ignore direction on resizing
+                    
+                    tryMoveCaretToPosition(startSelectionIndex);
+                } else if(endHandleResizing) {
+                    endSelectionIndex = bpIndex;
+                    
+                    selectionDirection = 1; // ignore direction on resizing
+                    
+                    tryMoveCaretToPosition(endSelectionIndex);
+                } else {
+                    endSelectionIndex = bpIndex;
+                    
+                    tryMoveCaretToPosition(endSelectionIndex);
+                }
+                
+                if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
+                    if(selectionDirection == 0 && startSelectionIndex != endSelectionIndex) {
+                        selectionDirection = (startSelectionIndex < endSelectionIndex) ? 1 : -1;
+                    }
+                    
+                    var start:int = (selectionDirection == -1) ? endSelectionIndex : startSelectionIndex;
+                    var end:int = (selectionDirection == -1) ? startSelectionIndex : endSelectionIndex;
+                    
+                    selectionLayer.startSelecting();
+                    selectionLayer.select(start, end);
+                }
+            }
+        }
+        
+        private function onMouseUp(event:MouseEvent):void
+        {
+            if(!(mouseIsDown || startHandleResizing || endHandleResizing)) { return; }
+            
+            mouseIsDown = false;
+            stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            
+            if(selectionLayer.selected && selectionLayer.selecting) {
+                selectionLayer.endSelecting();
+                
+                dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+            }
+        }
+        
+        private function onMouseDoubleClick(event:MouseEvent):void
+        {
+            if(event.target is FeatureRenderer) {
+                dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.target as FeatureRenderer).feature));
+            }
+        }
+        
+        private function onContextMenuSelect(event:ContextMenuEvent):void
+        {
+            customContextMenu.customItems = new Array();
+            
+            if(!_readOnly && event.mouseTarget is FeatureRenderer) {
+                customContextMenu.customItems.push(editFeatureContextMenuItem);
+                customContextMenu.customItems.push(removeFeatureContextMenuItem);
+            }
+            
+            if(!_readOnly && selectionLayer.selected) {
+                customContextMenu.customItems.push(selectedAsNewFeatureContextMenuItem);
+            }
+            
+            if(selectionLayer.selected && _showCutSites && isValidDigestionRegion()) {
+                customContextMenu.customItems.push(copyDigestionFragmentContextMenuItem);
+            }
+        }
+        
+        private function onEditFeatureMenuItem(event:ContextMenuEvent):void
+        {
+            if(event.mouseTarget is FeatureRenderer) {
+                dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+            }
+        }
+        
+        private function onRemoveFeatureMenuItem(event:ContextMenuEvent):void
+        {
+            if(event.mouseTarget is FeatureRenderer) {
+                dispatchEvent(new CommonEvent(CommonEvent.REMOVE_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
+            }
+        }
+        
+        private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
+        {
+            dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
+        }
+        
+        private function onSelectAll(event:Event):void
+        {
+            select(0, _featuredSequence.sequence.length);
+        }
+        
+        private function onCopy(event:Event):void
+        {
+            if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
+                Clipboard.generalClipboard.clear();
+                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
+            }
+        }
+        
+        private function onCut(event:Event):void
+        {
+            if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
+                Clipboard.generalClipboard.clear();
+                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
+                
+                if(_safeEditing) {
+                    doDeleteSequence(selectionLayer.start, selectionLayer.end);
+                } else {
+                    _featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+                    
+                    deselect();
+                }
+            }
+        }
+        
+        private function onPaste(event:Event):void
+        {
+            if(! isValidIndex(_caretPosition)) { return; }
+            
+            if(Clipboard.generalClipboard.hasFormat(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY)) {
+                if(startSelectionIndex == -1 || endSelectionIndex == -1 || !isValidDigestionRegion()) {
+                    return;
+                }
+                
+                if(!_showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites || _restrictionEnzymeMapper.cutSites.length == 0) {
+                    return;
+                }
+                
+                var digestionClipboardObject:Object = Clipboard.generalClipboard.getData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY);
+                
+                if(digestionClipboardObject == null || !(digestionClipboardObject is DigestionSequence)) {
+                    return;
+                }
+                
+                var digestionSequence:DigestionSequence = digestionClipboardObject as DigestionSequence;
+                
+                DigestionCutter.digestSequence(_featuredSequence, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
+            } else if(Clipboard.generalClipboard.hasFormat(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
+                var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY);
+                
+                if(clipboardObject != null) {
+                    var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
+                    var pasteSequence1:String = pasteFeaturedSequence.sequence.sequence;
+                    
+                    if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
+                        showInvalidPasteSequenceAlert();
+                        
+                        return;
+                    } else {
+                        pasteSequence1 = SequenceUtils.purifyCompatibleSequence(pasteSequence1);
+                    }
+                    
+                    if(_safeEditing) {
+                        doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+                    } else {
+                        _featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
+                    }				
+                }
+            } else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
+                var pasteSequence2:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
+                
+                if(!SequenceUtils.isCompatibleSequence(pasteSequence2)) {
+                    showInvalidPasteSequenceAlert();
+                    
+                    return;
+                } else {
+                    pasteSequence2 = SequenceUtils.purifyCompatibleSequence(pasteSequence2);
+                }
+                
+                if(_safeEditing) {
+                    doInsertSequence(new DNASequence(pasteSequence2), _caretPosition);
+                } else {
+                    _featuredSequence.insertSequence(new DNASequence(pasteSequence2), _caretPosition);
+                    
+                    tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
+                }				
+            }
+        }
+        
+        private function onKeyUp(event:KeyboardEvent):void
+        {
+            if(!event.shiftKey) {
+                shiftKeyDown = false;
+            }
+        }
+        
+        private function onKeyDown(event:KeyboardEvent):void
+        {
+            var keyCharacter:String = String.fromCharCode(event.charCode).toUpperCase();
+            
+            if(event.shiftKey && !shiftKeyDown) {
+                shiftDownCaretPosition = _caretPosition;
+                shiftKeyDown = true;
+                keysSelectionDirection = 0;
+            }
+            
+            if(event.ctrlKey && event.keyCode == Keyboard.LEFT) {
+                tryMoveCaretToPosition((_caretPosition % 10 == 0) ? _caretPosition - 10 : int(_caretPosition / 10) * 10);
+            } else if(event.ctrlKey && event.keyCode == Keyboard.RIGHT) {
+                tryMoveCaretToPosition((_caretPosition % 10 == 0) ? _caretPosition + 10 : int(_caretPosition / 10 + 1) * 10);
+            } else if(event.ctrlKey && event.keyCode == Keyboard.HOME) {
+                tryMoveCaretToPosition(0);
+            } else if(event.ctrlKey && event.keyCode == Keyboard.END) {
+                tryMoveCaretToPosition(_featuredSequence.sequence.length);
+            } else if(event.keyCode == Keyboard.LEFT) {
+                tryMoveCaretToPosition(_caretPosition - 1);
+            } else if(event.keyCode == Keyboard.UP) {
+                tryMoveCaretToPosition(_caretPosition - bpPerRow);
+            } else if(event.keyCode == Keyboard.RIGHT) {
+                tryMoveCaretToPosition(_caretPosition + 1);
+            } else if(event.keyCode == Keyboard.DOWN) {
+                tryMoveCaretToPosition(_caretPosition + bpPerRow);
+            } else if(event.keyCode == Keyboard.HOME || event.keyCode == Keyboard.END) {
+                var row:Row = rowByBpIndex(_caretPosition);
+                
+                if(event.keyCode == Keyboard.HOME) {
+                    tryMoveCaretToPosition(row.rowData.start);
+                } else {
+                    tryMoveCaretToPosition(row.rowData.end);
+                }
+            } else if(event.keyCode == Keyboard.PAGE_UP || event.keyCode == Keyboard.PAGE_DOWN) {
+                var numberOfVisibleRows:int = Math.max(int(sequenceAnnotator.height / _averageRowHeight - 1), 1);
+                
+                if(event.keyCode == Keyboard.PAGE_UP) {
+                    tryMoveCaretToPosition(_caretPosition - numberOfVisibleRows * _bpPerRow);
+                } else {
+                    tryMoveCaretToPosition(_caretPosition + numberOfVisibleRows * _bpPerRow);
+                }
+            } else if(!event.ctrlKey && !event.altKey && _caretPosition != -1) {
+                if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
+                    if(_safeEditing) {
+                        doInsertSequence(new DNASequence(keyCharacter), _caretPosition);
+                    } else {
+                        _featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + 1);
+                    }
+                } else if(event.keyCode == Keyboard.DELETE) {
+                    if(selectionLayer.selected) {
+                        if(_safeEditing) {
+                            doDeleteSequence(selectionLayer.start, selectionLayer.end);
+                        } else {
+                            _featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+                            
+                            tryMoveCaretToPosition(selectionLayer.start);
+                            
+                            deselect();
+                        }
+                    } else {
+                        if(_safeEditing) {
+                            doDeleteSequence(_caretPosition, _caretPosition + 1);
+                        } else {
+                            _featuredSequence.removeSequence(_caretPosition, _caretPosition + 1);
+                        }
+                    }
+                } else if(event.keyCode == Keyboard.BACKSPACE && _caretPosition > 0) {
+                    if(selectionLayer.selected) {
+                        if(_safeEditing) {
+                            doDeleteSequence(selectionLayer.start, selectionLayer.end);
+                        } else {
+                            _featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+                            
+                            tryMoveCaretToPosition(selectionLayer.start);
+                            
+                            deselect();
+                        }
+                    } else {
+                        if(_safeEditing) {
+                            doDeleteSequence(_caretPosition - 1, _caretPosition);
+                        } else {
+                            _featuredSequence.removeSequence(_caretPosition - 1, _caretPosition);
+                            
+                            tryMoveCaretToPosition(_caretPosition - 1);
+                        }
+                    }
+                }
+            }
+            
+            if(shiftKeyDown) {
+                if(keysSelectionDirection == 0) {
+                    if(_caretPosition > shiftDownCaretPosition) {
+                        keysSelectionDirection = 1;
+                    } else if(_caretPosition < shiftDownCaretPosition) {
+                        keysSelectionDirection = -1;
+                    } else {
+                        deselect();
+                        return;
+                    }
+                }
+                
+                if(isValidIndex(shiftDownCaretPosition) && isValidIndex(_caretPosition)) {
+                    if(keysSelectionDirection == 1) {
+                        doSelect(shiftDownCaretPosition, _caretPosition);
+                        
+                        dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, shiftDownCaretPosition, _caretPosition));
+                    } else {
+                        doSelect(_caretPosition, shiftDownCaretPosition);
+                        
+                        dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, _caretPosition, shiftDownCaretPosition));
+                    }
+                }
+            }
+        }
+        
+        private function onSelectionHandleClicked(event:SelectionLayerEvent):void
+        {
+            startSelectionIndex = selectionLayer.start;
+            endSelectionIndex = selectionLayer.end;
+            
+            startHandleResizing = event.handleKind == SelectionHandle.START_HANDLE;
+            endHandleResizing = event.handleKind == SelectionHandle.END_HANDLE;
+            
+            stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+        }
+        
+        private function onSelectionHandleReleased(event:SelectionLayerEvent):void
+        {
+            startHandleResizing = false;
+            endHandleResizing = false;
+            
+            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+        }
+        
+        private function onSelectionChanged(event:SelectionEvent):void
+        {
+            if(event.start >= 0 && event.end >= 0) {
+                customContextMenu.clipboardItems.copy = true;
+                customContextMenu.clipboardItems.cut = _readOnly ? false : true;
+            } else {
+                customContextMenu.clipboardItems.copy = false;
+                customContextMenu.clipboardItems.cut = false;
+            }
+        }
+        
+        // Private Methods
 		private function disableSequence():void
 		{
 			invalidSequence = true;
@@ -922,9 +1343,7 @@ package org.jbei.components.sequenceClasses
 			
 			customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
 			
-			if(! _readOnly) {
-				createCustomContextMenuItems();
-			}
+    		createCustomContextMenuItems();
         }
         
         private function createCustomContextMenuItems():void
@@ -937,6 +1356,10 @@ package org.jbei.components.sequenceClasses
 			
 			selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
 			selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
+            
+            copyDigestionFragmentContextMenuItem = new ContextMenuItem("Copy Digestion Fragment");
+            copyDigestionFragmentContextMenuItem.separatorBefore = true;
+            copyDigestionFragmentContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onCopyDigestionFragmentContextMenuItem);
         }
         
 		private function createSequenceRenderer():void
@@ -1068,354 +1491,6 @@ package org.jbei.components.sequenceClasses
 			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
 		}
 		
-	    private function onMouseDown(event:MouseEvent):void
-	    {
-			if(event.target is AnnotationRenderer) { return; }
-	    	
-	    	if(selectionLayer.selected) { deselect(); }
-	    	
-	    	mouseIsDown = true;
-			
-			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			
-			if(!startHandleResizing && !endHandleResizing) {
-				startSelectionIndex = bpAtPoint(new Point(event.localX, event.localY));
-				
-				selectionDirection = 0;
-			}
-			
-			tryMoveCaretToPosition(startSelectionIndex);
-	    }
-	    
-	    private function onMouseMove(event:MouseEvent):void
-	    {
-	    	if(mouseIsDown || startHandleResizing || endHandleResizing) {
-				var bpIndex:int = bpAtPoint(new Point(mouseX, mouseY));
-				
-				if(bpIndex == -1) { return; }
-				
-	    		if(startHandleResizing) {
-	    			startSelectionIndex = bpIndex;
-	    			
-					selectionDirection = 1; // ignore direction on resizing
-					
-	    			tryMoveCaretToPosition(startSelectionIndex);
-	    		} else if(endHandleResizing) {
-					endSelectionIndex = bpIndex;
-					
-					selectionDirection = 1; // ignore direction on resizing
-	    			
-					tryMoveCaretToPosition(endSelectionIndex);
-	    		} else {
-					endSelectionIndex = bpIndex;
-	    			
-					tryMoveCaretToPosition(endSelectionIndex);
-	    		}
-	    		
-				if(isValidIndex(startSelectionIndex) && isValidIndex(endSelectionIndex)) {
-					if(selectionDirection == 0 && startSelectionIndex != endSelectionIndex) {
-						selectionDirection = (startSelectionIndex < endSelectionIndex) ? 1 : -1;
-					}
-					
-					var start:int = (selectionDirection == -1) ? endSelectionIndex : startSelectionIndex;
-					var end:int = (selectionDirection == -1) ? startSelectionIndex : endSelectionIndex;
-					
-					selectionLayer.startSelecting();
-	    			selectionLayer.select(start, end);
-				}
-	    	}
-	    }
-	    
-		private function onMouseUp(event:MouseEvent):void
-	    {
-			if(!(mouseIsDown || startHandleResizing || endHandleResizing)) { return; }
-	    	
-	    	mouseIsDown = false;
-	    	stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-	    	stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-	    	
-	    	if(selectionLayer.selected && selectionLayer.selecting) {
-		    	selectionLayer.endSelecting();
-		    	
-		    	dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
-	    	}
-	    }
-	    
-        private function onMouseDoubleClick(event:MouseEvent):void
-        {
-        	if(event.target is FeatureRenderer) {
-        		dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.target as FeatureRenderer).feature));
-        	}
-        }
-        
-		private function onContextMenuSelect(event:ContextMenuEvent):void
-		{
-			customContextMenu.customItems = new Array();
-			
-			if(event.mouseTarget is FeatureRenderer) {
-		        customContextMenu.customItems.push(editFeatureContextMenuItem);
-				customContextMenu.customItems.push(removeFeatureContextMenuItem);
-			}
-			
-			if(selectionLayer.selected) {
-		        customContextMenu.customItems.push(selectedAsNewFeatureContextMenuItem);
-			}
-		}
-		
-		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
-		{
-			if(event.mouseTarget is FeatureRenderer) {
-				dispatchEvent(new CommonEvent(CommonEvent.EDIT_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
-			}
-		}
-		
-		private function onRemoveFeatureMenuItem(event:ContextMenuEvent):void
-		{
-			if(event.mouseTarget is FeatureRenderer) {
-				dispatchEvent(new CommonEvent(CommonEvent.REMOVE_FEATURE, true, true, (event.mouseTarget as FeatureRenderer).feature));
-			}
-		}
-		
-		private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
-		{
-			dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
-		}
-		
-	    private function onSelectAll(event:Event):void
-	    {
-	    	select(0, _featuredSequence.sequence.length);
-	    }
-	    
-		private function onCopy(event:Event):void
-		{
-			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
-			}
-		}
-		
-		private function onCut(event:Event):void
-		{
-			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
-				
-				if(_safeEditing) {
-					doDeleteSequence(selectionLayer.start, selectionLayer.end);
-				} else {
-					_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
-					
-					deselect();
-				}
-			}
-		}
-		
-	    private function onPaste(event:Event):void
-	    {
-	    	if(! isValidIndex(_caretPosition)) { return; }
-			
-			if(Clipboard.generalClipboard.hasFormat(FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
-				var clipboardObject:Object = Clipboard.generalClipboard.getData(FEATURED_SEQUENCE_CLIPBOARD_KEY);
-				
-				if(clipboardObject != null) {
-					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
-					var pasteSequence1:String = pasteFeaturedSequence.sequence.sequence;
-					
-					if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
-						showInvalidPasteSequenceAlert();
-						
-						return;
-					} else {
-						pasteSequence1 = SequenceUtils.purifyCompatibleSequence(pasteSequence1);
-					}
-					
-					if(_safeEditing) {
-						doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
-					} else {
-						_featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
-						
-						tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
-					}				
-				}
-			} else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-				var pasteSequence2:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
-				
-				if(!SequenceUtils.isCompatibleSequence(pasteSequence2)) {
-					showInvalidPasteSequenceAlert();
-					
-					return;
-				} else {
-					pasteSequence2 = SequenceUtils.purifyCompatibleSequence(pasteSequence2);
-				}
-				
-				if(_safeEditing) {
-					doInsertSequence(new DNASequence(pasteSequence2), _caretPosition);
-				} else {
-					_featuredSequence.insertSequence(new DNASequence(pasteSequence2), _caretPosition);
-					
-					tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
-				}				
-			}
-	    }
-	    
-		private function onKeyUp(event:KeyboardEvent):void
-	    {
-	    	if(!event.shiftKey) {
-	    		shiftKeyDown = false;
-	    	}
-	    }
-	    
-		private function onKeyDown(event:KeyboardEvent):void
-	    {
-	    	var keyCharacter:String = String.fromCharCode(event.charCode).toUpperCase();
-	    	
-	    	if(event.shiftKey && !shiftKeyDown) {
-	    		shiftDownCaretPosition = _caretPosition;
-	    		shiftKeyDown = true;
-				keysSelectionDirection = 0;
-	    	}
-			
-	    	if(event.ctrlKey && event.keyCode == Keyboard.LEFT) {
-				tryMoveCaretToPosition((_caretPosition % 10 == 0) ? _caretPosition - 10 : int(_caretPosition / 10) * 10);
-	    	} else if(event.ctrlKey && event.keyCode == Keyboard.RIGHT) {
-				tryMoveCaretToPosition((_caretPosition % 10 == 0) ? _caretPosition + 10 : int(_caretPosition / 10 + 1) * 10);
-			} else if(event.ctrlKey && event.keyCode == Keyboard.HOME) {
-				tryMoveCaretToPosition(0);
-			} else if(event.ctrlKey && event.keyCode == Keyboard.END) {
-				tryMoveCaretToPosition(_featuredSequence.sequence.length);
-			} else if(event.keyCode == Keyboard.LEFT) {
-				tryMoveCaretToPosition(_caretPosition - 1);
-	    	} else if(event.keyCode == Keyboard.UP) {
-				tryMoveCaretToPosition(_caretPosition - bpPerRow);
-	    	} else if(event.keyCode == Keyboard.RIGHT) {
-				tryMoveCaretToPosition(_caretPosition + 1);
-	    	} else if(event.keyCode == Keyboard.DOWN) {
-	    		tryMoveCaretToPosition(_caretPosition + bpPerRow);
-	    	} else if(event.keyCode == Keyboard.HOME || event.keyCode == Keyboard.END) {
-				var row:Row = rowByBpIndex(_caretPosition);
-				
-				if(event.keyCode == Keyboard.HOME) {
-					tryMoveCaretToPosition(row.rowData.start);
-				} else {
-					tryMoveCaretToPosition(row.rowData.end);
-				}
-	    	} else if(event.keyCode == Keyboard.PAGE_UP || event.keyCode == Keyboard.PAGE_DOWN) {
-				var numberOfVisibleRows:int = Math.max(int(sequenceAnnotator.height / _averageRowHeight - 1), 1);
-				
-				if(event.keyCode == Keyboard.PAGE_UP) {
-					tryMoveCaretToPosition(_caretPosition - numberOfVisibleRows * _bpPerRow);
-				} else {
-					tryMoveCaretToPosition(_caretPosition + numberOfVisibleRows * _bpPerRow);
-				}
-			} else if(!event.ctrlKey && !event.altKey && _caretPosition != -1) {
-				if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
-					if(_safeEditing) {
-						doInsertSequence(new DNASequence(keyCharacter), _caretPosition);
-					} else {
-						_featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
-						
-						tryMoveCaretToPosition(_caretPosition + 1);
-					}
-				} else if(event.keyCode == Keyboard.DELETE) {
-					if(selectionLayer.selected) {
-						if(_safeEditing) {
-							doDeleteSequence(selectionLayer.start, selectionLayer.end);
-						} else {
-							_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
-							
-							tryMoveCaretToPosition(selectionLayer.start);
-							
-							deselect();
-						}
-					} else {
-						if(_safeEditing) {
-							doDeleteSequence(_caretPosition, _caretPosition + 1);
-						} else {
-							_featuredSequence.removeSequence(_caretPosition, _caretPosition + 1);
-						}
-					}
-				} else if(event.keyCode == Keyboard.BACKSPACE && _caretPosition > 0) {
-					if(selectionLayer.selected) {
-						if(_safeEditing) {
-							doDeleteSequence(selectionLayer.start, selectionLayer.end);
-						} else {
-							_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
-							
-							tryMoveCaretToPosition(selectionLayer.start);
-							
-							deselect();
-						}
-					} else {
-						if(_safeEditing) {
-							doDeleteSequence(_caretPosition - 1, _caretPosition);
-						} else {
-							_featuredSequence.removeSequence(_caretPosition - 1, _caretPosition);
-							
-							tryMoveCaretToPosition(_caretPosition - 1);
-						}
-					}
-				}
-			}
-			
-			if(shiftKeyDown) {
-				if(keysSelectionDirection == 0) {
-					if(_caretPosition > shiftDownCaretPosition) {
-						keysSelectionDirection = 1;
-					} else if(_caretPosition < shiftDownCaretPosition) {
-						keysSelectionDirection = -1;
-					} else {
-						deselect();
-						return;
-					}
-				}
-				
-				if(isValidIndex(shiftDownCaretPosition) && isValidIndex(_caretPosition)) {
-					if(keysSelectionDirection == 1) {
-						doSelect(shiftDownCaretPosition, _caretPosition);
-						
-						dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, shiftDownCaretPosition, _caretPosition));
-					} else {
-						doSelect(_caretPosition, shiftDownCaretPosition);
-						
-						dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, _caretPosition, shiftDownCaretPosition));
-					}
-				}
-			}
-	    }
-	    
-	    private function onSelectionHandleClicked(event:SelectionLayerEvent):void
-	    {
-	    	startSelectionIndex = selectionLayer.start;
-    		endSelectionIndex = selectionLayer.end;
-	    	
-	    	startHandleResizing = event.handleKind == SelectionHandle.START_HANDLE;
-	    	endHandleResizing = event.handleKind == SelectionHandle.END_HANDLE;
-	    	
-	    	stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-	    }
-	    
-	    private function onSelectionHandleReleased(event:SelectionLayerEvent):void
-	    {
-	    	startHandleResizing = false;
-	    	endHandleResizing = false;
-	    	
-	    	stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-	    }
-        
-        private function onSelectionChanged(event:SelectionEvent):void
-        {
-        	if(event.start >= 0 && event.end >= 0) {
-        		customContextMenu.clipboardItems.copy = true;
-				customContextMenu.clipboardItems.cut = _readOnly ? false : true;
-        	} else {
-        		customContextMenu.clipboardItems.copy = false;
-        		customContextMenu.clipboardItems.cut = false;
-        	}
-        }
-	    
 		private function drawBackground():void
 		{
 			var g:Graphics = graphics;
@@ -1758,5 +1833,33 @@ package org.jbei.components.sequenceClasses
 				dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
 			}
 		}
+        
+        private function isValidDigestionRegion():Boolean
+        {
+            if(!_showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites || _restrictionEnzymeMapper.cutSites.length == 0) {
+                return false;
+            }
+            
+            var matchedStart:Boolean = false;
+            var matchedEnd:Boolean = false;
+            
+            for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
+                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                
+                if(startSelectionIndex == cutSite.start) {
+                    matchedStart = true;
+                }
+                
+                if(endSelectionIndex == cutSite.end + 1) {
+                    matchedEnd = true;
+                }
+                
+                if(matchedStart && matchedEnd) {
+                    break;
+                }
+            }
+            
+            return matchedStart && matchedEnd;
+        }
 	}
 }

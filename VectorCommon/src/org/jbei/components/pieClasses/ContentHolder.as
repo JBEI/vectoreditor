@@ -27,6 +27,7 @@ package org.jbei.components.pieClasses
     import org.jbei.bio.data.Feature;
     import org.jbei.bio.data.IAnnotation;
     import org.jbei.bio.data.ORF;
+    import org.jbei.bio.data.RestrictionEnzyme;
     import org.jbei.bio.data.Segment;
     import org.jbei.bio.data.TraceAnnotation;
     import org.jbei.bio.utils.SegmentUtils;
@@ -36,6 +37,8 @@ package org.jbei.components.pieClasses
     import org.jbei.components.common.AnnotationRenderer;
     import org.jbei.components.common.CaretEvent;
     import org.jbei.components.common.CommonEvent;
+    import org.jbei.components.common.Constants;
+    import org.jbei.components.common.digestion.DigestionSequence;
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.LabelBox;
@@ -46,6 +49,9 @@ package org.jbei.components.pieClasses
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.mappers.TraceMapper;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ContentHolder extends UIComponent implements IContentHolder
 	{
 		private const BACKGROUND_COLOR:int = 0xFFFFFF;
@@ -54,8 +60,7 @@ package org.jbei.components.pieClasses
 		private const PIE_RADIUS_PERCENTS:Number = 0.60;
 		private const SELECTION_THRESHOLD:Number = 5;
 		private const DISTANCE_LABEL_FROM_RAIL:int = 30;
-		private const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "VectorEditorFeaturedSequence";
-		private const LABEL_FONT_FACE:String = "Tahoma";
+        private const LABEL_FONT_FACE:String = "Tahoma";
 		private const FEATURE_LABEL_FONT_COLOR:int = 0x000000;
 		private const CUTSITES_LABEL_FONT_COLOR:int = 0x888888;
 		private const SINGLE_CUTTER_LABEL_FONT_COLOR:int = 0xE57676;
@@ -72,6 +77,7 @@ package org.jbei.components.pieClasses
 		private var editFeatureContextMenuItem:ContextMenuItem;
 		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
+        private var copyDigestionFragmentContextMenuItem:ContextMenuItem;
 		
 		private var _featuredSequence:FeaturedSequence;
 		private var _orfMapper:ORFMapper;
@@ -735,177 +741,7 @@ package org.jbei.components.pieClasses
 			validateCaret();
 		}
 		
-		// Private Methods
-		private function disableSequence():void
-		{
-			invalidSequence = true;
-			
-			featureAlignmentMap = null;
-			orfAlignmentMap = null;
-			tracesAlignmentMap = null;
-			
-			caretPosition = 0;
-			
-			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			removeEventListener(MouseEvent.DOUBLE_CLICK, onMouseDoubleClick);
-			
-			pie.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			pie.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
-			
-			pie.removeEventListener(Event.SELECT_ALL, onSelectAll);
-			pie.removeEventListener(Event.COPY, onCopy);
-			if(!_readOnly) {
-				pie.removeEventListener(Event.CUT, onCut);
-				pie.removeEventListener(Event.PASTE, onPaste);
-			}
-			
-			removeEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-		}
-		
-		private function initializeSequence():void
-		{
-			invalidSequence = false;
-			
-			featuresAlignmentChanged = true;
-			orfsAlignmentChanged = true;
-			tracesAlignmentChanged = true;
-			
-			if(selectionLayer.selected) {
-				doDeselect();
-			}
-			
-			_caretPosition = 0;
-			
-			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			addEventListener(MouseEvent.DOUBLE_CLICK, onMouseDoubleClick);
-			
-			pie.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			pie.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
-			
-			pie.addEventListener(Event.SELECT_ALL, onSelectAll);
-			pie.addEventListener(Event.COPY, onCopy);
-			if(!_readOnly) {
-				pie.addEventListener(Event.CUT, onCut);
-				pie.addEventListener(Event.PASTE, onPaste);
-			}
-			
-			addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-		}
-		
-        private function createContextMenu():void
-        {
-			customContextMenu = new ContextMenu();
-			
-			customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
-			customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-			customContextMenu.clipboardItems.paste = _readOnly ? false : true;
-			customContextMenu.clipboardItems.selectAll = true;
-			
-			contextMenu = customContextMenu;
-			
-			customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
-			
-			if(! _readOnly) {
-				createCustomContextMenuItems();
-			}
-        }
-        
-        private function createCustomContextMenuItems():void
-        {
-			editFeatureContextMenuItem = new ContextMenuItem("Edit Feature");
-			editFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditFeatureMenuItem);
-        	
-			removeFeatureContextMenuItem = new ContextMenuItem("Remove Feature");
-			removeFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveFeatureMenuItem);
-			
-			selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
-			selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
-        }
-        
-	 	private function createRailBox():void
-	 	{
-	        if(!railBox) {
-				railBox = new RailBox(this);
-				railBox.includeInLayout = false;
-	            
-            	addChild(railBox);
-	        }
-	 	}
-	 	
-		private function createHighlightLayer():void
-		{
-			if(highlightLayer == null) {
-				highlightLayer = new HighlightLayer(this);
-				highlightLayer.includeInLayout = false;
-				
-				addChild(highlightLayer);
-			}
-		}
-		
-	 	private function createSelectionLayer():void
-	 	{
-	        if(!selectionLayer) {
-	            selectionLayer = new SelectionLayer(this);
-	            selectionLayer.includeInLayout = false;
-            	addChild(selectionLayer);
-	        }
-	 	}
-	 	
-		private function createNameBox():void
-		{
-			if(!nameBox) {
-				nameBox = new NameBox(this);
-				nameBox.includeInLayout = false;
-				addChild(nameBox);
-			}
-		}
-		
-	 	private function createCaret():void
-		{
-	        if(!caret) {
-	            caret = new Caret(this);
-	            caret.includeInLayout = false;
-            	addChild(caret);
-	        }
-		}
-	 	
-		private function createTextRenderers():void
-		{
-			_cutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, CUTSITES_LABEL_FONT_COLOR));
-			_cutSiteTextRenderer.includeInLayout = false;
-			_cutSiteTextRenderer.visible = false;
-			
-			_singleCutterCutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, SINGLE_CUTTER_LABEL_FONT_COLOR));
-			_singleCutterCutSiteTextRenderer.includeInLayout = false;
-			_singleCutterCutSiteTextRenderer.visible = false;
-			
-			_featureTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize + 1, FEATURE_LABEL_FONT_COLOR));
-			_featureTextRenderer.includeInLayout = false;
-			_featureTextRenderer.visible = false;
-			
-			addChild(_cutSiteTextRenderer);
-			addChild(_singleCutterCutSiteTextRenderer);
-			addChild(_featureTextRenderer);
-			
-			// Load dummy renderers to calculate width and height
-			_cutSiteTextRenderer.textToBitmap("EcoRI");
-			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
-			_featureTextRenderer.textToBitmap("EcoRI");
-		}
-		
-		private function createWireframeSelectionLayer():void
-		{
-			if(!wireframeSelectionLayer) {
-				wireframeSelectionLayer = new WireframeSelectionLayer(this);
-				wireframeSelectionLayer.includeInLayout = false;
-				addChild(wireframeSelectionLayer);
-			}
-		}
-		
+        // Event Handlers
 	    private function onMouseDown(event:MouseEvent):void
 	    {
 	    	if(event.target is AnnotationRenderer) { return; }
@@ -993,14 +829,18 @@ package org.jbei.components.pieClasses
 		{
 			customContextMenu.customItems = new Array();
 			
-			if(event.mouseTarget is FeatureRenderer) {
+			if(!_readOnly && event.mouseTarget is FeatureRenderer) {
 		        customContextMenu.customItems.push(editFeatureContextMenuItem);
 				customContextMenu.customItems.push(removeFeatureContextMenuItem);
 			}
 			
-			if(selectionLayer.selected) {
+			if(!_readOnly && selectionLayer.selected) {
 		        customContextMenu.customItems.push(selectedAsNewFeatureContextMenuItem);
 			}
+            
+            if(selectionLayer.selected && _showCutSites && isValidDigestionRegion()) {
+                customContextMenu.customItems.push(copyDigestionFragmentContextMenuItem);
+            }
 		}
 		
 		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
@@ -1022,6 +862,49 @@ package org.jbei.components.pieClasses
 			dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
 		}
 		
+        private function onCopyDigestionFragmentContextMenuItem(event:ContextMenuEvent):void
+        {
+            if(!_showCutSites
+                || !_restrictionEnzymeMapper
+                || !_restrictionEnzymeMapper.cutSites
+                || _restrictionEnzymeMapper.cutSites.length == 0
+                || !isValidIndex(startSelectionIndex)
+                || !isValidIndex(endSelectionIndex)) {
+                return;
+            }
+            
+            var digestionStart:int = -1;
+            var digestionEnd:int = -1;
+            var digestionStartCutSite:CutSite = null;
+            var digestionEndCutSite:CutSite = null;
+            
+            for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
+                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                
+                if(startSelectionIndex == cutSite.start) {
+                    digestionStart = startSelectionIndex;
+                    digestionStartCutSite = cutSite;
+                }
+                
+                if(endSelectionIndex == cutSite.end + 1) {
+                    digestionEnd = endSelectionIndex;
+                    digestionEndCutSite = cutSite;
+                }
+            }
+            
+            if(digestionStart == -1 || digestionEnd == -1) {
+                return;
+            }
+            
+            var subFeaturedSequence:FeaturedSequence = _featuredSequence.subFeaturedSequence(digestionStart, digestionEnd);
+            var digestionSequence:DigestionSequence = new DigestionSequence(subFeaturedSequence, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
+            
+            Clipboard.generalClipboard.clear();
+            Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
+            Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
+            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.sequence, true);
+        }
+        
 	    private function onSelectAll(event:Event):void
 	    {
 	    	select(0, _featuredSequence.sequence.length);
@@ -1031,7 +914,7 @@ package org.jbei.components.pieClasses
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), true);
+				Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), true);
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence, true);
 			}
 		}
@@ -1040,7 +923,7 @@ package org.jbei.components.pieClasses
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
+				Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
 				
 				if(_safeEditing) {
@@ -1057,8 +940,8 @@ package org.jbei.components.pieClasses
 		{
 			if(! isValidIndex(_caretPosition)) { return; }
 			
-			if(Clipboard.generalClipboard.hasFormat(FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
-				var clipboardObject:Object = Clipboard.generalClipboard.getData(FEATURED_SEQUENCE_CLIPBOARD_KEY);
+			if(Clipboard.generalClipboard.hasFormat(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
+				var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY);
 				
 				if(clipboardObject != null) {
 					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
@@ -1143,6 +1026,179 @@ package org.jbei.components.pieClasses
         	}
         }
 	    
+        // Private Methods
+        private function disableSequence():void
+        {
+            invalidSequence = true;
+            
+            featureAlignmentMap = null;
+            orfAlignmentMap = null;
+            tracesAlignmentMap = null;
+            
+            caretPosition = 0;
+            
+            removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+            removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            removeEventListener(MouseEvent.DOUBLE_CLICK, onMouseDoubleClick);
+            
+            pie.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            pie.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+            
+            pie.removeEventListener(Event.SELECT_ALL, onSelectAll);
+            pie.removeEventListener(Event.COPY, onCopy);
+            if(!_readOnly) {
+                pie.removeEventListener(Event.CUT, onCut);
+                pie.removeEventListener(Event.PASTE, onPaste);
+            }
+            
+            removeEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+        }
+        
+        private function initializeSequence():void
+        {
+            invalidSequence = false;
+            
+            featuresAlignmentChanged = true;
+            orfsAlignmentChanged = true;
+            tracesAlignmentChanged = true;
+            
+            if(selectionLayer.selected) {
+                doDeselect();
+            }
+            
+            _caretPosition = 0;
+            
+            addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+            addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            addEventListener(MouseEvent.DOUBLE_CLICK, onMouseDoubleClick);
+            
+            pie.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            pie.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+            
+            pie.addEventListener(Event.SELECT_ALL, onSelectAll);
+            pie.addEventListener(Event.COPY, onCopy);
+            if(!_readOnly) {
+                pie.addEventListener(Event.CUT, onCut);
+                pie.addEventListener(Event.PASTE, onPaste);
+            }
+            
+            addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+        }
+        
+        private function createContextMenu():void
+        {
+            customContextMenu = new ContextMenu();
+            
+            customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
+            customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
+            customContextMenu.clipboardItems.paste = _readOnly ? false : true;
+            customContextMenu.clipboardItems.selectAll = true;
+            
+            contextMenu = customContextMenu;
+            
+            customContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
+            
+            createCustomContextMenuItems();
+        }
+        
+        private function createCustomContextMenuItems():void
+        {
+            editFeatureContextMenuItem = new ContextMenuItem("Edit Feature");
+            editFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditFeatureMenuItem);
+            
+            removeFeatureContextMenuItem = new ContextMenuItem("Remove Feature");
+            removeFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveFeatureMenuItem);
+            
+            selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
+            selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
+            
+            copyDigestionFragmentContextMenuItem = new ContextMenuItem("Copy Digestion Fragment");
+            copyDigestionFragmentContextMenuItem.separatorBefore = true;
+            copyDigestionFragmentContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onCopyDigestionFragmentContextMenuItem);
+        }
+        
+        private function createRailBox():void
+        {
+            if(!railBox) {
+                railBox = new RailBox(this);
+                railBox.includeInLayout = false;
+                
+                addChild(railBox);
+            }
+        }
+        
+        private function createHighlightLayer():void
+        {
+            if(highlightLayer == null) {
+                highlightLayer = new HighlightLayer(this);
+                highlightLayer.includeInLayout = false;
+                
+                addChild(highlightLayer);
+            }
+        }
+        
+        private function createSelectionLayer():void
+        {
+            if(!selectionLayer) {
+                selectionLayer = new SelectionLayer(this);
+                selectionLayer.includeInLayout = false;
+                addChild(selectionLayer);
+            }
+        }
+        
+        private function createNameBox():void
+        {
+            if(!nameBox) {
+                nameBox = new NameBox(this);
+                nameBox.includeInLayout = false;
+                addChild(nameBox);
+            }
+        }
+        
+        private function createCaret():void
+        {
+            if(!caret) {
+                caret = new Caret(this);
+                caret.includeInLayout = false;
+                addChild(caret);
+            }
+        }
+        
+        private function createTextRenderers():void
+        {
+            _cutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, CUTSITES_LABEL_FONT_COLOR));
+            _cutSiteTextRenderer.includeInLayout = false;
+            _cutSiteTextRenderer.visible = false;
+            
+            _singleCutterCutSiteTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize, SINGLE_CUTTER_LABEL_FONT_COLOR));
+            _singleCutterCutSiteTextRenderer.includeInLayout = false;
+            _singleCutterCutSiteTextRenderer.visible = false;
+            
+            _featureTextRenderer = new TextRenderer(new TextFormat(LABEL_FONT_FACE, labelFontSize + 1, FEATURE_LABEL_FONT_COLOR));
+            _featureTextRenderer.includeInLayout = false;
+            _featureTextRenderer.visible = false;
+            
+            addChild(_cutSiteTextRenderer);
+            addChild(_singleCutterCutSiteTextRenderer);
+            addChild(_featureTextRenderer);
+            
+            // Load dummy renderers to calculate width and height
+            _cutSiteTextRenderer.textToBitmap("EcoRI");
+            _singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
+            _featureTextRenderer.textToBitmap("EcoRI");
+        }
+        
+        private function createWireframeSelectionLayer():void
+        {
+            if(!wireframeSelectionLayer) {
+                wireframeSelectionLayer = new WireframeSelectionLayer(this);
+                wireframeSelectionLayer.includeInLayout = false;
+                addChild(wireframeSelectionLayer);
+            }
+        }
+        
 		private function drawBackground():void
 		{
 			var g:Graphics = graphics;
@@ -2037,5 +2093,33 @@ package org.jbei.components.pieClasses
 			_singleCutterCutSiteTextRenderer.textToBitmap("EcoRI");
 			_featureTextRenderer.textToBitmap("EcoRI");
 		}
+        
+        private function isValidDigestionRegion():Boolean
+        {
+            if(!_showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites || _restrictionEnzymeMapper.cutSites.length == 0) {
+                return false;
+            }
+            
+            var matchedStart:Boolean = false;
+            var matchedEnd:Boolean = false;
+            
+            for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
+                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                
+                if(startSelectionIndex == cutSite.start) {
+                    matchedStart = true;
+                }
+                
+                if(endSelectionIndex == cutSite.end + 1) {
+                    matchedEnd = true;
+                }
+                
+                if(matchedStart && matchedEnd) {
+                    break;
+                }
+            }
+            
+            return matchedStart && matchedEnd;
+        }
 	}
 }
