@@ -9,6 +9,9 @@ package org.jbei.registry.control
 	import org.jbei.registry.models.UserRestrictionEnzymeGroup;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public final class RestrictionEnzymeGroupManager
 	{
         private static var _instance:RestrictionEnzymeGroupManager = new RestrictionEnzymeGroupManager();
@@ -92,7 +95,7 @@ package org.jbei.registry.control
 			// load user groups
 			_userGroups.removeAll();
 			
-			if(!userRestrictionEnzymes || (userRestrictionEnzymes && userRestrictionEnzymes.activeEnzymeNames == null && userRestrictionEnzymes.groups == null)) {
+			if(!userRestrictionEnzymes || (userRestrictionEnzymes && (userRestrictionEnzymes.activeEnzymeNames == null || userRestrictionEnzymes.groups == null))) {
 				return;
 			}
 			
@@ -109,6 +112,10 @@ package org.jbei.registry.control
 				}
 			}
 			
+            CONFIG::standalone {
+                return;
+            }
+            
 			// load user active group
 			_activeGroup.removeAll();
 			
@@ -181,7 +188,7 @@ package org.jbei.registry.control
         private function initializeDefaultActiveGroup():void
         {
 			for(var i:int = 0; i < (_systemGroups[0] as RestrictionEnzymeGroup).enzymes.length; i++) {
-				activeGroup.addItem((_systemGroups[0] as RestrictionEnzymeGroup).enzymes[i]);
+                _activeGroup.addItem((_systemGroups[0] as RestrictionEnzymeGroup).enzymes[i]);
 			}
         }
 		
