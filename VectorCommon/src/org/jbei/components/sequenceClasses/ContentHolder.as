@@ -31,14 +31,14 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.CaretEvent;
     import org.jbei.components.common.CommonEvent;
     import org.jbei.components.common.Constants;
-    import org.jbei.components.common.digestion.DigestionCutter;
-    import org.jbei.components.common.digestion.DigestionSequence;
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.TextRenderer;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.mappers.AAMapper;
+    import org.jbei.lib.mappers.DigestionCutter;
+    import org.jbei.lib.mappers.DigestionSequence;
     import org.jbei.lib.mappers.ORFMapper;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.utils.SystemUtils;
@@ -1083,7 +1083,8 @@ package org.jbei.components.sequenceClasses
                 
                 var digestionSequence:DigestionSequence = digestionClipboardObject as DigestionSequence;
                 
-                DigestionCutter.digestSequence(_featuredSequence, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
+                var digestionCutter:DigestionCutter = new DigestionCutter(_featuredSequence, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
+                digestionCutter.digest(digestionCutter.matchType);
             } else if(Clipboard.generalClipboard.hasFormat(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
                 var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY);
                 

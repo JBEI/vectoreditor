@@ -1,4 +1,4 @@
-package org.jbei.components.common.digestion
+package org.jbei.lib.mappers
 {
     import org.jbei.bio.data.RestrictionEnzyme;
     import org.jbei.lib.FeaturedSequence;
