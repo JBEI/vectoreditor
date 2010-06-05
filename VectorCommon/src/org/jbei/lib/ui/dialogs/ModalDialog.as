@@ -11,6 +11,7 @@ package org.jbei.lib.ui.dialogs
 	import mx.controls.Button;
 	import mx.controls.HRule;
 	import mx.controls.Spacer;
+	import mx.core.Application;
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
 
@@ -29,10 +30,14 @@ package org.jbei.lib.ui.dialogs
 		private var hRule:HRule = new HRule();
 		
 		// Constructor
-		public function ModalDialog(dialogParent:DisplayObject, dialogFormClass:Class, dataObject:Object)
+		public function ModalDialog(dialogFormClass:Class, dataObject:Object, dialogParent:DisplayObject = null)
 		{
 			super();
 			
+            if(dialogParent == null) {
+                dialogParent = (Application.application as Application).parent;
+            }
+            
 			this.dialogParent = dialogParent;
 			this.dialogForm = new dialogFormClass();
 			this.dialogForm.dialog = this;

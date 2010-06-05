@@ -10,6 +10,7 @@ package org.jbei.lib.ui.dialogs
 	import mx.containers.VBox;
 	import mx.controls.Button;
 	import mx.controls.HRule;
+	import mx.core.Application;
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
 
@@ -26,11 +27,15 @@ package org.jbei.lib.ui.dialogs
 		private var hRule:HRule = new HRule();
 		
 		// Constructor
-		public function SimpleDialog(dialogParent:DisplayObject, dialogFormClass:Class, activeTabIndex:int = 0)
+		public function SimpleDialog(dialogFormClass:Class, activeTabIndex:int = 0, dialogParent:DisplayObject = null)
 		{
 			super();
 			
-			this.dialogParent = dialogParent;
+            if(dialogParent == null) {
+                dialogParent = (Application.application as Application).parent;
+            }
+            
+            this.dialogParent = dialogParent;
 			this.dialogForm = new dialogFormClass();
 			this.dialogForm.dialog = this;
 			
