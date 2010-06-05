@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialogs:AbstractDialogForm 
+    width="270" 
+    height="125" 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:dialogs="org.jbei.lib.ui.dialogs.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.effects.easing.Back;
+            public override function initialization(dataObject:Object):void
+            {
+                super.initialization(dataObject);
+                
+                if(dataObject == "sequence" || dataObject == "digestion-none") {
+                    digestionSequenceRadioButton.enabled = false;
+                    digestionNormalRadioButton.enabled = false;
+                    digestionReverseRadioButton.enabled = false;
+                } else {
+                    digestionSequenceRadioButton.enabled = true;
+                    digestionSequenceRadioButton.selected = true;
+                    
+                    if(dataObject == "digestion-normal") {
+                        digestionNormalRadioButton.enabled = true;
+                        digestionNormalRadioButton.selected = true;
+                    } else if(dataObject == "digestion-reverse") {
+                        digestionReverseRadioButton.enabled = true;
+                        digestionReverseRadioButton.selected = true;
+                    } else if(dataObject == "digestion-both") {
+                        digestionNormalRadioButton.enabled = true;
+                        digestionNormalRadioButton.selected = true;
+                        digestionReverseRadioButton.enabled = true;
+                        digestionReverseRadioButton.selected = false;
+                    }
+                }
+            }
+            
+            public override function validate():void
+            {
+                super.validate();
+                
+                isValid = true;
+                
+                if(pasteTypeRadioButtonGroup.selectedValue == "sequence") {
+                    dataObject = "sequence";
+                } else if(pasteTypeRadioButtonGroup.selectedValue == "revcom") {
+                    dataObject = "revcom";
+                } else if(pasteTypeRadioButtonGroup.selectedValue == "digestion") {
+                    dataObject = "digestion-normal";
+                }
+            }
+            
+            // Event Handlers
+            private function onBox1Click(event:MouseEvent):void
+            {
+                pasteTypeRadioButtonGroup.selection = sequenceRadioButton;
+            }
+            
+            private function onBox2Click(event:MouseEvent):void
+            {
+                pasteTypeRadioButtonGroup.selection = revComSequenceRadioButton;
+            }
+            
+            private function onBox3Click(event:MouseEvent):void
+            {
+                if(!digestionSequenceRadioButton.enabled) {
+                    return;
+                }
+                
+                pasteTypeRadioButtonGroup.selection = digestionSequenceRadioButton;
+            }
+            
+            private function onBox1RollOver(event:Event):void
+            {
+                box1.setStyle("backgroundColor", 0xFFFFEE);
+                box1.setStyle("borderColor", 0xC0C0C0); 
+            }
+            
+            private function onBox1RollOut(event:Event):void
+            {
+                box1.setStyle("backgroundColor", 0xFFFFFF);
+                box1.setStyle("borderColor", 0xFFFFFF);
+            }
+            
+            private function onBox2RollOver(event:Event):void
+            {
+                box2.setStyle("backgroundColor", 0xFFFFEE);
+                box2.setStyle("borderColor", 0xC0C0C0);
+            }
+            
+            private function onBox2RollOut(event:Event):void
+            {
+                box2.setStyle("backgroundColor", 0xFFFFFF);
+                box2.setStyle("borderColor", 0xFFFFFF);
+            }
+            
+            private function onBox3RollOver(event:Event):void
+            {
+                if(!digestionSequenceRadioButton.enabled) {
+                    return;
+                }
+                
+                box3.setStyle("backgroundColor", 0xFFFFEE);
+                box3.setStyle("borderColor", 0xC0C0C0);
+            }
+            
+            private function onBox3RollOut(event:Event):void
+            {
+                if(!digestionSequenceRadioButton.enabled) {
+                    return;
+                }
+                
+                box3.setStyle("backgroundColor", 0xFFFFFF);
+                box3.setStyle("borderColor", 0xFFFFFF);
+            }
+            
+            private function onSequenceRadioButtonChange(event:Event):void
+            {
+                digestionNormalRadioButton.enabled = false;
+                digestionReverseRadioButton.enabled = false;
+            }
+            
+            private function onRevComSequenceRadioButtonChange(event:Event):void
+            {
+                digestionNormalRadioButton.enabled = false;
+                digestionReverseRadioButton.enabled = false;
+            }
+            
+            private function onDigestionSequenceRadioButtonChange(event:Event):void
+            {
+                if(dataObject == "digestion-normal") {
+                    digestionNormalRadioButton.enabled = true;
+                    digestionReverseRadioButton.enabled = false;
+                } else if(dataObject == "digestion-reverse") {
+                    digestionNormalRadioButton.enabled = false;
+                    digestionReverseRadioButton.enabled = true;
+                } else if(dataObject == "digestion-both") {
+                    digestionNormalRadioButton.enabled = true;
+                    digestionReverseRadioButton.enabled = true;
+                }
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:RadioButtonGroup id="pasteTypeRadioButtonGroup"/>
+    <mx:RadioButtonGroup id="digestionPasteTypeRadioButtonGroup"/>
+    
+    <mx:VBox width="100%" height="100%" borderThickness="0">
+        <mx:HBox id="box1" click="onBox1Click(event)" width="100%" borderStyle="solid" borderThickness="1" borderColor="0xFFFFFF" paddingLeft="3" rollOver="onBox1RollOver(event)" rollOut="onBox1RollOut(event)">
+            <mx:RadioButton groupName="pasteTypeRadioButtonGroup" id="sequenceRadioButton" value="sequence" label="Sequence (with features if available)" selected="true" width="100%" change="onSequenceRadioButtonChange(event)"/>
+        </mx:HBox>
+        <mx:HBox id="box2" click="onBox2Click(event)" width="100%" borderStyle="solid" borderThickness="1" borderColor="0xFFFFFF" paddingLeft="3" rollOver="onBox2RollOver(event)" rollOut="onBox2RollOut(event)">
+            <mx:RadioButton groupName="pasteTypeRadioButtonGroup" id="revComSequenceRadioButton" value="revcom" label="Reverse complement sequence" width="100%" change="onRevComSequenceRadioButtonChange(event)"/>
+        </mx:HBox>
+        <mx:HBox id="box3" click="onBox3Click(event)" width="100%" borderStyle="solid" borderThickness="1" borderColor="0xFFFFFF" paddingLeft="3" rollOver="onBox3RollOver(event)" rollOut="onBox3RollOut(event)">
+            <mx:RadioButton groupName="pasteTypeRadioButtonGroup" id="digestionSequenceRadioButton" value="digestion" label="Digestion fragment" width="100%" change="onDigestionSequenceRadioButtonChange(event)"/>
+        </mx:HBox>
+        <mx:HBox width="100%" borderStyle="solid" borderThickness="1" borderColor="0xFFFFFF" paddingLeft="20" paddingTop="0">
+            <mx:RadioButton groupName="digestionPasteTypeRadioButtonGroup" id="digestionNormalRadioButton" value="digestion-normal" label="Normal" width="100%" enabled="false"/>
+            <mx:RadioButton groupName="digestionPasteTypeRadioButtonGroup" id="digestionReverseRadioButton" value="digestion-reverse" label="Reverse" width="100%" enabled="false"/>
+        </mx:HBox>
+    </mx:VBox>
+</dialogs:AbstractDialogForm>

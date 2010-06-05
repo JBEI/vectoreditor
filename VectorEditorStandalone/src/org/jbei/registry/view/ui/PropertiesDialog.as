@@ -9,9 +9,9 @@ package org.jbei.registry.view.ui
 	public class PropertiesDialog extends SimpleDialog
 	{
 		// Constructor
-		public function PropertiesDialog(dialogParent:DisplayObject, dialogFormClass:Class, activeTabIndex:int=0)
+		public function PropertiesDialog(dialogFormClass:Class, activeTabIndex:int = 0, dialogParent:DisplayObject = null)
 		{
-			super(dialogParent, dialogFormClass, activeTabIndex);
+			super(dialogFormClass, activeTabIndex, dialogParent);
 		}
 		
 		// Protected Methods

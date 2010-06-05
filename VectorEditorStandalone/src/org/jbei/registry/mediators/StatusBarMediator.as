@@ -1,5 +1,8 @@
 package org.jbei.registry.mediators
 {
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	import mx.utils.StringUtil;
 	
 	import org.jbei.bio.utils.TemperatureCalculator;
@@ -12,9 +15,11 @@ package org.jbei.registry.mediators
 	
 	public class StatusBarMediator extends Mediator
 	{
-		private const NAME:String = "StatusBarMediator";
+		private static const ACTION_MESSAGE_DELAY_TIME:int = 8000;
+        private const NAME:String = "StatusBarMediator";
 		
 		private var statusBar:StatusBar;
+        private var timer:Timer = new Timer(ACTION_MESSAGE_DELAY_TIME, 1);
 		
 		// Constructor
 		public function StatusBarMediator(viewComponent:Object=null)
@@ -22,6 +27,9 @@ package org.jbei.registry.mediators
 			super(NAME, viewComponent);
 			
 			statusBar = viewComponent as StatusBar;
+            
+            timer = new Timer(ACTION_MESSAGE_DELAY_TIME, 1);
+            timer.addEventListener(TimerEvent.TIMER_COMPLETE, onActionMessageTimerComplete);
 		}
 		
 		// Public Methods
@@ -35,6 +43,8 @@ package org.jbei.registry.mediators
 				
 				, Notifications.FEATURED_SEQUENCE_CHANGED
 				, Notifications.ENTRY_PERMISSIONS_FETCHED
+                
+                , Notifications.ACTION_MESSAGE
 			];
 		}
 		
@@ -85,10 +95,12 @@ package org.jbei.registry.mediators
 					
 					break;
 				case Notifications.FETCHING_DATA:
-					statusBar.statusLabel.text = notification.getBody() as String;
+                    updateActionMessage(notification.getBody() as String);
+                    
 					break;
 				case Notifications.DATA_FETCHED:
-					statusBar.statusLabel.text = "Done";
+                    updateActionMessage("Done");
+                    
 					break;
 				case Notifications.FEATURED_SEQUENCE_CHANGED:
 					if(ApplicationFacade.getInstance().featuredSequence) {
@@ -98,7 +110,26 @@ package org.jbei.registry.mediators
 					}
 					
 					break;
+                case Notifications.ACTION_MESSAGE:
+                    updateActionMessage(notification.getBody() as String);
+                    
+                    break;
 			}
 		}
+        
+        // Event Handlers
+        private function onActionMessageTimerComplete(event:TimerEvent):void
+        {
+            statusBar.statusLabel.text = "";
+        }
+        
+        // Private Methods
+        private function updateActionMessage(message:String):void
+        {
+            timer.reset();
+            timer.start();
+            
+            statusBar.statusLabel.text = message;
+        }
 	}
 }

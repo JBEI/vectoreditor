@@ -77,7 +77,6 @@ package org.jbei.components.railClasses
 		private var editFeatureContextMenuItem:ContextMenuItem;
 		private var removeFeatureContextMenuItem:ContextMenuItem;
 		private var selectedAsNewFeatureContextMenuItem:ContextMenuItem;
-        private var copyDigestionFragmentContextMenuItem:ContextMenuItem;
         
 		private var _cutSiteTextRenderer:TextRenderer;
 		private var _singleCutterCutSiteTextRenderer:TextRenderer;
@@ -830,11 +829,52 @@ package org.jbei.components.railClasses
 		
 		private function onCopy(event:Event):void
 		{
-			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(startSelectionIndex, endSelectionIndex), true);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(startSelectionIndex, endSelectionIndex).sequence, true);
-			}
+            if(!isValidIndex(selectionLayer.start) || !isValidIndex(selectionLayer.end)) {
+                return;
+            }
+            
+            var digestionStart:int = -1;
+            var digestionEnd:int = -1;
+            var digestionStartCutSite:CutSite = null;
+            var digestionEndCutSite:CutSite = null;
+            
+            if(_showCutSites
+                && _restrictionEnzymeMapper
+                && _restrictionEnzymeMapper.cutSites
+                && _restrictionEnzymeMapper.cutSites.length > 0) {
+                
+                for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
+                    var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                    
+                    if(startSelectionIndex == cutSite.start) {
+                        digestionStart = startSelectionIndex;
+                        digestionStartCutSite = cutSite;
+                    }
+                    
+                    if(endSelectionIndex == cutSite.end + 1) {
+                        digestionEnd = endSelectionIndex;
+                        digestionEndCutSite = cutSite;
+                    }
+                }
+            }
+            
+            if(digestionStart >= 0 && digestionEnd >= 0) {
+                var subFeaturedSequence:FeaturedSequence = _featuredSequence.subFeaturedSequence(digestionStart, digestionEnd);
+                var digestionSequence:DigestionSequence = new DigestionSequence(subFeaturedSequence, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
+                
+                Clipboard.generalClipboard.clear();
+                Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
+                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.sequence, true);
+                
+                dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
+            } else {
+                Clipboard.generalClipboard.clear();
+                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
+                
+                dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
+            }
 		}
 		
 		private function onCut(event:Event):void
@@ -844,6 +884,8 @@ package org.jbei.components.railClasses
 				Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
 				
+                dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
+                
 				if(_safeEditing) {
 					doDeleteSequence(selectionLayer.start, selectionLayer.end);
 				} else {
@@ -954,55 +996,8 @@ package org.jbei.components.railClasses
 			if(!_readOnly && selectionLayer.selected) {
 				customContextMenu.customItems.push(selectedAsNewFeatureContextMenuItem);
 			}
-            
-            if(selectionLayer.selected && _showCutSites && isValidDigestionRegion()) {
-                customContextMenu.customItems.push(copyDigestionFragmentContextMenuItem);
-            }
 		}
 		
-        private function onCopyDigestionFragmentContextMenuItem(event:ContextMenuEvent):void
-        {
-            if(!_showCutSites
-                || !_restrictionEnzymeMapper
-                || !_restrictionEnzymeMapper.cutSites
-                || _restrictionEnzymeMapper.cutSites.length == 0
-                || !isValidIndex(startSelectionIndex)
-                || !isValidIndex(endSelectionIndex)) {
-                return;
-            }
-            
-            var digestionStart:int = -1;
-            var digestionEnd:int = -1;
-            var digestionStartCutSite:CutSite = null;
-            var digestionEndCutSite:CutSite = null;
-            
-            for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
-                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
-                
-                if(startSelectionIndex == cutSite.start) {
-                    digestionStart = startSelectionIndex;
-                    digestionStartCutSite = cutSite;
-                }
-                
-                if(endSelectionIndex == cutSite.end + 1) {
-                    digestionEnd = endSelectionIndex;
-                    digestionEndCutSite = cutSite;
-                }
-            }
-            
-            if(digestionStart == -1 || digestionEnd == -1) {
-                return;
-            }
-            
-            var subFeaturedSequence:FeaturedSequence = _featuredSequence.subFeaturedSequence(digestionStart, digestionEnd);
-            var digestionSequence:DigestionSequence = new DigestionSequence(subFeaturedSequence, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
-            
-            Clipboard.generalClipboard.clear();
-            Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
-            Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
-            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.sequence, true);
-        }
-        
 		private function onEditFeatureMenuItem(event:ContextMenuEvent):void
 		{
 			if(event.mouseTarget is FeatureRenderer) {
@@ -1049,10 +1044,6 @@ package org.jbei.components.railClasses
             
             selectedAsNewFeatureContextMenuItem = new ContextMenuItem("Selected as New Feature");
             selectedAsNewFeatureContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onSelectedAsNewFeatureMenuItem);
-            
-            copyDigestionFragmentContextMenuItem = new ContextMenuItem("Copy Digestion Fragment");
-            copyDigestionFragmentContextMenuItem.separatorBefore = true;
-            copyDigestionFragmentContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onCopyDigestionFragmentContextMenuItem);
         }
         
         private function createRailBox():void

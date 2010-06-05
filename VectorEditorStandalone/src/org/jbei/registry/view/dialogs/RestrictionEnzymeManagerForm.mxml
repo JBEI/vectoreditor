@@ -155,7 +155,7 @@
 			{
 				var reGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("tmpGroup");
 				
-				var reNewGroupDialog:ModalDialog = new ModalDialog(this, RestrictionEnzymeNewGroupForm, reGroup);
+				var reNewGroupDialog:ModalDialog = new ModalDialog(RestrictionEnzymeNewGroupForm, reGroup);
 				reNewGroupDialog.title = "Create New Group";
 				reNewGroupDialog.open();
 				
@@ -312,7 +312,7 @@
 			{
 				var reGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("tmpGroup");
 				
-				var reNewGroupDialog:ModalDialog = new ModalDialog(this, RestrictionEnzymeNewGroupForm, reGroup);
+				var reNewGroupDialog:ModalDialog = new ModalDialog(RestrictionEnzymeNewGroupForm, reGroup);
 				reNewGroupDialog.title = "Create New Group";
 				reNewGroupDialog.open();
 				

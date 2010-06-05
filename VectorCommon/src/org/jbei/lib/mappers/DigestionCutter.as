@@ -69,8 +69,12 @@ package org.jbei.lib.mappers
         // Public Methods
         public function digest(type:String):void
         {
+            if(DEBUG_MODE && type == MATCH_BOTH) {
+                type = MATCH_NORMAL_ONLY;
+            }
+            
             if(!(type == MATCH_NORMAL_ONLY || type == MATCH_REVCOM_ONLY)) {
-                throw new Error("Invalid digestion type! Should be 'NormalOnly' or 'RevComOnly'")
+                throw new Error("Invalid digestion type! Should be 'NormalOnly' or 'RevComOnly'");
             }
             
             var startPosition:int = destinationStartCutSite.start;
@@ -80,11 +84,15 @@ package org.jbei.lib.mappers
                 startPosition = destinationStartCutSite.start + destinationStartCutSite.restrictionEnzyme.dsReverse;
             } else if(destinationStartCutSite.restrictionEnzyme.dsForward < destinationStartCutSite.restrictionEnzyme.dsReverse) {
                 startPosition = destinationStartCutSite.start + destinationStartCutSite.restrictionEnzyme.dsForward;
+            } else {
+                startPosition = destinationStartCutSite.start + destinationStartCutSite.restrictionEnzyme.dsForward;
             }
             
             if(destinationEndCutSite.restrictionEnzyme.dsForward > destinationEndCutSite.restrictionEnzyme.dsReverse) {
                 endPosition = destinationEndCutSite.start + destinationEndCutSite.restrictionEnzyme.dsForward;
             } else if(destinationEndCutSite.restrictionEnzyme.dsForward < destinationEndCutSite.restrictionEnzyme.dsReverse) {
+                endPosition = destinationEndCutSite.start + destinationEndCutSite.restrictionEnzyme.dsReverse;
+            } else {
                 endPosition = destinationEndCutSite.start + destinationEndCutSite.restrictionEnzyme.dsReverse;
             }
             
@@ -127,6 +135,9 @@ package org.jbei.lib.mappers
                 sourceOverhangStartType = OVERHANG_BOTTOM;
                 sourceOverhangStartSequence = sourceSequence.substring(digestionSequence.startRestrictionEnzyme.dsForward, digestionSequence.startRestrictionEnzyme.dsReverse);
                 pastableStartIndex = digestionSequence.startRestrictionEnzyme.dsReverse;
+            } else {
+                sourceOverhangStartType = OVERHANG_NONE;
+                sourceOverhangStartSequence = "";
             }
             
             if(digestionSequence.endRestrictionEnzyme.dsForward < digestionSequence.endRestrictionEnzyme.dsReverse) {
@@ -137,9 +148,20 @@ package org.jbei.lib.mappers
                 sourceOverhangEndType = OVERHANG_TOP;
                 sourceOverhangEndSequence = sourceSequence.substring(digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsForward, digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse);
                 pastableEndIndex = digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsForward;
+            } else {
+                sourceOverhangEndType = OVERHANG_NONE;
+                sourceOverhangEndSequence = "";
             }
             
             pasteFeaturedSequence = digestionSequence.featuredSequence.subFeaturedSequence(pastableStartIndex, pastableEndIndex);
+            
+            if(DEBUG_MODE) {
+                trace("--------------------------------------------------------------");
+                trace("Source:");
+                trace(digestionSequence.startRestrictionEnzyme.name + ": " + sourceOverhangStartType + ", " + sourceOverhangStartSequence);
+                trace(digestionSequence.endRestrictionEnzyme.name + ": " + sourceOverhangEndType + ", " + sourceOverhangEndSequence);
+                trace(pasteFeaturedSequence.sequence.sequence);
+            }
         }
         
         private function initializeDestination():void
@@ -174,6 +196,9 @@ package org.jbei.lib.mappers
                 destinationOverhangStartSequence = destinationSequence.substring(destinationStartCutSite.restrictionEnzyme.dsReverse, destinationStartCutSite.restrictionEnzyme.dsForward);
                 
                 destinationOverhangStartType = OVERHANG_TOP;
+            } else {
+                destinationOverhangStartType = OVERHANG_NONE;
+                destinationOverhangStartSequence = "";
             }
             
             var rePosition:int = destinationEndCutSite.start - destinationStartCutSite.start;
@@ -184,6 +209,16 @@ package org.jbei.lib.mappers
             } else if(destinationEndCutSite.restrictionEnzyme.dsForward > destinationEndCutSite.restrictionEnzyme.dsReverse) {
                 destinationOverhangEndSequence = destinationSequence.substring(rePosition + destinationEndCutSite.restrictionEnzyme.dsForward, rePosition + destinationEndCutSite.restrictionEnzyme.dsReverse);
                 destinationOverhangEndType = OVERHANG_BOTTOM;
+            } else {
+                destinationOverhangEndType = OVERHANG_NONE;
+                destinationOverhangEndSequence = "";
+            }
+            
+            if(DEBUG_MODE) {
+                trace("--------------------------------------------------------------");
+                trace("Destination:");
+                trace(destinationStartCutSite.restrictionEnzyme.name + ": " + destinationOverhangStartType + ", " + destinationOverhangStartSequence);
+                trace(destinationStartCutSite.restrictionEnzyme.name + ": " + destinationOverhangEndType + ", " + destinationOverhangEndSequence);
             }
         }
         

@@ -248,52 +248,10 @@ package org.jbei.registry.mediators
 			}
 		}
 		
-		// Private Methods
-		private function initializeControls(mainPanel:MainPanel):void
-		{
-			if(! controlsInitialized) {
-				this.mainPanel = mainPanel;
-				
-				pie = mainPanel.pie;
-				rail = mainPanel.rail;
-				sequenceAnnotator = mainPanel.sequenceAnnotator;
-				
-				initializeEventHandlers();
-				
-				controlsInitialized = true;
-			}
-		}
-		
-		private function initializeEventHandlers():void
-		{
-			sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
-			
-			sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
-			
-			sequenceAnnotator.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
-			pie.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
-			rail.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
-			
-			sequenceAnnotator.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
-			pie.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
-			rail.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
-			
-			sequenceAnnotator.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
-			pie.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
-			rail.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
-			
-			sequenceAnnotator.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
-			pie.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
-			rail.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
-		}
-		
+		// Event Handlers
 		private function onEditFeature(event:CommonEvent):void
 		{
-			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
+			var featureDialog:ModalDialog = new ModalDialog(FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Edit Feature";
 			featureDialog.open();
 		}
@@ -312,7 +270,7 @@ package org.jbei.registry.mediators
 		
 		private function onCreateFeature(event:CommonEvent):void
 		{
-			var featureDialog:ModalDialog = new ModalDialog(mainPanel, FeatureDialogForm, event.data as Feature);
+			var featureDialog:ModalDialog = new ModalDialog(FeatureDialogForm, event.data as Feature);
 			featureDialog.title = "Selected as New Feature";
 			featureDialog.open();
 		}
@@ -368,7 +326,7 @@ package org.jbei.registry.mediators
 			}
 			
 			if(showDialog) {
-				var editingPromptDialog:ModalDialog = new ModalDialog(mainPanel, EditingPromptDialogForm, new Array(event.kind, event.data));
+				var editingPromptDialog:ModalDialog = new ModalDialog(EditingPromptDialogForm, new Array(event.kind, event.data));
 				
 				editingPromptDialog.title = "Editing...";
 				editingPromptDialog.open();
@@ -402,6 +360,58 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
 		}
 		
+        private function onActionMessage(event:CommonEvent):void
+        {
+            sendNotification(Notifications.ACTION_MESSAGE, event.data);
+        }
+        
+        // Private Methods
+        private function initializeControls(mainPanel:MainPanel):void
+        {
+            if(! controlsInitialized) {
+                this.mainPanel = mainPanel;
+                
+                pie = mainPanel.pie;
+                rail = mainPanel.rail;
+                sequenceAnnotator = mainPanel.sequenceAnnotator;
+                
+                initializeEventHandlers();
+                
+                controlsInitialized = true;
+            }
+        }
+        
+        private function initializeEventHandlers():void
+        {
+            sequenceAnnotator.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+            pie.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+            rail.addEventListener(SelectionEvent.SELECTION_CHANGED, onSelectionChanged);
+            
+            sequenceAnnotator.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+            pie.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+            rail.addEventListener(CaretEvent.CARET_POSITION_CHANGED, onCaretPositionChanged);
+            
+            sequenceAnnotator.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+            pie.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+            rail.addEventListener(CommonEvent.EDIT_FEATURE, onEditFeature);
+            
+            sequenceAnnotator.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+            pie.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+            rail.addEventListener(CommonEvent.REMOVE_FEATURE, onRemoveFeature);
+            
+            sequenceAnnotator.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+            pie.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+            rail.addEventListener(CommonEvent.CREATE_FEATURE, onCreateFeature);
+            
+            sequenceAnnotator.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+            pie.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+            rail.addEventListener(EditingEvent.COMPONENT_SEQUENCE_EDITING, onEditing);
+            
+            sequenceAnnotator.addEventListener(CommonEvent.ACTION_MESSAGE, onActionMessage);
+            pie.addEventListener(CommonEvent.ACTION_MESSAGE, onActionMessage);
+            rail.addEventListener(CommonEvent.ACTION_MESSAGE, onActionMessage);
+        }
+        
 		public function save():void
 		{
 			CONFIG::standalone {

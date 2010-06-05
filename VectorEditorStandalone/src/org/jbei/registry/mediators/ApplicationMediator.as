@@ -24,14 +24,11 @@ package org.jbei.registry.mediators
 	public class ApplicationMediator extends Mediator
 	{
 		private const NAME:String = "ApplicationMediator";
-		private var application:Application;
 		
 		// Constructor
-		public function ApplicationMediator(viewComponent:Object=null)
+		public function ApplicationMediator()
 		{
-			super(NAME, viewComponent);
-			
-			application = viewComponent as Application;
+			super(NAME);
 		}
 		
 		// Public Methods
@@ -134,7 +131,7 @@ package org.jbei.registry.mediators
 				positions.push(10);
 			}
 			
-			var selectDialog:ModalDialog = new ModalDialog(application, SelectDialogForm, positions);
+			var selectDialog:ModalDialog = new ModalDialog(SelectDialogForm, positions);
 			selectDialog.title = "Select ...";
 			selectDialog.open();
 			
@@ -143,35 +140,35 @@ package org.jbei.registry.mediators
 		
 		private function showPreferencesDialog():void
 		{
-			var preferencesDialog:ModalDialog = new ModalDialog(application, PreferencesDialogForm, null);
+			var preferencesDialog:ModalDialog = new ModalDialog(PreferencesDialogForm, null);
 			preferencesDialog.title = "Preferences";
 			preferencesDialog.open();
 		}
 		
 		private function showPropertiesDialog():void
 		{
-			var propertiesDialog:PropertiesDialog = new PropertiesDialog(application, PropertiesDialogForm);
+			var propertiesDialog:PropertiesDialog = new PropertiesDialog(PropertiesDialogForm);
 			propertiesDialog.title = "Properties";
 			propertiesDialog.open();
 		}
 		
 		private function showCreateNewFeatureDialog():void
 		{
-			var featureDialog:ModalDialog = new ModalDialog(application, FeatureDialogForm, null);
+			var featureDialog:ModalDialog = new ModalDialog(FeatureDialogForm, null);
 			featureDialog.title = "Create New Feature";
 			featureDialog.open();
 		}
 		
 		private function showRestrictionEnzymesManagerDialog():void
 		{
-			var restrictionEnzymeManagerDialog:ModalDialog = new ModalDialog(application, RestrictionEnzymeManagerForm, new RestrictionEnzymeGroup("tmp"));
+			var restrictionEnzymeManagerDialog:ModalDialog = new ModalDialog(RestrictionEnzymeManagerForm, new RestrictionEnzymeGroup("tmp"));
 			restrictionEnzymeManagerDialog.title = "Restriction Enzyme Manager";
 			restrictionEnzymeManagerDialog.open();
 		}
 		
 		private function showGoToDialog():void
 		{
-			var gotoDialog:ModalDialog = new ModalDialog(application, GoToDialogForm, ApplicationFacade.getInstance().caretPosition);
+			var gotoDialog:ModalDialog = new ModalDialog(GoToDialogForm, ApplicationFacade.getInstance().caretPosition);
 			gotoDialog.title = "Go To...";
 			gotoDialog.open();
 			
@@ -180,7 +177,7 @@ package org.jbei.registry.mediators
 		
 		private function showAboutDialog():void
 		{
-			var aboutDialog:SimpleDialog = new SimpleDialog(application, AboutDialogForm);
+			var aboutDialog:SimpleDialog = new SimpleDialog(AboutDialogForm);
 			aboutDialog.title = "About";
 			aboutDialog.open();
 		}

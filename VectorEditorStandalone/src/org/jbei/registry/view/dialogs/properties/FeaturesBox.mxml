@@ -52,7 +52,7 @@
 			
 			private function onNewFeatureButtonClick(event:MouseEvent):void
 			{
-				var featureDialog:ModalDialog = new ModalDialog(this, FeatureDialogForm, null);
+				var featureDialog:ModalDialog = new ModalDialog(FeatureDialogForm, null);
 				featureDialog.title = "Create New Feature";
 				featureDialog.open();
 				
@@ -63,7 +63,7 @@
 			{
 				if(filteredFeatures.length == 0 && featuresDataGrid.selectedItems.length == 0) return;
 				
-				var featureDialog:ModalDialog = new ModalDialog(this, FeatureDialogForm, featuresDataGrid.selectedItem.feature as Feature);
+				var featureDialog:ModalDialog = new ModalDialog(FeatureDialogForm, featuresDataGrid.selectedItem.feature as Feature);
 				featureDialog.title = "Edit Feature";
 				featureDialog.open();
 				

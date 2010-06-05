@@ -1,5 +1,6 @@
 package org.jbei.registry.commands
 {
+	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.mediators.ApplicationMediator;
 	import org.jbei.registry.mediators.FindPanelMediator;
 	import org.jbei.registry.mediators.MainControlBarMediator;
@@ -16,7 +17,7 @@ package org.jbei.registry.commands
 		{
 			var application:VectorEditor = notification.getBody() as VectorEditor;
 			
-			facade.registerMediator(new ApplicationMediator(application));
+			facade.registerMediator(new ApplicationMediator());
 			facade.registerMediator(new MainControlBarMediator(application.mainControlBar));
 			facade.registerMediator(new MainMenuMediator(application.mainMenu));
 			facade.registerMediator(new MainPanelMediator(application.mainPanel));

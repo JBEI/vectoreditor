@@ -212,6 +212,7 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.DATA_FETCHED);
 			
 			sendNotification(Notifications.USER_PREFERENCES_CHANGED);
+            sendNotification(Notifications.ACTION_MESSAGE, "User preferences has been saved");
 			
 			Logger.getInstance().info("User preferences saved successfully");
 		}
@@ -234,6 +235,8 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.DATA_FETCHED);
 			
 			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
+            
+            sendNotification(Notifications.ACTION_MESSAGE, "User restriction enzymes saved");
 			
 			Logger.getInstance().info("User restriction enzymes saved successfully");
 		}
@@ -249,6 +252,7 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.DATA_FETCHED);
 			
 			sendNotification(Notifications.SEQUENCE_SAVED);
+            sendNotification(Notifications.ACTION_MESSAGE, "Sequence has been saved");
 			
 			Logger.getInstance().info("Sequence saved successfully");
 		}
