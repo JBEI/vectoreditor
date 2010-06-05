@@ -16,7 +16,7 @@ package org.jbei.registry.commands
 		{
 			var application:VectorViewer = notification.getBody() as VectorViewer;
 			
-			facade.registerMediator(new ApplicationMediator(application));
+			facade.registerMediator(new ApplicationMediator());
 			facade.registerMediator(new MainControlBarMediator(application.mainControlBar));
 			facade.registerMediator(new MainPanelMediator(application.mainPanel));
 			facade.registerMediator(new StatusBarMediator(application.statusBar));

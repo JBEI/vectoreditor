@@ -12,14 +12,10 @@ package org.jbei.registry.mediators
 	{
 		private const NAME:String = "ApplicationMediator";
 		
-		private var application:Application;
-		
 		// Constructor
-		public function ApplicationMediator(viewComponent:Object=null)
+		public function ApplicationMediator()
 		{
-			super(NAME, viewComponent);
-			
-			application = viewComponent as Application;
+			super(NAME);
 		}
 		
 		// Public Methods
@@ -42,7 +38,7 @@ package org.jbei.registry.mediators
 		
 		private function showPropertiesDialog():void
 		{
-			var propertiesDialog:SimpleDialog = new SimpleDialog(application, PropertiesDialogForm);
+			var propertiesDialog:SimpleDialog = new SimpleDialog(PropertiesDialogForm);
 			propertiesDialog.title = "Properties";
 			propertiesDialog.open();
 		}
