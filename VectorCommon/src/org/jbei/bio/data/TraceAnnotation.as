@@ -8,11 +8,11 @@ package org.jbei.bio.data
 	public class TraceAnnotation extends Annotation
 	{
 		private var _traceSequence:TraceSequence;
-		private var _matches:ArrayCollection = new ArrayCollection(); /* of Segment */
-		private var _mismatches:ArrayCollection = new ArrayCollection(); /* of Segment */
-		private var _deletions:ArrayCollection = new ArrayCollection(); /* of Segment */
-		private var _insertions:ArrayCollection = new ArrayCollection(); /* of Segment */
-		private var _allMismatches:ArrayCollection = new ArrayCollection(); /* of Segment */
+		private var _matches:ArrayCollection = new ArrayCollection(); /* of Annotation */
+		private var _mismatches:ArrayCollection = new ArrayCollection(); /* of Annotation */
+		private var _deletions:ArrayCollection = new ArrayCollection(); /* of Annotation */
+		private var _insertions:ArrayCollection = new ArrayCollection(); /* of Annotation */
+		private var _allMismatches:ArrayCollection = new ArrayCollection(); /* of Annotation */
 		
 		// Contructor
 		public function TraceAnnotation(start:int, end:int, traceSequence:TraceSequence)
@@ -28,52 +28,52 @@ package org.jbei.bio.data
 			return _traceSequence;
 		}
 		
-		public function get matches():ArrayCollection /* of Segment */
+		public function get matches():ArrayCollection /* of Annotation */
 		{
 			return _matches;
 		}
 		
-		public function set matches(value:ArrayCollection /* of Segment */):void
+		public function set matches(value:ArrayCollection /* of Annotation */):void
 		{
 			_matches = value;
 		}
 		
-		public function get mismatches():ArrayCollection /* of Segment */
+		public function get mismatches():ArrayCollection /* of Annotation */
 		{
 			return _mismatches;
 		}
 		
-		public function set mismatches(value:ArrayCollection /* of Segment */):void
+		public function set mismatches(value:ArrayCollection /* of Annotation */):void
 		{
 			_mismatches = value;
 		}
 		
-		public function get allMismatches():ArrayCollection /* of Segment */
+		public function get allMismatches():ArrayCollection /* of Annotation */
 		{
 			return _allMismatches;
 		}
 		
-		public function set allMismatches(value:ArrayCollection /* of Segment */):void
+		public function set allMismatches(value:ArrayCollection /* of Annotation */):void
 		{
 			_allMismatches = value;
 		}
 		
-		public function get deletions():ArrayCollection /* of Segment */
+		public function get deletions():ArrayCollection /* of Annotation */
 		{
 			return _deletions;
 		}
 		
-		public function set deletions(value:ArrayCollection /* of Segment */):void
+		public function set deletions(value:ArrayCollection /* of Annotation */):void
 		{
 			_deletions = value;
 		}
 		
-		public function get insertions():ArrayCollection /* of Segment */
+		public function get insertions():ArrayCollection /* of Annotation */
 		{
 			return _insertions;
 		}
 		
-		public function set insertions(value:ArrayCollection /* of Segment */):void
+		public function set insertions(value:ArrayCollection /* of Annotation */):void
 		{
 			_insertions = value;
 		}

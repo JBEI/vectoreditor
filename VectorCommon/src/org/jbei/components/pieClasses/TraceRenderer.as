@@ -80,12 +80,12 @@ package org.jbei.components.pieClasses
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
-					var mismatchSegment:Annotation = mismatches[i2] as Annotation;
+					var mismatchAnnotation:Annotation = mismatches[i2] as Annotation;
 					
-					var mismatchAngle1:Number = mismatchSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-					var mismatchAngle2:Number = (mismatchSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var mismatchAngle1:Number = mismatchAnnotation.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var mismatchAngle2:Number = (mismatchAnnotation.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					if(mismatchSegment.start == mismatchSegment.end) {
+					if(mismatchAnnotation.start == mismatchAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						var mismatchX:Number = center.x + traceAnnotationRadius * Math.sin(mismatchAngle1);
@@ -104,12 +104,12 @@ package org.jbei.components.pieClasses
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
-					var deletionSegment:Annotation = deletions[i3] as Annotation;
+					var deletionAnnotation:Annotation = deletions[i3] as Annotation;
 					
-					var deletionAngle1:Number = deletionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-					var deletionAngle2:Number = (deletionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var deletionAngle1:Number = deletionAnnotation.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var deletionAngle2:Number = (deletionAnnotation.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					if(deletionSegment.start == deletionSegment.end) {
+					if(deletionAnnotation.start == deletionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						var deletionX:Number = center.x + traceAnnotationRadius * Math.sin(deletionAngle1);
@@ -128,12 +128,12 @@ package org.jbei.components.pieClasses
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
-					var insertionSegment:Annotation = insertions[i4] as Annotation;
+					var insertionAnnotation:Annotation = insertions[i4] as Annotation;
 					
-					var insertionAngle1:Number = insertionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-					var insertionAngle2:Number = (insertionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var insertionAngle1:Number = insertionAnnotation.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+					var insertionAngle2:Number = (insertionAnnotation.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					
-					if(insertionSegment.start == insertionSegment.end) {
+					if(insertionAnnotation.start == insertionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						var insertionX:Number = center.x + traceAnnotationRadius * Math.sin(insertionAngle1);

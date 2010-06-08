@@ -75,7 +75,7 @@ package org.jbei.lib.mappers
 			}
 		}
 		
-		private function calculateMatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Segment */
+		private function calculateMatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
 		{
 			var matches:ArrayCollection = new ArrayCollection();
 			
@@ -117,7 +117,7 @@ package org.jbei.lib.mappers
 			return matches;
 		}
 		
-		private function calculateMismatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Segment */
+		private function calculateMismatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
 		{
 			var mismatches:ArrayCollection = new ArrayCollection();
 			
@@ -159,7 +159,7 @@ package org.jbei.lib.mappers
 			return mismatches;
 		}
 		
-		private function calculateDeletions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Segment */
+		private function calculateDeletions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
 		{
 			var deletions:ArrayCollection = new ArrayCollection();
 			
@@ -201,7 +201,7 @@ package org.jbei.lib.mappers
 			return deletions;
 		}
 		
-		private function calculateInsertions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Segment */
+		private function calculateInsertions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
 		{
 			var insertions:ArrayCollection = new ArrayCollection();
 			

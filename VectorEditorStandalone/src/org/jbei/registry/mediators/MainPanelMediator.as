@@ -564,20 +564,20 @@ package org.jbei.registry.mediators
 		
 		private function findAt(expression:String, dataType:String, searchType:String, position:int):void
 		{
-			var findSegment:Annotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
+			var findAnnotation:Annotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
 			
-			if(!findSegment) {
-				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);
+			if(!findAnnotation) {
+				findAnnotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);
 			}
 			
-			if(findSegment) {
-				sequenceAnnotator.select(findSegment.start, findSegment.end);
-				pie.select(findSegment.start, findSegment.end);
-				rail.select(findSegment.start, findSegment.end);
+			if(findAnnotation) {
+				sequenceAnnotator.select(findAnnotation.start, findAnnotation.end);
+				pie.select(findAnnotation.start, findAnnotation.end);
+				rail.select(findAnnotation.start, findAnnotation.end);
 				
-				sequenceAnnotator.caretPosition = findSegment.start;
-				pie.caretPosition = findSegment.start;
-				rail.caretPosition = findSegment.start;
+				sequenceAnnotator.caretPosition = findAnnotation.start;
+				pie.caretPosition = findAnnotation.start;
+				rail.caretPosition = findAnnotation.start;
 				
 				sendNotification(Notifications.FIND_MATCH_FOUND);
 			} else {
@@ -596,9 +596,9 @@ package org.jbei.registry.mediators
 		
 		private function highlight(expression:String, dataType:String, searchType:String):void
 		{
-			var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType);
+			var annotations:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType);
 			
-			sequenceAnnotator.highlights = segments;
+			sequenceAnnotator.highlights = annotations;
 		}
 		
 		private function changeSafeEditingStage(safeEditing:Boolean):void

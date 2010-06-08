@@ -75,12 +75,12 @@ package org.jbei.components.railClasses
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
-					var mismatchSegment:Annotation = mismatches[i2] as Annotation;
+					var mismatchAnnotation:Annotation = mismatches[i2] as Annotation;
 					
-					var mismatchStartPosition:Number = railMetrics.x + bpWidth * mismatchSegment.start;
-					var mismatchEndPosition:Number = railMetrics.x + bpWidth * mismatchSegment.end;
+					var mismatchStartPosition:Number = railMetrics.x + bpWidth * mismatchAnnotation.start;
+					var mismatchEndPosition:Number = railMetrics.x + bpWidth * mismatchAnnotation.end;
 					
-					if(mismatchSegment.start == mismatchSegment.end) {
+					if(mismatchAnnotation.start == mismatchAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						g.drawCircle(mismatchStartPosition, yPosition, 1);
@@ -96,12 +96,12 @@ package org.jbei.components.railClasses
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
-					var deletionSegment:Annotation = deletions[i3] as Annotation;
+					var deletionAnnotation:Annotation = deletions[i3] as Annotation;
 					
-					var deletionStartPosition:Number = railMetrics.x + bpWidth * deletionSegment.start;
-					var deletionEndPosition:Number = railMetrics.x + bpWidth * deletionSegment.end;
+					var deletionStartPosition:Number = railMetrics.x + bpWidth * deletionAnnotation.start;
+					var deletionEndPosition:Number = railMetrics.x + bpWidth * deletionAnnotation.end;
 					
-					if(deletionSegment.start == deletionSegment.end) {
+					if(deletionAnnotation.start == deletionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						g.drawCircle(deletionStartPosition, yPosition, 1);
@@ -117,12 +117,12 @@ package org.jbei.components.railClasses
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
-					var insertionSegment:Annotation = insertions[i4] as Annotation;
+					var insertionAnnotation:Annotation = insertions[i4] as Annotation;
 					
-					var insertionStartPosition:Number = railMetrics.x + bpWidth * insertionSegment.start;
-					var insertionEndPosition:Number = railMetrics.x + bpWidth * insertionSegment.end;
+					var insertionStartPosition:Number = railMetrics.x + bpWidth * insertionAnnotation.start;
+					var insertionEndPosition:Number = railMetrics.x + bpWidth * insertionAnnotation.end;
 					
-					if(insertionSegment.start == insertionSegment.end) {
+					if(insertionAnnotation.start == insertionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
 						
 						g.drawCircle(insertionStartPosition, yPosition, 1);

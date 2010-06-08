@@ -80,7 +80,7 @@ package org.jbei.components.pieClasses
 		private var _orfMapper:ORFMapper;
 		private var _traceMapper:TraceMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
-		private var _highlights:Array /* of Segment */;
+		private var _highlights:Array /* of Annotation */;
 		private var _labelFontSize:int = 10;
 		
 		private var _cutSiteTextRenderer:TextRenderer;
@@ -223,12 +223,12 @@ package org.jbei.components.pieClasses
 			traceMapperChanged = true;
 		}
 		
-		public function get highlights():Array /* of Segment */
+		public function get highlights():Array /* of Annotation */
 		{
 			return _highlights;
 		}
 		
-		public function set highlights(value:Array /* of Segment */):void
+		public function set highlights(value:Array /* of Annotation */):void
 		{
 			_highlights = value;
 			
@@ -1938,13 +1938,13 @@ package org.jbei.components.pieClasses
 		private function doStickySelect(start:int, end:int):void
 		{
 			var selectedAnnotations:Array = new Array();
-			var selectionSegment:Annotation = new Annotation(start, end);
+			var selectionAnnotation:Annotation = new Annotation(start, end);
 			
 			if(_showFeatures) {
 				for(var i1:int = 0; i1 < featuredSequence.features.length; i1++) {
 					var feature:Feature = featuredSequence.features[i1] as Feature;
 					
-					if(selectionSegment.contains(new Annotation(feature.start, feature.end))) {
+					if(selectionAnnotation.contains(new Annotation(feature.start, feature.end))) {
 						selectedAnnotations.push(feature);
 					}
 				}
@@ -1954,7 +1954,7 @@ package org.jbei.components.pieClasses
 				for(var i2:int = 0; i2 < restrictionEnzymeMapper.cutSites.length; i2++) {
 					var cutSite:RestrictionCutSite = restrictionEnzymeMapper.cutSites[i2] as RestrictionCutSite;
 					
-					if(selectionSegment.contains(new Annotation(cutSite.start, cutSite.end))) {
+					if(selectionAnnotation.contains(new Annotation(cutSite.start, cutSite.end))) {
 						selectedAnnotations.push(cutSite);
 					}
 				}
@@ -1964,7 +1964,7 @@ package org.jbei.components.pieClasses
 				for(var i3:int = 0; i3 < orfMapper.orfs.length; i3++) {
 					var orf:ORF = orfMapper.orfs[i3] as ORF;
 					
-					if(selectionSegment.contains(new Annotation(orf.start, orf.end))) {
+					if(selectionAnnotation.contains(new Annotation(orf.start, orf.end))) {
 						selectedAnnotations.push(orf);
 					}
 				}
@@ -1974,7 +1974,7 @@ package org.jbei.components.pieClasses
 				for(var i4:int = 0; i4 < traceMapper.traceAnnotations.length; i4++) {
 					var traceAnnotation:TraceAnnotation = traceMapper.traceAnnotations[i4] as TraceAnnotation;
 					
-					if(selectionSegment.contains(new Annotation(traceAnnotation.start, traceAnnotation.end))) {
+					if(selectionAnnotation.contains(new Annotation(traceAnnotation.start, traceAnnotation.end))) {
 						selectedAnnotations.push(traceAnnotation);
 					}
 				}

@@ -52,11 +52,11 @@ package org.jbei.components.pieClasses
 			if(!contentHolder.highlights || contentHolder.highlights.length == 0) { return;	} 
 			
 			for(var i:int = 0; i < contentHolder.highlights.length; i++) {
-				var segment:Annotation = contentHolder.highlights[i] as Annotation;
+				var annotation:Annotation = contentHolder.highlights[i] as Annotation;
 				
-				if(!contentHolder.isValidIndex(segment.start) || !contentHolder.isValidIndex(segment.end)) { return; }
+				if(!contentHolder.isValidIndex(annotation.start) || !contentHolder.isValidIndex(annotation.end)) { return; }
 				
-				drawSelectionPie(segment.start, segment.end);
+				drawSelectionPie(annotation.start, annotation.end);
 			}
 		}
 		

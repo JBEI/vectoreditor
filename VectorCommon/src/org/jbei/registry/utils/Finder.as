@@ -18,7 +18,7 @@ package org.jbei.registry.utils
 		{
 			if(!featuredSequence || featuredSequence.sequence.length == 0 || expression.length == 0) { return null; }
 			
-			var resultSegment:Annotation = null;
+			var resultAnnotation:Annotation = null;
 			
 			expression = expression.toUpperCase();
 			
@@ -28,18 +28,18 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceSegments:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
-					var reverseComplementSegment:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
+					var sequenceAnnotations:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
+					var reverseComplementAnnotation:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
 					
-					for(var i1:int = 0; i1 < sequenceSegments.length; i1++) {
-						var segment1:Annotation = sequenceSegments[i1] as Annotation;
+					for(var i1:int = 0; i1 < sequenceAnnotations.length; i1++) {
+						var annotation1:Annotation = sequenceAnnotations[i1] as Annotation;
 						
-						if(segment1.start >= start) {
-							if(resultSegment == null) {
-								resultSegment = segment1;
+						if(annotation1.start >= start) {
+							if(resultAnnotation == null) {
+								resultAnnotation = annotation1;
 							} else {
-								if(resultSegment.start > segment1.start) {
-									resultSegment = segment1;
+								if(resultAnnotation.start > annotation1.start) {
+									resultAnnotation = annotation1;
 								}
 							}
 						}
@@ -47,18 +47,18 @@ package org.jbei.registry.utils
 					
 					var sequenceLength:int = featuredSequence.sequence.length;
 					
-					for(var i2:int = 0; i2 < reverseComplementSegment.length; i2++) {
-						var segment2:Annotation = reverseComplementSegment[i2] as Annotation;
+					for(var i2:int = 0; i2 < reverseComplementAnnotation.length; i2++) {
+						var annotation2:Annotation = reverseComplementAnnotation[i2] as Annotation;
 						
-						var reverseStart:int = sequenceLength - segment2.end;
-						var reverseEnd:int = sequenceLength - segment2.start;
+						var reverseStart:int = sequenceLength - annotation2.end;
+						var reverseEnd:int = sequenceLength - annotation2.start;
 						
 						if(reverseStart >= start) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(reverseStart, reverseEnd);
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(reverseStart, reverseEnd);
 							} else {
-								if(resultSegment.start > reverseStart) {
-									resultSegment = new Annotation(reverseStart, reverseEnd);
+								if(resultAnnotation.start > reverseStart) {
+									resultAnnotation = new Annotation(reverseStart, reverseEnd);
 								}
 							}
 						}
@@ -94,89 +94,89 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					var sequenceSegmentsFrame1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, false);
-					var sequenceSegmentsFrame2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, false);
-					var sequenceSegmentsFrame3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, false);
+					var sequenceAnnotationsFrame1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, false);
+					var sequenceAnnotationsFrame2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, false);
+					var sequenceAnnotationsFrame3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, false);
 					
-					var revComSegmentsFrame1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, false);
-					var revComSegmentsFrame2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, false);
-					var revComSegmentsFrame3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, false);
+					var revComAnnotationsFrame1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, false);
+					var revComAnnotationsFrame2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, false);
+					var revComAnnotationsFrame3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, false);
 					
-					// sparse AA1 segments 
-					for(var j1:int = 0; j1 < sequenceSegmentsFrame1.length; j1++) {
-						var segmentAA1:Annotation = sequenceSegmentsFrame1[j1];
+					// sparse AA1 annotations 
+					for(var j1:int = 0; j1 < sequenceAnnotationsFrame1.length; j1++) {
+						var annotationAA1:Annotation = sequenceAnnotationsFrame1[j1];
 						
-						if(position1 < segmentAA1.start) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(3 * segmentAA1.start, 3 * segmentAA1.end);
-							} else if(resultSegment.start > 3 * segmentAA1.start) {
-								resultSegment = new Annotation(3 * segmentAA1.start, 3 * segmentAA1.end);
+						if(position1 < annotationAA1.start) {
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(3 * annotationAA1.start, 3 * annotationAA1.end);
+							} else if(resultAnnotation.start > 3 * annotationAA1.start) {
+								resultAnnotation = new Annotation(3 * annotationAA1.start, 3 * annotationAA1.end);
 							}
 						}
 					}
 					
-					for(var j2:int = 0; j2 < sequenceSegmentsFrame2.length; j2++) {
-						var segmentAA2:Annotation = sequenceSegmentsFrame2[j2];
+					for(var j2:int = 0; j2 < sequenceAnnotationsFrame2.length; j2++) {
+						var annotationAA2:Annotation = sequenceAnnotationsFrame2[j2];
 						
-						if(position1 < segmentAA2.start) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(3 * segmentAA2.start + 1, 3 * segmentAA2.end + 1);
-							} else if(resultSegment.start > 3 * segmentAA2.start + 1) {
-								resultSegment = new Annotation(3 * segmentAA2.start + 1, 3 * segmentAA2.end + 1);
+						if(position1 < annotationAA2.start) {
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(3 * annotationAA2.start + 1, 3 * annotationAA2.end + 1);
+							} else if(resultAnnotation.start > 3 * annotationAA2.start + 1) {
+								resultAnnotation = new Annotation(3 * annotationAA2.start + 1, 3 * annotationAA2.end + 1);
 							}
 						}
 					}
 					
-					for(var j3:int = 0; j3 < sequenceSegmentsFrame3.length; j3++) {
-						var segmentAA3:Annotation = sequenceSegmentsFrame3[j3];
+					for(var j3:int = 0; j3 < sequenceAnnotationsFrame3.length; j3++) {
+						var annotationAA3:Annotation = sequenceAnnotationsFrame3[j3];
 						
-						if(position1 < segmentAA3.start) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(3 * segmentAA3.start + 2, 3 * segmentAA3.end + 2);
-							} else if(resultSegment.start > 3 * segmentAA3.start + 2) {
-								resultSegment = new Annotation(3 * segmentAA3.start + 2, 3 * segmentAA3.end + 2);
+						if(position1 < annotationAA3.start) {
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(3 * annotationAA3.start + 2, 3 * annotationAA3.end + 2);
+							} else if(resultAnnotation.start > 3 * annotationAA3.start + 2) {
+								resultAnnotation = new Annotation(3 * annotationAA3.start + 2, 3 * annotationAA3.end + 2);
 							}
 						}
 					}
 					
-					for(var z1:int = 0; z1 < revComSegmentsFrame1.length; z1++) {
-						var revSegmentAA1:Annotation = revComSegmentsFrame1[z1] as Annotation;
-						var normalizedStart1:int = featuredSequence.sequence.length - 3 * revSegmentAA1.end;
-						var normalizedEnd1:int = featuredSequence.sequence.length - 3 * revSegmentAA1.start;
+					for(var z1:int = 0; z1 < revComAnnotationsFrame1.length; z1++) {
+						var revAnnotationAA1:Annotation = revComAnnotationsFrame1[z1] as Annotation;
+						var normalizedStart1:int = featuredSequence.sequence.length - 3 * revAnnotationAA1.end;
+						var normalizedEnd1:int = featuredSequence.sequence.length - 3 * revAnnotationAA1.start;
 						
 						if(position2 < normalizedStart1) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(normalizedStart1, normalizedEnd1);
-							} else if(resultSegment.start > normalizedStart1) {
-								resultSegment = new Annotation(normalizedStart1, normalizedEnd1);
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(normalizedStart1, normalizedEnd1);
+							} else if(resultAnnotation.start > normalizedStart1) {
+								resultAnnotation = new Annotation(normalizedStart1, normalizedEnd1);
 							}
 						}
 					}
 					
-					for(var z2:int = 0; z2 < revComSegmentsFrame2.length; z2++) {
-						var revSegmentAA2:Annotation = revComSegmentsFrame2[z2] as Annotation;
-						var normalizedStart2:int = featuredSequence.sequence.length - 3 * revSegmentAA2.end - 1;
-						var normalizedEnd2:int = featuredSequence.sequence.length - 3 * revSegmentAA2.start - 1;
+					for(var z2:int = 0; z2 < revComAnnotationsFrame2.length; z2++) {
+						var revAnnotationAA2:Annotation = revComAnnotationsFrame2[z2] as Annotation;
+						var normalizedStart2:int = featuredSequence.sequence.length - 3 * revAnnotationAA2.end - 1;
+						var normalizedEnd2:int = featuredSequence.sequence.length - 3 * revAnnotationAA2.start - 1;
 						
 						if(position2 < normalizedStart2) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(normalizedStart2, normalizedEnd2);
-							} else if(resultSegment.start > normalizedStart2) {
-								resultSegment = new Annotation(normalizedStart2, normalizedEnd2);
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(normalizedStart2, normalizedEnd2);
+							} else if(resultAnnotation.start > normalizedStart2) {
+								resultAnnotation = new Annotation(normalizedStart2, normalizedEnd2);
 							}
 						}
 					}
 					
-					for(var z3:int = 0; z3 < revComSegmentsFrame3.length; z3++) {
-						var revSegmentAA3:Annotation = revComSegmentsFrame3[z3] as Annotation;
-						var normalizedStart3:int = featuredSequence.sequence.length - 3 * revSegmentAA3.end - 2;
-						var normalizedEnd3:int = featuredSequence.sequence.length - 3 * revSegmentAA3.start - 2;
+					for(var z3:int = 0; z3 < revComAnnotationsFrame3.length; z3++) {
+						var revAnnotationAA3:Annotation = revComAnnotationsFrame3[z3] as Annotation;
+						var normalizedStart3:int = featuredSequence.sequence.length - 3 * revAnnotationAA3.end - 2;
+						var normalizedEnd3:int = featuredSequence.sequence.length - 3 * revAnnotationAA3.start - 2;
 						
 						if(position2 < normalizedStart3) {
-							if(resultSegment == null) {
-								resultSegment = new Annotation(normalizedStart3, normalizedEnd3);
-							} else if(resultSegment.start > normalizedStart3) {
-								resultSegment = new Annotation(normalizedStart3, normalizedEnd3);
+							if(resultAnnotation == null) {
+								resultAnnotation = new Annotation(normalizedStart3, normalizedEnd3);
+							} else if(resultAnnotation.start > normalizedStart3) {
+								resultAnnotation = new Annotation(normalizedStart3, normalizedEnd3);
 							}
 						}
 					}
@@ -184,10 +184,10 @@ package org.jbei.registry.utils
 					break;
 			}
 			
-			return resultSegment;
+			return resultAnnotation;
 		}
 		
-		public static function findAll(featuredSequence:FeaturedSequence, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL):Array /* of Segment */
+		public static function findAll(featuredSequence:FeaturedSequence, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL):Array /* of Annotation */
 		{
 			var result:Array; 
 			
@@ -197,17 +197,17 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceSegments:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
-					var reverseComplementSegments:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
+					var sequenceAnnotations:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
+					var reverseComplementAnnotations:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
 					
 					result = new Array();
 					
-					for(var k1:int = 0; k1 < sequenceSegments.length; k1++) {
-						result.push(sequenceSegments[k1]);
+					for(var k1:int = 0; k1 < sequenceAnnotations.length; k1++) {
+						result.push(sequenceAnnotations[k1]);
 					}
 					
-					for(var k2:int = 0; k2 < reverseComplementSegments.length; k2++) {
-						result.push(new Annotation(featuredSequence.sequence.length - (reverseComplementSegments[k2] as Annotation).end, featuredSequence.sequence.length - (reverseComplementSegments[k2] as Annotation).start))
+					for(var k2:int = 0; k2 < reverseComplementAnnotations.length; k2++) {
+						result.push(new Annotation(featuredSequence.sequence.length - (reverseComplementAnnotations[k2] as Annotation).end, featuredSequence.sequence.length - (reverseComplementAnnotations[k2] as Annotation).start))
 					}
 					
 					break;
@@ -216,46 +216,46 @@ package org.jbei.registry.utils
 					
 					expression = expression.toUpperCase();
 					
-					var segments1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, featuredSequence.circular);
-					var segments2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, featuredSequence.circular);
-					var segments3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, featuredSequence.circular);
-					var revComSegments1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, featuredSequence.circular);
-					var revComSegments2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, featuredSequence.circular);
-					var revComSegments3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, featuredSequence.circular);
+					var annotations1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, featuredSequence.circular);
+					var annotations2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, featuredSequence.circular);
+					var annotations3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, featuredSequence.circular);
+					var revComAnnotations1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, featuredSequence.circular);
+					var revComAnnotations2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, featuredSequence.circular);
+					var revComAnnotations3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, featuredSequence.circular);
 					
 					result = new Array();
 					
-					for(var i1:int = 0; i1 < segments1.length; i1++) {
-						(segments1[i1] as Annotation).start = 3 * (segments1[i1] as Annotation).start;
-						(segments1[i1] as Annotation).end = 3 * (segments1[i1] as Annotation).end;
+					for(var i1:int = 0; i1 < annotations1.length; i1++) {
+						(annotations1[i1] as Annotation).start = 3 * (annotations1[i1] as Annotation).start;
+						(annotations1[i1] as Annotation).end = 3 * (annotations1[i1] as Annotation).end;
 						
-						result.push((segments1[i1] as Annotation));
+						result.push((annotations1[i1] as Annotation));
 					}
 					
-					for(var i2:int = 0; i2 < segments2.length; i2++) {
-						(segments2[i2] as Annotation).start = 3 * (segments2[i2] as Annotation).start + 1;
-						(segments2[i2] as Annotation).end = 3 * (segments2[i2] as Annotation).end + 1;
+					for(var i2:int = 0; i2 < annotations2.length; i2++) {
+						(annotations2[i2] as Annotation).start = 3 * (annotations2[i2] as Annotation).start + 1;
+						(annotations2[i2] as Annotation).end = 3 * (annotations2[i2] as Annotation).end + 1;
 						
-						result.push((segments2[i2] as Annotation));
+						result.push((annotations2[i2] as Annotation));
 					}
 					
-					for(var i3:int = 0; i3 < segments3.length; i3++) {
-						(segments3[i3] as Annotation).start = 3 * (segments3[i3] as Annotation).start + 2;
-						(segments3[i3] as Annotation).end = 3 * (segments3[i3] as Annotation).end + 2;
+					for(var i3:int = 0; i3 < annotations3.length; i3++) {
+						(annotations3[i3] as Annotation).start = 3 * (annotations3[i3] as Annotation).start + 2;
+						(annotations3[i3] as Annotation).end = 3 * (annotations3[i3] as Annotation).end + 2;
 						
-						result.push((segments3[i3] as Annotation));
+						result.push((annotations3[i3] as Annotation));
 					}
 					
-					for(var j1:int = 0; j1 < revComSegments1.length; j1++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Annotation).end, featuredSequence.sequence.length - 3 * (revComSegments1[j1] as Annotation).start));
+					for(var j1:int = 0; j1 < revComAnnotations1.length; j1++) {
+						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).end, featuredSequence.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).start));
 					}
 					
-					for(var j2:int = 0; j2 < revComSegments2.length; j2++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Annotation).end - 1, featuredSequence.sequence.length - 3 * (revComSegments2[j2] as Annotation).start - 1));
+					for(var j2:int = 0; j2 < revComAnnotations2.length; j2++) {
+						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).end - 1, featuredSequence.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).start - 1));
 					}
 					
-					for(var j3:int = 0; j3 < revComSegments3.length; j3++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Annotation).end - 2, featuredSequence.sequence.length - 3 * (revComSegments3[j3] as Annotation).start - 2));
+					for(var j3:int = 0; j3 < revComAnnotations3.length; j3++) {
+						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).end - 2, featuredSequence.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).start - 2));
 					}
 					break;
 			}

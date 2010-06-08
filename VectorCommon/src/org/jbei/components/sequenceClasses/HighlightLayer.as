@@ -51,15 +51,15 @@ package org.jbei.components.sequenceClasses
 			if(!contentHolder.highlights || contentHolder.highlights.length == 0) { return;	} 
 			
 			for(var i:int = 0; i < contentHolder.highlights.length; i++) {
-				var segment:Annotation = contentHolder.highlights[i] as Annotation;
+				var annotation:Annotation = contentHolder.highlights[i] as Annotation;
 				
-				if(!contentHolder.isValidIndex(segment.start) || !contentHolder.isValidIndex(segment.end)) { return; }
+				if(!contentHolder.isValidIndex(annotation.start) || !contentHolder.isValidIndex(annotation.end)) { return; }
 				
-				if(segment.start > segment.end) {
-					drawSelection(0, segment.end);
-					drawSelection(segment.start, contentHolder.featuredSequence.sequence.length);
+				if(annotation.start > annotation.end) {
+					drawSelection(0, annotation.end);
+					drawSelection(annotation.start, contentHolder.featuredSequence.sequence.length);
 				} else {
-					drawSelection(segment.start, segment.end);
+					drawSelection(annotation.start, annotation.end);
 				}
 			}
 		}

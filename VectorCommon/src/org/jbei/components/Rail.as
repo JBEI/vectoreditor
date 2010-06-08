@@ -37,7 +37,7 @@ package org.jbei.components
 		private var _orfMapper:ORFMapper;
 		private var _traceMapper:TraceMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
-		private var _highlights:Array /* of Segment */;
+		private var _highlights:Array /* of Annotation */;
 		
 		private var _readOnly:Boolean = false;
 		private var _showFeatures:Boolean = true;
@@ -161,12 +161,12 @@ package org.jbei.components
 			invalidateProperties();
 		}
 		
-		public function get highlights():Array /* of Segment */
+		public function get highlights():Array /* of Annotation */
 		{
 			return _highlights;
 		}
 		
-		public function set highlights(value:Array /* of Segment */):void
+		public function set highlights(value:Array /* of Annotation */):void
 		{
 			_highlights = value;
 			
