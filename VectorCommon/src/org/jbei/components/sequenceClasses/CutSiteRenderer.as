@@ -5,7 +5,7 @@ package org.jbei.components.sequenceClasses
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.CutSite;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
@@ -16,7 +16,7 @@ package org.jbei.components.sequenceClasses
 		private var sequenceContentHolder:ContentHolder;
 		
 		// Constructor
-		public function CutSiteRenderer(contentHolder:IContentHolder, cutSite:CutSite)
+		public function CutSiteRenderer(contentHolder:IContentHolder, cutSite:RestrictionCutSite)
 		{
 			super(contentHolder, cutSite);
 			
@@ -24,9 +24,9 @@ package org.jbei.components.sequenceClasses
 		}
 		
 		// Properties
-		public function get cutSite():CutSite
+		public function get cutSite():RestrictionCutSite
 		{
-			return annotation as CutSite;
+			return annotation as RestrictionCutSite;
 		}
 		
 		// Public Methods
@@ -65,7 +65,7 @@ package org.jbei.components.sequenceClasses
 					var rowCutSites:Array = row.rowData.cutSitesAlignment[r] as Array;
 					
 					for(var c:int = 0; c < rowCutSites.length; c++) {
-						if((rowCutSites[c] as CutSite) == cutSite) {
+						if((rowCutSites[c] as RestrictionCutSite) == cutSite) {
 							alignmentRowIndex = row.rowData.cutSitesAlignment.length - r - 1;
 							break;
 						}
@@ -122,7 +122,7 @@ package org.jbei.components.sequenceClasses
 				var currentWidth:Number = bpEndMetrics.x - bpStartMetrics.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 				var currentHeight:Number = cutSiteHeight;
 				
-				var cutSiteBitMap:BitmapData = (cutSite.numCuts == 1) ? sequenceContentHolder.singleCutterCutSiteTextRenderer.textToBitmap(cutSite.label) : sequenceContentHolder.cutSiteTextRenderer.textToBitmap(cutSite.label);
+				var cutSiteBitMap:BitmapData = (cutSite.numCuts == 1) ? sequenceContentHolder.singleCutterCutSiteTextRenderer.textToBitmap(cutSite.restrictionEnzyme.name) : sequenceContentHolder.cutSiteTextRenderer.textToBitmap(cutSite.restrictionEnzyme.name);
 				
 				var matrix:Matrix = new Matrix();
 				matrix.tx += cutSiteX;
@@ -166,7 +166,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = cutSite.label + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.forward ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 	}
 }

@@ -5,7 +5,7 @@ package org.jbei.components.sequenceClasses
 	
 	import mx.core.UIComponent;
 	
-	import org.jbei.bio.data.Segment;
+	import org.jbei.bio.sequence.common.Annotation;
 	
 	public class HighlightLayer extends UIComponent
 	{
@@ -51,7 +51,7 @@ package org.jbei.components.sequenceClasses
 			if(!contentHolder.highlights || contentHolder.highlights.length == 0) { return;	} 
 			
 			for(var i:int = 0; i < contentHolder.highlights.length; i++) {
-				var segment:Segment = contentHolder.highlights[i] as Segment;
+				var segment:Annotation = contentHolder.highlights[i] as Annotation;
 				
 				if(!contentHolder.isValidIndex(segment.start) || !contentHolder.isValidIndex(segment.end)) { return; }
 				

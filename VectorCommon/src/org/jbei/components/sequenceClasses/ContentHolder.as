@@ -21,12 +21,13 @@ package org.jbei.components.sequenceClasses
     import mx.core.Application;
     import mx.core.UIComponent;
     
-    import org.jbei.bio.data.CutSite;
-    import org.jbei.bio.data.DNASequence;
-    import org.jbei.bio.data.Feature;
-    import org.jbei.bio.data.ORF;
-    import org.jbei.bio.data.RestrictionEnzyme;
-    import org.jbei.bio.utils.SequenceUtils;
+    import org.jbei.bio.enzymes.RestrictionCutSite;
+    import org.jbei.bio.orf.ORF;
+    import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.alphabets.DNAAlphabet;
+    import org.jbei.bio.sequence.common.SymbolList;
+    import org.jbei.bio.sequence.dna.DNASequence;
+    import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.components.SequenceAnnotator;
     import org.jbei.components.common.AnnotationRenderer;
     import org.jbei.components.common.CaretEvent;
@@ -36,6 +37,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.PasteDialogForm;
     import org.jbei.components.common.SelectionEvent;
+    import org.jbei.components.common.SequenceUtils;
     import org.jbei.components.common.TextRenderer;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.mappers.AAMapper;
@@ -987,7 +989,7 @@ package org.jbei.components.sequenceClasses
         
         private function onSelectedAsNewFeatureMenuItem(event:ContextMenuEvent):void
         {
-            dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature(selectionLayer.start, selectionLayer.end)));
+            dispatchEvent(new CommonEvent(CommonEvent.CREATE_FEATURE, true, true, new Feature("", selectionLayer.start, selectionLayer.end, "", 0)));
         }
         
         private function onSelectAll(event:Event):void
@@ -1003,8 +1005,8 @@ package org.jbei.components.sequenceClasses
             
             var digestionStart:int = -1;
             var digestionEnd:int = -1;
-            var digestionStartCutSite:CutSite = null;
-            var digestionEndCutSite:CutSite = null;
+            var digestionStartCutSite:RestrictionCutSite = null;
+            var digestionEndCutSite:RestrictionCutSite = null;
             
             if(_showCutSites
                 && _restrictionEnzymeMapper
@@ -1012,7 +1014,7 @@ package org.jbei.components.sequenceClasses
                 && _restrictionEnzymeMapper.cutSites.length > 0) {
                 
                 for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
-                    var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                    var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                     
                     if(startSelectionIndex == cutSite.start) {
                         digestionStart = startSelectionIndex;
@@ -1033,13 +1035,13 @@ package org.jbei.components.sequenceClasses
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
                 Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
-                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.sequence, true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.seqString(), true);
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
             } else {
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
             }
@@ -1050,7 +1052,7 @@ package org.jbei.components.sequenceClasses
             if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).sequence, true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
                 
@@ -1119,7 +1121,7 @@ package org.jbei.components.sequenceClasses
                 if(pasteData is FeaturedSequence) {
                     var pasteFeaturedSequence:FeaturedSequence = pasteData as FeaturedSequence;
                     
-                    var pasteSequence1:String = pasteFeaturedSequence.sequence.sequence;
+                    var pasteSequence1:String = pasteFeaturedSequence.sequence.seqString();
                     
                     if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
                         showInvalidPasteSequenceAlert();
@@ -1148,9 +1150,9 @@ package org.jbei.components.sequenceClasses
                     }
                     
                     if(_safeEditing) {
-                        doInsertSequence(new DNASequence(pasteSequence2), _caretPosition);
+                        doInsertSequence(DNATools.createDNA(pasteSequence2), _caretPosition);
                     } else {
-                        _featuredSequence.insertSequence(new DNASequence(pasteSequence2), _caretPosition);
+                        _featuredSequence.insertSequence(DNATools.createDNA(pasteSequence2), _caretPosition);
                         
                         tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
                     }				
@@ -1216,9 +1218,9 @@ package org.jbei.components.sequenceClasses
             } else if(!event.ctrlKey && !event.altKey && _caretPosition != -1) {
                 if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
                     if(_safeEditing) {
-                        doInsertSequence(new DNASequence(keyCharacter), _caretPosition);
+                        doInsertSequence(DNATools.createDNA(keyCharacter), _caretPosition);
                     } else {
-                        _featuredSequence.insertSequence(new DNASequence(keyCharacter), _caretPosition);
+                        _featuredSequence.insertSequence(DNATools.createDNA(keyCharacter), _caretPosition);
                         
                         tryMoveCaretToPosition(_caretPosition + 1);
                     }
@@ -1700,7 +1702,7 @@ package org.jbei.components.sequenceClasses
 			if(!showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites) { return; }
 			
 			for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
-				var cutSite:CutSite = _restrictionEnzymeMapper.cutSites[i] as CutSite;
+				var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites[i] as RestrictionCutSite;
 				
 				var cutSiteRenderer:CutSiteRenderer = new CutSiteRenderer(this, cutSite);
 				
@@ -1852,7 +1854,7 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
-		private function doInsertSequence(dnaSequence:DNASequence, position:int):void
+		private function doInsertSequence(dnaSequence:SymbolList, position:int):void
 		{
 			if(! _readOnly) {
 				dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
@@ -1876,7 +1878,7 @@ package org.jbei.components.sequenceClasses
             var matchedEnd:Boolean = false;
             
             for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
-                var cutSite:CutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                 
                 if(startSelectionIndex == cutSite.start) {
                     matchedStart = true;

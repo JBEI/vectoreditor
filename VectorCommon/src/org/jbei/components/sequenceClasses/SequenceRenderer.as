@@ -88,7 +88,7 @@ package org.jbei.components.sequenceClasses
 			
 			if(! contentHolder.featuredSequence) { return; }
 			
-			var sequence:String = contentHolder.featuredSequence.sequence.sequence;
+			var sequence:String = contentHolder.featuredSequence.sequence.seqString();
 			
 			var rows:Array = contentHolder.rowMapper.rows as Array /* of Row */;
 			

@@ -3,7 +3,7 @@ package org.jbei.components.railClasses
 	import flash.display.Graphics;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.ORF;
+	import org.jbei.bio.orf.ORF;
 	import org.jbei.components.common.AnnotationRenderer;
 
 	public class ORFRenderer extends AnnotationRenderer
@@ -72,14 +72,14 @@ package org.jbei.components.railClasses
 			}
 			
 			// render end codons as arrows
-			if(! orf.isComplement) {
+			if(orf.strand == 1) {
 				g.beginFill(color);
 				g.moveTo(endPosition - 5, yPosition - 2);
 				g.lineTo(endPosition, yPosition);
 				g.lineTo(endPosition - 5, yPosition + 2);
 				g.lineTo(endPosition - 5, yPosition - 2);
 				g.endFill();
-			} else if(orf.isComplement) {
+			} else if(orf.strand) {
 				g.beginFill(color);
 				g.moveTo(startPosition, yPosition);
 				g.lineTo(startPosition + 5, yPosition - 2);
@@ -91,7 +91,7 @@ package org.jbei.components.railClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame() + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.isComplement ? ", complimentary" : "");
+			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.strand == 1 ? ", complimentary" : "");
 			if(orf.startCodons.length > 1) {
 				tooltipLabel += "\n";
 				for(var i:int = 0; i < orf.startCodons.length; i++) {
@@ -109,11 +109,11 @@ package org.jbei.components.railClasses
 		{
 			var color:int = ORF_FRAME_COLOR1;
 			
-			if(orf.frame() == 0) {
+			if(orf.frame == 0) {
 				color = ORF_FRAME_COLOR1;
-			} else if(orf.frame() == 1) {
+			} else if(orf.frame == 1) {
 				color = ORF_FRAME_COLOR2;
-			} else if(orf.frame() == 2) {
+			} else if(orf.frame == 2) {
 				color = ORF_FRAME_COLOR3;
 			}
 			

@@ -4,7 +4,7 @@ package org.jbei.components.railClasses
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.CutSite;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.components.common.AnnotationRenderer;
 	
 	public class CutSiteRenderer extends AnnotationRenderer
@@ -18,15 +18,15 @@ package org.jbei.components.railClasses
 		private var railMetrics:Rectangle;
 		
 		// Constructor
-		public function CutSiteRenderer(contentHolder:ContentHolder, cutSite:CutSite)
+		public function CutSiteRenderer(contentHolder:ContentHolder, cutSite:RestrictionCutSite)
 		{
 			super(contentHolder, cutSite);
 		}
 		
 		// Properties
-		public function get cutSite():CutSite
+		public function get cutSite():RestrictionCutSite
 		{
-			return annotation as CutSite;
+			return annotation as RestrictionCutSite;
 		}
 		
 		public function get connectionPoint():Point
@@ -66,7 +66,7 @@ package org.jbei.components.railClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.forward ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 	}
 }

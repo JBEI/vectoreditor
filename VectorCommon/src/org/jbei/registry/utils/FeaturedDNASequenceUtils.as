@@ -2,10 +2,10 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.data.Feature;
-	import org.jbei.bio.data.FeatureNote;
-	import org.jbei.bio.utils.SequenceUtils;
+	import org.jbei.bio.sequence.DNATools;
+	import org.jbei.bio.sequence.dna.DNASequence;
+	import org.jbei.bio.sequence.dna.Feature;
+	import org.jbei.bio.sequence.dna.FeatureNote;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.registry.models.DNAFeature;
 	import org.jbei.registry.models.DNAFeatureNote;
@@ -20,7 +20,7 @@ package org.jbei.registry.utils
 			}
 			
 			var dnaSequenceFeatures:ArrayCollection = new ArrayCollection();
-			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(featuredSequence.sequence.sequence, dnaSequenceFeatures);
+			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(featuredSequence.sequence.seqString(), dnaSequenceFeatures);
 			
 			for(var i:int = 0; i < featuredSequence.features.length; i++) {
 				var feature:Feature = featuredSequence.features[i];
@@ -35,7 +35,7 @@ package org.jbei.registry.utils
 					}
 				}
 				
-				dnaSequenceFeatures.addItem(new DNAFeature(feature.start + 1, feature.end + 1, feature.strand, feature.label, descriptionNotes, feature.type, feature.annotationType));
+				dnaSequenceFeatures.addItem(new DNAFeature(feature.start + 1, feature.end + 1, feature.strand, feature.name, descriptionNotes, feature.type));
 			}
 			
 			return featuredDNASequence;
@@ -47,16 +47,16 @@ package org.jbei.registry.utils
 				return null;
 			}
 			
-			var dnaSequence:DNASequence = new DNASequence(featuredDNASequence.sequence);
+			var dnaSequence:DNASequence = DNATools.createDNASequence("", featuredDNASequence.sequence);
 			
-			var featuredSequence:FeaturedSequence = new FeaturedSequence(name, isCircular, dnaSequence, SequenceUtils.oppositeSequence(dnaSequence));
+			var featuredSequence:FeaturedSequence = new FeaturedSequence(name, isCircular, dnaSequence);
 			
 			var features:ArrayCollection = new ArrayCollection();
 			if(featuredDNASequence.features != null && featuredDNASequence.features.length > 0) {
 				for(var i:int = 0; i < featuredDNASequence.features.length; i++) {
 					var dnaFeature:DNAFeature = featuredDNASequence.features[i];
 					
-					var featureNotes:Array = new Array(); // of FeatureNote;
+					var featureNotes:Vector.<FeatureNote> = new Vector.<FeatureNote>(); // of FeatureNote;
 					
 					if(dnaFeature.notes != null && dnaFeature.notes.length > 0) {
 						for(var j:int = 0; j < dnaFeature.notes.length; j++) {
@@ -66,7 +66,7 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					features.addItem(new Feature(dnaFeature.start - 1, dnaFeature.end - 1, dnaFeature.name, dnaFeature.type, dnaFeature.strand, featureNotes, dnaFeature.annotationType));
+					features.addItem(new Feature(dnaFeature.name, dnaFeature.start - 1, dnaFeature.end - 1, dnaFeature.type, dnaFeature.strand, featureNotes));
 				}
 			}
 			

@@ -4,10 +4,10 @@ package org.jbei.components.sequenceClasses
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.CutSite;
-	import org.jbei.bio.data.Feature;
-	import org.jbei.bio.data.IAnnotation;
-	import org.jbei.bio.data.ORF;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
+	import org.jbei.bio.orf.ORF;
+	import org.jbei.bio.sequence.common.Annotation;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.Alignment;
 	
 	public class RowMapper
@@ -55,12 +55,15 @@ package org.jbei.components.sequenceClasses
 			
 			numRows = int(Math.ceil(((contentHolder.featuredSequence.sequence.length + 1) / contentHolder.bpPerRow)));
 			
+            var seqString:String = contentHolder.featuredSequence.sequence.seqString().toUpperCase();
+            var complementSeqString:String = contentHolder.featuredSequence.getComplementSequence().seqString().toUpperCase();
+            
 			for(var i:int = 0; i < numRows; i++) {
 				var start:int = i * contentHolder.bpPerRow;
 				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
 				
-				var sequence:String = contentHolder.featuredSequence.sequence.sequence.substring(start, end + 1);
-				var oppositeSequence:String = contentHolder.featuredSequence.oppositeSequence.sequence.substring(start, end + 1);
+				var sequence:String = seqString.substring(start, end + 1);
+				var oppositeSequence:String = complementSeqString.substring(start, end + 1);
 				
 				var row:Row = new Row(i, new RowData(start, end, sequence, oppositeSequence));
 				_rows.push(row);
@@ -119,7 +122,7 @@ package org.jbei.components.sequenceClasses
 			var rowsCutSites:Array = rowAnnotations(contentHolder.restrictionEnzymeMapper.cutSites);
 			
 			for(var k:int = 0; k < contentHolder.restrictionEnzymeMapper.cutSites.length; k++) {
-				var cutSite:CutSite = contentHolder.restrictionEnzymeMapper.cutSites[k];
+				var cutSite:RestrictionCutSite = contentHolder.restrictionEnzymeMapper.cutSites[k];
 				
 				_cutSiteToRowMap[cutSite] = null;
 			}
@@ -137,7 +140,7 @@ package org.jbei.components.sequenceClasses
 				if(rowOwnedCutSite == null) { continue; }
 				
 				for(var j:int = 0; j < rowOwnedCutSite.length; j++) {
-					var rowCutSite:CutSite = rowOwnedCutSite[j] as CutSite;
+					var rowCutSite:RestrictionCutSite = rowOwnedCutSite[j] as RestrictionCutSite;
 					
 					if(!_cutSiteToRowMap[rowCutSite]) {
 						_cutSiteToRowMap[rowCutSite] = new Array();
@@ -199,7 +202,7 @@ package org.jbei.components.sequenceClasses
 				
 				var numberOfItems:int = annotations.length;
 				for(var i:int = 0; i < numberOfItems; i++) {
-					var annotation:IAnnotation = annotations[i] as IAnnotation;
+					var annotation:Annotation = annotations[i] as Annotation;
 					
 					if(annotation.start > annotation.end) {
 						var rowStartIndex1:int = int(annotation.start / contentHolder.bpPerRow);
@@ -227,11 +230,11 @@ package org.jbei.components.sequenceClasses
 							
 							if(rows[z] as Array != null) {
 								(rows[z] as Array).push(annotation);
-								if(annotation is CutSite) {
+								if(annotation is RestrictionCutSite) {
 									//Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 								}
 							} else {
-								if(annotation is CutSite) {
+								if(annotation is RestrictionCutSite) {
 									//Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 								}
 							}

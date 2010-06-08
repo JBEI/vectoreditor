@@ -3,7 +3,8 @@ package org.jbei.components.pieClasses
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	
-	import org.jbei.bio.data.Feature;
+	import org.jbei.bio.sequence.common.StrandType;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 
@@ -82,9 +83,9 @@ package org.jbei.components.pieClasses
 			g.beginFill(color);
 			
 			var direction:uint = 0;
-			if(feature.strand == Feature.POSITIVE) {
+			if(feature.strand == StrandType.FORWARD) {
 				direction = 1;
-			} else if(feature.strand == Feature.NEGATIVE) {
+			} else if(feature.strand == StrandType.BACKWARD) {
 				direction = 2;
 			} else {
 				direction = 0;
@@ -97,7 +98,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.label == "" ? "" : (" - " + feature.label)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
 		}
 		
 		// Private Methods

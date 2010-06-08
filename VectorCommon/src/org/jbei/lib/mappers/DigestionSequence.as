@@ -1,6 +1,6 @@
 package org.jbei.lib.mappers
 {
-    import org.jbei.bio.data.RestrictionEnzyme;
+    import org.jbei.bio.enzymes.RestrictionEnzyme;
     import org.jbei.lib.FeaturedSequence;
 
     /**

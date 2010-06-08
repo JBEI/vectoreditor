@@ -3,7 +3,7 @@ package org.jbei.components.pieClasses
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	
-	import org.jbei.bio.data.CutSite;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 	
@@ -19,7 +19,7 @@ package org.jbei.components.pieClasses
 		private var angle:Number;
 		
 		// Constructor
-		public function CutSiteRenderer(contentHolder:ContentHolder, cutSite:CutSite)
+		public function CutSiteRenderer(contentHolder:ContentHolder, cutSite:RestrictionCutSite)
 		{
 			super(contentHolder, cutSite);
 		}
@@ -30,9 +30,9 @@ package org.jbei.components.pieClasses
 			return _middlePoint;
 		}
 		
-		public function get cutSite():CutSite
+		public function get cutSite():RestrictionCutSite
 		{
-			return annotation as CutSite;
+			return annotation as RestrictionCutSite;
 		}
 		
 		// Public Methods
@@ -73,7 +73,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.forward ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 	}
 }

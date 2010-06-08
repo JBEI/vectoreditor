@@ -3,7 +3,7 @@ package org.jbei.components.sequenceClasses
 	import flash.display.Graphics;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.ORF;
+	import org.jbei.bio.orf.ORF;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
@@ -107,11 +107,11 @@ package org.jbei.components.sequenceClasses
 				var upShift:Number = 2 + alignmentRowIndex * 6;
 				
 				var color:int = ORF_FRAME_COLOR1;
-				if(orf.frame() == 0) {
+				if(orf.frame == 0) {
 					color = ORF_FRAME_COLOR1;
-				} else if(orf.frame() == 1) {
+				} else if(orf.frame == 1) {
 					color = ORF_FRAME_COLOR2;
-				} else if(orf.frame() == 2) {
+				} else if(orf.frame == 2) {
 					color = ORF_FRAME_COLOR3;
 				}
 				
@@ -144,7 +144,7 @@ package org.jbei.components.sequenceClasses
 						var codonStartPointY:Number = codonStartMetrics.y - upShift;
 						g.beginFill(color);
 						
-						if(! orf.isComplement) {
+						if(orf.strand == -1) {
 							g.drawCircle(codonStartPointX + 4, codonStartPointY, 2);
 						} else {
 							g.drawCircle(codonStartPointX + sequenceContentHolder.sequenceSymbolRenderer.textWidth - 2, codonStartPointY, 2);
@@ -153,7 +153,7 @@ package org.jbei.components.sequenceClasses
 					}
 				}
 				
-				if(! orf.isComplement && endBP == orf.end) {
+				if(orf.strand == 1 && endBP == orf.end) {
 					var codonEndPoint1:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 					var codonEndPointX1:Number = codonEndPoint1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth + 3;
 					var codonEndPointY1:Number = codonEndPoint1.y - upShift;
@@ -164,7 +164,7 @@ package org.jbei.components.sequenceClasses
 					g.lineTo(codonEndPointX1 - 5, codonEndPointY1 + 2);
 					g.lineTo(codonEndPointX1 - 5, codonEndPointY1 - 2);
 					g.endFill();
-				} else if(orf.isComplement && startBP == orf.start) {
+				} else if(orf.strand == -1 && startBP == orf.start) {
 					var codonEndPoint2:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
 					var codonEndPointX2:Number = codonEndPoint2.x + 3;
 					var codonEndPointY2:Number = codonEndPoint2.y - upShift;
@@ -181,7 +181,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame() + ", length: " + (Math.abs(orf.end - orf.start) + 1 + 1) + " BP, " + (int((Math.abs(orf.end - orf.start) + 1) / 3) + 1) + " AA" + (orf.isComplement ? ", complimentary" : "");
+			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1 + 1) + " BP, " + (int((Math.abs(orf.end - orf.start) + 1) / 3) + 1) + " AA" + (orf.strand == -1 ? ", complimentary" : "");
 			if(orf.startCodons.length > 1) {
 				tooltipLabel += "\n";
 				for(var i:int = 0; i < orf.startCodons.length; i++) {

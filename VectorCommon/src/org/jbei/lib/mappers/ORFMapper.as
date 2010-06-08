@@ -4,10 +4,11 @@ package org.jbei.lib.mappers
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.data.ORF;
-	import org.jbei.bio.utils.ORFUtils;
-	import org.jbei.bio.utils.SequenceUtils;
+	import org.jbei.bio.orf.ORF;
+	import org.jbei.bio.orf.ORFFinder;
+	import org.jbei.bio.sequence.DNATools;
+	import org.jbei.bio.sequence.common.SymbolList;
+	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	
@@ -71,29 +72,23 @@ package org.jbei.lib.mappers
 		
 		private function recalculateNonCircular():void
 		{
-			var orfsSequence:Array = ORFUtils.calculateORFs(_featuredSequence.sequence, _minORFSize);
-			var orfsComplimentary:Array = ORFUtils.calculateReverseComplementaryORFs(SequenceUtils.reverseSequence(_featuredSequence.oppositeSequence), _minORFSize);
+			var orfsSequence:Vector.<ORF> = ORFFinder.calculateORFBothDirections(_featuredSequence.sequence, _featuredSequence.getReverseComplementSequence(), _minORFSize);
 			
 			_orfs = new ArrayCollection();
 			for(var i:int = 0; i < orfsSequence.length; i++) {
 				_orfs.addItem(orfsSequence[i]);
 			}
-			
-			for(var j:int = 0; j < orfsComplimentary.length; j++) {
-				_orfs.addItem(orfsComplimentary[j]);
-			}
 		}
 		
 		private function recalculateCircular():void
 		{
-			var forwardSequence:DNASequence = _featuredSequence.sequence;
-			var backwardSequence:DNASequence = SequenceUtils.reverseSequence(_featuredSequence.oppositeSequence);
+			var forwardSequence:SymbolList = _featuredSequence.sequence;
+			var backwardSequence:SymbolList = _featuredSequence.getReverseComplementSequence();
 			
-			var doubleForwardSequence:DNASequence = new DNASequence(forwardSequence.sequence + forwardSequence.sequence);
-			var doubleBackwardSequence:DNASequence = new DNASequence(backwardSequence.sequence + backwardSequence.sequence);
+			var doubleForwardSequence:SymbolList = DNATools.createDNA(forwardSequence.seqString() + forwardSequence.seqString());
+			var doubleBackwardSequence:SymbolList = DNATools.createDNA(backwardSequence.seqString() + backwardSequence.seqString());
 			
-			var orfsSequence:Array = ORFUtils.calculateORFs(doubleForwardSequence, _minORFSize);
-			var orfsComplimentary:Array = ORFUtils.calculateReverseComplementaryORFs(doubleBackwardSequence, _minORFSize);
+			var orfsSequence:Vector.<ORF> = ORFFinder.calculateORFBothDirections(doubleForwardSequence, doubleBackwardSequence, _minORFSize);
 			
 			var maxLength:int = forwardSequence.length;
 			
@@ -101,41 +96,22 @@ package org.jbei.lib.mappers
 			
 			var normalORFs:Array = new Array();
 			
-			for(var i1:int = 0; i1 < orfsSequence.length; i1++) {
-				var orf1:ORF = orfsSequence[i1] as ORF;
+			for(var i:int = 0; i < orfsSequence.length; i++) {
+				var orf:ORF = orfsSequence[i] as ORF;
 				
-				if(orf1.start >= maxLength) {
-				} else if(orf1.end < maxLength) {
-					normalORFs.push(orf1);
-				} else if(orf1.end >= maxLength && orf1.start < maxLength) {
-					orf1.end -= maxLength;
+				if(orf.start >= maxLength) {
+				} else if(orf.end < maxLength) {
+					normalORFs.push(orf);
+				} else if(orf.end >= maxLength && orf.start < maxLength) {
+					orf.end -= maxLength;
 					
-					for(var j1:int = 0; j1 < orf1.startCodons.length; j1++) {
-						if(orf1.startCodons[j1] >= maxLength) {
-							orf1.startCodons[j1] -= maxLength;
+					for(var j:int = 0; j < orf.startCodons.length; j++) {
+						if(orf.startCodons[j] >= maxLength) {
+							orf.startCodons[j] -= maxLength;
 						}
 					}
 					
-					_orfs.addItem(orf1);
-				}
-			}
-			
-			for(var i2:int = 0; i2 < orfsComplimentary.length; i2++) {
-				var orf2:ORF = orfsComplimentary[i2] as ORF;
-				
-				if(orf2.start >= maxLength) {
-				} else if(orf2.end < maxLength) {
-					normalORFs.push(orf2);
-				} else if(orf2.end >= maxLength && orf2.start < maxLength) {
-					orf2.end -= maxLength;
-					
-					for(var j2:int = 0; j2 < orf2.startCodons.length; j2++) {
-						if(orf2.startCodons[j2] >= maxLength) {
-							orf2.startCodons[j2] -= maxLength;
-						}
-					}
-					
-					_orfs.addItem(orf2);
+					_orfs.addItem(orf);
 				}
 			}
 			
@@ -147,7 +123,7 @@ package org.jbei.lib.mappers
 				for(var l:int = 0; l < _orfs.length; l++) {
 					var circularORF:ORF = _orfs[l] as ORF;
 					
-					if(circularORF.end == normalORF.end && circularORF.isComplement == normalORF.isComplement) {
+					if(circularORF.end == normalORF.end && circularORF.strand == normalORF.strand) {
 						skip = true;
 						break;
 					}

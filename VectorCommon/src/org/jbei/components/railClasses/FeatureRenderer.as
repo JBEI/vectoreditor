@@ -4,7 +4,8 @@ package org.jbei.components.railClasses
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.Feature;
+	import org.jbei.bio.sequence.common.StrandType;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
 
 	public class FeatureRenderer extends AnnotationRenderer
@@ -69,11 +70,11 @@ package org.jbei.components.railClasses
 				
 				g.beginFill(color);
 				switch(feature.strand) {
-					case Feature.POSITIVE:
+					case StrandType.FORWARD:
 						drawFeaturePositiveArrow(g, xStartPosition, yPosition, featureWidth, DEFAULT_FEATURE_HEIGHT);
 						
 						break;
-					case Feature.NEGATIVE:
+					case StrandType.BACKWARD:
 						drawFeatureNegativeArrow(g, xStartPosition, yPosition, featureWidth, DEFAULT_FEATURE_HEIGHT);
 						
 						break;
@@ -88,7 +89,7 @@ package org.jbei.components.railClasses
 				var endPosition:Number = railMetrics.x + contentHolder.featuredSequence.sequence.length * bpWidth;
 				
 				switch(feature.strand) {
-					case Feature.POSITIVE:
+					case StrandType.FORWARD:
 						g.beginFill(color);
 						drawFeatureRect(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
 						g.endFill();
@@ -98,7 +99,7 @@ package org.jbei.components.railClasses
 						g.endFill();
 						
 						break;
-					case Feature.NEGATIVE:
+					case StrandType.BACKWARD:
 						g.beginFill(color);
 						drawFeatureNegativeArrow(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
 						g.endFill();
@@ -126,7 +127,7 @@ package org.jbei.components.railClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.label == "" ? "" : (" - " + feature.label)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
 		}
 		
 		// Private Methods

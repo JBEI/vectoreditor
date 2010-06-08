@@ -3,7 +3,8 @@ package org.jbei.components.sequenceClasses
 	import flash.display.Graphics;
 	import flash.geom.Rectangle;
 	
-	import org.jbei.bio.data.Feature;
+	import org.jbei.bio.sequence.common.StrandType;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
@@ -126,13 +127,13 @@ package org.jbei.components.sequenceClasses
 					
 					var featureRowHeightCommon:Number = DEFAULT_FEATURE_HEIGHT;
 					
-					if(feature.strand == Feature.UNKNOWN) {
+					if(feature.strand == StrandType.UNKNOWN) {
 						drawFeatureRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
 						drawFeatureRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
-					} else if(feature.strand == Feature.POSITIVE) {
+					} else if(feature.strand == StrandType.FORWARD) {
 						drawFeatureForwardArrow(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
 						drawFeatureForwardRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
-					} else if(feature.strand == Feature.NEGATIVE) {
+					} else if(feature.strand == StrandType.BACKWARD) {
 						drawFeatureBackwardRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
 						drawFeatureBackwardArrow(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
 					}
@@ -150,15 +151,15 @@ package org.jbei.components.sequenceClasses
 					var featureRowWidth:Number = bpEndMetrics.x - bpStartMetrics.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
 					var featureRowHeight:Number = DEFAULT_FEATURE_HEIGHT;
 					
-					if(feature.strand == Feature.UNKNOWN) {
+					if(feature.strand == StrandType.UNKNOWN) {
 						drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
-					} else if(feature.strand == Feature.POSITIVE) {
+					} else if(feature.strand == StrandType.FORWARD) {
 						if(feature.end >= row.rowData.start && feature.end <= row.rowData.end) {
 							drawFeatureForwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						} else {
 							drawFeatureForwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						}
-					} else if(feature.strand == Feature.NEGATIVE) {
+					} else if(feature.strand == StrandType.BACKWARD) {
 						if(feature.start >= row.rowData.start && feature.start <= row.rowData.end) {
 							drawFeatureBackwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						} else {
@@ -173,7 +174,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.label == "" ? "" : (" - " + feature.label)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
 		}
 		
 		// Private Methods

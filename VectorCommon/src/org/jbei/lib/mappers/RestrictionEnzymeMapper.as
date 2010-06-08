@@ -5,11 +5,12 @@ package org.jbei.lib.mappers
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.CutSite;
-	import org.jbei.bio.data.DNASequence;
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
-	import org.jbei.bio.utils.RestrictionEnzymesUtils;
-	import org.jbei.bio.utils.SequenceUtils;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
+	import org.jbei.bio.enzymes.RestrictionEnzyme;
+	import org.jbei.bio.enzymes.RestrictionEnzymeMapper;
+	import org.jbei.bio.sequence.DNATools;
+	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 
@@ -120,40 +121,39 @@ package org.jbei.lib.mappers
 		
 		private function recalculateNonCircular():void
 		{
-			var normalCutSites:Dictionary = RestrictionEnzymesUtils.cutSequence(_restrictionEnzymeGroup.enzymes, _featuredSequence.sequence);
-			var reverseCutSites:Dictionary = RestrictionEnzymesUtils.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, SequenceUtils.reverseSequence(_featuredSequence.oppositeSequence));
+			var cutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, _featuredSequence.sequence);
 			
-			eliminateDuplicates(normalCutSites, reverseCutSites);
+			eliminateDuplicates(cutSites, new Dictionary());
 		}
 		
 		// TODO: Optimize this
 		private function recalculateCircular():void
 		{
-			var normalCutSites:Dictionary = RestrictionEnzymesUtils.cutSequence(_restrictionEnzymeGroup.enzymes, new DNASequence(_featuredSequence.sequence.sequence + _featuredSequence.sequence.sequence));
-			var reverseCutSites:Dictionary = RestrictionEnzymesUtils.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, SequenceUtils.reverseSequence(new DNASequence(_featuredSequence.oppositeSequence.sequence + _featuredSequence.oppositeSequence.sequence)));
+			var normalCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_featuredSequence.sequence.seqString() + _featuredSequence.sequence.seqString()));
+			//var reverseCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_featuredSequence.getReverseComplementSequence().seqString() + _featuredSequence.getReverseComplementSequence().seqString()));
 			
-			var sequenceLength:int = _featuredSequence.sequence.sequence.length;
+			var sequenceLength:int = _featuredSequence.sequence.length;
 			for(var restrictionEnzyme:Object in normalCutSites) {
-				var normalCutSitesList:Array = normalCutSites[restrictionEnzyme];
-				var reverseCutSitesList:Array = reverseCutSites[restrictionEnzyme];
+				var normalCutSitesList:Vector.<RestrictionCutSite> = normalCutSites[restrictionEnzyme];
+				//var reverseCutSitesList:Array = reverseCutSites[restrictionEnzyme];
 				
 				// emiminating cut sites that are over sequence length
-				normalCutSites[restrictionEnzyme] = new Array();
+				normalCutSites[restrictionEnzyme] = new Vector.<RestrictionCutSite>();
 				for(var k1:int = 0; k1 < normalCutSitesList.length; k1++) {
-					var cutSite1:CutSite = normalCutSitesList[k1] as CutSite;
+					var cutSite1:RestrictionCutSite = normalCutSitesList[k1] as RestrictionCutSite;
 					
 					if(cutSite1.start >= sequenceLength) {
 					} else if(cutSite1.end < sequenceLength) {
-						(normalCutSites[restrictionEnzyme] as Array).push(cutSite1);
+						(normalCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					} else {
 						cutSite1.end -= sequenceLength;
-						(normalCutSites[restrictionEnzyme] as Array).push(cutSite1);
+						(normalCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					}
 				}
 				
-				reverseCutSites[restrictionEnzyme] = new Array();
+				/*reverseCutSites[restrictionEnzyme] = new Array();
 				for(var k2:int = 0; k2 < reverseCutSitesList.length; k2++) {
-					var cutSite2:CutSite = reverseCutSitesList[k2] as CutSite;
+					var cutSite2:RestrictionCutSite = reverseCutSitesList[k2] as RestrictionCutSite;
 					
 					if(cutSite2.start >= sequenceLength) {
 					} else if(cutSite2.end < sequenceLength) {
@@ -162,10 +162,10 @@ package org.jbei.lib.mappers
 						cutSite2.end -= sequenceLength;
 						(reverseCutSites[restrictionEnzyme] as Array).push(cutSite2);
 					}
-				}
+				}*/
 			}
 			
-			eliminateDuplicates(normalCutSites, reverseCutSites);
+			eliminateDuplicates(normalCutSites, new Dictionary());
 		}
 		
 		private function eliminateDuplicates(normalCutSites:Dictionary, reverseCutSites:Dictionary):void
@@ -176,8 +176,8 @@ package org.jbei.lib.mappers
 			_allCutSitesMap = new Dictionary();
 			
 			for(var restrictionEnzyme:Object in normalCutSites) {
-				var tmpArray1:Array = normalCutSites[restrictionEnzyme];
-				var tmpArray2:Array = reverseCutSites[restrictionEnzyme];
+				var tmpArray1:Vector.<RestrictionCutSite> = normalCutSites[restrictionEnzyme];
+				var tmpArray2:Vector.<RestrictionCutSite> = reverseCutSites[restrictionEnzyme];
 				
 				_allCutSitesMap[restrictionEnzyme] = new Array();
 				
@@ -190,34 +190,36 @@ package org.jbei.lib.mappers
 					numCuts++;
 				}
 				
-				for(var i:int = 0; i < tmpArray2.length; i++) {
-					var cutSite2:CutSite = tmpArray2[i] as CutSite;
-					
-					var skip:Boolean = false;
-					for(var j:int = 0; j < tmpArray1.length; j++) {
-						var cutSite1:CutSite = tmpArray1[j] as CutSite;
-						
-						if(cutSite1.start == cutSite2.start && cutSite1.end == cutSite2.end) {
-							skip = true;
-							break;
-						}
-					}
-					
-					if(! skip) {
-						_allCutSites.addItem(cutSite2);
-						csMap.push(cutSite2);
-						numCuts++;
-					}
-				}
+                if(tmpArray2) {
+    				for(var i:int = 0; i < tmpArray2.length; i++) {
+    					var cutSite2:RestrictionCutSite = tmpArray2[i] as RestrictionCutSite;
+    					
+    					var skip:Boolean = false;
+    					for(var j:int = 0; j < tmpArray1.length; j++) {
+    						var cutSite1:RestrictionCutSite = tmpArray1[j] as RestrictionCutSite;
+    						
+    						if(cutSite1.start == cutSite2.start && cutSite1.end == cutSite2.end) {
+    							skip = true;
+    							break;
+    						}
+    					}
+    					
+    					if(! skip) {
+    						_allCutSites.addItem(cutSite2);
+    						csMap.push(cutSite2);
+    						numCuts++;
+    					}
+    				}
+                }
 				
 				for(var l:int = 0; l < csMap.length; l++) {
-					(csMap[l] as CutSite).numCuts = numCuts;
+					(csMap[l] as RestrictionCutSite).numCuts = numCuts;
 				}
 			}
 			
 			if(_maxRestrictionEnzymeCuts > 0 && _allCutSites.length > 0) {
 				for(var c1:int = 0; c1 < _allCutSites.length; c1++) {
-					if((_allCutSites[c1] as CutSite).numCuts <= maxRestrictionEnzymeCuts) {
+					if((_allCutSites[c1] as RestrictionCutSite).numCuts <= maxRestrictionEnzymeCuts) {
 						_cutSites.addItem(_allCutSites[c1]);
 					}
 				}
@@ -227,7 +229,7 @@ package org.jbei.lib.mappers
 					
 					_cutSitesMap[re] = new Array();
 					
-					if(cuts.length > 0 && (cuts[0] as CutSite).numCuts <= maxRestrictionEnzymeCuts) {
+					if(cuts.length > 0 && (cuts[0] as RestrictionCutSite).numCuts <= maxRestrictionEnzymeCuts) {
 						for(var c2:int = 0; c2 < cuts.length; c2++) {
 							(_cutSitesMap[re] as Array).push(cuts[c2]);
 						}

@@ -4,8 +4,8 @@ package org.jbei.lib.mappers
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.data.TraceAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.registry.models.TraceSequence;
 	import org.jbei.registry.models.TraceSequenceAlignment;
@@ -99,7 +99,7 @@ package org.jbei.lib.mappers
 					if(isMatch) {
 						matchEnd = i - 1;
 						
-						matches.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+						matches.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 					}
 					
 					matchStart = -1;
@@ -111,7 +111,7 @@ package org.jbei.lib.mappers
 			if(isMatch) {
 				matchEnd = alignmentLength - 1;
 				
-				matches.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+				matches.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 			}
 			
 			return matches;
@@ -141,7 +141,7 @@ package org.jbei.lib.mappers
 					if(isMatch) {
 						matchEnd = i - 1;
 						
-						mismatches.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+						mismatches.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 					}
 					
 					matchStart = -1;
@@ -153,7 +153,7 @@ package org.jbei.lib.mappers
 			if(isMatch) {
 				matchEnd = alignmentLength - 1;
 				
-				mismatches.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+				mismatches.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 			}
 			
 			return mismatches;
@@ -183,7 +183,7 @@ package org.jbei.lib.mappers
 					if(isMatch) {
 						matchEnd = i - 1;
 						
-						deletions.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+						deletions.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 					}
 					
 					matchStart = -1;
@@ -195,7 +195,7 @@ package org.jbei.lib.mappers
 			if(isMatch) {
 				matchEnd = alignmentLength - 1;
 				
-				deletions.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+				deletions.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 			}
 			
 			return deletions;
@@ -225,7 +225,7 @@ package org.jbei.lib.mappers
 					if(isMatch) {
 						matchEnd = i - 1;
 						
-						insertions.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+						insertions.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 					}
 					
 					matchStart = -1;
@@ -237,7 +237,7 @@ package org.jbei.lib.mappers
 			if(isMatch) {
 				matchEnd = alignmentLength - 1;
 				
-				insertions.addItem(new Segment(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
+				insertions.addItem(new Annotation(traceSequenceAlignment.queryStart + matchStart - 1, traceSequenceAlignment.queryStart + matchEnd - 1)); // -1 because our sequence starts from 0
 			}
 			
 			return insertions;

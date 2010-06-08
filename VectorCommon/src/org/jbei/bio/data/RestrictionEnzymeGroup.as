@@ -2,10 +2,12 @@ package org.jbei.bio.data
 {
 	import mx.collections.ArrayCollection;
 	
+	import org.jbei.bio.enzymes.RestrictionEnzyme;
+	
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.RestrictionEnzymeGroup")]
 	public class RestrictionEnzymeGroup
 	{
-		private var _enzymes:ArrayCollection /* of RestrictionEnzyme */ = new ArrayCollection();
+		private var _enzymes:Vector.<RestrictionEnzyme> /* of RestrictionEnzyme */ = new Vector.<RestrictionEnzyme>();
 		private var _name:String;
 		
 		// Constructor
@@ -25,12 +27,12 @@ package org.jbei.bio.data
 			_name = value;
 		}
 		
-		public function get enzymes():ArrayCollection /* of RestrictionEnzyme */
+		public function get enzymes():Vector.<RestrictionEnzyme> /* of RestrictionEnzyme */
 		{
 			return _enzymes;
 		}
 		
-		public function set enzymes(value:ArrayCollection /* of RestrictionEnzyme */):void
+		public function set enzymes(value:Vector.<RestrictionEnzyme> /* of RestrictionEnzyme */):void
 		{
 			_enzymes = value;
 		}
@@ -38,8 +40,8 @@ package org.jbei.bio.data
 		// Public Methods
 		public function addRestrictionEnzyme(restrictionEnzyme:RestrictionEnzyme):void
 		{
-			if(! _enzymes.contains(restrictionEnzyme)) {
-				_enzymes.addItem(restrictionEnzyme);
+			if(_enzymes.indexOf(restrictionEnzyme) == -1) {
+				_enzymes.push(restrictionEnzyme);
 			} else {
 				throw new Error("Duplicate Restriction Enzyme! Restriction Enzyme already in the set!");
 			}
@@ -47,16 +49,13 @@ package org.jbei.bio.data
 		
 		public function removeRestrictionEnzyme(restrictionEnzyme:RestrictionEnzyme):void
 		{
-			if(!_enzymes.contains(restrictionEnzyme)) {
+            var index:int = _enzymes.indexOf(restrictionEnzyme);
+            
+            if(index == -1) {
 				throw new Error("Can't delete Restriction Enzyme! It doesn't belong to this set!");
 			}
 			
-			_enzymes.removeItemAt(_enzymes.getItemIndex(restrictionEnzyme));
-		}
-		
-		public function removeAll():void
-		{
-			_enzymes.removeAll();
+			_enzymes.splice(index, 1);
 		}
 		
 		public function hasEnzyme(restrictionEnzyme:RestrictionEnzyme):Boolean

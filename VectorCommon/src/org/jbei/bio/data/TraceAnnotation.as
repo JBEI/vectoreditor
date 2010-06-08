@@ -2,9 +2,10 @@ package org.jbei.bio.data
 {
 	import mx.collections.ArrayCollection;
 	
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.registry.models.TraceSequence;
 
-	public class TraceAnnotation extends Segment
+	public class TraceAnnotation extends Annotation
 	{
 		private var _traceSequence:TraceSequence;
 		private var _matches:ArrayCollection = new ArrayCollection(); /* of Segment */

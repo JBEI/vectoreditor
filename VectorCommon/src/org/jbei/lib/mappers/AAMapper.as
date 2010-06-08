@@ -2,10 +2,13 @@ package org.jbei.lib.mappers
 {
 	import flash.events.EventDispatcher;
 	
-	import org.jbei.bio.data.AminoAcid;
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.utils.AminoAcidsHelper;
-	import org.jbei.bio.utils.SequenceUtils;
+	import org.jbei.bio.sequence.TranslationUtils;
+	import org.jbei.bio.sequence.alphabets.ProteinAlphabet;
+	import org.jbei.bio.sequence.common.SymbolList;
+	import org.jbei.bio.sequence.dna.DNASequence;
+	import org.jbei.bio.sequence.symbols.AminoAcidSymbol;
+	import org.jbei.bio.sequence.symbols.GapSymbol;
+	import org.jbei.bio.sequence.symbols.ISymbol;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	
@@ -19,9 +22,6 @@ package org.jbei.lib.mappers
 		private var _sequenceAA1Frame1Sparse:String;
 		private var _sequenceAA1Frame2Sparse:String;
 		private var _sequenceAA1Frame3Sparse:String;
-		/*private var _sequenceAA3Frame1:String;
-		private var _sequenceAA3Frame2:String;
-		private var _sequenceAA3Frame3:String;*/
 		private var _revComAA1Frame1:String;
 		private var _revComAA1Frame2:String;
 		private var _revComAA1Frame3:String;
@@ -107,39 +107,6 @@ package org.jbei.lib.mappers
 			return _sequenceAA1Frame3Sparse;
 		}
 		
-		/*public function get sequenceAA3Frame1():String
-		{
-			if(dirty) {
-				recalculate();
-				
-				dirty = false;
-			}
-			
-			return _sequenceAA3Frame1;
-		}
-		
-		public function get sequenceAA3Frame2():String
-		{
-			if(dirty) {
-				recalculate();
-				
-				dirty = false;
-			}
-			
-			return _sequenceAA3Frame2;
-		}
-		
-		public function get sequenceAA3Frame3():String
-		{
-			if(dirty) {
-				recalculate();
-				
-				dirty = false;
-			}
-			
-			return _sequenceAA3Frame3;
-		}*/
-		
 		public function get revComAA1Frame1():String
 		{
 			if(dirty) {
@@ -218,9 +185,6 @@ package org.jbei.lib.mappers
 				_sequenceAA1Frame1Sparse = "";
 				_sequenceAA1Frame2Sparse = "";
 				_sequenceAA1Frame3Sparse = "";
-				/*_sequenceAA3Frame1 = "";
-				_sequenceAA3Frame2 = "";
-				_sequenceAA3Frame3 = "";*/
 				_revComAA1Frame1 = "";
 				_revComAA1Frame2 = "";
 				_revComAA1Frame3 = "";
@@ -240,9 +204,6 @@ package org.jbei.lib.mappers
 			_sequenceAA1Frame1Sparse = "";
 			_sequenceAA1Frame2Sparse = "";
 			_sequenceAA1Frame3Sparse = "";
-			/*_sequenceAA3Frame1 = "";
-			_sequenceAA3Frame2 = "";
-			_sequenceAA3Frame3 = "";*/
 			_revComAA1Frame1 = "";
 			_revComAA1Frame2 = "";
 			_revComAA1Frame3 = "";
@@ -251,44 +212,48 @@ package org.jbei.lib.mappers
 			_revComAA1Frame3Sparse = "";
 			
 			for(var i:int = 0; i < featuredSequence.sequence.length; i++) {
-				var codonSeq:String = "";
-				
 				if(i >= featuredSequence.sequence.length - 2) { break; }
 				
-				codonSeq = featuredSequence.sequence.sequence.charAt(i) + featuredSequence.sequence.sequence.charAt(i + 1) + featuredSequence.sequence.sequence.charAt(i + 2);
+				var aminoAcid:ISymbol = TranslationUtils.dnaToProteinSymbol(featuredSequence.sequence.symbolAt(i), featuredSequence.sequence.symbolAt(i + 1), featuredSequence.sequence.symbolAt(i + 2));
 				
-				var aminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(codonSeq);
-				
-				var aa1:String = (! aminoAcid) ? (AminoAcidsHelper.instance.isStopCodon(codonSeq) ? '.' : '-') : aminoAcid.name1;
-				//var aa3:String = (! aminoAcid) ? (AminoAcidsHelper.instance.isStopCodon(codonSeq) ? '...' : '---') : aminoAcid.name3;
-				
+                var aa1:String = "-";
+                if(aminoAcid is GapSymbol) {
+                    if(TranslationUtils.isStopCodon(featuredSequence.sequence.symbolAt(i), featuredSequence.sequence.symbolAt(i + 1), featuredSequence.sequence.symbolAt(i + 2))) {
+                        aa1 = ".";
+                    }
+                } else {
+                    aa1 = (aminoAcid as AminoAcidSymbol).value;
+                }
+                
 				if(i == 0 || (i % 3) == 0) {
 					_sequenceAA1Frame1 += aa1;
 					_sequenceAA1Frame1Sparse += aa1 + "  ";
-					//_sequenceAA3Frame1 += aa3;
 				} else if(i == 1 || ((i + 2) % 3 == 0)) {
 					_sequenceAA1Frame2 += aa1;
 					_sequenceAA1Frame2Sparse += aa1 + "  ";
-					//_sequenceAA3Frame2 += aa3;
 				} else if(i == 2 || ((i + 1) % 3 == 0)) {
 					_sequenceAA1Frame3 += aa1;
 					_sequenceAA1Frame3Sparse += aa1 + "  ";
-					//_sequenceAA3Frame3 += aa3;
 				}
 			}
 			
-			var revComSequence:DNASequence = SequenceUtils.reverseSequence(featuredSequence.oppositeSequence);
+			var revComSequence:SymbolList = featuredSequence.getReverseComplementSequence();
 			
-			for(var j:int = 0; j < revComSequence.sequence.length; j++) {
-				var revComCodonSeq:String = "";
+            var revComSequenceString:String = revComSequence.seqString();
+            
+			for(var j:int = 0; j < revComSequenceString.length; j++) {
+				if(j >= revComSequenceString.length - 2) { break; }
 				
-				if(j >= revComSequence.sequence.length - 2) { break; }
-				
-				revComCodonSeq = revComSequence.sequence.charAt(j) + revComSequence.sequence.charAt(j + 1) + revComSequence.sequence.charAt(j + 2);
-				
-				var revComAminoAcid:AminoAcid = AminoAcidsHelper.instance.aminoAcidFromBP(revComCodonSeq);
-				
-				var revComAA1:String = (! revComAminoAcid) ? (AminoAcidsHelper.instance.isStopCodon(revComCodonSeq) ? '.' : '-') : revComAminoAcid.name1;
+                var revComAminoAcid:ISymbol = TranslationUtils.dnaToProteinSymbol(revComSequence.symbolAt(j), revComSequence.symbolAt(j + 1), revComSequence.symbolAt(j + 2));
+                
+                var revComAA1:String = "-";
+                if(revComAminoAcid is GapSymbol) {
+                    if(TranslationUtils.isStopCodon(revComSequence.symbolAt(j), revComSequence.symbolAt(j + 1), revComSequence.symbolAt(j + 2))) {
+                        revComAA1 = ".";
+                    }
+                } else {
+                    revComAA1 = (revComAminoAcid as AminoAcidSymbol).value;
+                }
 				
 				if(j == 0 || (j % 3) == 0) {
 					_revComAA1Frame1 += revComAA1;

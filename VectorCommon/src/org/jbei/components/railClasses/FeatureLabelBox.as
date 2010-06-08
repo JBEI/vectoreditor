@@ -5,8 +5,8 @@ package org.jbei.components.railClasses
 	
 	import mx.utils.StringUtil;
 	
-	import org.jbei.bio.data.Feature;
-	import org.jbei.bio.data.IAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.LabelBox;
 
 	public class FeatureLabelBox extends LabelBox
@@ -16,7 +16,7 @@ package org.jbei.components.railClasses
 		private var _feature:Feature;
 		
 		// Contructor
-		public function FeatureLabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
+		public function FeatureLabelBox(contentHolder:ContentHolder, relatedAnnotation:Annotation)
 		{
 			super(contentHolder, relatedAnnotation);
 			
@@ -24,7 +24,7 @@ package org.jbei.components.railClasses
 			
 			_feature = relatedAnnotation as Feature;
 			
-			if(_feature.label == null || _feature.label == "" || StringUtil.trim(_feature.label) == "") {
+			if(_feature.name == null || _feature.name == "" || StringUtil.trim(_feature.name) == "") {
 				visible = false;
 			}
 		}
@@ -38,7 +38,7 @@ package org.jbei.components.railClasses
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return _feature.type + (_feature.label == "" ? "" : (" - " + _feature.label)) + ": " + (_feature.start + 1) + ".." + (_feature.end + 1);
+			return _feature.type + (_feature.name == "" ? "" : (" - " + _feature.name)) + ": " + (_feature.start + 1) + ".." + (_feature.end + 1);
 		}
 		
 		protected override function render():void
@@ -46,7 +46,7 @@ package org.jbei.components.railClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
-			var featureBitMap:BitmapData = contentHolder.featureTextRenderer.textToBitmap(feature.label);
+			var featureBitMap:BitmapData = contentHolder.featureTextRenderer.textToBitmap(feature.name);
 			
 			_totalWidth = featureBitMap.width;
 			_totalHeight = featureBitMap.height;
@@ -58,7 +58,7 @@ package org.jbei.components.railClasses
 		
 		protected override function label():String
 		{
-			return _feature.label;
+			return _feature.name;
 		}
 	}
 }

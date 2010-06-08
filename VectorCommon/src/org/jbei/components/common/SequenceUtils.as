@@ -1,7 +1,8 @@
-package org.jbei.bio.utils
+package org.jbei.components.common
 {
-	import org.jbei.bio.data.DNASequence;
-	
+    import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.dna.DNASequence;
+
 	public class SequenceUtils
 	{
 		public static const ATOMIC_SYMBOLS:Array  = new Array('A', 'T', 'G', 'C');
@@ -24,46 +25,6 @@ package org.jbei.bio.utils
 		*/
 		
 		// Public Methods
-		public static function isValidDNA(sequence:String):Boolean
-		{
-			var result:Boolean = true;
-			
-			for(var i:int = 0; i < sequence.length; i++) {
-				var char:String = sequence.charAt(i);
-				if(! (SYMBOLS.indexOf(char) >= 0)) {
-					result = false;
-					break;
-				}
-			}
-			
-			return result;
-		}
-		
-		public static function oppositeSequence(sequence:DNASequence):DNASequence
-		{
-			var sequenceSymbols:Array = sequence.sequence.split("");
-			
-			for(var i:int = 0; i < sequenceSymbols.length; i++) {
-				sequenceSymbols[i] = REVERSE_SYMBOLS[SYMBOLS.indexOf(sequenceSymbols[i])];
-			}
-			
-			var reverseDNAString:String = sequenceSymbols.join("");
-			
-			return new DNASequence(reverseDNAString);
-		}
-		
-		public static function reverseComplement(sequence:DNASequence):DNASequence
-		{
-			return reverseSequence(oppositeSequence(sequence));
-		}
-		
-		public static function reverseSequence(dnaSequence:DNASequence):DNASequence
-		{
-			var sequence:String = dnaSequence.sequence;
-			
-			return new DNASequence(sequence.split("").reverse().join(""));
-		}
-		
 		/* Compatible sequence is sequence with characters like 0-9, ATGCUYRSWKMBVDHN, &lt;newline&gt;, &lt;space&gt;, &lt;tab&gt;, &lt;return&gt;
 		 * */
 		public static function isCompatibleSequence(sequence:String):Boolean

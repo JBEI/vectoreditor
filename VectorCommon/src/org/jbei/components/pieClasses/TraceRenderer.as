@@ -6,8 +6,8 @@ package org.jbei.components.pieClasses
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.data.TraceAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 
@@ -80,7 +80,7 @@ package org.jbei.components.pieClasses
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
-					var mismatchSegment:Segment = mismatches[i2] as Segment;
+					var mismatchSegment:Annotation = mismatches[i2] as Annotation;
 					
 					var mismatchAngle1:Number = mismatchSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var mismatchAngle2:Number = (mismatchSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
@@ -104,7 +104,7 @@ package org.jbei.components.pieClasses
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
-					var deletionSegment:Segment = deletions[i3] as Segment;
+					var deletionSegment:Annotation = deletions[i3] as Annotation;
 					
 					var deletionAngle1:Number = deletionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var deletionAngle2:Number = (deletionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
@@ -128,7 +128,7 @@ package org.jbei.components.pieClasses
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
-					var insertionSegment:Segment = insertions[i4] as Segment;
+					var insertionSegment:Annotation = insertions[i4] as Annotation;
 					
 					var insertionAngle1:Number = insertionSegment.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
 					var insertionAngle2:Number = (insertionSegment.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;

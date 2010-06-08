@@ -5,8 +5,8 @@ package org.jbei.components.railClasses
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.Segment;
 	import org.jbei.bio.data.TraceAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.AnnotationRenderer;
 
 	public class TraceRenderer extends AnnotationRenderer
@@ -75,7 +75,7 @@ package org.jbei.components.railClasses
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
-					var mismatchSegment:Segment = mismatches[i2] as Segment;
+					var mismatchSegment:Annotation = mismatches[i2] as Annotation;
 					
 					var mismatchStartPosition:Number = railMetrics.x + bpWidth * mismatchSegment.start;
 					var mismatchEndPosition:Number = railMetrics.x + bpWidth * mismatchSegment.end;
@@ -96,7 +96,7 @@ package org.jbei.components.railClasses
 			// render deletions
 			if(deletions != null && deletions.length > 0) {
 				for(var i3:int = 0; i3 < deletions.length; i3++) {
-					var deletionSegment:Segment = deletions[i3] as Segment;
+					var deletionSegment:Annotation = deletions[i3] as Annotation;
 					
 					var deletionStartPosition:Number = railMetrics.x + bpWidth * deletionSegment.start;
 					var deletionEndPosition:Number = railMetrics.x + bpWidth * deletionSegment.end;
@@ -117,7 +117,7 @@ package org.jbei.components.railClasses
 			// render insertions
 			if(insertions != null && insertions.length > 0) {
 				for(var i4:int = 0; i4 < insertions.length; i4++) {
-					var insertionSegment:Segment = insertions[i4] as Segment;
+					var insertionSegment:Annotation = insertions[i4] as Annotation;
 					
 					var insertionStartPosition:Number = railMetrics.x + bpWidth * insertionSegment.start;
 					var insertionEndPosition:Number = railMetrics.x + bpWidth * insertionSegment.end;

@@ -1,8 +1,7 @@
 package org.jbei.lib.mappers
 {
-    import org.jbei.bio.data.CutSite;
-    import org.jbei.bio.data.RestrictionEnzyme;
-    import org.jbei.bio.utils.SequenceUtils;
+    import org.jbei.bio.enzymes.RestrictionCutSite;
+    import org.jbei.bio.sequence.DNATools;
     import org.jbei.lib.FeaturedSequence;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 
@@ -30,8 +29,8 @@ package org.jbei.lib.mappers
         
         private var _matchType:String = MATCH_NONE;
         
-        private var destinationStartCutSite:CutSite = null;
-        private var destinationEndCutSite:CutSite = null;
+        private var destinationStartCutSite:RestrictionCutSite = null;
+        private var destinationEndCutSite:RestrictionCutSite = null;
         private var destinationOverhangStartType:String = OVERHANG_NONE;
         private var destinationOverhangEndType:String = OVERHANG_NONE;
         private var destinationOverhangStartSequence:String;
@@ -121,8 +120,8 @@ package org.jbei.lib.mappers
         
         private function initializeSource():void
         {
-            sourceSequence = digestionSequence.featuredSequence.sequence.sequence;
-            sourceRevComSequence = SequenceUtils.reverseComplement(digestionSequence.featuredSequence.sequence).sequence;
+            sourceSequence = digestionSequence.featuredSequence.sequence.seqString();
+            sourceRevComSequence = DNATools.reverseComplement(digestionSequence.featuredSequence.sequence).seqString();
             
             var pastableStartIndex:int = digestionSequence.startRestrictionEnzyme.dsForward;
             var pastableEndIndex:int = digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse;
@@ -160,14 +159,14 @@ package org.jbei.lib.mappers
                 trace("Source:");
                 trace(digestionSequence.startRestrictionEnzyme.name + ": " + sourceOverhangStartType + ", " + sourceOverhangStartSequence);
                 trace(digestionSequence.endRestrictionEnzyme.name + ": " + sourceOverhangEndType + ", " + sourceOverhangEndSequence);
-                trace(pasteFeaturedSequence.sequence.sequence);
+                trace(pasteFeaturedSequence.sequence.seqString());
             }
         }
         
         private function initializeDestination():void
         {
             for(var i:int = 0; i < restrictionEnzymeMapper.cutSites.length; i++) {
-                var cutSite:CutSite = restrictionEnzymeMapper.cutSites.getItemAt(i) as CutSite;
+                var cutSite:RestrictionCutSite = restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                 
                 if(start == cutSite.start) {
                     destinationStartCutSite = cutSite;
@@ -186,7 +185,7 @@ package org.jbei.lib.mappers
                 throw new Error("This should never happen!");
             }
             
-            var destinationSequence:String = featuredSequence.sequence.sequence.substring(start, end);
+            var destinationSequence:String = featuredSequence.sequence.seqString().substring(start, end);
             
             if(destinationStartCutSite.restrictionEnzyme.dsForward < destinationStartCutSite.restrictionEnzyme.dsReverse) {
                 destinationOverhangStartSequence = destinationSequence.substring(destinationStartCutSite.restrictionEnzyme.dsForward, destinationStartCutSite.restrictionEnzyme.dsReverse);

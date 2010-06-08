@@ -7,19 +7,19 @@ package org.jbei.components.common
 	import mx.core.UIComponent;
 	import mx.managers.ToolTipManager;
 	
-	import org.jbei.bio.data.IAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
 	
 	public class AnnotationRenderer extends UIComponent
 	{
 		protected var contentHolder:IContentHolder;
-		protected var annotation:IAnnotation;
+		protected var annotation:Annotation;
 		protected var needsMeasurement:Boolean = false;
 		protected var tooltipLabel:String;
 		
 		private var tip:ToolTip;
 		
 		// Constructor
-		public function AnnotationRenderer(contentHolder:IContentHolder, annotation:IAnnotation)
+		public function AnnotationRenderer(contentHolder:IContentHolder, annotation:Annotation)
 		{
 			super();
 			

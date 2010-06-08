@@ -5,9 +5,9 @@ package org.jbei.components.pieClasses
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
-	import org.jbei.bio.data.ORF;
-	import org.jbei.components.common.GraphicUtils;
+	import org.jbei.bio.orf.ORF;
 	import org.jbei.components.common.AnnotationRenderer;
+	import org.jbei.components.common.GraphicUtils;
 
 	public class ORFRenderer extends AnnotationRenderer
 	{
@@ -78,7 +78,7 @@ package org.jbei.components.pieClasses
 			}
 			
 			// render end codons as arrows
-			if(! orf.isComplement) {
+			if(orf.strand == 1) {
 				var arrowShiftAngle1:Number = angle2 - 5 / orfRadius;
 				
 				g.moveTo(center.x + (orfRadius + 2) * Math.sin(arrowShiftAngle1), center.y - (orfRadius + 2) * Math.cos(arrowShiftAngle1));
@@ -97,7 +97,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame() + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.isComplement ? ", complimentary" : "");
+			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.strand == 1 ? ", complimentary" : "");
 			if(orf.startCodons.length > 1) {
 				tooltipLabel += "\n";
 				for(var i:int = 0; i < orf.startCodons.length; i++) {
@@ -115,11 +115,11 @@ package org.jbei.components.pieClasses
 		{
 			var color:int = ORF_FRAME_COLOR1;
 			
-			if(orf.frame() == 0) {
+			if(orf.frame == 0) {
 				color = ORF_FRAME_COLOR1;
-			} else if(orf.frame() == 1) {
+			} else if(orf.frame == 1) {
 				color = ORF_FRAME_COLOR2;
-			} else if(orf.frame() == 2) {
+			} else if(orf.frame == 2) {
 				color = ORF_FRAME_COLOR3;
 			}
 			

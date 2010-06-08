@@ -1,7 +1,5 @@
 package org.jbei.components.sequenceClasses
 {
-	import org.jbei.bio.data.ORF;
-	
 	public class RowData
 	{
 		private var _sequence:String;

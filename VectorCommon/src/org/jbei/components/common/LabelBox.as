@@ -8,21 +8,21 @@ package org.jbei.components.common
 	import mx.core.UIComponent;
 	import mx.managers.ToolTipManager;
 	
-	import org.jbei.bio.data.IAnnotation;
-
+	import org.jbei.bio.sequence.common.Annotation;
+	
 	public class LabelBox extends UIComponent
 	{
 		private var needsMeasurement:Boolean = true;
 		private var contentHolder:IContentHolder;
 		private var tip:ToolTip;
-		private var _relatedAnnotation:IAnnotation;
+		private var _relatedAnnotation:Annotation;
 		private var _includeInView:Boolean = true;
 		
 		protected var _totalWidth:Number;
 		protected var _totalHeight:Number;
 		
 		// Constructor
-		public function LabelBox(contentHolder:IContentHolder, relatedAnnotation:IAnnotation)
+		public function LabelBox(contentHolder:IContentHolder, relatedAnnotation:Annotation)
 		{
 			super();
 			
@@ -36,7 +36,7 @@ package org.jbei.components.common
 		}
 		
 		// Properties
-		public function get relatedAnnotation():IAnnotation
+		public function get relatedAnnotation():Annotation
 		{
 			return _relatedAnnotation;
 		}

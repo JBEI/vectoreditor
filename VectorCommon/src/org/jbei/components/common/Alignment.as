@@ -1,6 +1,6 @@
 package org.jbei.components.common
 {
-	import org.jbei.bio.data.IAnnotation;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.lib.FeaturedSequence;
 	
 	public class Alignment
@@ -45,7 +45,7 @@ package org.jbei.components.common
 			}
 		}
 		
-		private function sortAnnotationsByLength(annotation1:IAnnotation, annotation2:IAnnotation):int
+		private function sortAnnotationsByLength(annotation1:Annotation, annotation2:Annotation):int
 		{
 			var annotation1Length:int = (annotation1.start > annotation1.end) ? (annotation1.end + featuredSequence.sequence.length - annotation1.start + 1) : (annotation1.end - annotation1.start + 1);
 			var annotation2Length:int = (annotation2.start > annotation2.end) ? (annotation2.end + featuredSequence.sequence.length - annotation2.start + 1) : (annotation2.end - annotation2.start + 1);
@@ -59,7 +59,7 @@ package org.jbei.components.common
 		    }
 		}
 		
-		private function sortAnnotationsByStartPosition(annotation1:IAnnotation, annotation2:IAnnotation):int
+		private function sortAnnotationsByStartPosition(annotation1:Annotation, annotation2:Annotation):int
 		{
 			var annotation1Start:int = annotation1.start;
 			var annotation2Start:int = annotation2.start;
@@ -73,13 +73,13 @@ package org.jbei.components.common
 			}
 		}
 		
-		private function doesFitInRow(row:Array /* of IAnnotation */, annotation:IAnnotation):Boolean
+		private function doesFitInRow(row:Array /* of IAnnotation */, annotation:Annotation):Boolean
 		{
 			var length:uint = row.length;
 			
 			var fits:Boolean = true;
 			for(var i:uint = 0; i < length; i++) {
-				if(annotationsOverlaps(row[i] as IAnnotation, annotation)) {
+				if(annotationsOverlaps(row[i] as Annotation, annotation)) {
 					fits = false;
 					break;
 				}
@@ -88,7 +88,7 @@ package org.jbei.components.common
 			return fits;
 		}
 		
-		private function fit(annotation:IAnnotation):void
+		private function fit(annotation:Annotation):void
 		{
 			// Trying to fit in existing rows
 			var doesFitInRows:Boolean = false;
@@ -110,7 +110,7 @@ package org.jbei.components.common
 			}
 		}
 		
-		private function annotationsOverlaps(annotation1:IAnnotation, annotation2:IAnnotation):Boolean
+		private function annotationsOverlaps(annotation1:Annotation, annotation2:Annotation):Boolean
 		{
 			var result:Boolean = false;
 			

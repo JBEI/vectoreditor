@@ -5,26 +5,26 @@ package org.jbei.components.railClasses
 	
 	import mx.utils.StringUtil;
 	
-	import org.jbei.bio.data.CutSite;
-	import org.jbei.bio.data.IAnnotation;
+	import org.jbei.bio.enzymes.RestrictionCutSite;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.LabelBox;
 
 	public class CutSiteLabelBox extends LabelBox
 	{
 		private var contentHolder:ContentHolder;
 		
-		private var cutSite:CutSite;
+		private var cutSite:RestrictionCutSite;
 		
 		// Constructor
-		public function CutSiteLabelBox(contentHolder:ContentHolder, relatedAnnotation:IAnnotation)
+		public function CutSiteLabelBox(contentHolder:ContentHolder, relatedAnnotation:Annotation)
 		{
 			super(contentHolder, relatedAnnotation);
 			
 			this.contentHolder = contentHolder;
 			
-			cutSite = relatedAnnotation as CutSite;
+			cutSite = relatedAnnotation as RestrictionCutSite;
 			
-			if(cutSite.label == null || cutSite.label == "" || StringUtil.trim(cutSite.label) == "") {
+			if(cutSite.restrictionEnzyme.name == null || cutSite.restrictionEnzyme.name == "" || StringUtil.trim(cutSite.restrictionEnzyme.name) == "") {
 				visible = false;
 			}
 		}
@@ -32,7 +32,7 @@ package org.jbei.components.railClasses
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return cutSite.label + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.forward ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			return cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 		
 		protected override function render():void
@@ -40,7 +40,7 @@ package org.jbei.components.railClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
-			var cutSiteBitMap:BitmapData = (cutSite.numCuts == 1) ? contentHolder.singleCutterCutSiteTextRenderer.textToBitmap(cutSite.label) : contentHolder.cutSiteTextRenderer.textToBitmap(cutSite.label);
+			var cutSiteBitMap:BitmapData = (cutSite.numCuts == 1) ? contentHolder.singleCutterCutSiteTextRenderer.textToBitmap(cutSite.restrictionEnzyme.name) : contentHolder.cutSiteTextRenderer.textToBitmap(cutSite.restrictionEnzyme.name);
 			
 			_totalWidth = cutSiteBitMap.width;
 			_totalHeight = cutSiteBitMap.height;
@@ -52,7 +52,7 @@ package org.jbei.components.railClasses
 		
 		protected override function label():String
 		{
-			return cutSite.label;
+			return cutSite.restrictionEnzyme.name;
 		}
 	}
 }
