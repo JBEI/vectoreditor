@@ -3,8 +3,8 @@ package org.jbei.registry.mediators
 	import mx.collections.ArrayCollection;
 	
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
@@ -21,6 +21,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainMediator extends Mediator
 	{
 		private const NAME:String = "MainMediator";
@@ -41,7 +44,7 @@ package org.jbei.registry.mediators
 				, Notifications.APPLICATION_FAILURE
 				, Notifications.ENTRY_FETCHED
 				, Notifications.SEQUENCE_FETCHED
-				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_PROVIDER_CHANGED
 				, Notifications.ENTRY_PERMISSIONS_FETCHED
 				, Notifications.SEQUENCE_SAVED
 				
@@ -107,7 +110,7 @@ package org.jbei.registry.mediators
 					
 					sendNotification(Notifications.LOAD_SEQUENCE);
 					
-					if(ApplicationFacade.getInstance().featuredSequence.circular) {
+					if(ApplicationFacade.getInstance().sequenceProvider.circular) {
 						sendNotification(Notifications.SHOW_PIE);
 					} else {
 						sendNotification(Notifications.SHOW_RAIL);
@@ -141,7 +144,7 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().application.unlock();
 					
 					break;
-				case Notifications.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().sequenceInitialized) {
 						ApplicationFacade.getInstance().updateBrowserSaveTitleState(false);
 					}
@@ -156,31 +159,31 @@ package org.jbei.registry.mediators
 		
 		private function sequenceFetched():void
 		{
-			var featuredSequence:FeaturedSequence = FeaturedDNASequenceUtils.featuredDNASequenceToFeaturedSequence(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
-			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			var sequenceProvider:SequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+            sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 			
-			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
+			var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
 			
 			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
 			for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
 				restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
 			}
 			
-			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
+			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(sequenceProvider, restrictionEnzymeGroup);
 			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
+            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
 			
-			var aaMapper:AAMapper = new AAMapper(featuredSequence);
+			var aaMapper:AAMapper = new AAMapper(sequenceProvider);
 			
-			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
+			ApplicationFacade.getInstance().sequenceProvider = sequenceProvider;
 			ApplicationFacade.getInstance().orfMapper = orfMapper;
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 			ApplicationFacade.getInstance().aaMapper = aaMapper;
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		private function onSequenceProviderChanged(event:SequenceProviderEvent):void
 		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
+			sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
 		}
 	}
 }

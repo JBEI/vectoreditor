@@ -75,7 +75,7 @@
 			);
 			
 			[Bindable]
-			private var sequenceLength:int = ApplicationFacade.getInstance().featuredSequence.sequence.length;
+			private var sequenceLength:int = ApplicationFacade.getInstance().sequenceProvider.sequence.length;
 			
 			// Public Methods
 			public override function validate():void
@@ -83,7 +83,7 @@
 				if(sequenceLength == 0 || startNumberValidator.validate().type == ValidationResultEvent.INVALID || endNumberValidator.validate().type == ValidationResultEvent.INVALID || nameStringValidator.validate().type == ValidationResultEvent.INVALID) {
 					isValid = false;
 				} else {
-					if(!dataObject || !ApplicationFacade.getInstance().featuredSequence.hasFeature(dataObject as Feature)) { // "New Feature" or "Selected as New Feature" cases
+					if(!dataObject || !ApplicationFacade.getInstance().sequenceProvider.hasFeature(dataObject as Feature)) { // "New Feature" or "Selected as New Feature" cases
 						createFeature();
 					} else { // "Edit Feature" case
 						updateFeature(dataObject as Feature);
@@ -154,13 +154,13 @@
 					feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
 				}*/
 				
-				ApplicationFacade.getInstance().featuredSequence.addFeature(feature);
+				ApplicationFacade.getInstance().sequenceProvider.addFeature(feature);
 			}
 			
 			private function updateFeature(feature:Feature):void
 			{
 				try {
-					ApplicationFacade.getInstance().featuredSequence.manualUpdateStart();
+					ApplicationFacade.getInstance().sequenceProvider.manualUpdateStart();
 					
 					feature.strand = strandRadioGroup.selectedValue as int;
 					feature.type = typeComboBox.text;
@@ -196,7 +196,7 @@
 						feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
 					}
 				} finally {
-					ApplicationFacade.getInstance().featuredSequence.manualUpdateEnd();
+					ApplicationFacade.getInstance().sequenceProvider.manualUpdateEnd();
 				}
 			}
 		]]>

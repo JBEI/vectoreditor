@@ -7,6 +7,9 @@ package org.jbei.registry.control
 	import org.jbei.lib.common.IMemento;
 	import org.jbei.registry.ApplicationFacade;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ActionStack extends EventDispatcher
 	{
 		private var undoStack:ArrayCollection /* of IMemento */ = new ArrayCollection();
@@ -30,9 +33,9 @@ package org.jbei.registry.control
 			
 			var item:IMemento = undoStack[0] as IMemento;
 			undoStack.removeItemAt(0);
-			redoStack.addItemAt(ApplicationFacade.getInstance().featuredSequence.createMemento(), 0);
+			redoStack.addItemAt(ApplicationFacade.getInstance().sequenceProvider.createMemento(), 0);
 			
-			ApplicationFacade.getInstance().featuredSequence.setMemento(item);
+			ApplicationFacade.getInstance().sequenceProvider.setMemento(item);
 			
 			dispatchEvent(new ActionStackEvent(ActionStackEvent.ACTION_STACK_CHANGED));
 		}
@@ -43,9 +46,9 @@ package org.jbei.registry.control
 			
 			var item:IMemento = redoStack[0] as IMemento;
 			redoStack.removeItemAt(0);
-			undoStack.addItemAt(ApplicationFacade.getInstance().featuredSequence.createMemento(), 0);
+			undoStack.addItemAt(ApplicationFacade.getInstance().sequenceProvider.createMemento(), 0);
 			
-			ApplicationFacade.getInstance().featuredSequence.setMemento(item);
+			ApplicationFacade.getInstance().sequenceProvider.setMemento(item);
 			
 			dispatchEvent(new ActionStackEvent(ActionStackEvent.ACTION_STACK_CHANGED));
 		}

@@ -14,6 +14,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class StatusBarMediator extends Mediator
 	{
 		private static const ACTION_MESSAGE_DELAY_TIME:int = 8000;
@@ -42,7 +45,7 @@ package org.jbei.registry.mediators
 				, Notifications.FETCHING_DATA
 				, Notifications.DATA_FETCHED
 				
-				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_PROVIDER_CHANGED
 				, Notifications.ENTRY_PERMISSIONS_FETCHED
                 
                 , Notifications.ACTION_MESSAGE
@@ -55,7 +58,7 @@ package org.jbei.registry.mediators
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
-					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().featuredSequence) {
+					if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().sequenceProvider) {
                         statusBar.selectionPositionLabel.text = '- : -'
                         statusBar.temperatureLabel.text = "";
                         
@@ -71,11 +74,11 @@ package org.jbei.registry.mediators
 						if (start < end) {
 							selectionLength = end - start;
 						} else {
-							selectionLength = end + ApplicationFacade.getInstance().featuredSequence.sequence.length - start;
+							selectionLength = end + ApplicationFacade.getInstance().sequenceProvider.sequence.length - start;
 						}
 						
 						statusBar.selectionPositionLabel.text = String(start + 1) + " : " + String(end) + " (" + String(selectionLength) + ")";
-                        statusBar.temperatureLabel.text = StringFormatter.sprintf('%.2f', String(TemperatureCalculator.calculateTemperature(new DNASequence(ApplicationFacade.getInstance().featuredSequence.subSequence(start, end))))) + "°C";
+                        statusBar.temperatureLabel.text = StringFormatter.sprintf('%.2f', String(TemperatureCalculator.calculateTemperature(new DNASequence(ApplicationFacade.getInstance().sequenceProvider.subSequence(start, end))))) + "°C";
 					} else {
 						statusBar.selectionPositionLabel.text = '- : -';
                         statusBar.temperatureLabel.text = "";
@@ -103,9 +106,9 @@ package org.jbei.registry.mediators
                     updateActionMessage("Done");
                     
 					break;
-				case Notifications.FEATURED_SEQUENCE_CHANGED:
-					if(ApplicationFacade.getInstance().featuredSequence) {
-						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().featuredSequence.sequence.length);
+				case Notifications.SEQUENCE_PROVIDER_CHANGED:
+					if(ApplicationFacade.getInstance().sequenceProvider) {
+						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().sequenceProvider.sequence.length);
 					} else {
 						statusBar.sequenceLengthLabel.text = "-";
 					}

@@ -4,9 +4,9 @@ package org.jbei.registry
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
-	import org.jbei.lib.FeaturedSequenceMemento;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
+	import org.jbei.lib.SequenceProviderMemento;
 	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
@@ -26,6 +26,9 @@ package org.jbei.registry
 	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.puremvc.as3.patterns.facade.Facade;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ApplicationFacade extends Facade
 	{
 		private const EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION:String = "updateSavedStateTitle";
@@ -34,7 +37,7 @@ package org.jbei.registry
 		private var _actionStack:ActionStack;
 		private var _entryId:String;
 		private var _sessionId:String;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		private var _entry:Entry;
 		private var _sequence:FeaturedDNASequence;
 		private var _orfMapper:ORFMapper;
@@ -80,17 +83,17 @@ package org.jbei.registry
 			return _actionStack;
 		}
 		
-		public function get featuredSequence():FeaturedSequence
+		public function get sequenceProvider():SequenceProvider
 		{
-			return _featuredSequence;
+			return _sequenceProvider;
 		}
 		
-		public function set featuredSequence(value:FeaturedSequence):void
+		public function set sequenceProvider(value:SequenceProvider):void
 		{
-			if(_featuredSequence != value) {
-				_featuredSequence = value;
+			if(_sequenceProvider != value) {
+				_sequenceProvider = value;
 				
-				_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGING, onSequenceChanging);
+				_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGING, onSequenceChanging);
 			}
 		}
 		
@@ -268,9 +271,9 @@ package org.jbei.registry
 			sendNotification(Notifications.ACTION_STACK_CHANGED);
 		}
 		
-		private function onSequenceChanging(event:FeaturedSequenceEvent):void
+		private function onSequenceChanging(event:SequenceProviderEvent):void
 		{
-			_actionStack.add(event.data as FeaturedSequenceMemento);
+			_actionStack.add(event.data as SequenceProviderMemento);
 		}
 	}
 }

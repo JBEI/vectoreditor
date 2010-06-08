@@ -23,9 +23,9 @@
 			
 			private function onCreationComplete():void
 			{
-				if(! ApplicationFacade.getInstance().featuredSequence) return;
+				if(! ApplicationFacade.getInstance().sequenceProvider) return;
 				
-				features = ApplicationFacade.getInstance().featuredSequence.features;
+				features = ApplicationFacade.getInstance().sequenceProvider.features;
 				
 				searchTextInput.setFocus();
 				
@@ -73,7 +73,7 @@
 					featuresToRemove.push(featuresList.selectedItems[i].feature as Feature);
 				}
 				
-				ApplicationFacade.getInstance().featuredSequence.removeFeatures(featuresToRemove);
+				ApplicationFacade.getInstance().sequenceProvider.removeFeatures(featuresToRemove);
 				
 				updateFeaturesList();
 			}
@@ -152,7 +152,7 @@
 			
 			private function onFeatureDialogSubmit(event:ModalDialogEvent):void
 			{
-				features = ApplicationFacade.getInstance().featuredSequence.features;
+				features = ApplicationFacade.getInstance().sequenceProvider.features;
 				
 				updateFeaturesList();
 			}

@@ -7,6 +7,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FindPanelMediator extends Mediator
 	{
 		private const NAME:String = "FindPanelMediator"
@@ -34,7 +37,7 @@ package org.jbei.registry.mediators
 				, Notifications.HIDE_FIND_PANEL
 				, Notifications.FIND_MATCH_FOUND
 				, Notifications.FIND_MATCH_NOT_FOUND
-				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_PROVIDER_CHANGED
 			];
 		}
 		
@@ -58,7 +61,7 @@ package org.jbei.registry.mediators
 					findPanel.highlightFindBox(false);
 					
 					break;
-				case Notifications.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					findPanel.updateHighlight();
 					
 					break;

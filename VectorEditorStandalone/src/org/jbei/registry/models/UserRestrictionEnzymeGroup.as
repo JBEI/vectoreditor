@@ -3,6 +3,9 @@ package org.jbei.registry.models
 	import mx.collections.ArrayCollection;
 
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.UserRestrictionEnzymeGroup")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class UserRestrictionEnzymeGroup
 	{
 		private var _groupName:String;

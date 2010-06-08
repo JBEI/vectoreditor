@@ -12,14 +12,14 @@
             import org.jbei.bio.sequence.dna.DNASequence;
             import org.jbei.bio.sequence.dna.Feature;
             import org.jbei.components.common.EditingEvent;
-            import org.jbei.lib.FeaturedSequence;
+            import org.jbei.lib.SequenceProvider;
             import org.jbei.registry.ApplicationFacade;
             import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			private var featuredItems:ArrayCollection;
 			
-			private var featuredSequence:FeaturedSequence;
+			private var sequenceProvider:SequenceProvider;
 			private var actionKind:String;
 			private var actionData:Array;
 			
@@ -32,10 +32,10 @@
 					return;
 				}
 				
-				featuredSequence.manualUpdateStart();
+                sequenceProvider.manualUpdateStart();
 				for(var i:int = 0; i < featuredItems.length; i++) {
 					if((featuredItems[i] as FeatureEditingTableItem).removeAction) {
-						featuredSequence.removeFeature((featuredItems[i] as FeatureEditingTableItem).feature);
+                        sequenceProvider.removeFeature((featuredItems[i] as FeatureEditingTableItem).feature);
 					}
 				}
 				
@@ -43,19 +43,19 @@
 					var start:int = actionData[0] as int;
 					var end:int = actionData[1] as int;
 					
-					featuredSequence.removeSequence(start, end);
+                    sequenceProvider.removeSequence(start, end);
 				} else if(actionKind == EditingEvent.KIND_INSERT_SEQUENCE) {
 					var dnaSequence:DNASequence = actionData[0] as DNASequence;
 					var position1:int = actionData[1] as int;
 					
-					featuredSequence.insertSequence(dnaSequence, position1);
+                    sequenceProvider.insertSequence(dnaSequence, position1);
 				} else if(actionKind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
-					var insertFeaturedSequence:FeaturedSequence = actionData[0] as FeaturedSequence;
+					var insertSequenceProvider:SequenceProvider = actionData[0] as SequenceProvider;
 					var position2:int = actionData[1] as int;
 					
-					featuredSequence.insertFeaturedSequence(insertFeaturedSequence, position2);
+                    sequenceProvider.insertSequenceProvider(insertSequenceProvider, position2);
 				}
-				featuredSequence.manualUpdateEnd();
+                sequenceProvider.manualUpdateEnd();
 				
 				isValid = true;
 			}
@@ -65,7 +65,7 @@
 			{
 				affectedFeaturesDataGrid.setFocus();
 				
-				featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+                sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 				
 				var input:Array = dataObject as Array;
 				actionKind = input[0] as String;
@@ -79,7 +79,7 @@
 					var start:int = actionData[0] as int;
 					var end:int = actionData[1] as int;
 					
-					affectedFeatures = featuredSequence.featuresByRange(start, end);
+					affectedFeatures = sequenceProvider.featuresByRange(start, end);
 					
 					for(var i1:int = 0; i1 < affectedFeatures.length; i1++) {
 						// Check if feature is completelly covered by segment
@@ -117,15 +117,15 @@
 					var dnaSequence:DNASequence = actionData[0] as DNASequence;
 					var position1:int = actionData[1] as int;
 					
-					affectedFeatures = featuredSequence.featuresAt(position1);
+					affectedFeatures = sequenceProvider.featuresAt(position1);
 					for(var i2:int = 0; i2 < affectedFeatures.length; i2++) {
 						featuredItems.addItem(new FeatureEditingTableItem(affectedFeatures[i2] as Feature, false, true));
 					}
 				} else if(actionKind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
-					var insertFeaturedSequence:FeaturedSequence = actionData[0] as FeaturedSequence;
+					var insertSequenceProvider:SequenceProvider = actionData[0] as SequenceProvider;
 					var position2:int = actionData[1] as int;
 					
-					affectedFeatures = featuredSequence.featuresAt(position2);
+					affectedFeatures = sequenceProvider.featuresAt(position2);
 					
 					for(var i3:int = 0; i3 < affectedFeatures.length; i3++) {
 						featuredItems.addItem(new FeatureEditingTableItem(affectedFeatures[i3] as Feature, false, true));

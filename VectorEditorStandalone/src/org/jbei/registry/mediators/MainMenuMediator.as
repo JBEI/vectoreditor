@@ -8,6 +8,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainMenuMediator extends Mediator
 	{
 		private const NAME:String = "MainMenuMediator";
@@ -70,7 +73,7 @@ package org.jbei.registry.mediators
 				, Notifications.SEQUENCE_SAVED
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
-				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_PROVIDER_CHANGED
 				];
 		}
 		
@@ -110,7 +113,7 @@ package org.jbei.registry.mediators
 				case Notifications.SEQUENCE_SAVED:
 					mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					break;
-				case Notifications.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().isReadOnly) {
 						mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					} else {

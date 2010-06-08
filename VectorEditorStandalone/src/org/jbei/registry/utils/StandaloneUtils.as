@@ -13,6 +13,9 @@ package org.jbei.registry.utils
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class StandaloneUtils
 	{
 		public static function standaloneEntry():Entry

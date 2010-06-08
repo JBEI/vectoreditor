@@ -8,6 +8,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainControlBarMediator extends Mediator
 	{
 		private const NAME:String = "MainControlBarMediator";
@@ -49,7 +52,7 @@ package org.jbei.registry.mediators
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
 				, Notifications.SEQUENCE_SAVED
-				, Notifications.FEATURED_SEQUENCE_CHANGED
+				, Notifications.SEQUENCE_PROVIDER_CHANGED
 			];
 		}
 		
@@ -78,7 +81,7 @@ package org.jbei.registry.mediators
 				case Notifications.SEQUENCE_SAVED:
 					controlBar.updateSaveButtonState(false);
 					break;
-				case Notifications.FEATURED_SEQUENCE_CHANGED:
+				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().isReadOnly) {
 						controlBar.updateSaveButtonState(false);
 					} else {

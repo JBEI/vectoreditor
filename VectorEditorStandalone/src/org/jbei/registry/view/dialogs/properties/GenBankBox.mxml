@@ -20,11 +20,11 @@
 				
 				genbankTextArea.text = "";
 				
-				if (ApplicationFacade.getInstance().entry == null || ApplicationFacade.getInstance().featuredSequence == null) {
+				if (ApplicationFacade.getInstance().entry == null || ApplicationFacade.getInstance().sequenceProvider == null) {
 					return;
 				}
 				
-				ApplicationFacade.getInstance().registryServiceProxy.generateGenBank(ApplicationFacade.getInstance().sessionId, FeaturedDNASequenceUtils.featuredSequenceToFeaturedDNASequence(ApplicationFacade.getInstance().featuredSequence), ApplicationFacade.getInstance().featuredSequence.name, ApplicationFacade.getInstance().featuredSequence.circular);
+				ApplicationFacade.getInstance().registryServiceProxy.generateGenBank(ApplicationFacade.getInstance().sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider), ApplicationFacade.getInstance().sequenceProvider.name, ApplicationFacade.getInstance().sequenceProvider.circular);
 			}
 			
 			public function updateTextArea(genbankSequence:String):void

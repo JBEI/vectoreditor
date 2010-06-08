@@ -7,7 +7,7 @@
 		import org.jbei.registry.ApplicationFacade;
 		
 		[Bindable]
-		private var sequenceLength:int = ApplicationFacade.getInstance().featuredSequence.sequence.length;
+		private var sequenceLength:int = ApplicationFacade.getInstance().sequenceProvider.sequence.length;
 		
 		// Event Handlers
 		private function onCreationComplete():void

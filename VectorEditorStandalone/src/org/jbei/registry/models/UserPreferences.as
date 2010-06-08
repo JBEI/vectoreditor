@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.UserPreferences")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class UserPreferences
 	{
 		private var _bpPerRow:int = -1;

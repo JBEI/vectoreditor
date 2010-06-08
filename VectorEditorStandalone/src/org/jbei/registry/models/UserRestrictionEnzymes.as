@@ -4,6 +4,9 @@ package org.jbei.registry.models
 	
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.services.blazeds.vo.UserRestrictionEnzymes")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class UserRestrictionEnzymes
 	{
 		private var _groups:ArrayCollection = new ArrayCollection(); /* of UserRestrictionEnzymeGroup */

@@ -6,6 +6,9 @@ package org.jbei.registry.view.ui
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.mediators.GenbankPropertyTabMediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class PropertiesDialog extends SimpleDialog
 	{
 		// Constructor
