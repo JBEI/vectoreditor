@@ -4,6 +4,9 @@ package org.jbei.registry.utils
 	
 	import org.jbei.bio.enzymes.RestrictionEnzyme;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RestrictionEnzymesUtils
 	{
 		public static function commonRestrictionEnzymes():ArrayCollection /* RestrictionEnzyme */

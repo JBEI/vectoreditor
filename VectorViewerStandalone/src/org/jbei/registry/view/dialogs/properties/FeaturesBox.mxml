@@ -28,9 +28,9 @@
 			
 			private function onInitialize(event:Event):void
 			{
-				if(! ApplicationFacade.getInstance().featuredSequence) return;
+				if(! ApplicationFacade.getInstance().sequenceProvider) return;
 				
-				features = ApplicationFacade.getInstance().featuredSequence.features;
+				features = ApplicationFacade.getInstance().sequenceProvider.features;
 				
 				searchTextInput.setFocus();
 				

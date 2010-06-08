@@ -13,7 +13,6 @@ package org.jbei.registry.mediators
 	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
-	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.utils.Finder;
@@ -21,6 +20,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainPanelMediator extends Mediator
 	{
 		private const NAME:String = "MainPanelMediator"
@@ -213,9 +215,9 @@ package org.jbei.registry.mediators
 		
 		private function loadSequence():void
 		{
-			sequenceAnnotator.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
-			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
-			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			sequenceAnnotator.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
+			pie.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
+			rail.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			sequenceAnnotator.orfMapper = ApplicationFacade.getInstance().orfMapper;
 			pie.orfMapper = ApplicationFacade.getInstance().orfMapper;
@@ -230,15 +232,15 @@ package org.jbei.registry.mediators
 		{
 			pie.visible = true;
 			pie.includeInLayout = true;
-			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			pie.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			rail.visible = false;
 			rail.includeInLayout = false;
-			rail.featuredSequence = null;
+			rail.sequenceProvider = null;
 			
 			sequenceAnnotator.visible = false;
 			sequenceAnnotator.includeInLayout = false;
-			sequenceAnnotator.featuredSequence = null;
+			sequenceAnnotator.sequenceProvider = null;
 			
 			ApplicationFacade.getInstance().activeSequenceComponent = pie;
 		}
@@ -247,15 +249,15 @@ package org.jbei.registry.mediators
 		{
 			pie.visible = false;
 			pie.includeInLayout = false;
-			pie.featuredSequence = null;
+			pie.sequenceProvider = null;
 			
 			rail.visible = true;
 			rail.includeInLayout = true;
-			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			rail.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			sequenceAnnotator.visible = false;
 			sequenceAnnotator.includeInLayout = false;
-			sequenceAnnotator.featuredSequence = null;
+			sequenceAnnotator.sequenceProvider = null;
 			
 			ApplicationFacade.getInstance().activeSequenceComponent = rail;
 		}
@@ -264,15 +266,15 @@ package org.jbei.registry.mediators
 		{
 			pie.visible = false;
 			pie.includeInLayout = false;
-			pie.featuredSequence = null;
+			pie.sequenceProvider = null;
 			
 			rail.visible = false;
 			rail.includeInLayout = false;
-			rail.featuredSequence = null;
+			rail.sequenceProvider = null;
 			
 			sequenceAnnotator.visible = true;
 			sequenceAnnotator.includeInLayout = true;
-			sequenceAnnotator.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			sequenceAnnotator.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			ApplicationFacade.getInstance().activeSequenceComponent = sequenceAnnotator;
 		}
@@ -312,11 +314,6 @@ package org.jbei.registry.mediators
 			rail.select(start, end);
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
-		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
-		}
-		
 		private function onSelectionChanged(event:SelectionEvent):void
 		{
 			sendNotification(Notifications.SELECTION_CHANGED, [event.start, event.end]);
@@ -351,10 +348,10 @@ package org.jbei.registry.mediators
 		
 		private function findAt(expression:String, dataType:String, searchType:String, position:int):void
 		{
-			var findSegment:Annotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
+			var findSegment:Annotation = Finder.find(ApplicationFacade.getInstance().sequenceProvider, expression, dataType, searchType, position);
 			
 			if(!findSegment) {
-				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);
+				findSegment = Finder.find(ApplicationFacade.getInstance().sequenceProvider, expression, dataType, searchType, 0);
 			}
 			
 			if(findSegment) {
@@ -383,7 +380,7 @@ package org.jbei.registry.mediators
 		
 		private function highlight(expression:String, dataType:String, searchType:String):void
 		{
-			var segments:Array = Finder.findAll(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType);
+			var segments:Array = Finder.findAll(ApplicationFacade.getInstance().sequenceProvider, expression, dataType, searchType);
 			
 			sequenceAnnotator.highlights = segments;
 		}
@@ -411,7 +408,7 @@ package org.jbei.registry.mediators
 				var printableWidth:Number = printJob.pageWidth;
 				var printableHeight:Number = printJob.pageHeight;
 				
-				mainPanel.printingSequenceAnnotator.featuredSequence = sequenceAnnotator.featuredSequence;
+				mainPanel.printingSequenceAnnotator.sequenceProvider = sequenceAnnotator.sequenceProvider;
 				mainPanel.printingSequenceAnnotator.restrictionEnzymeMapper = sequenceAnnotator.restrictionEnzymeMapper;
 				mainPanel.printingSequenceAnnotator.orfMapper = sequenceAnnotator.orfMapper;
 				mainPanel.printingSequenceAnnotator.aaMapper = sequenceAnnotator.aaMapper;
@@ -436,7 +433,7 @@ package org.jbei.registry.mediators
 				
 				if(printableContent.pages.length > 0) {
 					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().sequenceProvider.name, (i + 1) + " / " + printableContent.pages.length);
 						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
 					}
 				}
@@ -453,7 +450,7 @@ package org.jbei.registry.mediators
 				var printableWidth:Number = printJob.pageWidth;
 				var printableHeight:Number = printJob.pageHeight;
 				
-				mainPanel.printingPie.featuredSequence = pie.featuredSequence;
+				mainPanel.printingPie.sequenceProvider = pie.sequenceProvider;
 				mainPanel.printingPie.restrictionEnzymeMapper = pie.restrictionEnzymeMapper;
 				mainPanel.printingPie.orfMapper = pie.orfMapper;
 				mainPanel.printingPie.showFeatures = pie.showFeatures;
@@ -473,7 +470,7 @@ package org.jbei.registry.mediators
 				
 				if(printableContent.pages.length > 0) {
 					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().sequenceProvider.name, (i + 1) + " / " + printableContent.pages.length);
 						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
 					}
 				}
@@ -490,7 +487,7 @@ package org.jbei.registry.mediators
 				var printableWidth:Number = printJob.pageWidth;
 				var printableHeight:Number = printJob.pageHeight;
 				
-				mainPanel.printingRail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+				mainPanel.printingRail.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 				mainPanel.printingRail.restrictionEnzymeMapper = rail.restrictionEnzymeMapper;
 				mainPanel.printingRail.orfMapper = rail.orfMapper;
 				mainPanel.printingRail.showFeatures = rail.showFeatures;
@@ -510,7 +507,7 @@ package org.jbei.registry.mediators
 				
 				if(printableContent.pages.length > 0) {
 					for(var i:int = 0; i < printableContent.pages.length; i++) {
-						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().featuredSequence.name, (i + 1) + " / " + printableContent.pages.length);
+						mainPanel.printView.load(printableContent.pages[i] as BitmapData, ApplicationFacade.getInstance().sequenceProvider.name, (i + 1) + " / " + printableContent.pages.length);
 						printJob.addObject(mainPanel.printView, FlexPrintJobScaleType.NONE);
 					}
 				}

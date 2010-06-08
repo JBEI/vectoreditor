@@ -2,7 +2,10 @@ package org.jbei.registry.commands
 {
 	import org.puremvc.as3.patterns.command.MacroCommand;
 
-	public class InitializationCommand extends MacroCommand
+    /**
+     * @author Zinovii Dmytriv
+     */
+    public class InitializationCommand extends MacroCommand
 	{
 		// Protected Methods
 		protected override function initializeMacroCommand():void

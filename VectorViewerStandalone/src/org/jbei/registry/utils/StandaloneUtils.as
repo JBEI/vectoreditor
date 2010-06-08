@@ -10,6 +10,9 @@ package org.jbei.registry.utils
 	import org.jbei.registry.models.PartNumber;
 	import org.jbei.registry.models.Plasmid;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class StandaloneUtils
 	{
 		public static function standaloneEntry():Entry

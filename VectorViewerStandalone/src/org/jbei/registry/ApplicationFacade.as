@@ -8,8 +8,7 @@ package org.jbei.registry
 	
 	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
@@ -24,12 +23,15 @@ package org.jbei.registry
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.puremvc.as3.patterns.facade.Facade;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ApplicationFacade extends Facade
 	{
 		private var _application:VectorViewer;
 		private var _entryId:String;
 		private var _sessionId:String;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		private var _entry:Entry;
 		private var _sequence:FeaturedDNASequence;
 		private var _orfMapper:ORFMapper;
@@ -69,14 +71,14 @@ package org.jbei.registry
 			return _sessionId;
 		}
 		
-		public function get featuredSequence():FeaturedSequence
+		public function get sequenceProvider():SequenceProvider
 		{
-			return _featuredSequence;
+			return _sequenceProvider;
 		}
 		
-		public function set featuredSequence(value:FeaturedSequence):void
+		public function set sequenceProvider(value:SequenceProvider):void
 		{
-			_featuredSequence = value;
+			_sequenceProvider = value;
 		}
 		
 		public function get entry():Entry

@@ -4,8 +4,8 @@ package org.jbei.registry.mediators
 	
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.enzymes.RestrictionEnzyme;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.utils.Logger;
@@ -19,6 +19,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainMediator extends Mediator
 	{
 		private const NAME:String = "MainMediator";
@@ -83,7 +86,7 @@ package org.jbei.registry.mediators
 					
 					sendNotification(Notifications.LOAD_SEQUENCE);
 					
-					if(ApplicationFacade.getInstance().featuredSequence.circular) {
+					if(ApplicationFacade.getInstance().sequenceProvider.circular) {
 						sendNotification(Notifications.SHOW_PIE);
 					} else {
 						sendNotification(Notifications.SHOW_RAIL);
@@ -98,9 +101,9 @@ package org.jbei.registry.mediators
 		// Private Methods
 		private function sequenceFetched():void
 		{
-			var featuredSequence:FeaturedSequence = FeaturedDNASequenceUtils.featuredDNASequenceToFeaturedSequence(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+			var sequenceProvider:SequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
 			
-			var orfMapper:ORFMapper = new ORFMapper(featuredSequence);
+			var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
 			
 			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
 			
@@ -109,11 +112,11 @@ package org.jbei.registry.mediators
 				restrictionEnzymeGroup.addRestrictionEnzyme(commonRestrictionEnzymes.getItemAt(i) as RestrictionEnzyme);
 			}
 			
-			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(featuredSequence, restrictionEnzymeGroup);
+			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(sequenceProvider, restrictionEnzymeGroup);
 			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
+            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
 			
-			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
+			ApplicationFacade.getInstance().sequenceProvider = sequenceProvider;
 			ApplicationFacade.getInstance().orfMapper = orfMapper;
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 		}

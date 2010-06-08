@@ -9,6 +9,9 @@ package org.jbei.registry.commands
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.SimpleCommand;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class PrepareViewCommand extends SimpleCommand
 	{
 		// Public Methods

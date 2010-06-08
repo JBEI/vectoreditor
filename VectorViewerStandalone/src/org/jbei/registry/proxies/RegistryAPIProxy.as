@@ -10,6 +10,9 @@ package org.jbei.registry.proxies
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.utils.StandaloneUtils;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RegistryAPIProxy extends AbstractServiceProxy
 	{
 		public static const REMOTE_SERVICE_NAME:String = "RegistryAMFAPI";
