@@ -6,16 +6,16 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.collections.Sort;
-			import mx.collections.SortField;
-			import mx.controls.dataGridClasses.DataGridItemRenderer;
-			
-			import org.jbei.bio.data.ORF;
-			import org.jbei.lib.mappers.ORFMapper;
-			import org.jbei.lib.ui.dialogs.SimpleDialog;
-			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.Notifications;
+            import mx.collections.ArrayCollection;
+            import mx.collections.Sort;
+            import mx.collections.SortField;
+            import mx.controls.dataGridClasses.DataGridItemRenderer;
+            
+            import org.jbei.bio.orf.ORF;
+            import org.jbei.lib.mappers.ORFMapper;
+            import org.jbei.lib.ui.dialogs.SimpleDialog;
+            import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			public var parentDialog:SimpleDialog;
@@ -37,7 +37,7 @@
 				for (var i:int = 0; i < orfMapper.orfs.length; i++) {
 					var orf:ORF = orfMapper.orfs[i] as ORF;
 					
-					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end + 1)), strand : (orf.isComplement ? "-" : "+"), frame : (orf.frame() + 1), length : (orf.end - orf.start)});
+					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end + 1)), strand : (orf.strand ? "-" : "+"), frame : (orf.frame + 1), length : (orf.end - orf.start)});
 				}
 				
 				var sort:Sort = new Sort();

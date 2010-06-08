@@ -2,8 +2,8 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.RestrictionEnzyme;
-
+	import org.jbei.bio.enzymes.RestrictionEnzyme;
+	
 	public class RestrictionEnzymesUtils
 	{
 		public static function commonRestrictionEnzymes():ArrayCollection /* RestrictionEnzyme */

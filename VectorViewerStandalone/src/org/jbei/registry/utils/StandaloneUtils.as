@@ -2,7 +2,6 @@ package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.RestrictionEnzyme;
 	import org.jbei.registry.models.DNAFeature;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;

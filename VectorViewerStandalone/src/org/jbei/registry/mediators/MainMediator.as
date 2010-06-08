@@ -2,8 +2,8 @@ package org.jbei.registry.mediators
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.RestrictionEnzyme;
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
+	import org.jbei.bio.enzymes.RestrictionEnzyme;
 	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FeaturedSequenceEvent;
 	import org.jbei.lib.mappers.ORFMapper;

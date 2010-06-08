@@ -8,15 +8,15 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.controls.dataGridClasses.DataGridItemRenderer;
-			import mx.utils.StringUtil;
-			
-			import org.jbei.bio.data.Feature;
-			import org.jbei.lib.ui.dialogs.ModalDialog;
-			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
-			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.Notifications;
+            import mx.collections.ArrayCollection;
+            import mx.controls.dataGridClasses.DataGridItemRenderer;
+            import mx.utils.StringUtil;
+            
+            import org.jbei.bio.sequence.dna.Feature;
+            import org.jbei.lib.ui.dialogs.ModalDialog;
+            import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+            import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			private var filteredFeatures:ArrayCollection = new ArrayCollection();
@@ -72,10 +72,10 @@
 					}
 					
 					if(searchQuery == "") {
-						filteredFeatures.addItem({name : feature.label, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+						filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
 					} else {
-						if(feature.label.toLowerCase().search(searchQuery) >= 0 || feature.type.toLowerCase().search(searchQuery) >= 0) {
-							filteredFeatures.addItem({name : feature.label, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+						if(feature.name.toLowerCase().search(searchQuery) >= 0 || feature.type.toLowerCase().search(searchQuery) >= 0) {
+							filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
 						}
 					}
 				}

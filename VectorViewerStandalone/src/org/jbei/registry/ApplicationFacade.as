@@ -6,8 +6,6 @@ package org.jbei.registry
 	import mx.printing.FlexPrintJob;
 	import mx.printing.FlexPrintJobScaleType;
 	
-	import org.jbei.bio.data.RestrictionEnzymeGroup;
-	import org.jbei.bio.data.Segment;
 	import org.jbei.components.common.ISequenceComponent;
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.lib.FeaturedSequence;

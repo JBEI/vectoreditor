@@ -6,7 +6,7 @@ package org.jbei.registry.mediators
 	import mx.printing.FlexPrintJob;
 	import mx.printing.FlexPrintJobScaleType;
 	
-	import org.jbei.bio.data.Segment;
+	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.Pie;
 	import org.jbei.components.Rail;
 	import org.jbei.components.SequenceAnnotator;
@@ -351,7 +351,7 @@ package org.jbei.registry.mediators
 		
 		private function findAt(expression:String, dataType:String, searchType:String, position:int):void
 		{
-			var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
+			var findSegment:Annotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
 			
 			if(!findSegment) {
 				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);

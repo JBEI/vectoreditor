@@ -6,13 +6,13 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.utils.ObjectUtil;
-			
-			import org.jbei.bio.data.CutSite;
-			import org.jbei.lib.mappers.RestrictionEnzymeMapper;
-			import org.jbei.lib.ui.dialogs.SimpleDialog;
-			import org.jbei.registry.ApplicationFacade;
+            import mx.collections.ArrayCollection;
+            import mx.utils.ObjectUtil;
+            
+            import org.jbei.bio.enzymes.RestrictionCutSite;
+            import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+            import org.jbei.lib.ui.dialogs.SimpleDialog;
+            import org.jbei.registry.ApplicationFacade;
 			
 			[Bindable]
 			public var parentDialog:SimpleDialog;
@@ -36,7 +36,7 @@
 					
 					if(cuts.length > 0) {
 						for (var i:int = 0; i < cuts.length; i++) {
-							var cutSite:CutSite = cuts[i] as CutSite;
+							var cutSite:RestrictionCutSite = cuts[i] as RestrictionCutSite;
 							
 							cutSites.addItem(
 								{
@@ -44,7 +44,7 @@
 									nCuts : cutSite.numCuts, 
 									cutSite : cutSite, 
 									position : ((cutSite.start + 1) + " - " + (cutSite.end + 1)), 
-									strand : (cutSite.forward ? "+" : "-")
+									strand : (cutSite.strand == 1 ? "+" : "-")
 								}
 							);
 						}
