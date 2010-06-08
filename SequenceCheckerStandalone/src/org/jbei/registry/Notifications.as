@@ -1,5 +1,8 @@
 package org.jbei.registry
 {
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public final class Notifications
 	{
 		public static const INITIALIZATION:String = "Initialization";
@@ -24,7 +27,7 @@ package org.jbei.registry
 		public static const TRACE_SEQUENCE_SELECTION_CHANGED:String = "TraceSequenceSelectionChanged";
 		public static const SELECTION_CHANGED:String = "SelectionChanged";
 		public static const CARET_POSITION_CHANGED:String = "CaretPositionChanged";
-		public static const FEATURED_SEQUENCE_CHANGED:String = "FeaturedSequenceChanged";
+		public static const SEQUENCE_PROVIDER_CHANGED:String = "SequenceProviderChanged";
 		
 		public static const LOAD_SEQUENCE:String = "LoadSequence";
 	}

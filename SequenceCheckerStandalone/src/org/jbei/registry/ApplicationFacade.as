@@ -2,7 +2,7 @@ package org.jbei.registry
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.mappers.TraceMapper;
 	import org.jbei.registry.commands.FetchEntryCommand;
 	import org.jbei.registry.commands.FetchSequenceCommand;
@@ -13,6 +13,9 @@ package org.jbei.registry
 	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.puremvc.as3.patterns.facade.Facade;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ApplicationFacade extends Facade
 	{
 		private var _application:SequenceChecker;
@@ -20,7 +23,7 @@ package org.jbei.registry
 		private var _entry:Entry;
 		private var _sequence:FeaturedDNASequence;
 		private var _sessionId:String;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		private var _traces:ArrayCollection;
 		private var _traceMapper:TraceMapper;
 		
@@ -55,14 +58,14 @@ package org.jbei.registry
 			_sessionId = value;
 		}
 		
-		public function get featuredSequence():FeaturedSequence
+		public function get sequenceProvider():SequenceProvider
 		{
-			return _featuredSequence;
+			return _sequenceProvider;
 		}
 		
-		public function set featuredSequence(value:FeaturedSequence):void
+		public function set sequenceProvider(value:SequenceProvider):void
 		{
-			_featuredSequence = value;
+			_sequenceProvider = value;
 		}
 		
 		public function get entry():Entry

@@ -8,6 +8,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class AlignmentPanelMediator extends Mediator
 	{
 		private const NAME:String = "AlignmentPanelMediator";

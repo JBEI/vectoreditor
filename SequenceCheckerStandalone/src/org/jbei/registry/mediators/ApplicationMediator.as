@@ -2,8 +2,8 @@ package org.jbei.registry.mediators
 {
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.mappers.TraceMapper;
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.ApplicationFacade;
@@ -15,6 +15,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ApplicationMediator extends Mediator
 	{
 		private const NAME:String = "ApplicationMediator";
@@ -77,7 +80,7 @@ package org.jbei.registry.mediators
 					
 					sequenceFetched();
 					
-					if(ApplicationFacade.getInstance().featuredSequence.circular) {
+					if(ApplicationFacade.getInstance().sequenceProvider.circular) {
 						sendNotification(Notifications.SHOW_PIE);
 					} else {
 						sendNotification(Notifications.SHOW_RAIL);
@@ -101,16 +104,16 @@ package org.jbei.registry.mediators
 		
 		private function sequenceFetched():void
 		{
-			var featuredSequence:FeaturedSequence = FeaturedDNASequenceUtils.featuredDNASequenceToFeaturedSequence(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+			var sequenceProvider:SequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
 			
-			featuredSequence.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_INITIALIZED));
+            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
 			
-			ApplicationFacade.getInstance().featuredSequence = featuredSequence;
+			ApplicationFacade.getInstance().sequenceProvider = sequenceProvider;
 		}
 		
 		public function tracesFetched():void
 		{
-			var traceMapper:TraceMapper = new TraceMapper(ApplicationFacade.getInstance().featuredSequence, ApplicationFacade.getInstance().traces);
+			var traceMapper:TraceMapper = new TraceMapper(ApplicationFacade.getInstance().sequenceProvider, ApplicationFacade.getInstance().traces);
 			
 			ApplicationFacade.getInstance().traceMapper = traceMapper;
 		}

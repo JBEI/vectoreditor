@@ -13,6 +13,9 @@ package org.jbei.registry.utils
 	import org.jbei.registry.models.TraceSequence;
 	import org.jbei.registry.models.TraceSequenceAlignment;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class StandaloneUtils
 	{
 		public static function standaloneTraces():ArrayCollection /* of TraceSequence */

@@ -4,7 +4,7 @@ package org.jbei.registry.mediators
 	import org.jbei.components.Rail;
 	import org.jbei.components.common.CaretEvent;
 	import org.jbei.components.common.SelectionEvent;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.TraceSequence;
@@ -12,6 +12,9 @@ package org.jbei.registry.mediators
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class MainPanelMediator extends Mediator
 	{
 		private const NAME:String = "MainPanelMediator"
@@ -99,22 +102,22 @@ package org.jbei.registry.mediators
 		{
 			pie.visible = true;
 			pie.includeInLayout = true;
-			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			pie.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			rail.visible = false;
 			rail.includeInLayout = false;
-			rail.featuredSequence = null;
+			rail.sequenceProvider = null;
 		}
 		
 		private function showRail():void
 		{
 			pie.visible = false;
 			pie.includeInLayout = false;
-			pie.featuredSequence = null;
+			pie.sequenceProvider = null;
 			
 			rail.visible = true;
 			rail.includeInLayout = true;
-			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			rail.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 		}
 		
 		private function displayFeatures(showFeatures:Boolean):void
@@ -142,15 +145,10 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.CARET_POSITION_CHANGED, event.position);
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
-		{
-			sendNotification(Notifications.FEATURED_SEQUENCE_CHANGED, event.data, event.kind);
-		}
-		
 		private function loadSequence():void
 		{
-			pie.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
-			rail.featuredSequence = ApplicationFacade.getInstance().featuredSequence;
+			pie.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
+			rail.sequenceProvider = ApplicationFacade.getInstance().sequenceProvider;
 			
 			pie.traceMapper = ApplicationFacade.getInstance().traceMapper;
 			rail.traceMapper = ApplicationFacade.getInstance().traceMapper;
