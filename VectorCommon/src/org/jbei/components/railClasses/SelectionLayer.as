@@ -5,6 +5,9 @@ package org.jbei.components.railClasses
 	
 	import mx.core.UIComponent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionLayer extends UIComponent
 	{
 		private const SELECTION_COLOR:int = 0x0099FF;
@@ -90,7 +93,7 @@ package org.jbei.components.railClasses
 		// Private Methods
 		private function drawSelection(fromIndex:int, endIndex:int):void
 		{
-			if(contentHolder.featuredSequence.sequence.length == 0 || (_start == fromIndex && _end == endIndex) || fromIndex == endIndex) { return; }
+			if(contentHolder.sequenceProvider.sequence.length == 0 || (_start == fromIndex && _end == endIndex) || fromIndex == endIndex) { return; }
 			
 			var fromPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * fromIndex;
 			var toPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * endIndex;
@@ -105,7 +108,7 @@ package org.jbei.components.railClasses
 				g.endFill();
 			} else {
 				var startPointX:Number = contentHolder.railMetrics.x;
-				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.featuredSequence.sequence.length;
+				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.sequenceProvider.sequence.length;
 				
 				g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
 				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, endPointX - fromPointX, 3 * RailBox.THICKNESS);

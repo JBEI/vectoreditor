@@ -9,6 +9,9 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.AnnotationRenderer;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class TraceRenderer extends AnnotationRenderer
 	{
 		public static const RAIL_GAP:Number = 10;

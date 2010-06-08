@@ -2,6 +2,9 @@ package org.jbei.lib.utils
 {
 	import flash.events.EventDispatcher;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Logger extends EventDispatcher
 	{
 		private static var instance:Logger;

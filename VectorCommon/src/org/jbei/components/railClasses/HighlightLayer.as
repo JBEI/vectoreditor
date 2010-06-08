@@ -8,6 +8,9 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.GraphicUtils;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class HighlightLayer extends UIComponent
 	{
 		private const HIGHLIGHT_COLOR:int = 0x00FF00;
@@ -74,7 +77,7 @@ package org.jbei.components.railClasses
 				g.endFill();
 			} else {
 				var startPointX:Number = contentHolder.railMetrics.x;
-				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.featuredSequence.sequence.length;
+				var endPointX:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * contentHolder.sequenceProvider.sequence.length;
 				
 				g.beginFill(HIGHLIGHT_COLOR, HIGHLIGHT_TRANSPARENCY);
 				g.drawRect(fromPointX, contentHolder.railMetrics.y - RailBox.THICKNESS, endPointX - fromPointX, 3 * RailBox.THICKNESS);

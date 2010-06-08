@@ -5,7 +5,7 @@ package org.jbei.components.common
      */
     public class Constants
     {
-        public static const FEATURED_SEQUENCE_CLIPBOARD_KEY:String = "FeaturedSequence";
+        public static const SEQUENCE_PROVIDER_CLIPBOARD_KEY:String = "SequenceProvider";
         public static const DIGESTION_SEQUENCE_CLIPBOARD_KEY:String = "DigestionSequence";
     }
 }

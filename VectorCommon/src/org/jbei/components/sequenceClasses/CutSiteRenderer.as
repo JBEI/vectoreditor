@@ -9,6 +9,9 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class CutSiteRenderer extends AnnotationRenderer
 	{
 		private const CURVY_LINE_COLOR:int = 0xFF0000;
@@ -86,8 +89,8 @@ package org.jbei.components.sequenceClasses
 					if(cutSite.end >= row.rowData.start && cutSite.end <= row.rowData.end) {
 						endBP = cutSite.end;
 					}
-					else if(row.rowData.end >= contentHolder.featuredSequence.sequence.length) {
-						endBP = contentHolder.featuredSequence.sequence.length - 1;
+					else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
+						endBP = contentHolder.sequenceProvider.sequence.length - 1;
 					}
 					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */

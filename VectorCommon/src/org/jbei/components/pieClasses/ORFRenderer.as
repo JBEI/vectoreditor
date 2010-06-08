@@ -9,6 +9,9 @@ package org.jbei.components.pieClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ORFRenderer extends AnnotationRenderer
 	{
 		public static const DISTANCE_FROM_RAIL:Number = 15;
@@ -61,15 +64,15 @@ package org.jbei.components.pieClasses
 				orfRadius += rowIndex * DISTANCE_BETWEEN_ORFS;
 			}
 			
-			var angle1:Number = orf.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-			var angle2:Number = (orf.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			var angle1:Number = orf.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+			var angle2:Number = (orf.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			g.moveTo(center.x + orfRadius * Math.sin(angle1), center.y - orfRadius * Math.cos(angle1));
 			GraphicUtils.drawArc(g, center, orfRadius, angle1, angle2);
 			
 			// render start codons as bold dots
 			for(var i:int = 0; i < orf.startCodons.length; i++) {
-				var startCodonAngle:Number = orf.startCodons[i] * 2 * Math.PI / contentHolder.featuredSequence.sequence.length
+				var startCodonAngle:Number = orf.startCodons[i] * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length
 				
 				var startCodonX:Number = center.x + orfRadius * Math.sin(startCodonAngle);
 				var startCodonY:Number = center.y - orfRadius * Math.cos(startCodonAngle);

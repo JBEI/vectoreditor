@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Strain")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Strain extends Entry
 	{
 		private var _genotypePhenotype:String;

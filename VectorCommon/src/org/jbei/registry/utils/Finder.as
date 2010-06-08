@@ -1,10 +1,13 @@
 package org.jbei.registry.utils
 {
 	import org.jbei.bio.sequence.common.Annotation;
-	import org.jbei.lib.FeaturedSequence;
 	import org.jbei.lib.FindUtils;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.mappers.AAMapper;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Finder
 	{
 		public static const DATA_TYPE_DNA:String = "DataTypeDNA";
@@ -14,9 +17,9 @@ package org.jbei.registry.utils
 		public static const SEARCH_TYPE_AMBIGUOUS:String = "SearchTypeAmbiguous";
 		
 		// Public Methods
-		public static function find(featuredSequence:FeaturedSequence, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL, start:int = 0):Annotation
+		public static function find(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL, start:int = 0):Annotation
 		{
-			if(!featuredSequence || featuredSequence.sequence.length == 0 || expression.length == 0) { return null; }
+			if(!sequenceProvider || sequenceProvider.sequence.length == 0 || expression.length == 0) { return null; }
 			
 			var resultAnnotation:Annotation = null;
 			
@@ -28,8 +31,8 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceAnnotations:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
-					var reverseComplementAnnotation:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
+					var sequenceAnnotations:Array = FindUtils.findAll(sequenceProvider.sequence.seqString(), expression, sequenceProvider.circular);
+					var reverseComplementAnnotation:Array = FindUtils.findAll(sequenceProvider.getReverseComplementSequence().seqString(), expression, sequenceProvider.circular);
 					
 					for(var i1:int = 0; i1 < sequenceAnnotations.length; i1++) {
 						var annotation1:Annotation = sequenceAnnotations[i1] as Annotation;
@@ -45,7 +48,7 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					var sequenceLength:int = featuredSequence.sequence.length;
+					var sequenceLength:int = sequenceProvider.sequence.length;
 					
 					for(var i2:int = 0; i2 < reverseComplementAnnotation.length; i2++) {
 						var annotation2:Annotation = reverseComplementAnnotation[i2] as Annotation;
@@ -66,7 +69,7 @@ package org.jbei.registry.utils
 					
 					break;
 				case DATA_TYPE_AMINO_ACIDS:
-					var aaMapper:AAMapper = new AAMapper(featuredSequence);
+					var aaMapper:AAMapper = new AAMapper(sequenceProvider);
 					
 					var position1:int = 0;
 					if(start == 0) {
@@ -141,8 +144,8 @@ package org.jbei.registry.utils
 					
 					for(var z1:int = 0; z1 < revComAnnotationsFrame1.length; z1++) {
 						var revAnnotationAA1:Annotation = revComAnnotationsFrame1[z1] as Annotation;
-						var normalizedStart1:int = featuredSequence.sequence.length - 3 * revAnnotationAA1.end;
-						var normalizedEnd1:int = featuredSequence.sequence.length - 3 * revAnnotationAA1.start;
+						var normalizedStart1:int = sequenceProvider.sequence.length - 3 * revAnnotationAA1.end;
+						var normalizedEnd1:int = sequenceProvider.sequence.length - 3 * revAnnotationAA1.start;
 						
 						if(position2 < normalizedStart1) {
 							if(resultAnnotation == null) {
@@ -155,8 +158,8 @@ package org.jbei.registry.utils
 					
 					for(var z2:int = 0; z2 < revComAnnotationsFrame2.length; z2++) {
 						var revAnnotationAA2:Annotation = revComAnnotationsFrame2[z2] as Annotation;
-						var normalizedStart2:int = featuredSequence.sequence.length - 3 * revAnnotationAA2.end - 1;
-						var normalizedEnd2:int = featuredSequence.sequence.length - 3 * revAnnotationAA2.start - 1;
+						var normalizedStart2:int = sequenceProvider.sequence.length - 3 * revAnnotationAA2.end - 1;
+						var normalizedEnd2:int = sequenceProvider.sequence.length - 3 * revAnnotationAA2.start - 1;
 						
 						if(position2 < normalizedStart2) {
 							if(resultAnnotation == null) {
@@ -169,8 +172,8 @@ package org.jbei.registry.utils
 					
 					for(var z3:int = 0; z3 < revComAnnotationsFrame3.length; z3++) {
 						var revAnnotationAA3:Annotation = revComAnnotationsFrame3[z3] as Annotation;
-						var normalizedStart3:int = featuredSequence.sequence.length - 3 * revAnnotationAA3.end - 2;
-						var normalizedEnd3:int = featuredSequence.sequence.length - 3 * revAnnotationAA3.start - 2;
+						var normalizedStart3:int = sequenceProvider.sequence.length - 3 * revAnnotationAA3.end - 2;
+						var normalizedEnd3:int = sequenceProvider.sequence.length - 3 * revAnnotationAA3.start - 2;
 						
 						if(position2 < normalizedStart3) {
 							if(resultAnnotation == null) {
@@ -187,7 +190,7 @@ package org.jbei.registry.utils
 			return resultAnnotation;
 		}
 		
-		public static function findAll(featuredSequence:FeaturedSequence, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL):Array /* of Annotation */
+		public static function findAll(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL):Array /* of Annotation */
 		{
 			var result:Array; 
 			
@@ -197,8 +200,8 @@ package org.jbei.registry.utils
 						expression = makeAmbiguousDNAExpression(expression);
 					}
 					
-					var sequenceAnnotations:Array = FindUtils.findAll(featuredSequence.sequence.seqString(), expression, featuredSequence.circular);
-					var reverseComplementAnnotations:Array = FindUtils.findAll(featuredSequence.getReverseComplementSequence().seqString(), expression, featuredSequence.circular);
+					var sequenceAnnotations:Array = FindUtils.findAll(sequenceProvider.sequence.seqString(), expression, sequenceProvider.circular);
+					var reverseComplementAnnotations:Array = FindUtils.findAll(sequenceProvider.getReverseComplementSequence().seqString(), expression, sequenceProvider.circular);
 					
 					result = new Array();
 					
@@ -207,21 +210,21 @@ package org.jbei.registry.utils
 					}
 					
 					for(var k2:int = 0; k2 < reverseComplementAnnotations.length; k2++) {
-						result.push(new Annotation(featuredSequence.sequence.length - (reverseComplementAnnotations[k2] as Annotation).end, featuredSequence.sequence.length - (reverseComplementAnnotations[k2] as Annotation).start))
+						result.push(new Annotation(sequenceProvider.sequence.length - (reverseComplementAnnotations[k2] as Annotation).end, sequenceProvider.sequence.length - (reverseComplementAnnotations[k2] as Annotation).start))
 					}
 					
 					break;
 				case DATA_TYPE_AMINO_ACIDS:
-					var aaMapper:AAMapper = new AAMapper(featuredSequence);
+					var aaMapper:AAMapper = new AAMapper(sequenceProvider);
 					
 					expression = expression.toUpperCase();
 					
-					var annotations1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, featuredSequence.circular);
-					var annotations2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, featuredSequence.circular);
-					var annotations3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, featuredSequence.circular);
-					var revComAnnotations1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, featuredSequence.circular);
-					var revComAnnotations2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, featuredSequence.circular);
-					var revComAnnotations3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, featuredSequence.circular);
+					var annotations1:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame1, expression, sequenceProvider.circular);
+					var annotations2:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame2, expression, sequenceProvider.circular);
+					var annotations3:Array = FindUtils.findAll(aaMapper.sequenceAA1Frame3, expression, sequenceProvider.circular);
+					var revComAnnotations1:Array = FindUtils.findAll(aaMapper.revComAA1Frame1, expression, sequenceProvider.circular);
+					var revComAnnotations2:Array = FindUtils.findAll(aaMapper.revComAA1Frame2, expression, sequenceProvider.circular);
+					var revComAnnotations3:Array = FindUtils.findAll(aaMapper.revComAA1Frame3, expression, sequenceProvider.circular);
 					
 					result = new Array();
 					
@@ -247,15 +250,15 @@ package org.jbei.registry.utils
 					}
 					
 					for(var j1:int = 0; j1 < revComAnnotations1.length; j1++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).end, featuredSequence.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).start));
+						result.push(new Annotation(sequenceProvider.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).end, sequenceProvider.sequence.length - 3 * (revComAnnotations1[j1] as Annotation).start));
 					}
 					
 					for(var j2:int = 0; j2 < revComAnnotations2.length; j2++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).end - 1, featuredSequence.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).start - 1));
+						result.push(new Annotation(sequenceProvider.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).end - 1, sequenceProvider.sequence.length - 3 * (revComAnnotations2[j2] as Annotation).start - 1));
 					}
 					
 					for(var j3:int = 0; j3 < revComAnnotations3.length; j3++) {
-						result.push(new Annotation(featuredSequence.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).end - 2, featuredSequence.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).start - 2));
+						result.push(new Annotation(sequenceProvider.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).end - 2, sequenceProvider.sequence.length - 3 * (revComAnnotations3[j3] as Annotation).start - 2));
 					}
 					break;
 			}

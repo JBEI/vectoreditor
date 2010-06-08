@@ -3,6 +3,9 @@ package org.jbei.components.common
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.dna.DNASequence;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SequenceUtils
 	{
 		public static const ATOMIC_SYMBOLS:Array  = new Array('A', 'T', 'G', 'C');

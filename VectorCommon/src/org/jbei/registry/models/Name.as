@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Name")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Name
 	{
 		private var _name:String;

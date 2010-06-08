@@ -5,6 +5,9 @@ package org.jbei.components.pieClasses
 	
 	import mx.core.UIComponent;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RailBox extends UIComponent
 	{
 		private const FRAME_COLOR:int = 0x000000;

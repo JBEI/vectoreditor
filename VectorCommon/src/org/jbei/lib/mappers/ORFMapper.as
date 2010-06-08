@@ -9,23 +9,26 @@ package org.jbei.lib.mappers
 	import org.jbei.bio.sequence.DNATools;
 	import org.jbei.bio.sequence.common.SymbolList;
 	import org.jbei.bio.sequence.dna.DNASequence;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ORFMapper extends EventDispatcher
 	{
 		private var dirty:Boolean = true;
 		private var _orfs:ArrayCollection /* of ORF */;
 		private var _minORFSize:int = 300;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		
 		// Constructor
-		public function ORFMapper(featuredSequence:FeaturedSequence)
+		public function ORFMapper(sequenceProvider:SequenceProvider)
 		{
 			super();
 			
-			_featuredSequence = featuredSequence;
-			_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			_sequenceProvider = sequenceProvider;
+			_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 		}
 		
 		// Properties
@@ -57,8 +60,8 @@ package org.jbei.lib.mappers
 		// Private Methods
 		private function recalculate():void
 		{
-			if(_featuredSequence) {
-				if(_featuredSequence.circular) {
+			if(_sequenceProvider) {
+				if(_sequenceProvider.circular) {
 					recalculateCircular();
 				} else {
 					recalculateNonCircular();
@@ -72,7 +75,7 @@ package org.jbei.lib.mappers
 		
 		private function recalculateNonCircular():void
 		{
-			var orfsSequence:Vector.<ORF> = ORFFinder.calculateORFBothDirections(_featuredSequence.sequence, _featuredSequence.getReverseComplementSequence(), _minORFSize);
+			var orfsSequence:Vector.<ORF> = ORFFinder.calculateORFBothDirections(_sequenceProvider.sequence, _sequenceProvider.getReverseComplementSequence(), _minORFSize);
 			
 			_orfs = new ArrayCollection();
 			for(var i:int = 0; i < orfsSequence.length; i++) {
@@ -82,8 +85,8 @@ package org.jbei.lib.mappers
 		
 		private function recalculateCircular():void
 		{
-			var forwardSequence:SymbolList = _featuredSequence.sequence;
-			var backwardSequence:SymbolList = _featuredSequence.getReverseComplementSequence();
+			var forwardSequence:SymbolList = _sequenceProvider.sequence;
+			var backwardSequence:SymbolList = _sequenceProvider.getReverseComplementSequence();
 			
 			var doubleForwardSequence:SymbolList = DNATools.createDNA(forwardSequence.seqString() + forwardSequence.seqString());
 			var doubleBackwardSequence:SymbolList = DNATools.createDNA(backwardSequence.seqString() + backwardSequence.seqString());
@@ -135,7 +138,7 @@ package org.jbei.lib.mappers
 			}
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		private function onSequenceProviderChanged(event:SequenceProviderEvent):void
 		{
 			dirty = true;
 		}

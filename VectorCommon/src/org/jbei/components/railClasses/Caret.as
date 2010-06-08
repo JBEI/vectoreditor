@@ -4,6 +4,9 @@ package org.jbei.components.railClasses
 	
 	import mx.core.UIComponent;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Caret extends UIComponent
 	{
 		private const CARET_COLOR:int = 0x000000;
@@ -74,7 +77,7 @@ package org.jbei.components.railClasses
 			
 			g.clear();
 			
-			if(contentHolder.featuredSequence.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
+			if(contentHolder.sequenceProvider.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
 			
 			var xPosition:Number = contentHolder.railMetrics.x + contentHolder.bpWidth * _position;
 			var yPosition:Number = contentHolder.railMetrics.y - RailBox.THICKNESS;

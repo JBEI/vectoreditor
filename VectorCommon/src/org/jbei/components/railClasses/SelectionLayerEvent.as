@@ -2,6 +2,9 @@ package org.jbei.components.railClasses
 {
 	import flash.events.Event;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionLayerEvent extends Event
 	{
 		// Static Constants

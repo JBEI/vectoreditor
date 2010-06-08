@@ -8,6 +8,9 @@ package org.jbei.components.pieClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeatureRenderer extends AnnotationRenderer
 	{
 		private const DEFAULT_FEATURE_HEIGHT:int = 10;
@@ -53,8 +56,8 @@ package org.jbei.components.pieClasses
 				featureRadius -= alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP);
 			}
 			
-			angle1 = feature.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-			angle2 = (feature.end + 1) * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			angle1 = feature.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+			angle2 = (feature.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			var centralAngle:Number;
 			

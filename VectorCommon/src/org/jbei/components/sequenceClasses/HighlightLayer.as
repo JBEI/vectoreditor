@@ -7,6 +7,9 @@ package org.jbei.components.sequenceClasses
 	
 	import org.jbei.bio.sequence.common.Annotation;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class HighlightLayer extends UIComponent
 	{
 		private const HIGHLIGHT_COLOR:int = 0x00FF00;
@@ -57,7 +60,7 @@ package org.jbei.components.sequenceClasses
 				
 				if(annotation.start > annotation.end) {
 					drawSelection(0, annotation.end);
-					drawSelection(annotation.start, contentHolder.featuredSequence.sequence.length);
+					drawSelection(annotation.start, contentHolder.sequenceProvider.sequence.length);
 				} else {
 					drawSelection(annotation.start, annotation.end);
 				}

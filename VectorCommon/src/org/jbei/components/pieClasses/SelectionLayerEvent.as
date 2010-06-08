@@ -2,6 +2,9 @@ package org.jbei.components.pieClasses
 {
 	import flash.events.Event;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionLayerEvent extends Event
 	{
 		// Static Constants

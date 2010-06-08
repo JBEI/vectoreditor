@@ -12,11 +12,11 @@ package org.jbei.lib
     import org.jbei.lib.common.IOriginator;
     import org.jbei.lib.utils.StringFormatter;
     
+    [RemoteClass(alias="org.jbei.lib.SequenceProvider")]
     /**
      * @author Zinovii Dmytriv
      */
-    [RemoteClass(alias="org.jbei.lib.FeaturedSequence")]
-    public class FeaturedSequence implements IOriginator
+    public class SequenceProvider implements IOriginator
     {
         private var _name:String;
         private var _circular:Boolean;
@@ -32,7 +32,7 @@ package org.jbei.lib
         private var dispatcher:EventDispatcher = new EventDispatcher();
         
         // Constructor
-        public function FeaturedSequence(name:String = null, circular:Boolean = false, sequence:SymbolList = null, features:ArrayCollection = null)
+        public function SequenceProvider(name:String = null, circular:Boolean = false, sequence:SymbolList = null, features:ArrayCollection = null)
         {
             super();
             
@@ -103,22 +103,22 @@ package org.jbei.lib
                 }
             }
             
-            return new FeaturedSequenceMemento(_name, _circular, _sequence, clonedFeatures);
+            return new SequenceProviderMemento(_name, _circular, _sequence, clonedFeatures);
         }
         
         public function setMemento(memento:IMemento):void
         {
-            var featuredSequenceMemento:FeaturedSequenceMemento = memento as FeaturedSequenceMemento;
+            var sequenceProviderMemento:SequenceProviderMemento = memento as SequenceProviderMemento;
             
-            _name = featuredSequenceMemento.name;
-            _circular = featuredSequenceMemento.circular;
-            _sequence = featuredSequenceMemento.sequence;
-            _features = featuredSequenceMemento.features;
+            _name = sequenceProviderMemento.name;
+            _circular = sequenceProviderMemento.circular;
+            _sequence = sequenceProviderMemento.sequence;
+            _features = sequenceProviderMemento.features;
             
             needsRecalculateComplementSequence = true;
             needsRecalculateReverseComplementSequence = true;
             
-            dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SET_MEMENTO));
+            dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_SET_MEMENTO));
         }
         
         // Public Methods: EventDispatcher wrapped
@@ -169,9 +169,9 @@ package org.jbei.lib
             return result;
         }
         
-        public function subFeaturedSequence(start:int, end:int):FeaturedSequence
+        public function subSequenceProvider(start:int, end:int):SequenceProvider
         {
-            var featuredSubSequence:FeaturedSequence;
+            var featuredSubSequence:SequenceProvider;
             
             if(start < 0 || end < 0 || start > _sequence.length || end > _sequence.length) {
                 return featuredSubSequence;
@@ -221,7 +221,7 @@ package org.jbei.lib
                 }
             }
             
-            featuredSubSequence = new FeaturedSequence("Dummy", false, featuredSubSymbolList, subFeatures);
+            featuredSubSequence = new SequenceProvider("Dummy", false, featuredSubSymbolList, subFeatures);
             
             return featuredSubSequence;
         }
@@ -229,13 +229,13 @@ package org.jbei.lib
         public function addFeature(feature:Feature, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_ADD, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_FEATURE_ADD, createMemento()));
             }
             
             _features.addItem(feature);
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_ADD, feature));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_FEATURE_ADD, feature));
             }
         }
         
@@ -244,7 +244,7 @@ package org.jbei.lib
             if(!featuresToAdd || featuresToAdd.length == 0) { return; } 
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_ADD, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_FEATURES_ADD, createMemento()));
             }
             
             for(var i:int = 0; i < featuresToAdd.length; i++) {
@@ -254,7 +254,7 @@ package org.jbei.lib
             }
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_ADD, features));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_FEATURES_ADD, features));
             }
         }
         
@@ -264,13 +264,13 @@ package org.jbei.lib
             
             if(index >= 0) {
                 if(!quiet && !_manualUpdateStarted) {
-                    dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, createMemento()));
+                    dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_FEATURE_REMOVE, createMemento()));
                 }
                 
                 _features.removeItemAt(index);
                 
                 if(!quiet && !_manualUpdateStarted) {
-                    dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURE_REMOVE, feature));
+                    dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_FEATURE_REMOVE, feature));
                 }
             }
         }
@@ -280,7 +280,7 @@ package org.jbei.lib
             if(!featuresToRemove || featuresToRemove.length == 0) { return; } 
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_FEATURES_REMOVE, createMemento()));
             }
             
             for(var i:int = 0; i < featuresToRemove.length; i++) {
@@ -290,7 +290,7 @@ package org.jbei.lib
             }
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_FEATURES_REMOVE, features));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_FEATURES_REMOVE, features));
             }
         }
         
@@ -299,19 +299,19 @@ package org.jbei.lib
             return features.contains(feature);
         }
         
-        public function insertFeaturedSequence(featuredSequence:FeaturedSequence, position:int, quiet:Boolean = false):void
+        public function insertSequenceProvider(sequenceProvider:SequenceProvider, position:int, quiet:Boolean = false):void
         {
             needsRecalculateComplementSequence = true;
             needsRecalculateReverseComplementSequence = true;
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_SEQUENCE_INSERT, createMemento()));
             }
             
-            insertSequence(featuredSequence.sequence, position, true);
+            insertSequence(sequenceProvider.sequence, position, true);
             
-            for(var z:int = 0; z < featuredSequence.features.length; z++) {
-                var insertFeature:Feature = (featuredSequence.features[z] as Feature).clone();
+            for(var z:int = 0; z < sequenceProvider.features.length; z++) {
+                var insertFeature:Feature = (sequenceProvider.features[z] as Feature).clone();
                 
                 insertFeature.start += position;
                 insertFeature.end += position;
@@ -320,7 +320,7 @@ package org.jbei.lib
             }
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {featuredSequence : featuredSequence, position : position}));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_SEQUENCE_INSERT, {sequenceProvider : sequenceProvider, position : position}));
             }
         }
         
@@ -332,7 +332,7 @@ package org.jbei.lib
             needsRecalculateReverseComplementSequence = true;
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_SEQUENCE_INSERT, createMemento()));
             }
             
             _sequence.insertSymbols(position, insertSequence);
@@ -361,7 +361,7 @@ package org.jbei.lib
             }
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, {sequence : insertSequence, position : position}));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_SEQUENCE_INSERT, {sequence : insertSequence, position : position}));
             }
         }
         
@@ -375,7 +375,7 @@ package org.jbei.lib
             needsRecalculateReverseComplementSequence = true;
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_SEQUENCE_INSERT, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_SEQUENCE_INSERT, createMemento()));
             }
             
             const DEBUG_MODE:Boolean = false;
@@ -632,7 +632,7 @@ package org.jbei.lib
             }
             
             if(!quiet && !_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_SEQUENCE_REMOVE, {position : startIndex, length : length}));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_SEQUENCE_REMOVE, {position : startIndex, length : length}));
             }
         }
         
@@ -694,30 +694,30 @@ package org.jbei.lib
             if(!_manualUpdateStarted) {
                 _manualUpdateStarted = true;
                 
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGING, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, createMemento()));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_MANUAL_UPDATE, createMemento()));
             }
         }
         
         public function manualUpdateEnd():void
         {
             if(_manualUpdateStarted) {
-                dispatcher.dispatchEvent(new FeaturedSequenceEvent(FeaturedSequenceEvent.SEQUENCE_CHANGED, FeaturedSequenceEvent.KIND_MANUAL_UPDATE, null));
+                dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_MANUAL_UPDATE, null));
                 
                 _manualUpdateStarted = false;
             }
         }
         
-        public function clone():FeaturedSequence
+        public function clone():SequenceProvider
         {
-            var clonedFeaturedSequence:FeaturedSequence = new FeaturedSequence(_name, _circular, DNATools.createDNA(_sequence.seqString()));
+            var clonedSequenceProvider:SequenceProvider = new SequenceProvider(_name, _circular, DNATools.createDNA(_sequence.seqString()));
             
             if(_features && _features.length > 0) {
                 for(var i:int = 0; i < _features.length; i++) {
-                    clonedFeaturedSequence.addFeature(_features[i], true);
+                    clonedSequenceProvider.addFeature(_features[i], true);
                 }
             }
             
-            return clonedFeaturedSequence;
+            return clonedSequenceProvider;
         }
         
         // Private Methods

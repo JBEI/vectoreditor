@@ -2,6 +2,9 @@ package org.jbei.lib.utils
 {
 	import flash.events.Event;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class LoggerEvent extends Event
 	{
 		public static const LOG:String = "LoggerEvent";

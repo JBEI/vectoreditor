@@ -2,6 +2,9 @@ package org.jbei.components.common
 {
 	import flash.events.Event;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class CaretEvent extends Event
 	{
 		public var position:int = -1;

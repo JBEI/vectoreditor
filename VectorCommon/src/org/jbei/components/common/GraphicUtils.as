@@ -3,6 +3,9 @@ package org.jbei.components.common
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public final class GraphicUtils
 	{
 		public static function drawDashedLine(graphics:Graphics, fromPoint:Point, toPoint:Point, length:int = 5, gap:int = 5):void

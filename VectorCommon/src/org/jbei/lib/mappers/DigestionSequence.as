@@ -1,24 +1,24 @@
 package org.jbei.lib.mappers
 {
     import org.jbei.bio.enzymes.RestrictionEnzyme;
-    import org.jbei.lib.FeaturedSequence;
+    import org.jbei.lib.SequenceProvider;
 
+    [RemoteClass(alias="org.jbei.components.common.DigestionSequence")]
     /**
      * @author Zinovii Dmytriv
      */
-    [RemoteClass(alias="org.jbei.components.common.DigestionSequence")]
     public class DigestionSequence
     {
-        private var _featuredSequence:FeaturedSequence;
+        private var _sequenceProvider:SequenceProvider;
         private var _startRestrictionEnzyme:RestrictionEnzyme;
         private var _endRestrictionEnzyme:RestrictionEnzyme;
         private var _startRelativePosition:int = 0;
         private var _endRelativePosition:int = 0;
         
         // Constructor
-        public function DigestionSequence(featuredSequence:FeaturedSequence = null, startRestrictionEnzyme:RestrictionEnzyme = null, endRestrictionEnzyme:RestrictionEnzyme = null, startRelativePosition:int = 0, endRelativePosition:int = 0)
+        public function DigestionSequence(sequenceProvider:SequenceProvider = null, startRestrictionEnzyme:RestrictionEnzyme = null, endRestrictionEnzyme:RestrictionEnzyme = null, startRelativePosition:int = 0, endRelativePosition:int = 0)
         {
-            _featuredSequence = featuredSequence;
+            _sequenceProvider = sequenceProvider;
             _startRestrictionEnzyme = startRestrictionEnzyme;
             _endRestrictionEnzyme = endRestrictionEnzyme;
             _startRelativePosition = startRelativePosition;
@@ -26,14 +26,14 @@ package org.jbei.lib.mappers
         }
         
         // Properties
-        public function get featuredSequence():FeaturedSequence
+        public function get sequenceProvider():SequenceProvider
         {
-            return _featuredSequence;
+            return _sequenceProvider;
         }
         
-        public function set featuredSequence(value:FeaturedSequence):void
+        public function set sequenceProvider(value:SequenceProvider):void
         {
-            _featuredSequence = value;
+            _sequenceProvider = value;
         }
         
         public function get startRestrictionEnzyme():RestrictionEnzyme

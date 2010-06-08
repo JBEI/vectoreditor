@@ -8,6 +8,9 @@ package org.jbei.components.pieClasses
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.GraphicUtils;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class HighlightLayer extends UIComponent
 	{
 		private const HIGHLIGHT_COLOR:int = 0x00FF00;
@@ -62,8 +65,8 @@ package org.jbei.components.pieClasses
 		
 		private function drawSelectionPie(fromIndex:int, endIndex:int):void
 		{
-			var angle1:Number = fromIndex * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
-			var angle2:Number = endIndex * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			var angle1:Number = fromIndex * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+			var angle2:Number = endIndex * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			var radius:Number = contentHolder.railRadius + 10;
 			

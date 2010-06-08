@@ -6,6 +6,9 @@ package org.jbei.registry.proxies
 	
 	import org.puremvc.as3.patterns.proxy.Proxy;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class AbstractServiceProxy extends Proxy
 	{
 		private var _serviceName:String;

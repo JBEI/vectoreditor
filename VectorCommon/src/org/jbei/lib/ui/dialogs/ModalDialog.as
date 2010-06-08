@@ -15,6 +15,9 @@ package org.jbei.lib.ui.dialogs
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ModalDialog extends TitleWindow
 	{
 		private var _isOpen:Boolean = false;

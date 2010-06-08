@@ -9,9 +9,12 @@ package org.jbei.lib.mappers
 	import org.jbei.bio.sequence.symbols.AminoAcidSymbol;
 	import org.jbei.bio.sequence.symbols.GapSymbol;
 	import org.jbei.bio.sequence.symbols.ISymbol;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class AAMapper extends EventDispatcher
 	{
 		private var dirty:Boolean = true;
@@ -29,15 +32,15 @@ package org.jbei.lib.mappers
 		private var _revComAA1Frame2Sparse:String;
 		private var _revComAA1Frame3Sparse:String;
 		
-		private var featuredSequence:FeaturedSequence;
+		private var sequenceProvider:SequenceProvider;
 		
 		// Constructor
-		public function AAMapper(featuredSequence:FeaturedSequence)
+		public function AAMapper(sequenceProvider:SequenceProvider)
 		{
 			super();
 			
-			this.featuredSequence = featuredSequence;
-			featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			this.sequenceProvider = sequenceProvider;
+            sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 		}
 		
 		// Properties
@@ -176,7 +179,7 @@ package org.jbei.lib.mappers
 		// Private Methods
 		private function recalculate():void
 		{
-			if(featuredSequence) {
+			if(sequenceProvider) {
 				recalculateNonCircular();
 			} else {
 				_sequenceAA1Frame1 = "";
@@ -211,14 +214,14 @@ package org.jbei.lib.mappers
 			_revComAA1Frame2Sparse = "";
 			_revComAA1Frame3Sparse = "";
 			
-			for(var i:int = 0; i < featuredSequence.sequence.length; i++) {
-				if(i >= featuredSequence.sequence.length - 2) { break; }
+			for(var i:int = 0; i < sequenceProvider.sequence.length; i++) {
+				if(i >= sequenceProvider.sequence.length - 2) { break; }
 				
-				var aminoAcid:ISymbol = TranslationUtils.dnaToProteinSymbol(featuredSequence.sequence.symbolAt(i), featuredSequence.sequence.symbolAt(i + 1), featuredSequence.sequence.symbolAt(i + 2));
+				var aminoAcid:ISymbol = TranslationUtils.dnaToProteinSymbol(sequenceProvider.sequence.symbolAt(i), sequenceProvider.sequence.symbolAt(i + 1), sequenceProvider.sequence.symbolAt(i + 2));
 				
                 var aa1:String = "-";
                 if(aminoAcid is GapSymbol) {
-                    if(TranslationUtils.isStopCodon(featuredSequence.sequence.symbolAt(i), featuredSequence.sequence.symbolAt(i + 1), featuredSequence.sequence.symbolAt(i + 2))) {
+                    if(TranslationUtils.isStopCodon(sequenceProvider.sequence.symbolAt(i), sequenceProvider.sequence.symbolAt(i + 1), sequenceProvider.sequence.symbolAt(i + 2))) {
                         aa1 = ".";
                     }
                 } else {
@@ -237,7 +240,7 @@ package org.jbei.lib.mappers
 				}
 			}
 			
-			var revComSequence:SymbolList = featuredSequence.getReverseComplementSequence();
+			var revComSequence:SymbolList = sequenceProvider.getReverseComplementSequence();
 			
             var revComSequenceString:String = revComSequence.seqString();
             
@@ -268,7 +271,7 @@ package org.jbei.lib.mappers
 			}
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		private function onSequenceProviderChanged(event:SequenceProviderEvent):void
 		{
 			dirty = true;
 		}

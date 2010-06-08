@@ -9,7 +9,7 @@ package org.jbei.lib
     /**
      * @author Zinovii Dmytriv
      */
-    public class FeaturedSequenceMemento implements IMemento
+    public class SequenceProviderMemento implements IMemento
     {
         private var _name:String;
         private var _circular:Boolean;
@@ -17,7 +17,7 @@ package org.jbei.lib
         private var _features:ArrayCollection;
         
         // Contructor
-        public function FeaturedSequenceMemento(name:String, circular:Boolean, sequence:SymbolList, features:ArrayCollection)
+        public function SequenceProviderMemento(name:String, circular:Boolean, sequence:SymbolList, features:ArrayCollection)
         {
             _name = name;
             _circular = circular;

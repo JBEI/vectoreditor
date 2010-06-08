@@ -14,6 +14,9 @@ package org.jbei.lib.ui.dialogs
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SimpleDialog extends TitleWindow
 	{
 		private var dialogForm:SimpleDialogForm;

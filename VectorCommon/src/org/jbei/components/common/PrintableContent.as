@@ -1,5 +1,8 @@
 package org.jbei.components.common
 {
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class PrintableContent
 	{
 		public var width:Number = 0;

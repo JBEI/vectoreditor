@@ -10,6 +10,9 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.Alignment;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RowMapper
 	{
 		private var contentHolder:ContentHolder;
@@ -53,10 +56,10 @@ package org.jbei.components.sequenceClasses
 		{
 			_rows = new Array();
 			
-			numRows = int(Math.ceil(((contentHolder.featuredSequence.sequence.length + 1) / contentHolder.bpPerRow)));
+			numRows = int(Math.ceil(((contentHolder.sequenceProvider.sequence.length + 1) / contentHolder.bpPerRow)));
 			
-            var seqString:String = contentHolder.featuredSequence.sequence.seqString().toUpperCase();
-            var complementSeqString:String = contentHolder.featuredSequence.getComplementSequence().seqString().toUpperCase();
+            var seqString:String = contentHolder.sequenceProvider.sequence.seqString().toUpperCase();
+            var complementSeqString:String = contentHolder.sequenceProvider.getComplementSequence().seqString().toUpperCase();
             
 			for(var i:int = 0; i < numRows; i++) {
 				var start:int = i * contentHolder.bpPerRow;
@@ -77,14 +80,14 @@ package org.jbei.components.sequenceClasses
 		// Private Methods
 		private function reloadFeatures():void
 		{
-			if(!contentHolder.showFeatures || !contentHolder.featuredSequence.features) { return; }
+			if(!contentHolder.showFeatures || !contentHolder.sequenceProvider.features) { return; }
 			
-			var rowsFeatures:Array = rowAnnotations(contentHolder.featuredSequence.features);
+			var rowsFeatures:Array = rowAnnotations(contentHolder.sequenceProvider.features);
 			
 			_featureToRowMap = new Dictionary();
 			
-			for(var k:int = 0; k < contentHolder.featuredSequence.features.length; k++) {
-				var feature:Feature = contentHolder.featuredSequence.features[k];
+			for(var k:int = 0; k < contentHolder.sequenceProvider.features.length; k++) {
+				var feature:Feature = contentHolder.sequenceProvider.features[k];
 				
 				_featureToRowMap[feature] = null;
 			}
@@ -93,7 +96,7 @@ package org.jbei.components.sequenceClasses
 				var start:int = i * contentHolder.bpPerRow;
 				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
 				
-				var featuresAlignment:Alignment = new Alignment(rowsFeatures[i] as Array, contentHolder.featuredSequence);
+				var featuresAlignment:Alignment = new Alignment(rowsFeatures[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.featuresAlignment = featuresAlignment.rows;
 				
@@ -131,7 +134,7 @@ package org.jbei.components.sequenceClasses
 				var start:int = i * contentHolder.bpPerRow;
 				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
 				
-				var cutSitesAlignment:Alignment = new Alignment(rowsCutSites[i] as Array, contentHolder.featuredSequence);
+				var cutSitesAlignment:Alignment = new Alignment(rowsCutSites[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.cutSitesAlignment = cutSitesAlignment.rows;
 				
@@ -169,7 +172,7 @@ package org.jbei.components.sequenceClasses
 				var start:int = i * contentHolder.bpPerRow;
 				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
 				
-				var orfsAlignment:Alignment = new Alignment(rowsOrfs[i] as Array, contentHolder.featuredSequence);
+				var orfsAlignment:Alignment = new Alignment(rowsOrfs[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.orfAlignment = orfsAlignment.rows;
 				
@@ -193,7 +196,7 @@ package org.jbei.components.sequenceClasses
 		{
 			var rows:Array = new Array();
 			
-			var numRows:int = int(Math.ceil((contentHolder.featuredSequence.sequence.length / contentHolder.bpPerRow)));
+			var numRows:int = int(Math.ceil((contentHolder.sequenceProvider.sequence.length / contentHolder.bpPerRow)));
 			
 			if(annotations != null) {
 				for(var j:int = 0; j < numRows; j++) {
@@ -206,7 +209,7 @@ package org.jbei.components.sequenceClasses
 					
 					if(annotation.start > annotation.end) {
 						var rowStartIndex1:int = int(annotation.start / contentHolder.bpPerRow);
-						var rowEndIndex1:int = int((contentHolder.featuredSequence.sequence.length - 1) / contentHolder.bpPerRow);
+						var rowEndIndex1:int = int((contentHolder.sequenceProvider.sequence.length - 1) / contentHolder.bpPerRow);
 						
 						var rowStartIndex2:int = 0;
 						var rowEndIndex2:int = int(annotation.end / contentHolder.bpPerRow);

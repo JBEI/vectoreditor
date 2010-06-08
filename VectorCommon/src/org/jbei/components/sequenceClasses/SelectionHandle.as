@@ -9,6 +9,9 @@ package org.jbei.components.sequenceClasses
 	import mx.managers.CursorManager;
 	import mx.styles.StyleManager;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionHandle extends Canvas
 	{
 		public static const START_HANDLE:String = "START";

@@ -40,7 +40,7 @@ package org.jbei.components.railClasses
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.components.common.SequenceUtils;
 	import org.jbei.components.common.TextRenderer;
-	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.mappers.DigestionSequence;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
@@ -81,7 +81,7 @@ package org.jbei.components.railClasses
 		private var _featureTextRenderer:TextRenderer;
 		
 		private var _hCenter:Number;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		private var _orfMapper:ORFMapper;
 		private var _traceMapper:TraceMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
@@ -123,7 +123,7 @@ package org.jbei.components.railClasses
 		private var startSelectionIndex:int;
 		private var endSelectionIndex:int;
 		
-		private var featuredSequenceChanged:Boolean = false;
+		private var sequenceProviderChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var traceMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
@@ -157,21 +157,21 @@ package org.jbei.components.railClasses
 		}
 		
 		// Properties
-		public function get featuredSequence():FeaturedSequence
+		public function get sequenceProvider():SequenceProvider
 		{
-			return _featuredSequence;
+			return _sequenceProvider;
 		}
 		
-		public function set featuredSequence(value:FeaturedSequence):void
+		public function set sequenceProvider(value:SequenceProvider):void
 		{
-			_featuredSequence = value;
+			_sequenceProvider = value;
 			
-			if(_featuredSequence) {
+			if(_sequenceProvider) {
 				initializeSequence();
 				
 				invalidateProperties();
 				
-				featuredSequenceChanged = true;
+                sequenceProviderChanged = true;
 			} else {
 				disableSequence();
 				
@@ -479,7 +479,7 @@ package org.jbei.components.railClasses
 		
 		public function isValidIndex(index:int):Boolean
 		{
-			return index >= 0 && index <= featuredSequence.sequence.length;
+			return index >= 0 && index <= sequenceProvider.sequence.length;
 		}
 		
 		public function contentBitmapData(pageWidth:Number, pageHeight:Number, scaleToPage:Boolean = false, page:int = 0):BitmapData
@@ -536,8 +536,8 @@ package org.jbei.components.railClasses
 			
 			if(invalidSequence) { return; }
 			
-			if(featuredSequenceChanged) {
-				featuredSequenceChanged = false;
+			if(sequenceProviderChanged) {
+                sequenceProviderChanged = false;
 				
 				needsMeasurement = true;
 				
@@ -696,7 +696,7 @@ package org.jbei.components.railClasses
 				
 				_railMetrics = new Rectangle(HORIZONTAL_PADDING, yRailPosition, parentWidth - 2 * HORIZONTAL_PADDING, RailBox.THICKNESS);
 				
-				_bpWidth = _railMetrics.width / featuredSequence.sequence.length;
+				_bpWidth = _railMetrics.width / sequenceProvider.sequence.length;
 				
 				_hCenter = _railMetrics.x + _railMetrics.width / 2;
 				
@@ -723,7 +723,7 @@ package org.jbei.components.railClasses
 				
 				caret.updateMetrics();
 				
-				nameBox.update(_featuredSequence.name, _featuredSequence.sequence.length);
+				nameBox.update(_sequenceProvider.name, _sequenceProvider.sequence.length);
 				
 				if(highlightsChanged) {
 					highlightsChanged = false;
@@ -822,7 +822,7 @@ package org.jbei.components.railClasses
 		
 		private function onSelectAll(event:Event):void
 		{
-			select(0, _featuredSequence.sequence.length);
+			select(0, _sequenceProvider.sequence.length);
 		}
 		
 		private function onCopy(event:Event):void
@@ -857,19 +857,19 @@ package org.jbei.components.railClasses
             }
             
             if(digestionStart >= 0 && digestionEnd >= 0) {
-                var subFeaturedSequence:FeaturedSequence = _featuredSequence.subFeaturedSequence(digestionStart, digestionEnd);
-                var digestionSequence:DigestionSequence = new DigestionSequence(subFeaturedSequence, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
+                var subSequenceProvider:SequenceProvider = _sequenceProvider.subSequenceProvider(digestionStart, digestionEnd);
+                var digestionSequence:DigestionSequence = new DigestionSequence(subSequenceProvider, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
                 
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
-                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, subFeaturedSequence, true);
-                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subFeaturedSequence.sequence.seqString(), true);
+                Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, subSequenceProvider, true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subSequenceProvider.sequence.seqString(), true);
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
             } else {
                 Clipboard.generalClipboard.clear();
-                Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
+                Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, _sequenceProvider.subSequenceProvider(selectionLayer.start, selectionLayer.end), true);
+                Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _sequenceProvider.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
             }
@@ -879,15 +879,15 @@ package org.jbei.components.railClasses
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {
 				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY, _featuredSequence.subFeaturedSequence(selectionLayer.start, selectionLayer.end), true);
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _featuredSequence.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
+				Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, _sequenceProvider.subSequenceProvider(selectionLayer.start, selectionLayer.end), true);
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _sequenceProvider.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
 				
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
                 
 				if(_safeEditing) {
 					doDeleteSequence(selectionLayer.start, selectionLayer.end);
 				} else {
-					_featuredSequence.removeSequence(selectionLayer.start, selectionLayer.end);
+					_sequenceProvider.removeSequence(selectionLayer.start, selectionLayer.end);
 					
 					deselect();
 				}
@@ -898,12 +898,12 @@ package org.jbei.components.railClasses
 		{
 			if(! isValidIndex(_caretPosition)) { return; }
 			
-			if(Clipboard.generalClipboard.hasFormat(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY)) {
-				var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.FEATURED_SEQUENCE_CLIPBOARD_KEY);
+			if(Clipboard.generalClipboard.hasFormat(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY)) {
+				var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY);
 				
 				if(clipboardObject != null) {
-					var pasteFeaturedSequence:FeaturedSequence = clipboardObject as FeaturedSequence;
-					var pasteSequence1:String = pasteFeaturedSequence.sequence.seqString();
+					var pasteSequenceProvider:SequenceProvider = clipboardObject as SequenceProvider;
+					var pasteSequence1:String = pasteSequenceProvider.sequence.seqString();
 					
 					if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
 						showInvalidPasteSequenceAlert();
@@ -914,9 +914,9 @@ package org.jbei.components.railClasses
 					}
 					
 					if(_safeEditing) {
-						doInsertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+						doInsertSequenceProvider(pasteSequenceProvider, _caretPosition);
 					} else {
-						_featuredSequence.insertFeaturedSequence(pasteFeaturedSequence, _caretPosition);
+						_sequenceProvider.insertSequenceProvider(pasteSequenceProvider, _caretPosition);
 						
 						tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
 					}				
@@ -933,7 +933,7 @@ package org.jbei.components.railClasses
 				if(_safeEditing) {
 					doInsertSequence(DNATools.createDNA(pasteSequence2) as DNASequence, _caretPosition);
 				} else {
-					_featuredSequence.insertSequence(DNATools.createDNA(pasteSequence2) as DNASequence, _caretPosition);
+					_sequenceProvider.insertSequence(DNATools.createDNA(pasteSequence2) as DNASequence, _caretPosition);
 					
 					tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
 				}				
@@ -957,7 +957,7 @@ package org.jbei.components.railClasses
 		
 		private function onKeyDown(event:KeyboardEvent):void
 		{
-			if(! _featuredSequence) { return; }
+			if(! _sequenceProvider) { return; }
 			
 			if(event.shiftKey && !shiftKeyDown) {
 				shiftDownCaretPosition = _caretPosition;
@@ -1348,10 +1348,10 @@ package org.jbei.components.railClasses
 		{
 			removeFeatureRenderers();
 			
-			if(! _featuredSequence || ! _featuredSequence.features) { return; }
+			if(! _sequenceProvider || ! _sequenceProvider.features) { return; }
 			
-			for(var i:int = 0; i < featuredSequence.features.length; i++) {
-				var feature:Feature = featuredSequence.features[i] as Feature;
+			for(var i:int = 0; i < sequenceProvider.features.length; i++) {
+				var feature:Feature = sequenceProvider.features[i] as Feature;
 				
 				var featureRenderer:FeatureRenderer = new FeatureRenderer(this, feature);
 				
@@ -1367,7 +1367,7 @@ package org.jbei.components.railClasses
 		{
 			removeCutSiteRenderers();
 			
-			if(!showCutSites || !featuredSequence || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites) { return; }
+			if(!showCutSites || !sequenceProvider || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites) { return; }
 			
 			for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
 				var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites[i] as RestrictionCutSite;
@@ -1386,7 +1386,7 @@ package org.jbei.components.railClasses
 		{
 			removeORFRenderers();
 			
-			if(!showORFs || !featuredSequence || !_orfMapper || !_orfMapper.orfs) { return; }
+			if(!showORFs || !sequenceProvider || !_orfMapper || !_orfMapper.orfs) { return; }
 			
 			for(var i:int = 0; i < _orfMapper.orfs.length; i++) {
 				var orf:ORF = _orfMapper.orfs[i] as ORF;
@@ -1403,7 +1403,7 @@ package org.jbei.components.railClasses
 		{
 			removeTraceRenderers();
 			
-			if(!showTraces || !featuredSequence || !_traceMapper || !_traceMapper.traceAnnotations) { return; }
+			if(!showTraces || !sequenceProvider || !_traceMapper || !_traceMapper.traceAnnotations) { return; }
 			
 			for(var i:int = 0; i < _traceMapper.traceAnnotations.length; i++) {
 				var traceAnnotation:TraceAnnotation = _traceMapper.traceAnnotations[i] as TraceAnnotation;
@@ -1420,12 +1420,12 @@ package org.jbei.components.railClasses
 		{
 			removeLabels();
 			
-			if(_featuredSequence.features && showFeatures && showFeatureLabels) {
+			if(_sequenceProvider.features && showFeatures && showFeatureLabels) {
 				// Create new labels for annotations
-				var numberOfFeatures:int = _featuredSequence.features.length;
+				var numberOfFeatures:int = _sequenceProvider.features.length;
 				
 				for(var i:int = 0; i < numberOfFeatures; i++) {
-					var feature:Feature = _featuredSequence.features[i] as Feature;
+					var feature:Feature = _sequenceProvider.features[i] as Feature;
 					
 					var featureLabelBox:FeatureLabelBox = new FeatureLabelBox(this, feature);
 					
@@ -1450,7 +1450,7 @@ package org.jbei.components.railClasses
 			
 			// Split labels into 2 groups
 			var totalNumberOfLabels:uint = labelBoxes.length;
-			var totalLength:uint = _featuredSequence.sequence.length;
+			var totalLength:uint = _sequenceProvider.sequence.length;
 			for(var l:int = 0; l < totalNumberOfLabels; l++) {
 				var labelBox:LabelBox = labelBoxes[l] as LabelBox;
 				
@@ -1562,9 +1562,9 @@ package org.jbei.components.railClasses
 		{
 			featureAlignmentMap = new Dictionary();
 			
-			if(!_showFeatures || !_featuredSequence || _featuredSequence.features.length == 0) { return; }
+			if(!_showFeatures || !_sequenceProvider || _sequenceProvider.features.length == 0) { return; }
 			
-			featureAlignment = new Alignment(_featuredSequence.features.toArray(), _featuredSequence);
+			featureAlignment = new Alignment(_sequenceProvider.features.toArray(), _sequenceProvider);
 			for(var i:int = 0; i < featureAlignment.rows.length; i++) {
 				var featuresRow:Array = featureAlignment.rows[i];
 				
@@ -1582,7 +1582,7 @@ package org.jbei.components.railClasses
 			
 			if(!showORFs || !_orfMapper || _orfMapper.orfs.length == 0) { return; }
 			
-			var orfAlignment:Alignment = new Alignment(_orfMapper.orfs.toArray(), _featuredSequence);
+			var orfAlignment:Alignment = new Alignment(_orfMapper.orfs.toArray(), _sequenceProvider);
 			for(var k:int = 0; k < orfAlignment.rows.length; k++) {
 				var orfsRow:Array = orfAlignment.rows[k];
 				
@@ -1602,7 +1602,7 @@ package org.jbei.components.railClasses
 			
 			if(!showTraces || !_traceMapper || _traceMapper.traceAnnotations.length == 0) { return; }
 			
-			var tracesAlignment:Alignment = new Alignment(_traceMapper.traceAnnotations.toArray(), _featuredSequence);
+			var tracesAlignment:Alignment = new Alignment(_traceMapper.traceAnnotations.toArray(), _sequenceProvider);
 			maxTracesAlignmentRow = tracesAlignment.numberOfRows;
 			for(var k:int = 0; k < tracesAlignment.rows.length; k++) {
 				var tracesRow:Array = tracesAlignment.rows[k];
@@ -1687,8 +1687,8 @@ package org.jbei.components.railClasses
 			
 			if(newPosition < 0) {
 				newPosition = 0;
-			} else if(newPosition > featuredSequence.sequence.length) {
-				newPosition = featuredSequence.sequence.length;
+			} else if(newPosition > sequenceProvider.sequence.length) {
+				newPosition = sequenceProvider.sequence.length;
 			}
 			
 			moveCaretToPosition(newPosition);
@@ -1729,7 +1729,7 @@ package org.jbei.components.railClasses
 			if(contentPoint.x < _railMetrics.x) {
 				result = 0;
 			} else if(contentPoint.x > _railMetrics.x + _railMetrics.width) {
-				result = featuredSequence.sequence.length;
+				result = sequenceProvider.sequence.length;
 			} else {
 				result = int(Math.floor((contentPoint.x - _railMetrics.x) / _bpWidth));
 			}
@@ -1740,7 +1740,7 @@ package org.jbei.components.railClasses
 		private function doSelect(start:int, end:int):void
 		{
 			if(start > 0 && end == 0) {
-				end == featuredSequence.sequence.length - 1;
+				end == sequenceProvider.sequence.length - 1;
 			}
 			
 			startSelectionIndex = start;
@@ -1762,8 +1762,8 @@ package org.jbei.components.railClasses
 			var selectionAnnotation:Annotation = new Annotation(start, end);
 			
 			if(_showFeatures) {
-				for(var i1:int = 0; i1 < featuredSequence.features.length; i1++) {
-					var feature:Feature = featuredSequence.features[i1] as Feature;
+				for(var i1:int = 0; i1 < sequenceProvider.features.length; i1++) {
+					var feature:Feature = sequenceProvider.features[i1] as Feature;
 					
 					if(selectionAnnotation.contains(new Annotation(feature.start, feature.end))) {
 						selectedAnnotations.push(feature);
@@ -1887,9 +1887,9 @@ package org.jbei.components.railClasses
 			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
 		}
 		
-		private function doInsertFeaturedSequence(currentFeaturedSequence:FeaturedSequence, position:int):void
+		private function doInsertSequenceProvider(currentSequenceProvider:SequenceProvider, position:int):void
 		{
-			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentFeaturedSequence, position)));
+			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_FEATURED_SEQUENCE, new Array(currentSequenceProvider, position)));
 		}
 		
 		private function clearLabelTextRenderers():void

@@ -7,6 +7,9 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ORFRenderer extends AnnotationRenderer
 	{
 		private static const DEFAULT_ORF_HEIGHT:int = 6;
@@ -77,8 +80,8 @@ package org.jbei.components.sequenceClasses
 					if(orf.end >= row.rowData.start && orf.end <= row.rowData.end) {
 						endBP = orf.end;
 					}
-					else if(row.rowData.end >= contentHolder.featuredSequence.sequence.length) {
-						endBP = contentHolder.featuredSequence.sequence.length - 1;
+					else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
+						endBP = contentHolder.sequenceProvider.sequence.length - 1;
 					}
 					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */

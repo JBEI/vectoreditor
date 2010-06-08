@@ -7,6 +7,9 @@ package org.jbei.components.pieClasses
 	import mx.core.FlexTextField;
 	import mx.core.UIComponent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class NameBox extends UIComponent
 	{
 		private const FONT_FACE:String = "Tahoma";

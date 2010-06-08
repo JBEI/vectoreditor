@@ -4,6 +4,9 @@ package org.jbei.registry.models
 
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.FundingSource")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FundingSource
 	{
 		private var _fundingSource:String;

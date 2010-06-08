@@ -9,6 +9,9 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.LabelBox;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeatureLabelBox extends LabelBox
 	{
 		private var contentHolder:ContentHolder;

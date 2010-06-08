@@ -2,6 +2,9 @@ package org.jbei.components.sequenceClasses
 {
 	import flash.geom.Rectangle;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Row
 	{
 		private var _rowData:RowData;

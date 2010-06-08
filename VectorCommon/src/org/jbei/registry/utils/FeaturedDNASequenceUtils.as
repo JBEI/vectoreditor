@@ -6,24 +6,27 @@ package org.jbei.registry.utils
 	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.bio.sequence.dna.FeatureNote;
-	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.registry.models.DNAFeature;
 	import org.jbei.registry.models.DNAFeatureNote;
 	import org.jbei.registry.models.FeaturedDNASequence;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeaturedDNASequenceUtils
 	{
-		public static function featuredSequenceToFeaturedDNASequence(featuredSequence:FeaturedSequence):FeaturedDNASequence
+		public static function sequenceProviderToFeaturedDNASequence(sequenceProvider:SequenceProvider):FeaturedDNASequence
 		{
-			if(featuredSequence == null) {
+			if(sequenceProvider == null) {
 				return null;
 			}
 			
 			var dnaSequenceFeatures:ArrayCollection = new ArrayCollection();
-			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(featuredSequence.sequence.seqString(), dnaSequenceFeatures);
+			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(sequenceProvider.sequence.seqString(), dnaSequenceFeatures);
 			
-			for(var i:int = 0; i < featuredSequence.features.length; i++) {
-				var feature:Feature = featuredSequence.features[i];
+			for(var i:int = 0; i < sequenceProvider.features.length; i++) {
+				var feature:Feature = sequenceProvider.features[i];
 				
 				var descriptionNotes:ArrayCollection = new ArrayCollection() /* of DNAFeatureNote */;
 				
@@ -41,7 +44,7 @@ package org.jbei.registry.utils
 			return featuredDNASequence;
 		}
 		
-		public static function featuredDNASequenceToFeaturedSequence(featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):FeaturedSequence
+		public static function featuredDNASequenceToSequenceProvider(featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):SequenceProvider
 		{
 			if(featuredDNASequence == null) {
 				return null;
@@ -49,7 +52,7 @@ package org.jbei.registry.utils
 			
 			var dnaSequence:DNASequence = DNATools.createDNASequence("", featuredDNASequence.sequence);
 			
-			var featuredSequence:FeaturedSequence = new FeaturedSequence(name, isCircular, dnaSequence);
+			var sequenceProvider:SequenceProvider = new SequenceProvider(name, isCircular, dnaSequence);
 			
 			var features:ArrayCollection = new ArrayCollection();
 			if(featuredDNASequence.features != null && featuredDNASequence.features.length > 0) {
@@ -70,9 +73,9 @@ package org.jbei.registry.utils
 				}
 			}
 			
-			featuredSequence.features = features;
+            sequenceProvider.features = features;
 			
-			return featuredSequence;
+			return sequenceProvider;
 		}
 	}
 }

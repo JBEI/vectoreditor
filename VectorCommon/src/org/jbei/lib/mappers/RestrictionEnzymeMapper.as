@@ -11,9 +11,12 @@ package org.jbei.lib.mappers
 	import org.jbei.bio.enzymes.RestrictionEnzymeMapper;
 	import org.jbei.bio.sequence.DNATools;
 	import org.jbei.bio.sequence.dna.DNASequence;
-	import org.jbei.lib.FeaturedSequence;
-	import org.jbei.lib.FeaturedSequenceEvent;
+	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.SequenceProviderEvent;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RestrictionEnzymeMapper extends EventDispatcher
 	{
 		private var dirty:Boolean = true;
@@ -23,16 +26,16 @@ package org.jbei.lib.mappers
 		private var _allCutSitesMap:Dictionary /* [RestrictionEnzyme] = Array(CutSite) */;
 		private var _maxRestrictionEnzymeCuts:int = -1;
 		private var _restrictionEnzymeGroup:RestrictionEnzymeGroup;
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		
 		// Constructor
-		public function RestrictionEnzymeMapper(featuredSequence:FeaturedSequence, restrictionEnzymeGroup:RestrictionEnzymeGroup)
+		public function RestrictionEnzymeMapper(sequenceProvider:SequenceProvider, restrictionEnzymeGroup:RestrictionEnzymeGroup)
 		{
 			super();
 			
-			_featuredSequence = featuredSequence;
+			_sequenceProvider = sequenceProvider;
 			_restrictionEnzymeGroup = restrictionEnzymeGroup;
-			_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+			_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 		}
 		
 		// Properties
@@ -105,8 +108,8 @@ package org.jbei.lib.mappers
 		// Private Methods
 		private function recalculate():void
 		{
-			if(_featuredSequence && _restrictionEnzymeGroup && _restrictionEnzymeGroup.enzymes.length > 0) {
-				if(_featuredSequence.circular) {
+			if(_sequenceProvider && _restrictionEnzymeGroup && _restrictionEnzymeGroup.enzymes.length > 0) {
+				if(_sequenceProvider.circular) {
 					recalculateCircular();
 				} else {
 					recalculateNonCircular();
@@ -121,7 +124,7 @@ package org.jbei.lib.mappers
 		
 		private function recalculateNonCircular():void
 		{
-			var cutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, _featuredSequence.sequence);
+			var cutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, _sequenceProvider.sequence);
 			
 			eliminateDuplicates(cutSites, new Dictionary());
 		}
@@ -129,10 +132,10 @@ package org.jbei.lib.mappers
 		// TODO: Optimize this
 		private function recalculateCircular():void
 		{
-			var normalCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_featuredSequence.sequence.seqString() + _featuredSequence.sequence.seqString()));
-			//var reverseCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_featuredSequence.getReverseComplementSequence().seqString() + _featuredSequence.getReverseComplementSequence().seqString()));
+			var normalCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_sequenceProvider.sequence.seqString() + _sequenceProvider.sequence.seqString()));
+			//var reverseCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_sequenceProvider.getReverseComplementSequence().seqString() + _sequenceProvider.getReverseComplementSequence().seqString()));
 			
-			var sequenceLength:int = _featuredSequence.sequence.length;
+			var sequenceLength:int = _sequenceProvider.sequence.length;
 			for(var restrictionEnzyme:Object in normalCutSites) {
 				var normalCutSitesList:Vector.<RestrictionCutSite> = normalCutSites[restrictionEnzyme];
 				//var reverseCutSitesList:Array = reverseCutSites[restrictionEnzyme];
@@ -241,7 +244,7 @@ package org.jbei.lib.mappers
 			}
 		}
 		
-		private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+		private function onSequenceProviderChanged(event:SequenceProviderEvent):void
 		{
 			dirty = true;
 		}

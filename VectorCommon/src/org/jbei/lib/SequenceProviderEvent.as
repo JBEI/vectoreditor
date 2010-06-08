@@ -5,17 +5,17 @@ package org.jbei.lib
     /**
      * @author Zinovii Dmytriv
      */
-    public class FeaturedSequenceEvent extends Event
+    public class SequenceProviderEvent extends Event
     {
         public static const SEQUENCE_CHANGING:String = "SequenceChanging";
         public static const SEQUENCE_CHANGED:String = "SequenceChanged";
         
-        public static const KIND_FEATURE_ADD:String = "FeatureAddFeaturedSequenceEvent";
-        public static const KIND_FEATURE_REMOVE:String = "FeatureRemoveFeaturedSequenceEvent";
-        public static const KIND_FEATURES_ADD:String = "FeaturesAddFeaturedSequenceEvent";
-        public static const KIND_FEATURES_REMOVE:String = "FeaturesRemoveFeaturedSequenceEvent";
-        public static const KIND_SEQUENCE_INSERT:String = "SequenceInsertFeaturedSequenceEvent";
-        public static const KIND_SEQUENCE_REMOVE:String = "SequenceRemoveFeaturedSequenceEvent";
+        public static const KIND_FEATURE_ADD:String = "FeatureAddSequenceProviderEvent";
+        public static const KIND_FEATURE_REMOVE:String = "FeatureRemoveSequenceProviderEvent";
+        public static const KIND_FEATURES_ADD:String = "FeaturesAddSequenceProviderEvent";
+        public static const KIND_FEATURES_REMOVE:String = "FeaturesRemoveSequenceProviderEvent";
+        public static const KIND_SEQUENCE_INSERT:String = "SequenceInsertSequenceProviderEvent";
+        public static const KIND_SEQUENCE_REMOVE:String = "SequenceRemoveSequenceProviderEvent";
         
         public static const KIND_MANUAL_UPDATE:String = "ManualUpdate";
         public static const KIND_SET_MEMENTO:String = "SetMemento";
@@ -26,7 +26,7 @@ package org.jbei.lib
         public var data:Object;
         
         // Contructor
-        public function FeaturedSequenceEvent(type:String, kind:String, data:Object = null)
+        public function SequenceProviderEvent(type:String, kind:String, data:Object = null)
         {
             super(type);
             

@@ -3,6 +3,9 @@ package org.jbei.lib.utils
 	import flash.external.ExternalInterface;
 	import flash.net.navigateToURL;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public final class SystemUtils
 	{
 		import flash.system.Capabilities;

@@ -2,6 +2,9 @@ package org.jbei.lib.ui.dialogs
 {
 	import mx.containers.Box;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class AbstractDialogForm extends Box
 	{
 		private var _dataObject:Object;

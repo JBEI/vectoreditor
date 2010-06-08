@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.SelectionMarker")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionMarker
 	{
 		private var _name:String;

@@ -14,8 +14,8 @@ package org.jbei.components
     import org.jbei.components.common.ISequenceComponent;
     import org.jbei.components.common.PrintableContent;
     import org.jbei.components.sequenceClasses.ContentHolder;
-    import org.jbei.lib.FeaturedSequence;
-    import org.jbei.lib.FeaturedSequenceEvent;
+    import org.jbei.lib.SequenceProvider;
+    import org.jbei.lib.SequenceProviderEvent;
     import org.jbei.lib.mappers.AAMapper;
     import org.jbei.lib.mappers.AAMapperEvent;
     import org.jbei.lib.mappers.ORFMapper;
@@ -29,6 +29,9 @@ package org.jbei.components
 	[Event(name="beforeUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	[Event(name="afterUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SequenceAnnotator extends ScrollControlBase implements IFocusManagerComponent, ISequenceComponent
 	{
 		private const DEFAULT_BP_PER_ROW:int = 60;
@@ -38,7 +41,7 @@ package org.jbei.components
 		private const MIN_LABEL_FONT_SIZE:int = 9;
 		private const MAX_LABEL_FONT_SIZE:int = 14;
 		
-		private var _featuredSequence:FeaturedSequence;
+		private var _sequenceProvider:SequenceProvider;
 		private var _orfMapper:ORFMapper;
 		private var _aaMapper:AAMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
@@ -64,7 +67,7 @@ package org.jbei.components
 		private var contentHeight:uint = 0;
 		private var floatingBpPerRow:int = DEFAULT_BP_PER_ROW;
 		
-		private var featuredSequenceChanged:Boolean = false;
+		private var sequenceProviderChanged:Boolean = false;
 		private var orfMapperChanged:Boolean = false;
 		private var aaMapperChanged:Boolean = false;
 		private var restrictionEnzymeMapperChanged:Boolean = false;
@@ -103,16 +106,16 @@ package org.jbei.components
 		}
 		
 		// Properties
-	    public function get featuredSequence():FeaturedSequence
+	    public function get sequenceProvider():SequenceProvider
 	    {
-	        return _featuredSequence;
+	        return _sequenceProvider;
 	    }
 		
-	    public function set featuredSequence(value:FeaturedSequence):void
+	    public function set sequenceProvider(value:SequenceProvider):void
 	    {
-	    	_featuredSequence = value;
+	    	_sequenceProvider = value;
 	    	
-	    	featuredSequenceChanged = true;
+            sequenceProviderChanged = true;
 	    	
 	    	invalidateProperties();
 	    	
@@ -122,8 +125,8 @@ package org.jbei.components
 	    	contentHolder.x = 0;
 	    	contentHolder.y = 0;
 	    	
-	    	if(_featuredSequence) {
-	    		_featuredSequence.addEventListener(FeaturedSequenceEvent.SEQUENCE_CHANGED, onFeaturedSequenceChanged);
+	    	if(_sequenceProvider) {
+	    		_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 	    	}
 	    }
 		
@@ -487,12 +490,12 @@ package org.jbei.components
 		{
 	        super.commitProperties();
 	        
-	        if(featuredSequenceChanged) {
-	        	featuredSequenceChanged = false;
+	        if(sequenceProviderChanged) {
+                sequenceProviderChanged = false;
 				
 				needsMeasurement = true;
 				
-				contentHolder.featuredSequence = _featuredSequence;
+				contentHolder.sequenceProvider = _sequenceProvider;
 				
 				invalidateDisplayList();
 	        }
@@ -768,9 +771,9 @@ package org.jbei.components
 			invalidateDisplayList();
 		}
 		
-        private function onFeaturedSequenceChanged(event:FeaturedSequenceEvent):void
+        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
         {
-			featuredSequenceChanged = true;
+			sequenceProviderChanged = true;
 			
 			invalidateProperties();
         }

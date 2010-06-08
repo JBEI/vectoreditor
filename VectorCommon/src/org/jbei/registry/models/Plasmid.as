@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Plasmid")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Plasmid extends Entry
 	{
 		private var _backbone:String;

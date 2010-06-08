@@ -1,5 +1,8 @@
 package org.jbei.components.sequenceClasses
 {
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RowData
 	{
 		private var _sequence:String;

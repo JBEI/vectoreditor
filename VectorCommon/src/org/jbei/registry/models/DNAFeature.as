@@ -3,6 +3,9 @@ package org.jbei.registry.models
 	import mx.collections.ArrayCollection;
 
 	[RemoteClass(alias="org.jbei.ice.lib.vo.DNAFeature")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class DNAFeature
 	{
 		private var _name:String;

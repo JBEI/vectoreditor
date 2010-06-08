@@ -1,6 +1,9 @@
 package org.jbei.registry.models
 {
 	[RemoteClass(alias="org.jbei.ice.lib.models.TraceSequenceAlignment")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class TraceSequenceAlignment
 	{
 		private var _score:int;

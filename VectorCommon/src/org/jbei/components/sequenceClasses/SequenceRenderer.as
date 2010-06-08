@@ -10,6 +10,9 @@ package org.jbei.components.sequenceClasses
 	
 	import mx.core.UIComponent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SequenceRenderer extends UIComponent
 	{
 		private var contentHolder:ContentHolder;
@@ -57,7 +60,7 @@ package org.jbei.components.sequenceClasses
 			if(needsMeasurement) {
 				needsMeasurement = false;
 				
-				if(contentHolder.featuredSequence) {
+				if(contentHolder.sequenceProvider) {
 					render();
 				}
 			}
@@ -86,9 +89,9 @@ package org.jbei.components.sequenceClasses
 			_totalWidth = 0;
 			_totalHeight = 0;
 			
-			if(! contentHolder.featuredSequence) { return; }
+			if(! contentHolder.sequenceProvider) { return; }
 			
-			var sequence:String = contentHolder.featuredSequence.sequence.seqString();
+			var sequence:String = contentHolder.sequenceProvider.sequence.seqString();
 			
 			var rows:Array = contentHolder.rowMapper.rows as Array /* of Row */;
 			
@@ -280,8 +283,8 @@ package org.jbei.components.sequenceClasses
 			var aa2:String = " " + contentHolder.aaMapper.revComAA1Frame2Sparse;
 			var aa3:String = "  " + contentHolder.aaMapper.revComAA1Frame3Sparse;
 			
-			var start:int = contentHolder.featuredSequence.sequence.length - row.rowData.end - 1;
-			var end:int = contentHolder.featuredSequence.sequence.length - row.rowData.start - 1;
+			var start:int = contentHolder.sequenceProvider.sequence.length - row.rowData.end - 1;
+			var end:int = contentHolder.sequenceProvider.sequence.length - row.rowData.start - 1;
 			
 			var aminoAcidsString1:String = aa1.substring(start, end + 1);
 			var aminoAcidsString2:String = aa2.substring(start, end + 1);

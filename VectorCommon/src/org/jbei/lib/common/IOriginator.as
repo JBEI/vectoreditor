@@ -1,5 +1,8 @@
 package org.jbei.lib.common
 {
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public interface IOriginator
 	{
 		function createMemento():IMemento;

@@ -7,6 +7,9 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.components.common.AnnotationRenderer;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class CutSiteRenderer extends AnnotationRenderer
 	{
 		public static const CUT_SITE_HEIGHT:Number = 8;

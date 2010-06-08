@@ -3,6 +3,9 @@ package org.jbei.registry.models
 	import mx.collections.ArrayCollection;
 
 	[RemoteClass(alias="org.jbei.ice.lib.vo.FeaturedDNASequence")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeaturedDNASequence
 	{
 		private var _sequence:String;

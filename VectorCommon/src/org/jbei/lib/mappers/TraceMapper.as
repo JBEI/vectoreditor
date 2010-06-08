@@ -6,28 +6,31 @@ package org.jbei.lib.mappers
 	
 	import org.jbei.bio.data.TraceAnnotation;
 	import org.jbei.bio.sequence.common.Annotation;
-	import org.jbei.lib.FeaturedSequence;
+	import org.jbei.lib.SequenceProvider;
 	import org.jbei.registry.models.TraceSequence;
 	import org.jbei.registry.models.TraceSequenceAlignment;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class TraceMapper extends EventDispatcher
 	{
 		private var dirty:Boolean = true;
 		
-		private var featuredSequence:FeaturedSequence;
+		private var sequenceProvider:SequenceProvider;
 		private var _traceAnnotations:ArrayCollection = new ArrayCollection(); /* of TraceAnnotation */
 		
 		
 		// Constructor
-		public function TraceMapper(featuredSequence:FeaturedSequence, traces:ArrayCollection /* of TraceSequence */)
+		public function TraceMapper(sequenceProvider:SequenceProvider, traces:ArrayCollection /* of TraceSequence */)
 		{
 			super();
 			
-			this.featuredSequence = featuredSequence;
+			this.sequenceProvider = sequenceProvider;
 			
 			_traceAnnotations.removeAll();
 			
-			if(traces == null || traces.length == 0 || featuredSequence == null) {
+			if(traces == null || traces.length == 0 || sequenceProvider == null) {
 				return;
 			}
 			
@@ -38,7 +41,7 @@ package org.jbei.lib.mappers
 					continue;
 				}
 				
-				_traceAnnotations.addItem(new TraceAnnotation(traceSequence.traceSequenceAlignment.queryStart - 1, traceSequence.traceSequenceAlignment.queryEnd - 1, traceSequence)) // -1 because featured sequence based on 0 position
+				_traceAnnotations.addItem(new TraceAnnotation(traceSequence.traceSequenceAlignment.queryStart - 1, traceSequence.traceSequenceAlignment.queryEnd - 1, traceSequence)) // -1 because sequenceProvider based on 0 position
 			}
 		}
 		

@@ -2,6 +2,9 @@ package org.jbei.components.common
 {
 	import flash.events.Event;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionEvent extends Event
 	{
 		public var start:int;

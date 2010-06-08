@@ -7,6 +7,9 @@ package org.jbei.components.pieClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.GraphicUtils;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class CutSiteRenderer extends AnnotationRenderer
 	{
 		private const FRAME_COLOR:int = 0x606060;
@@ -41,7 +44,7 @@ package org.jbei.components.pieClasses
 			this.center = center;
 			this.railRadius = railRadius;
 			
-			angle = cutSite.start * 2 * Math.PI / contentHolder.featuredSequence.sequence.length;
+			angle = cutSite.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			_middlePoint = GraphicUtils.pointOnCircle(center, angle, railRadius + 10);
 			

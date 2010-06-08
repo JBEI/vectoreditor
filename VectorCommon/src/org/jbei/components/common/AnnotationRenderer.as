@@ -9,6 +9,9 @@ package org.jbei.components.common
 	
 	import org.jbei.bio.sequence.common.Annotation;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class AnnotationRenderer extends UIComponent
 	{
 		protected var contentHolder:IContentHolder;

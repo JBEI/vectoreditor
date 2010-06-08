@@ -2,6 +2,9 @@ package org.jbei.lib.ui.dialogs
 {
 	import flash.events.Event;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class ModalDialogEvent extends Event
 	{
 		public static const SUBMIT:String = "okButtonModalDialogEvent";

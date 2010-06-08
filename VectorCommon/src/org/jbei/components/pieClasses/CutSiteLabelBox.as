@@ -9,6 +9,9 @@ package org.jbei.components.pieClasses
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.LabelBox;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class CutSiteLabelBox extends LabelBox
 	{
 		private var contentHolder:ContentHolder;

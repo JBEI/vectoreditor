@@ -7,6 +7,9 @@ package org.jbei.components.sequenceClasses
 	
 	import mx.core.UIComponent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class SelectionLayer extends UIComponent
 	{
 		private const SELECTION_COLOR:int = 0x0099FF;
@@ -86,7 +89,7 @@ package org.jbei.components.sequenceClasses
 				
 				if(fromIndex > toIndex) {
 					drawSelection(0, toIndex);
-					drawSelection(fromIndex, contentHolder.featuredSequence.sequence.length);
+					drawSelection(fromIndex, contentHolder.sequenceProvider.sequence.length);
 				} else {
 					drawSelection(fromIndex, toIndex);
 				}

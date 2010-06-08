@@ -1,6 +1,9 @@
 package org.jbei.registry.models
 {
 	[RemoteClass(alias="org.jbei.ice.lib.vo.DNAFeatureNote")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class DNAFeatureNote
 	{
 		private var _name:String;

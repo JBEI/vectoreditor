@@ -1,6 +1,9 @@
 package org.jbei.registry.models
 {
 	[RemoteClass(alias="org.jbei.ice.lib.models.TraceSequence")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class TraceSequence
 	{
 		private var _filename:String;

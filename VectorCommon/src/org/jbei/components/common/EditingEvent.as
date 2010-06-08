@@ -2,6 +2,9 @@ package org.jbei.components.common
 {
 	import flash.events.Event;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class EditingEvent extends Event
 	{
 		public static const COMPONENT_SEQUENCE_EDITING:String = "ComponentSequenceEditing";

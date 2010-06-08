@@ -5,6 +5,9 @@ package org.jbei.components.railClasses
 	
 	import mx.core.UIComponent;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RailBox extends UIComponent
 	{
 		public static const THICKNESS:Number = 5;

@@ -2,6 +2,9 @@ package org.jbei.components.common
 {
     import flash.events.Event;
     
+    /**
+     * @author Zinovii Dmytriv
+     */
     public class CommonEvent extends Event
     {
         public static const BEFORE_UPDATE:String = "beforeUpdate";

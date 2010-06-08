@@ -4,6 +4,9 @@ package org.jbei.registry.models
 	
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Entry")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Entry
 	{
 		private var _id:int;

@@ -9,6 +9,9 @@ package org.jbei.components.common
 	
 	import mx.core.UIComponent;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class TextRenderer extends UIComponent
 	{
 		protected var _textFormat:TextFormat;

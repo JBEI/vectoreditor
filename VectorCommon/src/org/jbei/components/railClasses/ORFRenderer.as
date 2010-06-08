@@ -6,7 +6,10 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.orf.ORF;
 	import org.jbei.components.common.AnnotationRenderer;
 
-	public class ORFRenderer extends AnnotationRenderer
+    /**
+     * @author Zinovii Dmytriv
+     */
+    public class ORFRenderer extends AnnotationRenderer
 	{
 		public static const RAIL_GAP:Number = 10;
 		public static const DEFAULT_GAP:int = 7;
@@ -60,7 +63,7 @@ package org.jbei.components.railClasses
 				g.lineTo(endPosition, yPosition);
 				
 				g.moveTo(startPosition, yPosition);
-				g.lineTo(railMetrics.x + bpWidth * contentHolder.featuredSequence.sequence.length, yPosition);
+				g.lineTo(railMetrics.x + bpWidth * contentHolder.sequenceProvider.sequence.length, yPosition);
 			} else { // linear
 				g.moveTo(startPosition, yPosition);
 				g.lineTo(endPosition, yPosition);

@@ -2,6 +2,9 @@ package org.jbei.lib.mappers
 {
 	import flash.events.Event;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class RestrictionEnzymeMapperEvent extends Event
 	{
 		public static const RESTRICTION_ENZYME_MAPPER_UPDATED:String = "RestrictionEnzymeMapperUpdated";

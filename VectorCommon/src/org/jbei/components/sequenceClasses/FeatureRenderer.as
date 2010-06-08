@@ -8,6 +8,9 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeatureRenderer extends AnnotationRenderer
 	{
 		public static const DEFAULT_FEATURE_HEIGHT:int = 6;
@@ -82,8 +85,8 @@ package org.jbei.components.sequenceClasses
 					}
 						/* |--------------------------------------------------------------------------------------|
 						*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-					else if(row.rowData.end >= contentHolder.featuredSequence.sequence.length) {
-						endBP = contentHolder.featuredSequence.sequence.length - 1;
+					else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
+						endBP = contentHolder.sequenceProvider.sequence.length - 1;
 					}
 					else {
 						endBP = row.rowData.end;
@@ -109,10 +112,10 @@ package org.jbei.components.sequenceClasses
 				*  FFFFFFFFFFFFFFFFFFFFFFFFFFF|                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
 				if(startBP > endBP) {
 					var bpStartMetrics1:Rectangle = sequenceContentHolder.bpMetricsByIndex(row.rowData.start);
-					var bpEndMetrics1:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
+					var bpEndMetrics1:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.sequenceProvider.sequence.length - 1));
 					
 					var bpStartMetrics2:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
-					var bpEndMetrics2:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(row.rowData.end, contentHolder.featuredSequence.sequence.length - 1));
+					var bpEndMetrics2:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(row.rowData.end, contentHolder.sequenceProvider.sequence.length - 1));
 					
 					var featureX1:Number = bpStartMetrics1.x + 2; // +2 to look pretty
 					var featureX2:Number = bpStartMetrics2.x + 2; // +2 to look pretty
@@ -139,7 +142,7 @@ package org.jbei.components.sequenceClasses
 					}
 				} else {
 					var bpStartMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
-					var bpEndMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.featuredSequence.sequence.length - 1));
+					var bpEndMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.sequenceProvider.sequence.length - 1));
 					
 					var featureX:Number = bpStartMetrics.x + 2; // +2 to look pretty
 					var featureY:Number = bpStartMetrics.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;

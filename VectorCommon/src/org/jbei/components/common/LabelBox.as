@@ -10,6 +10,9 @@ package org.jbei.components.common
 	
 	import org.jbei.bio.sequence.common.Annotation;
 	
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class LabelBox extends UIComponent
 	{
 		private var needsMeasurement:Boolean = true;

@@ -8,6 +8,9 @@ package org.jbei.components.railClasses
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class FeatureRenderer extends AnnotationRenderer
 	{
 		public static const DEFAULT_FEATURE_HEIGHT:int = 10;
@@ -86,7 +89,7 @@ package org.jbei.components.railClasses
 				g.endFill();
 			} else { // circular feature
 				var startPosition:Number = railMetrics.x;
-				var endPosition:Number = railMetrics.x + contentHolder.featuredSequence.sequence.length * bpWidth;
+				var endPosition:Number = railMetrics.x + contentHolder.sequenceProvider.sequence.length * bpWidth;
 				
 				switch(feature.strand) {
 					case StrandType.FORWARD:

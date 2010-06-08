@@ -7,6 +7,9 @@ package org.jbei.components.pieClasses
 	
 	import org.jbei.components.common.GraphicUtils;
 
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Caret extends UIComponent
 	{
 		private const CARET_COLOR:int = 0x000000;
@@ -82,9 +85,9 @@ package org.jbei.components.pieClasses
 			
 			g.clear();
 			
-			if(contentHolder.featuredSequence.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
+			if(contentHolder.sequenceProvider.sequence.length == 0 || !contentHolder.isValidIndex(_position)) { return; }
 			
-			var angle:Number = 2 * _position * Math.PI / contentHolder.featuredSequence.sequence.length;
+			var angle:Number = 2 * _position * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			var point:Point = GraphicUtils.pointOnCircle(center, angle, radius);
 			

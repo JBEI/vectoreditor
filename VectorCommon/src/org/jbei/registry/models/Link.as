@@ -2,6 +2,9 @@ package org.jbei.registry.models
 {
 	[Bindable]
 	[RemoteClass(alias="org.jbei.ice.lib.models.Link")]
+    /**
+     * @author Zinovii Dmytriv
+     */
 	public class Link
 	{
 		private var _url:String;

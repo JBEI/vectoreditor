@@ -86,7 +86,7 @@ package org.jbei.components.sequenceClasses
         {
             super.updateDisplayList(unscaledWidth, unscaledHeight);
             
-            if(! contentHolder.featuredSequence) { return; }
+            if(! contentHolder.sequenceProvider) { return; }
             
             if(needsRemeasurement) {
                 needsRemeasurement = false;
