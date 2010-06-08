@@ -6,15 +6,15 @@
 	xmlns:dialogs="org.jbei.lib.ui.dialogs.*">
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.events.FlexEvent;
-			
-			import org.jbei.bio.data.DNASequence;
-			import org.jbei.bio.data.Feature;
-			import org.jbei.components.common.EditingEvent;
-			import org.jbei.lib.FeaturedSequence;
-			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.Notifications;
+            import mx.collections.ArrayCollection;
+            import mx.events.FlexEvent;
+            
+            import org.jbei.bio.sequence.dna.DNASequence;
+            import org.jbei.bio.sequence.dna.Feature;
+            import org.jbei.components.common.EditingEvent;
+            import org.jbei.lib.FeaturedSequence;
+            import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.Notifications;
 			
 			[Bindable]
 			private var featuredItems:ArrayCollection;

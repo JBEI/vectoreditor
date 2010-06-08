@@ -2,12 +2,13 @@
 <AbstractDialogForm creationComplete="onCreationComplete()" xmlns="org.jbei.lib.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.events.ValidationResultEvent;
-			
-			import org.jbei.bio.data.Feature;
-			import org.jbei.bio.data.FeatureNote;
-			import org.jbei.registry.ApplicationFacade;
+            import mx.collections.ArrayCollection;
+            import mx.events.ValidationResultEvent;
+            
+            import org.jbei.bio.sequence.common.StrandType;
+            import org.jbei.bio.sequence.dna.Feature;
+            import org.jbei.bio.sequence.dna.FeatureNote;
+            import org.jbei.registry.ApplicationFacade;
 			
 			[Bindable]
 			private var featureTypes:ArrayCollection = new ArrayCollection(
@@ -112,11 +113,11 @@
 			// Private Methods
 			private function populateControls(feature:Feature):void
 			{
-				nameTextInput.text = feature.label;
+				nameTextInput.text = feature.name;
 				
-				if(feature.strand == Feature.POSITIVE) {
+				if(feature.strand == StrandType.FORWARD) {
 					positiveRadioButton.selected = true;
-				} else if(feature.strand == Feature.NEGATIVE) {
+				} else if(feature.strand == StrandType.BACKWARD) {
 					negativeRadioButton.selected = true;
 				}
 				
@@ -148,7 +149,7 @@
 				feature.end = endNumericStepper.value - 2;
 				feature.name = nameTextInput.text;
 				
-				feature.notes = new Array();
+				feature.notes = new Vector.<FeatureNote>();
 				/*if(descriptionTextArea.text != "") {
 					feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
 				}*/
@@ -168,7 +169,7 @@
 					feature.name = nameTextInput.text;
 					
 					if(!feature.notes) {
-						feature.notes = new Array();
+						feature.notes = new Vector.<FeatureNote>();
 					}
 					
 					var labelNoteIndex:int = -1;
@@ -210,8 +211,8 @@
 		<mx:FormItem label="Strand:" direction="horizontal">
 			<mx:RadioButtonGroup id="strandRadioGroup" />
 			
-			<mx:RadioButton groupName="strandRadioGroup" id="positiveRadioButton" value="{ Feature.POSITIVE }" label="Positive" selected="true" />
-			<mx:RadioButton groupName="strandRadioGroup" id="negativeRadioButton" value="{ Feature.NEGATIVE }" label="Negative" />
+			<mx:RadioButton groupName="strandRadioGroup" id="positiveRadioButton" value="{ StrandType.FORWARD }" label="Positive" selected="true" />
+			<mx:RadioButton groupName="strandRadioGroup" id="negativeRadioButton" value="{ StrandType.BACKWARD }" label="Negative" />
 		</mx:FormItem>
 		<mx:FormItem label="Type:" direction="horizontal">
 			<mx:ComboBox id="typeComboBox" dataProvider="{ featureTypes }" labelField="label"/>

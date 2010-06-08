@@ -2,12 +2,12 @@ package org.jbei.registry.view.dialogs.editingPromptDialog
 {
 	import flash.events.EventDispatcher;
 	
-	import org.jbei.bio.data.Feature;
+	import org.jbei.bio.sequence.dna.Feature;
 	
 	public class FeatureEditingTableItem extends EventDispatcher
 	{
 		[Bindable]
-		public var feature:Feature;
+		public var feature:org.jbei.bio.sequence.dna.Feature;
 		
 		[Bindable]
 		public var removeAction:Boolean;

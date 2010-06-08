@@ -8,10 +8,11 @@ package org.jbei.registry.mediators
 	import mx.printing.FlexPrintJob;
 	import mx.printing.FlexPrintJobScaleType;
 	
-	import org.jbei.bio.data.DNASequence;
-	import org.jbei.bio.data.Feature;
 	import org.jbei.bio.data.RestrictionEnzymeGroup;
-	import org.jbei.bio.data.Segment;
+	import org.jbei.bio.sequence.common.Annotation;
+	import org.jbei.bio.sequence.common.SymbolList;
+	import org.jbei.bio.sequence.dna.DNASequence;
+	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.Pie;
 	import org.jbei.components.Rail;
 	import org.jbei.components.SequenceAnnotator;
@@ -302,7 +303,7 @@ package org.jbei.registry.mediators
 					sendNotification(Notifications.CARET_POSITION_CHANGED, start);
 				}
 			} else if(event.kind == EditingEvent.KIND_INSERT_SEQUENCE) {
-				var dnaSequence:DNASequence = (event.data as Array)[0] as DNASequence;
+				var dnaSequence:SymbolList = (event.data as Array)[0] as SymbolList;
 				var position1:int = (event.data as Array)[1] as int;
 				
 				features = featuredSequence.featuresAt(position1);
@@ -344,7 +345,7 @@ package org.jbei.registry.mediators
 				sendNotification(Notifications.SELECTION_CHANGED, new Array(-1, -1));
 				sendNotification(Notifications.CARET_POSITION_CHANGED, data[0] as int);
 			} else if(kind == EditingEvent.KIND_INSERT_SEQUENCE) {
-				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as DNASequence).sequence.length);
+				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as DNASequence).length);
 			} else if(kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
 				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as FeaturedSequence).sequence.length);
 			}
@@ -563,7 +564,7 @@ package org.jbei.registry.mediators
 		
 		private function findAt(expression:String, dataType:String, searchType:String, position:int):void
 		{
-			var findSegment:Segment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
+			var findSegment:Annotation = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, position);
 			
 			if(!findSegment) {
 				findSegment = Finder.find(ApplicationFacade.getInstance().featuredSequence, expression, dataType, searchType, 0);

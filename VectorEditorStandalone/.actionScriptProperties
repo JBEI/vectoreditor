@@ -7,6 +7,7 @@
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
       <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/datavisualization.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/VectorCommon/bin/VectorCommon.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DOCUMENTS}/BioFlex/bin/BioFlex.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

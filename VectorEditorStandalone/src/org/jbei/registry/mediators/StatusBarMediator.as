@@ -5,7 +5,8 @@ package org.jbei.registry.mediators
 	
 	import mx.utils.StringUtil;
 	
-	import org.jbei.bio.utils.TemperatureCalculator;
+	import org.jbei.bio.sequence.dna.DNASequence;
+	import org.jbei.bio.tools.TemperatureCalculator;
 	import org.jbei.lib.utils.StringFormatter;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
@@ -74,7 +75,7 @@ package org.jbei.registry.mediators
 						}
 						
 						statusBar.selectionPositionLabel.text = String(start + 1) + " : " + String(end) + " (" + String(selectionLength) + ")";
-                        statusBar.temperatureLabel.text = StringFormatter.sprintf('%.2f', String(TemperatureCalculator.calculateTemperature(ApplicationFacade.getInstance().featuredSequence.subSequence(start, end).sequence.toLowerCase()))) + "°C";
+                        statusBar.temperatureLabel.text = StringFormatter.sprintf('%.2f', String(TemperatureCalculator.calculateTemperature(new DNASequence(ApplicationFacade.getInstance().featuredSequence.subSequence(start, end))))) + "°C";
 					} else {
 						statusBar.selectionPositionLabel.text = '- : -';
                         statusBar.temperatureLabel.text = "";

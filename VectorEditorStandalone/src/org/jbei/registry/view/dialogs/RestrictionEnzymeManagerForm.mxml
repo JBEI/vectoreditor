@@ -8,20 +8,19 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import mx.collections.Sort;
-			import mx.collections.SortField;
-			import mx.controls.Alert;
-			
-			import org.jbei.bio.data.RestrictionEnzyme;
-			import org.jbei.bio.data.RestrictionEnzymeGroup;
-			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-			import org.jbei.registry.models.UserRestrictionEnzymeGroup;
-			import org.jbei.registry.models.UserRestrictionEnzymes;
-			
-			import org.jbei.lib.ui.dialogs.ModalDialog;
-			import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+            import mx.collections.ArrayCollection;
+            import mx.collections.Sort;
+            import mx.collections.SortField;
+            import mx.controls.Alert;
+            
+            import org.jbei.bio.data.RestrictionEnzymeGroup;
+            import org.jbei.bio.enzymes.RestrictionEnzyme;
+            import org.jbei.lib.ui.dialogs.ModalDialog;
+            import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+            import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+            import org.jbei.registry.models.UserRestrictionEnzymeGroup;
+            import org.jbei.registry.models.UserRestrictionEnzymes;
 			
 			/*import org.jbei.lib.ui.dialogs.ModalDialog;
 			import org.jbei.lib.ui.dialogs.ModalDialogEvent;*/
@@ -62,7 +61,7 @@
 						
 						var enzymeNames:ArrayCollection = new ArrayCollection() /* of String */;
 						for(var i1:int = 0; i1 < userGroup.enzymes.length; i1++) {
-							enzymeNames.addItem((userGroup.enzymes.getItemAt(i1) as RestrictionEnzyme).name);
+							enzymeNames.addItem((userGroup.enzymes[i1] as RestrictionEnzyme).name);
 						}
 						
 						var userRestrictionEnzymeGroup:UserRestrictionEnzymeGroup = new UserRestrictionEnzymeGroup(userGroup.name, enzymeNames);
@@ -104,7 +103,7 @@
 					&& (RestrictionEnzymeGroupManager.instance.activeGroup == null
 						|| RestrictionEnzymeGroupManager.instance.activeGroup.length == 0)) { // if user never saved enzymes then load common group
 					for(var z:int = 0; z < (RestrictionEnzymeGroupManager.instance.systemGroups.getItemAt(0) as RestrictionEnzymeGroup).enzymes.length; z++) {
-						activeEnzymes.addItem((RestrictionEnzymeGroupManager.instance.systemGroups.getItemAt(0) as RestrictionEnzymeGroup).enzymes.getItemAt(z) as RestrictionEnzyme);
+						activeEnzymes.addItem((RestrictionEnzymeGroupManager.instance.systemGroups.getItemAt(0) as RestrictionEnzymeGroup).enzymes[z] as RestrictionEnzyme);
 					}
 				} else {
 					for(var j:int = 0; j < RestrictionEnzymeGroupManager.instance.activeGroup.length; j++) {
@@ -281,7 +280,7 @@
 				
 				updateCurrentUserGroup();
 				
-				sortEnzymes(currentRestrictionEnzymesGroup.enzymes);
+                currentRestrictionEnzymesGroup.enzymes.sort(sortEnzymes2);
 			}
 			
 			private function onMakeActiveGroupButtonClick(event:MouseEvent):void
@@ -386,6 +385,17 @@
 				collection.sort = sort;
 				collection.refresh();
 			}
+            
+            private function sortEnzymes2(a:RestrictionEnzyme, b:RestrictionEnzyme):int
+            {
+                if(a.name > b.name) {
+                    return 1;
+                } else if(a.name < b.name) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
 		]]>
 	</mx:Script>
 	
