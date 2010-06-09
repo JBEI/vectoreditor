@@ -121,7 +121,7 @@ package org.jbei.lib.mappers
         private function initializeSource():void
         {
             sourceSequence = digestionSequence.sequenceProvider.sequence.seqString();
-            sourceRevComSequence = DNATools.reverseComplement(digestionSequence.sequenceProvider.sequence).seqString();
+            sourceRevComSequence = DNATools.complement(digestionSequence.sequenceProvider.sequence).seqString();
             
             var pastableStartIndex:int = digestionSequence.startRestrictionEnzyme.dsForward;
             var pastableEndIndex:int = digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse;

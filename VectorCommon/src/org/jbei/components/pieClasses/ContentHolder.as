@@ -27,6 +27,7 @@ package org.jbei.components.pieClasses
     import org.jbei.bio.orf.ORF;
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.common.Annotation;
+    import org.jbei.bio.sequence.common.SymbolList;
     import org.jbei.bio.sequence.dna.DNASequence;
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.components.Pie;
@@ -38,14 +39,18 @@ package org.jbei.components.pieClasses
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
     import org.jbei.components.common.LabelBox;
+    import org.jbei.components.common.PasteDialogForm;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.SequenceUtils;
     import org.jbei.components.common.TextRenderer;
     import org.jbei.lib.SequenceProvider;
+    import org.jbei.lib.mappers.DigestionCutter;
     import org.jbei.lib.mappers.DigestionSequence;
     import org.jbei.lib.mappers.ORFMapper;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.mappers.TraceMapper;
+    import org.jbei.lib.ui.dialogs.ModalDialog;
+    import org.jbei.lib.ui.dialogs.ModalDialogEvent;
 	
     /**
      * @author Zinovii Dmytriv
@@ -148,6 +153,9 @@ package org.jbei.components.pieClasses
 		private var maxORFAlignmentRow:int;
 		private var maxTracesAlignmentRow:int;
 		
+        private var digestionCutter:DigestionCutter;
+        private var pasteData:Object = null;
+        
 		// Contructor
 		public function ContentHolder(pie:Pie)
 		{
@@ -929,54 +937,130 @@ package org.jbei.components.pieClasses
 			}
 		}
 		
-		private function onPaste(event:Event):void
-		{
-			if(! isValidIndex(_caretPosition)) { return; }
-			
-			if(Clipboard.generalClipboard.hasFormat(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY)) {
-				var clipboardObject:Object = Clipboard.generalClipboard.getData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY);
-				
-				if(clipboardObject != null) {
-					var pasteSequenceProvider:SequenceProvider = clipboardObject as SequenceProvider;
-					var pasteSequence1:String = pasteSequenceProvider.sequence.seqString();
-					
-					if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
-						showInvalidPasteSequenceAlert();
-						
-						return;
-					} else {
-						pasteSequence1 = SequenceUtils.purifyCompatibleSequence(pasteSequence1);
-					}
-					
-					if(_safeEditing) {
-						doInsertSequenceProvider(pasteSequenceProvider, _caretPosition);
-					} else {
-						_sequenceProvider.insertSequenceProvider(pasteSequenceProvider, _caretPosition);
-						
-						tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
-					}				
-				}
-			} else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-				var pasteSequence2:String = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
-				
-				if(!SequenceUtils.isCompatibleSequence(pasteSequence2)) {
-					showInvalidPasteSequenceAlert();
-					
-					return;
-				} else {
-					pasteSequence2 = SequenceUtils.purifyCompatibleSequence(pasteSequence2);
-				}
-				
-				if(_safeEditing) {
-					doInsertSequence(DNATools.createDNA(pasteSequence2) as DNASequence, _caretPosition);
-				} else {
-					_sequenceProvider.insertSequence(DNATools.createDNA(pasteSequence2) as DNASequence, _caretPosition);
-					
-					tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
-				}				
-			}
-		}
-		
+        private function onPaste(event:Event):void
+        {
+            if(! isValidIndex(_caretPosition)) { return; }
+            
+            var pasteSequenceType:String = null;
+            
+            if(Clipboard.generalClipboard.hasFormat(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY)) {
+                if(startSelectionIndex == -1 || endSelectionIndex == -1 || !isValidDigestionRegion() || !_showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites || _restrictionEnzymeMapper.cutSites.length == 0) {
+                    pasteData = Clipboard.generalClipboard.getData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY) as SequenceProvider;
+                    
+                    pasteSequenceType = "sequence";
+                } else {
+                    var digestionClipboardObject:Object = Clipboard.generalClipboard.getData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY);
+                    
+                    var digestionSequence:DigestionSequence = digestionClipboardObject as DigestionSequence;
+                    pasteData = digestionSequence;
+                    
+                    digestionCutter = new DigestionCutter(_sequenceProvider, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
+                    
+                    if(digestionCutter.matchType == DigestionCutter.MATCH_NONE) {
+                        pasteSequenceType = "digestion-none";
+                    } else if(digestionCutter.matchType == DigestionCutter.MATCH_NORMAL_ONLY) {
+                        pasteSequenceType = "digestion-normal";
+                    } else if(digestionCutter.matchType == DigestionCutter.MATCH_REVCOM_ONLY) {
+                        pasteSequenceType = "digestion-reverse";
+                    } else if(digestionCutter.matchType == DigestionCutter.MATCH_BOTH) {
+                        pasteSequenceType = "digestion-both";
+                    }
+                }
+            } else if(Clipboard.generalClipboard.hasFormat(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY)) {
+                pasteData = Clipboard.generalClipboard.getData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY) as SequenceProvider;
+                
+                pasteSequenceType = "sequence";
+            } else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
+                pasteData = String(Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT, ClipboardTransferMode.CLONE_ONLY)).toUpperCase();
+                
+                pasteSequenceType = "sequence";
+            }
+            
+            var pasteModalDialog:ModalDialog = new ModalDialog(PasteDialogForm, pasteSequenceType);
+            pasteModalDialog.open();
+            pasteModalDialog.title = "Paste ...";
+            pasteModalDialog.addEventListener(ModalDialogEvent.SUBMIT, onPasteDialogSubmit);
+        }
+        
+        private function onPasteDialogSubmit(event:ModalDialogEvent):void
+        {
+            if(event.data == null || !(event.data is String)) {
+                return;
+            }
+            
+            var pasteType:String = event.data as String;
+            
+            if(pasteType == "sequence") {
+                if(pasteData is SequenceProvider) {
+                    var pasteSequenceProvider:SequenceProvider = pasteData as SequenceProvider;
+                    
+                    if(_safeEditing) {
+                        doInsertSequenceProvider(pasteSequenceProvider, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequenceProvider(pasteSequenceProvider, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + pasteSequenceProvider.sequence.length);
+                    }
+                } else if(pasteData is String) {
+                    var pasteSequence2:String = pasteData as String;
+                    
+                    if(!SequenceUtils.isCompatibleSequence(pasteSequence2)) {
+                        showInvalidPasteSequenceAlert();
+                        
+                        return;
+                    } else {
+                        pasteSequence2 = SequenceUtils.purifyCompatibleSequence(pasteSequence2);
+                    }
+                    
+                    if(_safeEditing) {
+                        doInsertSequence(DNATools.createDNA(pasteSequence2), _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequence(DNATools.createDNA(pasteSequence2), _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
+                    }
+                }
+            } else if(pasteType == "revcom") {
+                if(pasteData is String) {
+                    var pasteSequence3:String = pasteData as String;
+                    
+                    if(!SequenceUtils.isCompatibleSequence(pasteSequence3)) {
+                        showInvalidPasteSequenceAlert();
+                        
+                        return;
+                    } else {
+                        pasteSequence3 = SequenceUtils.purifyCompatibleSequence(pasteSequence3);
+                    }
+                    
+                    var dnaRevComSequence:SymbolList = DNATools.reverseComplement(DNATools.createDNA(pasteSequence3));
+                    
+                    if(_safeEditing) {
+                        doInsertSequence(dnaRevComSequence, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequence(dnaRevComSequence, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + dnaRevComSequence.length);
+                    }
+                } else if(pasteData is SequenceProvider) {
+                    var pasteSequenceProvider2:SequenceProvider = pasteData as SequenceProvider;
+                    
+                    var revComSequenceProvider:SequenceProvider = SequenceProvider.reverseSequence(pasteSequenceProvider2);
+                    
+                    if(_safeEditing) {
+                        doInsertSequenceProvider(revComSequenceProvider, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequenceProvider(revComSequenceProvider, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + revComSequenceProvider.sequence.length);
+                    }
+                }
+            } else if(pasteType == "digestion-normal") {
+                digestionCutter.digest(DigestionCutter.MATCH_NORMAL_ONLY);
+            } else if(pasteType == "digestion-reverse") {
+                digestionCutter.digest(DigestionCutter.MATCH_REVCOM_ONLY);
+            }
+        }
+        
 		private function onKeyUp(event:KeyboardEvent):void
 	    {
 			if(shiftKeyDown) {
@@ -2061,7 +2145,7 @@ package org.jbei.components.pieClasses
 			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_DELETE, new Array(start, end)));
 		}
 		
-		private function doInsertSequence(dnaSequence:DNASequence, position:int):void
+		private function doInsertSequence(dnaSequence:SymbolList, position:int):void
 		{
 			dispatchEvent(new EditingEvent(EditingEvent.COMPONENT_SEQUENCE_EDITING, EditingEvent.KIND_INSERT_SEQUENCE, new Array(dnaSequence, position)));
 		}

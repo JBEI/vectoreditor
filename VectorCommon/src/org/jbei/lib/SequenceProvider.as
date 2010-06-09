@@ -720,6 +720,30 @@ package org.jbei.lib
             return clonedSequenceProvider;
         }
         
+        public static function reverseSequence(inputSequenceProvider:SequenceProvider):SequenceProvider
+        {
+            var revComSequence:SymbolList = DNATools.reverseComplement(inputSequenceProvider.sequence);
+            
+            var reverseSequenceProvider:SequenceProvider = new SequenceProvider(inputSequenceProvider.name, inputSequenceProvider.circular, revComSequence);
+            
+            var seqLength:int = inputSequenceProvider.sequence.length;
+            
+            for(var i:int = 0; i < inputSequenceProvider.features.length; i++) {
+                var reverseFeature:Feature = (inputSequenceProvider.features.getItemAt(i) as Feature).clone();
+                reverseFeature.strand = -reverseFeature.strand;
+                
+                var oldStart:int = reverseFeature.start;
+                var oldEnd:int = reverseFeature.end;
+                
+                reverseFeature.start = seqLength - oldEnd - 1;
+                reverseFeature.end = seqLength - oldStart - 1;
+                
+                reverseSequenceProvider.addFeature(reverseFeature, true);
+            }
+            
+            return reverseSequenceProvider;
+        }
+        
         // Private Methods
         private function updateComplementSequence():void
         {

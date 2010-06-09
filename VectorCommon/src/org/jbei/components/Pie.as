@@ -641,7 +641,7 @@ package org.jbei.components
 			}
 		}
         
-        private function onSequenceProviderChanged(event:SequenceProvider):void
+        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
         {
             sequenceProviderChanged = true;
 			

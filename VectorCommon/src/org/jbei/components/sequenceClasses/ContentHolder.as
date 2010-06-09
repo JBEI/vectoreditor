@@ -24,6 +24,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.bio.enzymes.RestrictionCutSite;
     import org.jbei.bio.orf.ORF;
     import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.TranslationUtils;
     import org.jbei.bio.sequence.alphabets.DNAAlphabet;
     import org.jbei.bio.sequence.common.SymbolList;
     import org.jbei.bio.sequence.dna.DNASequence;
@@ -1117,27 +1118,19 @@ package org.jbei.components.sequenceClasses
                 return;
             }
             
-            if(event.data == "sequence") {
+            var pasteType:String = event.data as String;
+            
+            if(pasteType == "sequence") {
                 if(pasteData is SequenceProvider) {
                     var pasteSequenceProvider:SequenceProvider = pasteData as SequenceProvider;
-                    
-                    var pasteSequence1:String = pasteSequenceProvider.sequence.seqString();
-                    
-                    if(!SequenceUtils.isCompatibleSequence(pasteSequence1)) {
-                        showInvalidPasteSequenceAlert();
-                        
-                        return;
-                    } else {
-                        pasteSequence1 = SequenceUtils.purifyCompatibleSequence(pasteSequence1);
-                    }
                     
                     if(_safeEditing) {
                         doInsertSequenceProvider(pasteSequenceProvider, _caretPosition);
                     } else {
                         _sequenceProvider.insertSequenceProvider(pasteSequenceProvider, _caretPosition);
                         
-                        tryMoveCaretToPosition(_caretPosition + pasteSequence1.length);
-                    }				
+                        tryMoveCaretToPosition(_caretPosition + pasteSequenceProvider.sequence.length);
+                    }
                 } else if(pasteData is String) {
                     var pasteSequence2:String = pasteData as String;
                     
@@ -1155,13 +1148,45 @@ package org.jbei.components.sequenceClasses
                         _sequenceProvider.insertSequence(DNATools.createDNA(pasteSequence2), _caretPosition);
                         
                         tryMoveCaretToPosition(_caretPosition + pasteSequence2.length);
-                    }				
+                    }
                 }
-            } else if(event.data == "revcom") {
-                throw new Error("Not implemented yet!");
-            } else if(event.data == "digestion-normal") {
+            } else if(pasteType == "revcom") {
+                if(pasteData is String) {
+                    var pasteSequence3:String = pasteData as String;
+                    
+                    if(!SequenceUtils.isCompatibleSequence(pasteSequence3)) {
+                        showInvalidPasteSequenceAlert();
+                        
+                        return;
+                    } else {
+                        pasteSequence3 = SequenceUtils.purifyCompatibleSequence(pasteSequence3);
+                    }
+                    
+                    var dnaRevComSequence:SymbolList = DNATools.reverseComplement(DNATools.createDNA(pasteSequence3));
+                    
+                    if(_safeEditing) {
+                        doInsertSequence(dnaRevComSequence, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequence(dnaRevComSequence, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + dnaRevComSequence.length);
+                    }
+                } else if(pasteData is SequenceProvider) {
+                    var pasteSequenceProvider2:SequenceProvider = pasteData as SequenceProvider;
+                    
+                    var revComSequenceProvider:SequenceProvider = SequenceProvider.reverseSequence(pasteSequenceProvider2);
+                    
+                    if(_safeEditing) {
+                        doInsertSequenceProvider(revComSequenceProvider, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequenceProvider(revComSequenceProvider, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + revComSequenceProvider.sequence.length);
+                    }
+                }
+            } else if(pasteType == "digestion-normal") {
                 digestionCutter.digest(DigestionCutter.MATCH_NORMAL_ONLY);
-            } else if(event.data == "digestion-reverse") {
+            } else if(pasteType == "digestion-reverse") {
                 digestionCutter.digest(DigestionCutter.MATCH_REVCOM_ONLY);
             }
         }
@@ -1216,7 +1241,7 @@ package org.jbei.components.sequenceClasses
                     tryMoveCaretToPosition(_caretPosition + numberOfVisibleRows * _bpPerRow);
                 }
             } else if(!event.ctrlKey && !event.altKey && _caretPosition != -1) {
-                if(SequenceUtils.SYMBOLS.indexOf(keyCharacter) >= 0) {
+                if(DNAAlphabet.instance.symbolByValue(keyCharacter)) {
                     if(_safeEditing) {
                         doInsertSequence(DNATools.createDNA(keyCharacter), _caretPosition);
                     } else {
