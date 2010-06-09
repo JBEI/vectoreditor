@@ -1,4 +1,4 @@
-package org.jbei.lib
+package org.jbei.lib.utils
 {
     import org.jbei.bio.sequence.common.Annotation;
 

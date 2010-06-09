@@ -4,8 +4,8 @@ package org.jbei.registry.control
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.enzymes.RestrictionEnzyme;
+	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.registry.models.UserRestrictionEnzymeGroup;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	

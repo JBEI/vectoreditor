@@ -21,7 +21,6 @@ package org.jbei.components.railClasses
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
-	import org.jbei.bio.data.TraceAnnotation;
 	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.bio.orf.ORF;
 	import org.jbei.bio.sequence.DNATools;
@@ -38,11 +37,12 @@ package org.jbei.components.railClasses
 	import org.jbei.components.common.EditingEvent;
 	import org.jbei.components.common.IContentHolder;
 	import org.jbei.components.common.LabelBox;
-	import org.jbei.components.common.PasteDialogForm;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.components.common.SequenceUtils;
 	import org.jbei.components.common.TextRenderer;
+	import org.jbei.components.dialogs.PasteDialogForm;
 	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.data.TraceAnnotation;
 	import org.jbei.lib.mappers.DigestionCutter;
 	import org.jbei.lib.mappers.DigestionSequence;
 	import org.jbei.lib.mappers.ORFMapper;

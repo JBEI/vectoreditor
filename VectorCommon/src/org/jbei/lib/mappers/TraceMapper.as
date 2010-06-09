@@ -4,9 +4,9 @@ package org.jbei.lib.mappers
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.TraceAnnotation;
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.data.TraceAnnotation;
 	import org.jbei.registry.models.TraceSequence;
 	import org.jbei.registry.models.TraceSequenceAlignment;
 	

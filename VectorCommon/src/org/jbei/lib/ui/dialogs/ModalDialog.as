@@ -99,6 +99,14 @@ package org.jbei.lib.ui.dialogs
 			dispatchEvent(new ModalDialogEvent(ModalDialogEvent.CANCEL));
 		}
 		
+        // Protected Methods
+        protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+        {
+            super.updateDisplayList(unscaledWidth, unscaledHeight);
+            
+            okButton.setFocus();
+        }
+        
 		// Event Handlers
 		private function onKeyDown(event:KeyboardEvent):void
 		{

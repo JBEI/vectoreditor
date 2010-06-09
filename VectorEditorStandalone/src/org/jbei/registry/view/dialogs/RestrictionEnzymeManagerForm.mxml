@@ -13,8 +13,8 @@
             import mx.collections.SortField;
             import mx.controls.Alert;
             
-            import org.jbei.bio.data.RestrictionEnzymeGroup;
             import org.jbei.bio.enzymes.RestrictionEnzyme;
+            import org.jbei.lib.data.RestrictionEnzymeGroup;
             import org.jbei.lib.ui.dialogs.ModalDialog;
             import org.jbei.lib.ui.dialogs.ModalDialogEvent;
             import org.jbei.registry.ApplicationFacade;

@@ -1,4 +1,4 @@
-package org.jbei.bio.data
+package org.jbei.lib.data
 {
     import mx.collections.ArrayCollection;
     

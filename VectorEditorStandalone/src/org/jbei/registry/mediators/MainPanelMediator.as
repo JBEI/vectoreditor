@@ -8,7 +8,6 @@ package org.jbei.registry.mediators
 	import mx.printing.FlexPrintJob;
 	import mx.printing.FlexPrintJobScaleType;
 	
-	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.bio.sequence.common.SymbolList;
 	import org.jbei.bio.sequence.dna.DNASequence;
@@ -22,6 +21,7 @@ package org.jbei.registry.mediators
 	import org.jbei.components.common.PrintableContent;
 	import org.jbei.components.common.SelectionEvent;
 	import org.jbei.lib.SequenceProvider;
+	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 	import org.jbei.lib.ui.dialogs.ModalDialog;
 	import org.jbei.lib.ui.dialogs.ModalDialogEvent;

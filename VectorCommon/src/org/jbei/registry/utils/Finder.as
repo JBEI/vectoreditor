@@ -1,9 +1,9 @@
 package org.jbei.registry.utils
 {
 	import org.jbei.bio.sequence.common.Annotation;
-	import org.jbei.lib.FindUtils;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.mappers.AAMapper;
+    import org.jbei.lib.utils.FindUtils;
 
     /**
      * @author Zinovii Dmytriv

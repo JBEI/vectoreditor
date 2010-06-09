@@ -5,7 +5,7 @@
 			import mx.controls.Alert;
 			import mx.events.ValidationResultEvent;
 			
-			import org.jbei.bio.data.RestrictionEnzymeGroup;
+			import org.jbei.lib.data.RestrictionEnzymeGroup;
 			import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 			
 			// Public Methods

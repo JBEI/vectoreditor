@@ -5,7 +5,6 @@ package org.jbei.lib.mappers
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.RestrictionEnzymeGroup;
 	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.bio.enzymes.RestrictionEnzyme;
 	import org.jbei.bio.enzymes.RestrictionEnzymeMapper;
@@ -13,6 +12,7 @@ package org.jbei.lib.mappers
 	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.SequenceProviderEvent;
+	import org.jbei.lib.data.RestrictionEnzymeGroup;
 
     /**
      * @author Zinovii Dmytriv

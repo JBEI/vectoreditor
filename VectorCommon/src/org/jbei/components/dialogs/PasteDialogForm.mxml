@@ -2,12 +2,14 @@
 <dialogs:AbstractDialogForm 
     width="270" 
     height="125" 
+    creationComplete="onCreationComplete()"
     xmlns:mx="http://www.adobe.com/2006/mxml" 
     xmlns:dialogs="org.jbei.lib.ui.dialogs.*">
     
     <mx:Script>
         <![CDATA[
             import mx.effects.easing.Back;
+            
             public override function initialization(dataObject:Object):void
             {
                 super.initialization(dataObject);
@@ -51,6 +53,11 @@
             }
             
             // Event Handlers
+            private function onCreationComplete():void
+            {
+                sequenceRadioButton.setFocus();
+            }
+            
             private function onBox1Click(event:MouseEvent):void
             {
                 pasteTypeRadioButtonGroup.selection = sequenceRadioButton;

@@ -36,10 +36,10 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.Constants;
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
-    import org.jbei.components.common.PasteDialogForm;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.SequenceUtils;
     import org.jbei.components.common.TextRenderer;
+    import org.jbei.components.dialogs.PasteDialogForm;
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.mappers.AAMapper;
     import org.jbei.lib.mappers.DigestionCutter;

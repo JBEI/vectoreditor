@@ -5,9 +5,9 @@ package org.jbei.components.railClasses
 	
 	import mx.collections.ArrayCollection;
 	
-	import org.jbei.bio.data.TraceAnnotation;
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.components.common.AnnotationRenderer;
+	import org.jbei.lib.data.TraceAnnotation;
 
     /**
      * @author Zinovii Dmytriv
