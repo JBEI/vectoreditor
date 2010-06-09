@@ -146,7 +146,7 @@
 		
 		<mx:DataGrid id="affectedFeaturesDataGrid" dataProvider="{ featuredItems }" width="100%" height="100%">
 			<mx:columns>
-				<mx:DataGridColumn dataField="feature.label" headerText="Name" sortable="false" />
+				<mx:DataGridColumn dataField="feature.name" headerText="Name" sortable="false" />
 				<mx:DataGridColumn dataField="feature.type" headerText="Type"  sortable="false"/>
 				<mx:DataGridColumn dataField="position" headerText="Position"  sortable="false"/>
 				<mx:DataGridColumn headerText="Remove" width="60"  sortable="false" itemRenderer="org.jbei.registry.view.dialogs.editingPromptDialog.FeatureActionRowRenderer" />
