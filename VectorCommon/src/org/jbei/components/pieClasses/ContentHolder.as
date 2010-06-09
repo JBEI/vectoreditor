@@ -43,9 +43,9 @@ package org.jbei.components.pieClasses
     import org.jbei.components.common.TextRenderer;
     import org.jbei.components.dialogs.PasteDialogForm;
     import org.jbei.lib.SequenceProvider;
+    import org.jbei.lib.data.DigestionSequence;
     import org.jbei.lib.data.TraceAnnotation;
     import org.jbei.lib.mappers.DigestionCutter;
-    import org.jbei.lib.mappers.DigestionSequence;
     import org.jbei.lib.mappers.ORFMapper;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.mappers.TraceMapper;

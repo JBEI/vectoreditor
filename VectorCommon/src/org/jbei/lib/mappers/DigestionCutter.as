@@ -3,6 +3,7 @@ package org.jbei.lib.mappers
     import org.jbei.bio.enzymes.RestrictionCutSite;
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.lib.SequenceProvider;
+    import org.jbei.lib.data.DigestionSequence;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
 
     /**

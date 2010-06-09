@@ -1,4 +1,4 @@
-package org.jbei.lib.mappers
+package org.jbei.lib.data
 {
     import org.jbei.bio.enzymes.RestrictionEnzyme;
     import org.jbei.lib.SequenceProvider;
