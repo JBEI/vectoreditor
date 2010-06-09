@@ -126,52 +126,38 @@ package org.jbei.lib.mappers
 		{
 			var cutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, _sequenceProvider.sequence);
 			
-			eliminateDuplicates(cutSites, new Dictionary());
+			eliminateDuplicates(cutSites);
 		}
 		
-		// TODO: Optimize this
 		private function recalculateCircular():void
 		{
-			var normalCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_sequenceProvider.sequence.seqString() + _sequenceProvider.sequence.seqString()));
-			//var reverseCutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutReverseComplementary(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_sequenceProvider.getReverseComplementSequence().seqString() + _sequenceProvider.getReverseComplementSequence().seqString()));
+            var sequenceLength:int = _sequenceProvider.sequence.length;
+            var cutSites:Dictionary = org.jbei.bio.enzymes.RestrictionEnzymeMapper.cutSequence(_restrictionEnzymeGroup.enzymes, DNATools.createDNA(_sequenceProvider.sequence.seqString() + _sequenceProvider.sequence.seqString()));
 			
-			var sequenceLength:int = _sequenceProvider.sequence.length;
-			for(var restrictionEnzyme:Object in normalCutSites) {
-				var normalCutSitesList:Vector.<RestrictionCutSite> = normalCutSites[restrictionEnzyme];
-				//var reverseCutSitesList:Array = reverseCutSites[restrictionEnzyme];
+            var newCutSites:Dictionary = new Dictionary();
+            
+			for(var restrictionEnzyme:Object in cutSites) {
+				var cutSitesList:Vector.<RestrictionCutSite> = cutSites[restrictionEnzyme];
 				
 				// emiminating cut sites that are over sequence length
-				normalCutSites[restrictionEnzyme] = new Vector.<RestrictionCutSite>();
-				for(var k1:int = 0; k1 < normalCutSitesList.length; k1++) {
-					var cutSite1:RestrictionCutSite = normalCutSitesList[k1] as RestrictionCutSite;
+                newCutSites[restrictionEnzyme] = new Vector.<RestrictionCutSite>();
+				for(var k1:int = 0; k1 < cutSitesList.length; k1++) {
+					var cutSite1:RestrictionCutSite = cutSitesList[k1] as RestrictionCutSite;
 					
 					if(cutSite1.start >= sequenceLength) {
 					} else if(cutSite1.end < sequenceLength) {
-						(normalCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
+						(newCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					} else {
 						cutSite1.end -= sequenceLength;
-						(normalCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
+						(newCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					}
 				}
-				
-				/*reverseCutSites[restrictionEnzyme] = new Array();
-				for(var k2:int = 0; k2 < reverseCutSitesList.length; k2++) {
-					var cutSite2:RestrictionCutSite = reverseCutSitesList[k2] as RestrictionCutSite;
-					
-					if(cutSite2.start >= sequenceLength) {
-					} else if(cutSite2.end < sequenceLength) {
-						(reverseCutSites[restrictionEnzyme] as Array).push(cutSite2);
-					} else {
-						cutSite2.end -= sequenceLength;
-						(reverseCutSites[restrictionEnzyme] as Array).push(cutSite2);
-					}
-				}*/
 			}
 			
-			eliminateDuplicates(normalCutSites, new Dictionary());
+			eliminateDuplicates(newCutSites);
 		}
 		
-		private function eliminateDuplicates(normalCutSites:Dictionary, reverseCutSites:Dictionary):void
+		private function eliminateDuplicates(normalCutSites:Dictionary):void
 		{
 			_cutSites = new ArrayCollection();
 			_cutSitesMap = new Dictionary();
@@ -180,7 +166,6 @@ package org.jbei.lib.mappers
 			
 			for(var restrictionEnzyme:Object in normalCutSites) {
 				var tmpArray1:Vector.<RestrictionCutSite> = normalCutSites[restrictionEnzyme];
-				var tmpArray2:Vector.<RestrictionCutSite> = reverseCutSites[restrictionEnzyme];
 				
 				_allCutSitesMap[restrictionEnzyme] = new Array();
 				
@@ -192,28 +177,6 @@ package org.jbei.lib.mappers
 					csMap.push(tmpArray1[k]);
 					numCuts++;
 				}
-				
-                if(tmpArray2) {
-    				for(var i:int = 0; i < tmpArray2.length; i++) {
-    					var cutSite2:RestrictionCutSite = tmpArray2[i] as RestrictionCutSite;
-    					
-    					var skip:Boolean = false;
-    					for(var j:int = 0; j < tmpArray1.length; j++) {
-    						var cutSite1:RestrictionCutSite = tmpArray1[j] as RestrictionCutSite;
-    						
-    						if(cutSite1.start == cutSite2.start && cutSite1.end == cutSite2.end) {
-    							skip = true;
-    							break;
-    						}
-    					}
-    					
-    					if(! skip) {
-    						_allCutSites.addItem(cutSite2);
-    						csMap.push(cutSite2);
-    						numCuts++;
-    					}
-    				}
-                }
 				
 				for(var l:int = 0; l < csMap.length; l++) {
 					(csMap[l] as RestrictionCutSite).numCuts = numCuts;

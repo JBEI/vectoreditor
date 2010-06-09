@@ -1200,7 +1200,7 @@ package org.jbei.components.sequenceClasses
         
         private function onKeyDown(event:KeyboardEvent):void
         {
-            var keyCharacter:String = String.fromCharCode(event.charCode).toUpperCase();
+            var keyCharacter:String = String.fromCharCode(event.charCode).toLowerCase();
             
             if(event.shiftKey && !shiftKeyDown) {
                 shiftDownCaretPosition = _caretPosition;
