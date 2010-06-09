@@ -103,7 +103,7 @@ package org.jbei.lib
                 }
             }
             
-            return new SequenceProviderMemento(_name, _circular, _sequence, clonedFeatures);
+            return new SequenceProviderMemento(_name, _circular, DNATools.createDNA(_sequence.seqString()), clonedFeatures);
         }
         
         public function setMemento(memento:IMemento):void
