@@ -122,7 +122,7 @@ package org.jbei.lib.mappers
         private function initializeSource():void
         {
             sourceSequence = digestionSequence.sequenceProvider.sequence.seqString();
-            sourceRevComSequence = DNATools.complement(digestionSequence.sequenceProvider.sequence).seqString();
+            sourceRevComSequence = digestionSequence.sequenceProvider.getComplementSequence().seqString();
             
             var pastableStartIndex:int = digestionSequence.startRestrictionEnzyme.dsForward;
             var pastableEndIndex:int = digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse;
@@ -133,7 +133,7 @@ package org.jbei.lib.mappers
                 pastableStartIndex = digestionSequence.startRestrictionEnzyme.dsForward;
             } else if(digestionSequence.startRestrictionEnzyme.dsForward > digestionSequence.startRestrictionEnzyme.dsReverse) {
                 sourceOverhangStartType = OVERHANG_BOTTOM;
-                sourceOverhangStartSequence = sourceSequence.substring(digestionSequence.startRestrictionEnzyme.dsForward, digestionSequence.startRestrictionEnzyme.dsReverse);
+                sourceOverhangStartSequence = sourceRevComSequence.substring(digestionSequence.startRestrictionEnzyme.dsForward, digestionSequence.startRestrictionEnzyme.dsReverse);
                 pastableStartIndex = digestionSequence.startRestrictionEnzyme.dsReverse;
             } else {
                 sourceOverhangStartType = OVERHANG_NONE;
@@ -142,7 +142,7 @@ package org.jbei.lib.mappers
             
             if(digestionSequence.endRestrictionEnzyme.dsForward < digestionSequence.endRestrictionEnzyme.dsReverse) {
                 sourceOverhangEndType = OVERHANG_BOTTOM;
-                sourceOverhangEndSequence = sourceSequence.substring(digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsForward, digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse);
+                sourceOverhangEndSequence = sourceRevComSequence.substring(digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsForward, digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse);
                 pastableEndIndex = digestionSequence.endRelativePosition + digestionSequence.endRestrictionEnzyme.dsReverse;
             } else if(digestionSequence.endRestrictionEnzyme.dsForward > digestionSequence.endRestrictionEnzyme.dsReverse) {
                 sourceOverhangEndType = OVERHANG_TOP;
@@ -187,9 +187,10 @@ package org.jbei.lib.mappers
             }
             
             var destinationSequence:String = sequenceProvider.sequence.seqString().substring(start, end);
+            var destinationRevComSequence:String = sequenceProvider.getComplementSequence().seqString().substring(start, end);
             
             if(destinationStartCutSite.restrictionEnzyme.dsForward < destinationStartCutSite.restrictionEnzyme.dsReverse) {
-                destinationOverhangStartSequence = destinationSequence.substring(destinationStartCutSite.restrictionEnzyme.dsForward, destinationStartCutSite.restrictionEnzyme.dsReverse);
+                destinationOverhangStartSequence = destinationRevComSequence.substring(destinationStartCutSite.restrictionEnzyme.dsForward, destinationStartCutSite.restrictionEnzyme.dsReverse);
                 
                 destinationOverhangStartType = OVERHANG_BOTTOM;
             } else if(destinationStartCutSite.restrictionEnzyme.dsForward > destinationStartCutSite.restrictionEnzyme.dsReverse) {
@@ -207,7 +208,7 @@ package org.jbei.lib.mappers
                 destinationOverhangEndSequence = destinationSequence.substring(rePosition + destinationEndCutSite.restrictionEnzyme.dsForward, rePosition + destinationEndCutSite.restrictionEnzyme.dsReverse);
                 destinationOverhangEndType = OVERHANG_TOP;
             } else if(destinationEndCutSite.restrictionEnzyme.dsForward > destinationEndCutSite.restrictionEnzyme.dsReverse) {
-                destinationOverhangEndSequence = destinationSequence.substring(rePosition + destinationEndCutSite.restrictionEnzyme.dsForward, rePosition + destinationEndCutSite.restrictionEnzyme.dsReverse);
+                destinationOverhangEndSequence = destinationRevComSequence.substring(rePosition + destinationEndCutSite.restrictionEnzyme.dsForward, rePosition + destinationEndCutSite.restrictionEnzyme.dsReverse);
                 destinationOverhangEndType = OVERHANG_BOTTOM;
             } else {
                 destinationOverhangEndType = OVERHANG_NONE;
@@ -255,13 +256,23 @@ package org.jbei.lib.mappers
             }
             
             // Trying to much overhang by sequence
-            if(sourceOverhangStartSequence == destinationOverhangStartSequence
-                && sourceOverhangEndSequence == destinationOverhangEndSequence) {
+            if(sourceOverhangStartType == OVERHANG_TOP || sourceOverhangStartType == OVERHANG_BOTTOM) {
+                var complement1:String = DNATools.complement(DNATools.createDNA(destinationOverhangStartSequence)).seqString();
                 
-                return true;
+                if(sourceOverhangStartSequence != complement1) {
+                    return false;
+                }
             }
             
-            return false;
+            if(sourceOverhangEndType == OVERHANG_TOP || sourceOverhangEndType == OVERHANG_BOTTOM) {
+                var complement2:String = DNATools.complement(DNATools.createDNA(destinationOverhangEndSequence)).seqString();
+                
+                if(sourceOverhangEndSequence != complement2) {
+                    return false;
+                }
+            }
+            
+            return true;
         }
         
         private function hasRevComMatch():Boolean
@@ -270,16 +281,16 @@ package org.jbei.lib.mappers
             var matchByShapeStart:Boolean = false;
             var matchByShapeEnd:Boolean = false;
             
-            if((sourceOverhangEndType == OVERHANG_TOP && destinationOverhangStartType == OVERHANG_BOTTOM)
-                || (sourceOverhangEndType == OVERHANG_BOTTOM && destinationOverhangStartType == OVERHANG_TOP)
+            if((sourceOverhangEndType == OVERHANG_TOP && destinationOverhangStartType == OVERHANG_TOP)
+                || (sourceOverhangEndType == OVERHANG_BOTTOM && destinationOverhangStartType == OVERHANG_BOTTOM)
                 || (sourceOverhangEndType == OVERHANG_NONE && destinationOverhangStartType == OVERHANG_NONE)
             ) {
                 matchByShapeStart = true;
             }
             
             if(matchByShapeStart 
-                && ((sourceOverhangStartType == OVERHANG_TOP && destinationOverhangEndType == OVERHANG_BOTTOM)
-                    ||  (sourceOverhangStartType == OVERHANG_BOTTOM && destinationOverhangEndType == OVERHANG_TOP)
+                && ((sourceOverhangStartType == OVERHANG_TOP && destinationOverhangEndType == OVERHANG_TOP)
+                    ||  (sourceOverhangStartType == OVERHANG_BOTTOM && destinationOverhangEndType == OVERHANG_BOTTOM)
                     ||  (sourceOverhangStartType == OVERHANG_NONE && destinationOverhangEndType == OVERHANG_NONE))
             ) {
                 matchByShapeEnd = true;
@@ -297,13 +308,19 @@ package org.jbei.lib.mappers
             }
             
             // Trying to much overhang by sequence
-            if(sourceOverhangEndSequence == destinationOverhangStartSequence
-                && sourceOverhangStartSequence == destinationOverhangEndSequence) {
-                
-                return true;
+            if(sourceOverhangStartType == OVERHANG_TOP || sourceOverhangStartType == OVERHANG_BOTTOM) {
+                if(sourceOverhangStartSequence != destinationOverhangEndSequence) {
+                    return false;
+                }
             }
             
-            return false;
+            if(sourceOverhangEndType == OVERHANG_TOP || sourceOverhangEndType == OVERHANG_BOTTOM) {
+                if(sourceOverhangEndSequence != destinationOverhangStartSequence) {
+                    return false;
+                }
+            }
+            
+            return true;
         }
     }
 }

@@ -956,8 +956,8 @@ package org.jbei.components.railClasses
             var pasteType:String = event.data as String;
             
             if(pasteType == "sequence") {
-                if(pasteData is SequenceProvider) {
-                    var pasteSequenceProvider:SequenceProvider = pasteData as SequenceProvider;
+                if(pasteData is DigestionSequence) {
+                    var pasteSequenceProvider:SequenceProvider = (pasteData as DigestionSequence).sequenceProvider;
                     
                     if(_safeEditing) {
                         doInsertSequenceProvider(pasteSequenceProvider, _caretPosition);
@@ -965,6 +965,16 @@ package org.jbei.components.railClasses
                         _sequenceProvider.insertSequenceProvider(pasteSequenceProvider, _caretPosition);
                         
                         tryMoveCaretToPosition(_caretPosition + pasteSequenceProvider.sequence.length);
+                    }
+                } else if(pasteData is SequenceProvider) {
+                    var pasteSequenceProvider2:SequenceProvider = pasteData as SequenceProvider;
+                    
+                    if(_safeEditing) {
+                        doInsertSequenceProvider(pasteSequenceProvider2, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequenceProvider(pasteSequenceProvider2, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + pasteSequenceProvider2.sequence.length);
                     }
                 } else if(pasteData is String) {
                     var pasteSequence2:String = pasteData as String;
@@ -1006,10 +1016,10 @@ package org.jbei.components.railClasses
                         
                         tryMoveCaretToPosition(_caretPosition + dnaRevComSequence.length);
                     }
-                } else if(pasteData is SequenceProvider) {
-                    var pasteSequenceProvider2:SequenceProvider = pasteData as SequenceProvider;
+                } else if(pasteData is DigestionSequence) {
+                    var pasteSequenceProvider3:SequenceProvider = (pasteData as DigestionSequence).sequenceProvider;
                     
-                    var revComSequenceProvider:SequenceProvider = SequenceProvider.reverseSequence(pasteSequenceProvider2);
+                    var revComSequenceProvider:SequenceProvider = SequenceProvider.reverseSequence(pasteSequenceProvider3);
                     
                     if(_safeEditing) {
                         doInsertSequenceProvider(revComSequenceProvider, _caretPosition);
@@ -1017,6 +1027,18 @@ package org.jbei.components.railClasses
                         _sequenceProvider.insertSequenceProvider(revComSequenceProvider, _caretPosition);
                         
                         tryMoveCaretToPosition(_caretPosition + revComSequenceProvider.sequence.length);
+                    }
+                } else if(pasteData is SequenceProvider) {
+                    var pasteSequenceProvider4:SequenceProvider = pasteData as SequenceProvider;
+                    
+                    var revComSequenceProvider2:SequenceProvider = SequenceProvider.reverseSequence(pasteSequenceProvider4);
+                    
+                    if(_safeEditing) {
+                        doInsertSequenceProvider(revComSequenceProvider2, _caretPosition);
+                    } else {
+                        _sequenceProvider.insertSequenceProvider(revComSequenceProvider2, _caretPosition);
+                        
+                        tryMoveCaretToPosition(_caretPosition + revComSequenceProvider2.sequence.length);
                     }
                 }
             } else if(pasteType == "digestion-normal") {

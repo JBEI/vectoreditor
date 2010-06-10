@@ -744,6 +744,31 @@ package org.jbei.lib
             return reverseSequenceProvider;
         }
         
+        public function reverseComplementSequence():void
+        {
+            manualUpdateStart();
+            
+            var revComSequence:SymbolList = DNATools.reverseComplement(_sequence);
+            _sequence = revComSequence;
+            
+            var seqLength:int = _sequence.length;
+            for(var i:int = 0; i < _features.length; i++) {
+                var reverseFeature:Feature = (_features.getItemAt(i) as Feature);
+                reverseFeature.strand = -reverseFeature.strand;
+                
+                var oldStart:int = reverseFeature.start;
+                var oldEnd:int = reverseFeature.end;
+                
+                reverseFeature.start = seqLength - oldEnd - 1;
+                reverseFeature.end = seqLength - oldStart - 1;
+            }
+            
+            needsRecalculateComplementSequence = true;
+            needsRecalculateReverseComplementSequence = true;
+            
+            manualUpdateEnd();
+        }
+        
         // Private Methods
         private function updateComplementSequence():void
         {
