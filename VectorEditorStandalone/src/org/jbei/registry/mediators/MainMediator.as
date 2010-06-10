@@ -53,6 +53,8 @@ package org.jbei.registry.mediators
 				
 				, Notifications.UNDO
 				, Notifications.REDO
+                
+                , Notifications.REVERSE_COMPLEMENT_SEQUENCE
 			];
 		}
 		
@@ -154,6 +156,10 @@ package org.jbei.registry.mediators
 					ApplicationFacade.getInstance().updateBrowserSaveTitleState(true);
 					
 					break;
+                case Notifications.REVERSE_COMPLEMENT_SEQUENCE:
+                    ApplicationFacade.getInstance().sequenceProvider.reverseComplementSequence();
+                    
+                    break;
 			}
 		}
 		

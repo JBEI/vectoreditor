@@ -57,6 +57,7 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
 			mainMenu.addEventListener(MainMenu.SAVE, onSave);
 			mainMenu.addEventListener(MainMenu.SHOW_ENTRY_IN_REGISTRY, onShowEntryInRegistry);
+            mainMenu.addEventListener(MainMenu.REVERSE_COMPLEMENT, onReverseComplement);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -308,5 +309,10 @@ package org.jbei.registry.mediators
 		{
 			sendNotification(Notifications.SAVE_SEQUENCE);
 		}
+        
+        private function onReverseComplement(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.REVERSE_COMPLEMENT_SEQUENCE);
+        }
 	}
 }
