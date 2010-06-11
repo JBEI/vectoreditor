@@ -1014,16 +1014,19 @@ package org.jbei.components.sequenceClasses
                 && _restrictionEnzymeMapper.cutSites
                 && _restrictionEnzymeMapper.cutSites.length > 0) {
                 
+                var start:int = (startSelectionIndex > endSelectionIndex) ? endSelectionIndex : startSelectionIndex;
+                var end:int = (startSelectionIndex > endSelectionIndex) ? startSelectionIndex : endSelectionIndex;
+                
                 for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
                     var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                     
-                    if(startSelectionIndex == cutSite.start) {
-                        digestionStart = startSelectionIndex;
+                    if(start == cutSite.start) {
+                        digestionStart = start;
                         digestionStartCutSite = cutSite;
                     }
                     
-                    if(endSelectionIndex == cutSite.end + 1) {
-                        digestionEnd = endSelectionIndex;
+                    if(end == cutSite.end + 1) {
+                        digestionEnd = end;
                         digestionEndCutSite = cutSite;
                     }
                 }

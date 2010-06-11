@@ -868,8 +868,8 @@ package org.jbei.components.pieClasses
 	    	select(0, _sequenceProvider.sequence.length);
 	    }
 	    
-		private function onCopy(event:Event):void
-		{
+        private function onCopy(event:Event):void
+        {
             if(!isValidIndex(selectionLayer.start) || !isValidIndex(selectionLayer.end)) {
                 return;
             }
@@ -884,16 +884,19 @@ package org.jbei.components.pieClasses
                 && _restrictionEnzymeMapper.cutSites
                 && _restrictionEnzymeMapper.cutSites.length > 0) {
                 
+                var start:int = (startSelectionIndex > endSelectionIndex) ? endSelectionIndex : startSelectionIndex;
+                var end:int = (startSelectionIndex > endSelectionIndex) ? startSelectionIndex : endSelectionIndex;
+                
                 for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
                     var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                     
-                    if(startSelectionIndex == cutSite.start) {
-                        digestionStart = startSelectionIndex;
+                    if(start == cutSite.start) {
+                        digestionStart = start;
                         digestionStartCutSite = cutSite;
                     }
                     
-                    if(endSelectionIndex == cutSite.end + 1) {
-                        digestionEnd = endSelectionIndex;
+                    if(end == cutSite.end + 1) {
+                        digestionEnd = end;
                         digestionEndCutSite = cutSite;
                     }
                 }
@@ -916,8 +919,8 @@ package org.jbei.components.pieClasses
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
             }
-		}
-		
+        }
+        
 		private function onCut(event:Event):void
 		{
 			if(isValidIndex(selectionLayer.start) && isValidIndex(selectionLayer.end)) {

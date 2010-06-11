@@ -48,7 +48,11 @@
                 } else if(pasteTypeRadioButtonGroup.selectedValue == "revcom") {
                     dataObject = "revcom";
                 } else if(pasteTypeRadioButtonGroup.selectedValue == "digestion") {
-                    dataObject = "digestion-normal";
+                    if(digestionPasteTypeRadioButtonGroup.selectedValue == "digestion-normal") {
+                        dataObject = "digestion-normal";
+                    } else if(digestionPasteTypeRadioButtonGroup.selectedValue == "digestion-reverse") {
+                        dataObject = "digestion-reverse";
+                    }
                 }
             }
             

@@ -69,12 +69,12 @@ package org.jbei.lib.mappers
         // Public Methods
         public function digest(type:String):void
         {
-            if(DEBUG_MODE && type == MATCH_BOTH) {
-                type = MATCH_NORMAL_ONLY;
+            if(!(type == MATCH_NORMAL_ONLY || type == MATCH_REVCOM_ONLY)) {
+                throw new Error("Invalid digestion type! Should be '" + MATCH_NORMAL_ONLY +  "' or '" + MATCH_REVCOM_ONLY + "'");
             }
             
-            if(!(type == MATCH_NORMAL_ONLY || type == MATCH_REVCOM_ONLY)) {
-                throw new Error("Invalid digestion type! Should be 'NormalOnly' or 'RevComOnly'");
+            if(type == MATCH_REVCOM_ONLY) {
+                pasteSequenceProvider.reverseComplementSequence();
             }
             
             var startPosition:int = destinationStartCutSite.start;
@@ -166,6 +166,9 @@ package org.jbei.lib.mappers
         
         private function initializeDestination():void
         {
+            destinationStartCutSite = null;
+            destinationEndCutSite = null;
+            
             for(var i:int = 0; i < restrictionEnzymeMapper.cutSites.length; i++) {
                 var cutSite:RestrictionCutSite = restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                 
