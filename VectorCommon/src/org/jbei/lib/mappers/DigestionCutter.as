@@ -189,8 +189,8 @@ package org.jbei.lib.mappers
                 throw new Error("This should never happen!");
             }
             
-            var destinationSequence:String = sequenceProvider.sequence.seqString().substring(start, end);
-            var destinationRevComSequence:String = sequenceProvider.getComplementSequence().seqString().substring(start, end);
+            var destinationSequence:String = (start > end) ? (sequenceProvider.sequence.subList(0, end).seqString() + sequenceProvider.sequence.subList(start, sequenceProvider.sequence.length).seqString()) : sequenceProvider.sequence.subList(start, end).seqString();
+            var destinationRevComSequence:String = (start > end) ? (sequenceProvider.getComplementSequence().subList(0, end).seqString() + sequenceProvider.getComplementSequence().subList(start, sequenceProvider.getComplementSequence().length).seqString()) : sequenceProvider.getComplementSequence().subList(start, end).seqString();
             
             if(destinationStartCutSite.restrictionEnzyme.dsForward < destinationStartCutSite.restrictionEnzyme.dsReverse) {
                 destinationOverhangStartSequence = destinationRevComSequence.substring(destinationStartCutSite.restrictionEnzyme.dsForward, destinationStartCutSite.restrictionEnzyme.dsReverse);

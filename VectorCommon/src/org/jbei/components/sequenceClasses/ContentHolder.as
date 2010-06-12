@@ -1014,19 +1014,16 @@ package org.jbei.components.sequenceClasses
                 && _restrictionEnzymeMapper.cutSites
                 && _restrictionEnzymeMapper.cutSites.length > 0) {
                 
-                var start:int = (startSelectionIndex > endSelectionIndex) ? endSelectionIndex : startSelectionIndex;
-                var end:int = (startSelectionIndex > endSelectionIndex) ? startSelectionIndex : endSelectionIndex;
-                
                 for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
                     var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                     
-                    if(start == cutSite.start) {
-                        digestionStart = start;
+                    if(selectionLayer.start == cutSite.start) {
                         digestionStartCutSite = cutSite;
+                        digestionStart = selectionLayer.start;
                     }
                     
-                    if(end == cutSite.end + 1) {
-                        digestionEnd = end;
+                    if(selectionLayer.end == cutSite.end + 1) {
+                        digestionEnd = selectionLayer.end;
                         digestionEndCutSite = cutSite;
                     }
                 }
@@ -1034,7 +1031,7 @@ package org.jbei.components.sequenceClasses
             
             if(digestionStart >= 0 && digestionEnd >= 0) {
                 var subSequenceProvider:SequenceProvider = _sequenceProvider.subSequenceProvider(digestionStart, digestionEnd);
-                var digestionSequence:DigestionSequence = new DigestionSequence(subSequenceProvider, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
+                var digestionSequence:DigestionSequence = new DigestionSequence(subSequenceProvider, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, (selectionLayer.start > selectionLayer.end) ? (digestionEndCutSite.start + sequenceProvider.sequence.length - digestionStartCutSite.start - 1) : (digestionEndCutSite.start - digestionStartCutSite.start));
                 
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
