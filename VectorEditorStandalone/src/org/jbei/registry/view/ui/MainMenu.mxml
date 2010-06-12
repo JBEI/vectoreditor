@@ -10,6 +10,8 @@
 			// File
 			public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
 			public static const SAVE:String = "Save";
+            public static const IMPORT_SEQUENCE_FILE:String = "Import";
+            public static const EXPORT_SEQUENCE_FILE:String = "Export";
 			public static const PRINT_SEQUENCE:String = "PrintSequence";
 			public static const PRINT_PIE:String = "PrintPie";
 			public static const PRINT_RAIL:String = "PrintRail";
@@ -75,13 +77,22 @@
             	var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
 				var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
-            	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save", "", false, false, false);
+            	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save to Registry", "", false, false, false);
+                var importMenuItem:MenuItem = new MenuItem("importMenuItem", "Open");
+                var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Save as ...");
 				var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
 				var showEntryInRegistryMenuItem:MenuItem = new MenuItem("showEntryInRegistryMenuItem", "Show in Registry");
-				fileMenuItem.addSubItem(saveMenuItem);
-				fileMenuItem.addSubItem(separatorMenuItem);
+                
+                fileMenuItem.addSubItem(importMenuItem);
+                fileMenuItem.addSubItem(exportMenuItem);
+                
+                CONFIG::registryEdition {
+				    fileMenuItem.addSubItem(saveMenuItem);
+                }
+                
+                fileMenuItem.addSubItem(separatorMenuItem);
 				fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
 				fileMenuItem.addSubItem(propertiesMenuItem);
             	fileMenuItem.addSubItem(separatorMenuItem);
@@ -176,10 +187,12 @@
             	
             	// File
             	menuItemsMap["fileMenuItem"] = fileMenuItem;
-            	menuItemsMap["printMenuItem"] = printMenuItem;
-				menuItemsMap["saveMenuItem"] = saveMenuItem;
+                menuItemsMap["saveMenuItem"] = saveMenuItem;
+                menuItemsMap["importMenuItem"] = importMenuItem;
+                menuItemsMap["exportMenuItem"] = exportMenuItem;
 				menuItemsMap["showEntryInRegistryMenuItem"] = showEntryInRegistryMenuItem;
 				menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
+                menuItemsMap["printMenuItem"] = printMenuItem;
             	
             	// Edit
             	menuItemsMap["editMenuItem"] = editMenuItem;
@@ -301,6 +314,10 @@
 					dispatchEvent(new MenuItemEvent(SHOW_ENTRY_IN_REGISTRY, menuItem));
             	} else if(menuItem.id == "reverseComplementMenuItem") {
                     dispatchEvent(new MenuItemEvent(REVERSE_COMPLEMENT, menuItem));
+                } else if(menuItem.id == "importMenuItem") {
+                    dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE_FILE, menuItem));
+                } else if(menuItem.id == "exportMenuItem") {
+                    dispatchEvent(new MenuItemEvent(EXPORT_SEQUENCE_FILE, menuItem));
                 }
             }
 		]]>

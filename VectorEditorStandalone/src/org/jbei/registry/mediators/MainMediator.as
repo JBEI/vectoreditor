@@ -1,7 +1,17 @@
 package org.jbei.registry.mediators
 {
-	import mx.collections.ArrayCollection;
+	import flash.events.DataEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.TimerEvent;
+	import flash.net.FileReference;
+	import flash.utils.Timer;
 	
+	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
+	
+	import org.jbei.components.common.SequenceUtils;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.data.RestrictionEnzymeGroup;
@@ -17,6 +27,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
+	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -27,6 +38,9 @@ package org.jbei.registry.mediators
 	public class MainMediator extends Mediator
 	{
 		private const NAME:String = "MainMediator";
+        
+        private var fileReference:FileReference;
+        private var saveSequenceContent:String;
 		
 		// Constructor
 		public function MainMediator()
@@ -38,8 +52,7 @@ package org.jbei.registry.mediators
 		public override function listNotificationInterests():Array
 		{
 			return [
-				Notifications.RESTRICTION_ENZYMES_FETCHED
-				, Notifications.USER_PREFERENCES_FETCHED
+				Notifications.USER_PREFERENCES_FETCHED
 				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
 				, Notifications.APPLICATION_FAILURE
 				, Notifications.ENTRY_FETCHED
@@ -55,6 +68,10 @@ package org.jbei.registry.mediators
 				, Notifications.REDO
                 
                 , Notifications.REVERSE_COMPLEMENT_SEQUENCE
+                
+                , Notifications.IMPORT_SEQUENCE_FILE
+                , Notifications.EXPORT_SEQUENCE_FILE
+                , Notifications.SEQUENCE_GENERATED
 			];
 		}
 		
@@ -63,12 +80,6 @@ package org.jbei.registry.mediators
 			switch(notification.getName()) {
 				case Notifications.APPLICATION_FAILURE:
 					ApplicationFacade.getInstance().application.disableApplication(notification.getBody() as String);
-					
-					break;
-				case Notifications.RESTRICTION_ENZYMES_FETCHED:
-					ApplicationFacade.getInstance().loadRestrictionEnzymes(notification.getBody() as ArrayCollection /* of RestrictionEnzyme */);
-					
-					sendNotification(Notifications.FETCH_USER_PREFERENCES);
 					
 					break;
 				case Notifications.USER_PREFERENCES_FETCHED:
@@ -160,13 +171,96 @@ package org.jbei.registry.mediators
                     ApplicationFacade.getInstance().sequenceProvider.reverseComplementSequence();
                     
                     break;
+                case Notifications.IMPORT_SEQUENCE_FILE:
+                    fileReference = new FileReference();
+                    fileReference.addEventListener(Event.SELECT, onImportSequenceSelect);
+                    fileReference.addEventListener(Event.COMPLETE, onImportSequenceComplete);
+                    fileReference.addEventListener(IOErrorEvent.IO_ERROR, onImportIOSequenceError);
+                    fileReference.browse();
+                    
+                    break;
+                case Notifications.EXPORT_SEQUENCE_FILE:
+                    (ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy).generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider));
+                    
+                    break;
+                case Notifications.SEQUENCE_GENERATED:
+                    saveSequenceContent = notification.getBody() as String;
+                    
+                    if(saveSequenceContent == null) {
+                        return;
+                    }
+                    
+                    Alert.show("Sequence was generated successfully. Press OK button to save it", "Save sequence", Alert.OK | Alert.CANCEL, ApplicationFacade.getInstance().application, onAlertClose);
+                    
+                    break;
 			}
 		}
 		
-		private function sequenceFetched():void
+        // Event Handlers
+        private function onImportSequenceSelect(event:Event):void
+        {
+            fileReference.load();
+        }
+        
+        private function onImportSequenceComplete(event:Event):void
+        {
+            if(fileReference.data == null) {
+                showFailedToUploadMessage();
+                
+                return;
+            }
+            
+            (ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy).parseSequenceFile(fileReference.data.toString());
+        }
+        
+        private function onImportIOSequenceError(event:Event):void
+        {
+            showFailedToUploadMessage();
+        }
+        
+        private function onExportSequenceComplete(event:Event):void
+        {
+            sendNotification(Notifications.ACTION_MESSAGE, "File saved successfully");
+        }
+        
+        private function onExportIOSequenceError(event:Event):void
+        {
+            Alert.show("Failed to write file!", "Write file error");
+        }
+        
+        private function onAlertClose(event:CloseEvent):void
+        {
+            if(event.detail == Alert.OK) {
+                fileReference = new FileReference();
+                fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
+                fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
+                fileReference.save(saveSequenceContent);
+            }
+        }
+        
+        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
+        {
+            sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
+        }
+        
+        // Private Methods
+        private function sequenceFetched():void
 		{
-			var sequenceProvider:SequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
-            sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
+            var sequenceProvider:SequenceProvider;
+            
+            CONFIG::toolEdition {
+                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, (fileReference == null) ? "" : fileReference.name, true);
+            }
+            
+            CONFIG::registryEdition {
+                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+            }
+            
+            CONFIG::standalone {
+                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
+            }
+            
+			sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 			
 			var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
 			
@@ -186,10 +280,10 @@ package org.jbei.registry.mediators
 			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
 			ApplicationFacade.getInstance().aaMapper = aaMapper;
 		}
-		
-		private function onSequenceProviderChanged(event:SequenceProviderEvent):void
-		{
-			sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
-		}
+        
+        private function showFailedToUploadMessage():void
+        {
+            Alert.show("Failed to read file!", "Open file error");
+        }
 	}
 }

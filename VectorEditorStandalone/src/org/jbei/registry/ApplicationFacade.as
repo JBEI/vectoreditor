@@ -51,7 +51,7 @@ package org.jbei.registry
 		private var _sequenceInitialized:Boolean = false;
 		
 		private var browserSavedState:Boolean = true;
-		
+        
 		// Properties
 		public function get application():VectorEditor
 		{
@@ -68,7 +68,7 @@ package org.jbei.registry
 			_entryId = value;
 		}
 		
-		public function set sessionId(value:String):void
+        public function set sessionId(value:String):void
 		{
 			_sessionId = value;
 		}
@@ -228,6 +228,8 @@ package org.jbei.registry
 			
 			_actionStack = new ActionStack();
 			_actionStack.addEventListener(ActionStackEvent.ACTION_STACK_CHANGED, onActionStackChanged);
+            
+            RestrictionEnzymeGroupManager.instance.loadRebaseDatabase();
 		}
 		
 		// Public Methods
@@ -240,11 +242,6 @@ package org.jbei.registry
 					ExternalInterface.call(EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION, isSaved ? "true" : "false");
 				}
 			}
-		}
-		
-		public function loadRestrictionEnzymes(rebaseEnzymesCollection:ArrayCollection /* of RestrictionEnzyme */):void
-		{
-			RestrictionEnzymeGroupManager.instance.loadRebaseDatabase(rebaseEnzymesCollection);
 		}
 		
 		public function loadUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void

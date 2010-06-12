@@ -56,6 +56,8 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
 			mainMenu.addEventListener(MainMenu.SAVE, onSave);
+            mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE_FILE, onImportSequence);
+            mainMenu.addEventListener(MainMenu.EXPORT_SEQUENCE_FILE, onExportSequence);
 			mainMenu.addEventListener(MainMenu.SHOW_ENTRY_IN_REGISTRY, onShowEntryInRegistry);
             mainMenu.addEventListener(MainMenu.REVERSE_COMPLEMENT, onReverseComplement);
 		}
@@ -313,6 +315,16 @@ package org.jbei.registry.mediators
         private function onReverseComplement(event:MenuItemEvent):void
         {
             sendNotification(Notifications.REVERSE_COMPLEMENT_SEQUENCE);
+        }
+        
+        private function onImportSequence(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.IMPORT_SEQUENCE_FILE);
+        }
+        
+        private function onExportSequence(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.EXPORT_SEQUENCE_FILE);
         }
 	}
 }

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" creationComplete="onCreationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
 			import mx.events.ItemClickEvent;
 			
 			public static const SAVE:String = "Save";
+            public static const IMPORT_SEQUENCE_FILE:String = "Import";
+            public static const EXPORT_SEQUENCE_FILE:String = "Export";
 			public static const SHOW_RAIL_VIEW:String = "ShowRailView";
 			public static const SHOW_PIE_VIEW:String = "ShowPieView";
 			public static const SHOW_FEATURES_STATE_CHANGED:String = "ShowFeaturesStateChanged";
@@ -101,6 +103,14 @@
 			[Bindable]
 			private var orfIcon:Class;
 			
+            [Embed(source='../assets/icons/import.png')]
+            [Bindable]
+            private var importIcon:Class;
+            
+            [Embed(source='../assets/icons/export.png')]
+            [Bindable]
+            private var exportIcon:Class;
+            
 			// Public Methods
 			public function updateSaveButtonState(active:Boolean):void
 			{
@@ -151,6 +161,14 @@
 			}
 			
 			// Event Handlers
+            private function onCreationComplete():void
+            {
+                CONFIG::toolEdition {
+                    saveButton.visible = false;
+                    saveButton.includeInLayout = false;
+                }
+            }
+            
 			private function onChangeViewButtonClick(event:ItemClickEvent):void
 			{
 				if(event.index == 0) { // Circular View
@@ -162,7 +180,9 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Button width="32" height="32" id="saveButton" icon="{ saveDisabledIcon }" enabled="false" toolTip="Save" click="{ dispatchEvent(new Event(SAVE)) }" />
+    <mx:Button width="32" height="32" id="exportButton" icon="{ exportIcon }" toolTip="Save as ..." click="{ dispatchEvent(new Event(EXPORT_SEQUENCE_FILE)) }" />
+    <mx:Button width="32" height="32" id="importButton" icon="{ importIcon }" toolTip="Open" click="{ dispatchEvent(new Event(IMPORT_SEQUENCE_FILE)) }" />
+	<mx:Button width="32" height="32" id="saveButton" icon="{ saveDisabledIcon }" enabled="false" toolTip="Save to Registry" click="{ dispatchEvent(new Event(SAVE)) }" />
 	<mx:Spacer width="5" />
 	<mx:ToggleButtonBar 
 		id="viewToggleButtonBar"

@@ -13,7 +13,7 @@ package org.jbei.registry.commands
 			addSubCommand(PrepareModelCommand);
 			addSubCommand(PrepareViewCommand);
 			
-			addSubCommand(FetchRestrictionEnzymesCommand);
+			addSubCommand(FetchUserPreferencesCommand);
 		}
 	}
 }

@@ -5,6 +5,7 @@ package org.jbei.registry.control
 	import mx.collections.ArrayCollection;
 	
 	import org.jbei.bio.enzymes.RestrictionEnzyme;
+	import org.jbei.bio.enzymes.RestrictionEnzymeManager;
 	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.registry.models.UserRestrictionEnzymeGroup;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
@@ -14,7 +15,7 @@ package org.jbei.registry.control
      */
 	public final class RestrictionEnzymeGroupManager
 	{
-        private static var _instance:RestrictionEnzymeGroupManager = new RestrictionEnzymeGroupManager();
+        private static var _instance:RestrictionEnzymeGroupManager;
         
 		private var rebaseEnzymesDatabase:Dictionary /* {RestrictionEnzyme.Name : RestrictionEnzyme} */ = new Dictionary();
 		private var isInitialized:Boolean = false;
@@ -26,14 +27,15 @@ package org.jbei.registry.control
 		// Constructor
 		public function RestrictionEnzymeGroupManager()
 		{
-            if (_instance != null) {
-                throw new Error("RestrictionEnzymeGroupManager can only be accessed through RestrictionEnzymeGroupManager.instance");
-            }
 		}
 		
 		// Properties
         public static function get instance():RestrictionEnzymeGroupManager
         {
+            if(_instance == null) {
+                _instance = new RestrictionEnzymeGroupManager();
+            }
+            
             return _instance;
         }
         
@@ -68,18 +70,16 @@ package org.jbei.registry.control
         }
         
 		// Public Methods
-		public function loadRebaseDatabase(rebaseEnzymesCollection:ArrayCollection /* of RestrictionEnzyme */):void
+		public function loadRebaseDatabase():void
 		{
 			if(isInitialized) {
 				throw new Error("REBASE database already initialized!");
 			}
 			
-			if(!rebaseEnzymesCollection || rebaseEnzymesCollection.length == 0) {
-				return;
-			}
-			
+            var rebaseEnzymesCollection:Vector.<RestrictionEnzyme> = RestrictionEnzymeManager.instance.getRebaseRestrictionEnzymes();
+            
 			for(var i:int = 0; i < rebaseEnzymesCollection.length; i++) {
-				var enzyme:RestrictionEnzyme = rebaseEnzymesCollection.getItemAt(i) as RestrictionEnzyme;
+				var enzyme:RestrictionEnzyme = rebaseEnzymesCollection[i] as RestrictionEnzyme;
 				
 				rebaseEnzymesDatabase[enzyme.name.toLowerCase()] = enzyme;
 			}
@@ -112,16 +112,14 @@ package org.jbei.registry.control
 				}
 			}
 			
-            CONFIG::standalone {
-                return;
-            }
-            
 			// load user active group
-			_activeGroup.removeAll();
-			
 			if(userRestrictionEnzymes.activeEnzymeNames && userRestrictionEnzymes.activeEnzymeNames.length > 0) {
+                _activeGroup.removeAll();
+                
 				var activeEnzymeNames:RestrictionEnzymeGroup = createGroupByEnzymes("tmpActive", userRestrictionEnzymes.activeEnzymeNames.toArray());
-				_activeGroup.addAll(activeEnzymeNames.enzymes);
+                for(var k:int = 0; k < activeEnzymeNames.enzymes.length; k++) {
+                    _activeGroup.addItem(activeEnzymeNames.enzymes[k]);
+                }
 			}
 		}
 		

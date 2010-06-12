@@ -131,12 +131,12 @@
 				startNumericStepper.value = feature.start + 1;
 				endNumericStepper.value = feature.end + 1;
 				
-				for(var j:int = 0; j < feature.notes.length; j++) {
+				/*for(var j:int = 0; j < feature.notes.length; j++) {
 					if((feature.notes[j] as FeatureNote).name.toLowerCase() == "description") {
 						descriptionTextArea.text = (feature.notes[j] as FeatureNote).value;
 						break;
 					}
-				}
+				}*/
 			}
 			
 			private function createFeature():void

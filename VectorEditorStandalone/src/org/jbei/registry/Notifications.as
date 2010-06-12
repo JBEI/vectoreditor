@@ -29,8 +29,6 @@ package org.jbei.registry
 		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		public static const GENERATE_AND_FETCH_GENBANK:String = "GenerateAndFetchGenbank";
 		public static const GENBANK_FETCHED:String = "GenbankFetched";
-		public static const FETCH_RESTRICTION_ENZYMES:String = "FetchRestrictionEnzymes";
-		public static const RESTRICTION_ENZYMES_FETCHED:String = "RestrictionEnzymesFetched";
 		public static const LOAD_SEQUENCE:String = "LoadSequence";
 		
 		public static const UNDO:String = "Undo";
@@ -81,6 +79,9 @@ package org.jbei.registry
 		public static const SAVE_SEQUENCE:String = "SaveSequence";
 		public static const SEQUENCE_SAVED:String = "SequenceSaved";
 		public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
+        public static const IMPORT_SEQUENCE_FILE:String = "ImportSequenceFile";
+        public static const EXPORT_SEQUENCE_FILE:String = "ExportSequenceFile";
+        public static const SEQUENCE_GENERATED:String = "SequenceGenerated";
         
         public static const ACTION_MESSAGE:String = "ActionMessage";
 	}

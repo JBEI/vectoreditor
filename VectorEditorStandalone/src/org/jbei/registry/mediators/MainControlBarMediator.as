@@ -39,6 +39,8 @@ package org.jbei.registry.mediators
 			controlBar.addEventListener(MainControlBar.CUT, onCut);
 			controlBar.addEventListener(MainControlBar.PASTE, onPaste);
 			controlBar.addEventListener(MainControlBar.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
+            controlBar.addEventListener(MainControlBar.IMPORT_SEQUENCE_FILE, onImportSequenceFile);
+            controlBar.addEventListener(MainControlBar.EXPORT_SEQUENCE_FILE, onExportSequenceFile);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -179,5 +181,15 @@ package org.jbei.registry.mediators
 		{
 			sendNotification(Notifications.SAVE_SEQUENCE);
 		}
+        
+        private function onImportSequenceFile(event:Event):void
+        {
+            sendNotification(Notifications.IMPORT_SEQUENCE_FILE);
+        }
+        
+        private function onExportSequenceFile(event:Event):void
+        {
+            sendNotification(Notifications.EXPORT_SEQUENCE_FILE);
+        }
 	}
 }

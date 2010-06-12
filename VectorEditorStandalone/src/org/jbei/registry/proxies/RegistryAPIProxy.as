@@ -1,13 +1,16 @@
 package org.jbei.registry.proxies
 {
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	
 	import org.jbei.lib.utils.Logger;
+	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
+	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
@@ -29,110 +32,131 @@ package org.jbei.registry.proxies
 		// Public Methods
 		public function fetchEntry(sessionId:String, entryId:String):void
 		{
-			CONFIG::standalone {
-				updateEntry(StandaloneUtils.standaloneEntry() as Entry);
+            CONFIG::registryEdition {
+                service.getEntry(sessionId, entryId);
 				
 				return;
 			}
 			
-			service.getEntry(sessionId, entryId);
+            CONFIG::standalone {
+                updateEntry(StandaloneUtils.standaloneEntry() as Entry);
+                
+                return;
+            }
+            
+            CONFIG::toolEdition {
+                updateEntry(new Plasmid());
+            }
 		}
 		
 		public function hasWritablePermissions(sessionId:String, entryId:String):void
 		{
-			CONFIG::standalone {
-				updateEntryPermissions(true);
+            CONFIG::registryEdition {
+                service.hasWritablePermissions(sessionId, entryId);
 				
 				return;
 			}
 			
-			service.hasWritablePermissions(sessionId, entryId);
+            updateEntryPermissions(true);
 		}
 		
 		public function fetchSequence(sessionId:String, entryId:String):void
 		{
-			CONFIG::standalone {
-				updateSequence(StandaloneUtils.standaloneSequence() as FeaturedDNASequence);
+            CONFIG::registryEdition {
+                service.getSequence(sessionId, entryId);
 				
 				return;
 			}
 			
-			service.getSequence(sessionId, entryId);
+            CONFIG::standalone {
+                updateSequence(StandaloneUtils.standaloneSequence() as FeaturedDNASequence);
+                
+                return;
+            }
+            
+            CONFIG::toolEdition {
+                updateSequence(new FeaturedDNASequence());
+                
+                return;
+            }
 		}
 		
 		public function saveSequence(sessionId:String, entryId:String, featuredDNASequence:FeaturedDNASequence):void
 		{
-			CONFIG::standalone {
-				return;
+            CONFIG::registryEdition {
+                service.saveSequence(sessionId, entryId, featuredDNASequence);
 			}
-			
-			service.saveSequence(sessionId, entryId, featuredDNASequence);
 		}
 		
 		public function fetchUserPreferences(sessionId:String):void
 		{
-			CONFIG::standalone {
-				updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+			CONFIG::registryEdition {
+                service.getUserPreferences(sessionId);
 				
 				return;
 			}
 			
-			service.getUserPreferences(sessionId);
+            updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
 		}
 		
 		public function saveUserPreferences(sessionId:String, userPreferences:UserPreferences):void
 		{
-			CONFIG::standalone {
-				updateUserPreferences(userPreferences);
+            CONFIG::registryEdition {
+                service.saveUserPreferences(sessionId, userPreferences);
 				
 				return;
 			}
 			
-			service.saveUserPreferences(sessionId, userPreferences);
+            updateUserPreferences(userPreferences);
 		}
 		
 		public function fetchUserRestrictionEnzymes(sessionId:String):void
 		{
-			CONFIG::standalone {
-				updateUserRestrictionEnzymes(StandaloneUtils.standaloneUserRestrictionEnzymes());
-				
+            CONFIG::registryEdition {
+                service.getUserRestrictionEnzymes(sessionId);
+                
 				return;
 			}
 			
-			service.getUserRestrictionEnzymes(sessionId);
+            updateUserRestrictionEnzymes(StandaloneUtils.standaloneUserRestrictionEnzymes());
 		}
 		
 		public function saveUserRestrictionEnzymes(sessionId:String, userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
-			CONFIG::standalone {
-				updateUserRestrictionEnzymes(userRestrictionEnzymes);
-				
+            CONFIG::registryEdition {
+                service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
+                
 				return;
 			}
 			
-			service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
+            updateUserRestrictionEnzymes(userRestrictionEnzymes);
 		}
 		
 		public function generateGenBank(sessionId:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
 		{
-			CONFIG::standalone {
-				return;
+            CONFIG::registryEdition {
+                service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
 			}
-			
-			service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
 		}
 		
-		public function fetchRestrictionEnzymes(sessionId:String):void
-		{
-			CONFIG::standalone {
-				updateRestrictionEnzymes(StandaloneUtils.standaloneRestrictionEnzymes());
-				
-				return;
-			}
-			
-			service.getRestrictionEnzymes(sessionId);
-		}
-		
+        public function parseSequenceFile(data:String):void
+        {
+            CONFIG::standalone {
+                return;
+            }
+            
+            service.parseSequenceFile(data);
+        }
+        
+        public function generateSequenceFile(featuredDNASequence:FeaturedDNASequence):void
+        {
+            CONFIG::standalone {
+                return;
+            }
+            
+            service.generateSequenceFile(featuredDNASequence);
+        }
+        
 		// Protected Methods
 		protected override function onServiceFault(event:FaultEvent):void
 		{
@@ -159,9 +183,10 @@ package org.jbei.registry.proxies
 			
 			// GenBank
 			service.generateGenBank.addEventListener(ResultEvent.RESULT, onGenerateGenBankResult);
-			
-			// Restriction Enzymes Database
-			service.getRestrictionEnzymes.addEventListener(ResultEvent.RESULT, onGetRestrictionEnzymesResult);
+            
+            // File
+            service.parseSequenceFile.addEventListener(ResultEvent.RESULT, onParseSequenceFileResult);
+            service.generateSequenceFile.addEventListener(ResultEvent.RESULT, onGenerateSequenceFileResult);
 		}
 		
 		// Private Methods: Response handlers
@@ -275,19 +300,30 @@ package org.jbei.registry.proxies
 			Logger.getInstance().info("Genbank file generated and fetched successfully");
 		}
 		
-		private function onGetRestrictionEnzymesResult(event:ResultEvent):void
-		{
-			if(event.result == null) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to get restriction enzymes database!");
-				
-				return;
-			}
-			
-			sendNotification(Notifications.DATA_FETCHED);
-			
-			updateRestrictionEnzymes(event.result as ArrayCollection);
-		}
-		
+        private function onParseSequenceFileResult(event:ResultEvent):void
+        {
+            if(event.result == null) {
+                Alert.show("Failed to parse sequence file", "Failed to parse");
+                
+                return;
+            }
+            
+            updateSequence(event.result as FeaturedDNASequence);
+        }
+        
+        private function onGenerateSequenceFileResult(event:ResultEvent):void
+        {
+            if(event.result == null) {
+                Alert.show("Failed to parse sequence file", "Failed to parse");
+                
+                return;
+            }
+            
+            sendNotification(Notifications.DATA_FETCHED);
+            
+            sendNotification(Notifications.SEQUENCE_GENERATED, event.result as String);
+        }
+        
 		// Private Methods
 		private function updateEntry(entry:Entry):void
 		{
@@ -301,13 +337,6 @@ package org.jbei.registry.proxies
 			sendNotification(Notifications.SEQUENCE_FETCHED, featuredDNASequence);
 			
 			Logger.getInstance().info("Sequence fetched successfully");
-		}
-		
-		private function updateRestrictionEnzymes(enzymes:ArrayCollection):void
-		{
-			sendNotification(Notifications.RESTRICTION_ENZYMES_FETCHED, enzymes);
-			
-			Logger.getInstance().info("Restriction Enzymes fetched successfully");
 		}
 		
 		private function updateEntryPermissions(hasWritablePermissions:Boolean):void

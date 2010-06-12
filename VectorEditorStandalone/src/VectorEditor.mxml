@@ -78,33 +78,31 @@
 			// Private Methods
 			private function processParameters():void
 			{
-				if(Application.application.parameters.entryId && (Application.application.parameters.entryId as String).length > 0) {
-					facade.entryId = Application.application.parameters.entryId;
-				} else {
-					CONFIG::release {
-						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter entryId is mandatory!");
-						
-						Logger.getInstance().info("Missing mandatory parameter 'entryId'");
-						
-						return;
-					}
-				}
-				
-				if(Application.application.parameters.sessionId && (Application.application.parameters.sessionId as String).length > 0) {
-					facade.sessionId = Application.application.parameters.sessionId;
-				} else {
-					CONFIG::release {
-						facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
-						
-						Logger.getInstance().info("Missing mandatory parameter 'sessionId'");
-						
-						return;
-					}
-				}
-				
-				Logger.getInstance().info("Entry ID: " + facade.entryId);
-				Logger.getInstance().info("Session ID: " + facade.sessionId);
-				
+                CONFIG::registryEdition {
+    				if(Application.application.parameters.entryId && (Application.application.parameters.entryId as String).length > 0) {
+    					facade.entryId = Application.application.parameters.entryId;
+    				} else {
+    					facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter entryId is mandatory!");
+    					
+    					Logger.getInstance().info("Missing mandatory parameter 'entryId'");
+    					
+    					return;
+    				}
+    				
+    				if(Application.application.parameters.sessionId && (Application.application.parameters.sessionId as String).length > 0) {
+    					facade.sessionId = Application.application.parameters.sessionId;
+    				} else {
+    					facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
+    					
+    					Logger.getInstance().info("Missing mandatory parameter 'sessionId'");
+    					
+    					return;
+    				}
+    				
+    				Logger.getInstance().info("Entry ID: " + facade.entryId);
+    				Logger.getInstance().info("Session ID: " + facade.sessionId);
+                }
+			    
 				facade.sendNotification(Notifications.INITIALIZATION, this);
 			}
 		]]>
