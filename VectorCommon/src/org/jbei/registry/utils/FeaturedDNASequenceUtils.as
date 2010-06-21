@@ -23,7 +23,7 @@ package org.jbei.registry.utils
 			}
 			
 			var dnaSequenceFeatures:ArrayCollection = new ArrayCollection();
-			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(sequenceProvider.sequence.seqString(), dnaSequenceFeatures);
+			var featuredDNASequence:FeaturedDNASequence = new FeaturedDNASequence(sequenceProvider.name, sequenceProvider.sequence.seqString(), sequenceProvider.circular, dnaSequenceFeatures);
 			
 			for(var i:int = 0; i < sequenceProvider.features.length; i++) {
 				var feature:Feature = sequenceProvider.features[i];
@@ -44,7 +44,7 @@ package org.jbei.registry.utils
 			return featuredDNASequence;
 		}
 		
-		public static function featuredDNASequenceToSequenceProvider(featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):SequenceProvider
+		public static function featuredDNASequenceToSequenceProvider(featuredDNASequence:FeaturedDNASequence):SequenceProvider
 		{
 			if(featuredDNASequence == null) {
 				return null;
@@ -52,7 +52,7 @@ package org.jbei.registry.utils
 			
 			var dnaSequence:DNASequence = DNATools.createDNASequence("", featuredDNASequence.sequence);
 			
-			var sequenceProvider:SequenceProvider = new SequenceProvider(name, isCircular, dnaSequence);
+			var sequenceProvider:SequenceProvider = new SequenceProvider(featuredDNASequence.name, featuredDNASequence.isCircular, dnaSequence);
 			
 			var features:ArrayCollection = new ArrayCollection();
 			if(featuredDNASequence.features != null && featuredDNASequence.features.length > 0) {

@@ -12,14 +12,18 @@ package org.jbei.registry.models
 		private var _features:ArrayCollection; /* of DNAFeature */
 		private var _accessionNumber:String = "";
 		private var _identifier:String = "";
+        private var _isCircular:Boolean = true;
+        private var _name:String = "";
 		
 		// Constructor
-		public function FeaturedDNASequence(sequence:String = "", features:ArrayCollection /* of DNAFeature */ = null)
+		public function FeaturedDNASequence(name:String = "", sequence:String = "", isCircular:Boolean = true, features:ArrayCollection /* of DNAFeature */ = null)
 		{
 			super();
 			
 			_features = features;
 			_sequence = sequence;
+            _name = name;
+            _isCircular = isCircular;
 		}
 		
 		// Properties
@@ -33,6 +37,26 @@ package org.jbei.registry.models
 			_sequence = value;
 		}
 		
+        public function get name():String
+        {
+            return _name;
+        }
+        
+        public function set name(value:String):void
+        {
+            _name = value;
+        }
+        
+        public function get isCircular():Boolean
+        {
+            return _isCircular;
+        }
+        
+        public function set isCircular(value:Boolean):void
+        {
+            _isCircular = value;
+        }
+        
 		public function get features():ArrayCollection /* of DNAFeature */
 		{
 			return _features;
