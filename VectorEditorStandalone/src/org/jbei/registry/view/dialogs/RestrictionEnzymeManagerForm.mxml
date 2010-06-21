@@ -50,7 +50,6 @@
 				
 				var userRestrictionEnzymes:UserRestrictionEnzymes = new UserRestrictionEnzymes();
 				
-				userRestrictionEnzymes.groups.removeAll();
 				if(userGroups && userGroups.length > 0) {
 					for(var i:int = 0; i < userGroups.length; i++) {
 						var userGroup:RestrictionEnzymeGroup = userGroups.getItemAt(i) as RestrictionEnzymeGroup;
@@ -84,9 +83,11 @@
 					}
 				}
 				
-				ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymes);
+                CONFIG::registryEdition {
+				    ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymes);
+                }
 				
-				RestrictionEnzymeGroupManager.instance.activeGroup = activeEnzymes;
+                ApplicationFacade.getInstance().updateUserRestrictionEnzymes(userRestrictionEnzymes);
 			}
 			
 			// Event Handlers

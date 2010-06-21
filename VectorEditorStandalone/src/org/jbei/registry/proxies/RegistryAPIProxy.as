@@ -8,9 +8,7 @@ package org.jbei.registry.proxies
 	import org.jbei.lib.utils.Logger;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
-	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.utils.StandaloneUtils;
@@ -30,130 +28,53 @@ package org.jbei.registry.proxies
 		}
 		
 		// Public Methods
-		public function fetchEntry(sessionId:String, entryId:String):void
-		{
-            CONFIG::registryEdition {
-                service.getEntry(sessionId, entryId);
-				
-				return;
-			}
-			
-            CONFIG::standalone {
-                updateEntry(StandaloneUtils.standaloneEntry() as Entry);
-                
-                return;
-            }
-            
-            CONFIG::toolEdition {
-                updateEntry(new Plasmid());
-            }
-		}
-		
-		public function hasWritablePermissions(sessionId:String, entryId:String):void
-		{
-            CONFIG::registryEdition {
-                service.hasWritablePermissions(sessionId, entryId);
-				
-				return;
-			}
-			
-            updateEntryPermissions(true);
-		}
-		
 		public function fetchSequence(sessionId:String, entryId:String):void
 		{
-            CONFIG::registryEdition {
-                service.getSequence(sessionId, entryId);
-				
-				return;
-			}
-			
-            CONFIG::standalone {
-                updateSequence(StandaloneUtils.standaloneSequence() as FeaturedDNASequence);
-                
-                return;
-            }
-            
-            CONFIG::toolEdition {
-                updateSequence(new FeaturedDNASequence());
-                
-                return;
-            }
+            service.getSequence(sessionId, entryId);
 		}
 		
 		public function saveSequence(sessionId:String, entryId:String, featuredDNASequence:FeaturedDNASequence):void
 		{
-            CONFIG::registryEdition {
-                service.saveSequence(sessionId, entryId, featuredDNASequence);
-			}
+            service.saveSequence(sessionId, entryId, featuredDNASequence);
 		}
 		
 		public function fetchUserPreferences(sessionId:String):void
 		{
-			CONFIG::registryEdition {
-                service.getUserPreferences(sessionId);
-				
-				return;
-			}
-			
-            updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+            service.getUserPreferences(sessionId);
 		}
 		
 		public function saveUserPreferences(sessionId:String, userPreferences:UserPreferences):void
 		{
-            CONFIG::registryEdition {
-                service.saveUserPreferences(sessionId, userPreferences);
-				
-				return;
-			}
-			
-            updateUserPreferences(userPreferences);
+            service.saveUserPreferences(sessionId, userPreferences);
 		}
 		
 		public function fetchUserRestrictionEnzymes(sessionId:String):void
 		{
-            CONFIG::registryEdition {
-                service.getUserRestrictionEnzymes(sessionId);
-                
-				return;
-			}
-			
-            updateUserRestrictionEnzymes(StandaloneUtils.standaloneUserRestrictionEnzymes());
+            service.getUserRestrictionEnzymes(sessionId);
 		}
 		
 		public function saveUserRestrictionEnzymes(sessionId:String, userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
-            CONFIG::registryEdition {
-                service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
-                
-				return;
-			}
-			
-            updateUserRestrictionEnzymes(userRestrictionEnzymes);
+            service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
 		}
 		
+        public function hasWritablePermissions(sessionId:String, entryId:String):void
+        {
+            service.hasWritablePermissions(sessionId, entryId);
+        }
+        
 		public function generateGenBank(sessionId:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
 		{
-            CONFIG::registryEdition {
-                service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
-			}
+            service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
 		}
 		
         public function parseSequenceFile(data:String):void
         {
-            CONFIG::standalone {
-                return;
-            }
-            
             service.parseSequenceFile(data);
         }
         
         public function generateSequenceFile(featuredDNASequence:FeaturedDNASequence):void
         {
-            CONFIG::standalone {
-                return;
-            }
-            
             service.generateSequenceFile(featuredDNASequence);
         }
         
@@ -166,7 +87,6 @@ package org.jbei.registry.proxies
 		protected override function registerServiceOperations():void
 		{
 			// Entry
-			service.getEntry.addEventListener(ResultEvent.RESULT, onGetEntryResult);
 			service.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onHasWritablePermissionsResult);
 			
 			// Sequence
@@ -190,19 +110,6 @@ package org.jbei.registry.proxies
 		}
 		
 		// Private Methods: Response handlers
-		private function onGetEntryResult(event:ResultEvent):void
-		{
-			if(!event.result) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch entry! Invalid response result type!");
-				
-				return;
-			}
-			
-			sendNotification(Notifications.DATA_FETCHED);
-			
-			updateEntry(event.result as Entry);
-		}
-		
 		private function onGetSequenceResult(event:ResultEvent):void
 		{
 			sendNotification(Notifications.DATA_FETCHED);
@@ -239,8 +146,7 @@ package org.jbei.registry.proxies
 		{
 			sendNotification(Notifications.DATA_FETCHED);
 			
-			sendNotification(Notifications.USER_PREFERENCES_CHANGED);
-            sendNotification(Notifications.ACTION_MESSAGE, "User preferences has been saved");
+			sendNotification(Notifications.ACTION_MESSAGE, "User preferences has been saved");
 			
 			Logger.getInstance().info("User preferences saved successfully");
 		}
@@ -325,37 +231,30 @@ package org.jbei.registry.proxies
         }
         
 		// Private Methods
-		private function updateEntry(entry:Entry):void
-		{
-			sendNotification(Notifications.ENTRY_FETCHED, entry);
-			
-			Logger.getInstance().info("Entry fetched successfully");
-		}
-		
 		private function updateSequence(featuredDNASequence:FeaturedDNASequence):void
 		{
-			sendNotification(Notifications.SEQUENCE_FETCHED, featuredDNASequence);
+            ApplicationFacade.getInstance().updateSequence(featuredDNASequence);
 			
 			Logger.getInstance().info("Sequence fetched successfully");
 		}
 		
 		private function updateEntryPermissions(hasWritablePermissions:Boolean):void
 		{
-			sendNotification(Notifications.ENTRY_PERMISSIONS_FETCHED, hasWritablePermissions);
+            ApplicationFacade.getInstance().updateEntryPermissions(hasWritablePermissions);
 			
 			Logger.getInstance().info("Entry permissions fetched successfully");
 		}
 		
 		private function updateUserPreferences(userPreferences:UserPreferences):void
 		{
-			sendNotification(Notifications.USER_PREFERENCES_FETCHED, userPreferences);
+            ApplicationFacade.getInstance().updateUserPreferences(userPreferences);
 			
 			Logger.getInstance().info("User preferences fetched successfully");
 		}
 		
 		private function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
-			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_FETCHED, userRestrictionEnzymes);
+            ApplicationFacade.getInstance().updateUserRestrictionEnzymes(userRestrictionEnzymes);
 			
 			Logger.getInstance().info("User restriction enzymes fetched successfully");
 		}

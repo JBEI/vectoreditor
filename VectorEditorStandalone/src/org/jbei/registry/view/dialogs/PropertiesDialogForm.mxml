@@ -29,7 +29,6 @@
 	</mx:Script>
 	
 	<mx:TabNavigator id="propertiesTabNavigator" width="100%" height="100%" paddingTop="2" paddingBottom="2" paddingLeft="2" paddingRight="2">
-		<properties:EntryInformationBox width="500" height="400" />
 		<properties:FeaturesBox width="500" height="400" />
 		<properties:CutSitesBox width="500" height="400" parentDialog="{ parentDialog }" />
 		<properties:ORFsBox width="500" height="400" parentDialog="{ parentDialog }" />

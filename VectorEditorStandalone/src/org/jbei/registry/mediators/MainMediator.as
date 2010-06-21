@@ -22,9 +22,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.models.Entry;
 	import org.jbei.registry.models.FeaturedDNASequence;
-	import org.jbei.registry.models.Plasmid;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.proxies.RegistryAPIProxy;
@@ -52,13 +50,7 @@ package org.jbei.registry.mediators
 		public override function listNotificationInterests():Array
 		{
 			return [
-				Notifications.USER_PREFERENCES_FETCHED
-				, Notifications.USER_RESTRICTION_ENZYMES_FETCHED
-				, Notifications.APPLICATION_FAILURE
-				, Notifications.ENTRY_FETCHED
-				, Notifications.SEQUENCE_FETCHED
-				, Notifications.SEQUENCE_PROVIDER_CHANGED
-				, Notifications.ENTRY_PERMISSIONS_FETCHED
+                Notifications.SEQUENCE_PROVIDER_CHANGED
 				, Notifications.SEQUENCE_SAVED
 				
 				, Notifications.DATA_FETCHED
@@ -80,63 +72,6 @@ package org.jbei.registry.mediators
 			switch(notification.getName()) {
 				case Notifications.APPLICATION_FAILURE:
 					ApplicationFacade.getInstance().application.disableApplication(notification.getBody() as String);
-					
-					break;
-				case Notifications.USER_PREFERENCES_FETCHED:
-					ApplicationFacade.getInstance().userPreferences = notification.getBody() as UserPreferences;
-					
-					sendNotification(Notifications.FETCH_USER_RESTRICTION_ENZYMES);
-					
-					break;
-				case Notifications.USER_RESTRICTION_ENZYMES_FETCHED:
-					ApplicationFacade.getInstance().loadUserRestrictionEnzymes(notification.getBody() as UserRestrictionEnzymes);
-					
-					sendNotification(Notifications.FETCH_ENTRY);
-					
-					break;
-				case Notifications.ENTRY_FETCHED:
-					var entry:Entry = notification.getBody() as Entry;
-					
-					if(!entry) {
-						sendNotification(Notifications.APPLICATION_FAILURE, "Entry is null");
-					}
-					
-					ApplicationFacade.getInstance().entry = entry;
-					
-					sendNotification(Notifications.FETCH_SEQUENCE);
-					
-					break;
-				case Notifications.SEQUENCE_FETCHED:
-					var sequence:FeaturedDNASequence;
-					
-					if(notification.getBody() == null) {
-						sequence = new FeaturedDNASequence("", new ArrayCollection());
-					} else {
-						sequence = notification.getBody() as FeaturedDNASequence;
-					}
-					
-					ApplicationFacade.getInstance().sequence = sequence;
-					
-					sendNotification(Notifications.FETCH_ENTRY_PERMISSIONS);
-					
-					sequenceFetched();
-					
-					sendNotification(Notifications.LOAD_SEQUENCE);
-					
-					if(ApplicationFacade.getInstance().sequenceProvider.circular) {
-						sendNotification(Notifications.SHOW_PIE);
-					} else {
-						sendNotification(Notifications.SHOW_RAIL);
-					}
-					
-					// TODO: Do something with this
-					sendNotification(Notifications.USER_PREFERENCES_CHANGED);
-					
-					ApplicationFacade.getInstance().sequenceInitialized = true;
-					
-					break;
-				case Notifications.ENTRY_PERMISSIONS_FETCHED:
-					ApplicationFacade.getInstance().isReadOnly = !(notification.getBody() as Boolean);
 					
 					break;
 				case Notifications.UNDO:
@@ -238,49 +173,7 @@ package org.jbei.registry.mediators
             }
         }
         
-        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
-        {
-            sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
-        }
-        
         // Private Methods
-        private function sequenceFetched():void
-		{
-            var sequenceProvider:SequenceProvider;
-            
-            CONFIG::toolEdition {
-                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, (fileReference == null) ? "" : fileReference.name, true);
-            }
-            
-            CONFIG::registryEdition {
-                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
-            }
-            
-            CONFIG::standalone {
-                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(ApplicationFacade.getInstance().sequence, ApplicationFacade.getInstance().entry.combinedName(), ((ApplicationFacade.getInstance().entry is Plasmid) ? (ApplicationFacade.getInstance().entry as Plasmid).circular : false));
-            }
-            
-			sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
-			
-			var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
-			
-			var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
-			for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
-				restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
-			}
-			
-			var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(sequenceProvider, restrictionEnzymeGroup);
-			
-            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
-			
-			var aaMapper:AAMapper = new AAMapper(sequenceProvider);
-			
-			ApplicationFacade.getInstance().sequenceProvider = sequenceProvider;
-			ApplicationFacade.getInstance().orfMapper = orfMapper;
-			ApplicationFacade.getInstance().restrictionEnzymeMapper = reMapper;
-			ApplicationFacade.getInstance().aaMapper = aaMapper;
-		}
-        
         private function showFailedToUploadMessage():void
         {
             Alert.show("Failed to read file!", "Open file error");

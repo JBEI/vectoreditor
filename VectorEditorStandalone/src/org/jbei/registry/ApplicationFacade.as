@@ -7,23 +7,25 @@ package org.jbei.registry
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.SequenceProviderMemento;
+	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.lib.mappers.AAMapper;
 	import org.jbei.lib.mappers.ORFMapper;
 	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
-	import org.jbei.registry.commands.FetchEntryCommand;
-	import org.jbei.registry.commands.FetchEntryPermissionsCommand;
-	import org.jbei.registry.commands.FetchSequenceCommand;
-	import org.jbei.registry.commands.FetchUserPreferencesCommand;
-	import org.jbei.registry.commands.FetchUserRestrictionEnzymesCommand;
-	import org.jbei.registry.commands.InitializationCommand;
 	import org.jbei.registry.control.ActionStack;
 	import org.jbei.registry.control.ActionStackEvent;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.models.Entry;
+	import org.jbei.registry.mediators.ApplicationMediator;
+	import org.jbei.registry.mediators.FindPanelMediator;
+	import org.jbei.registry.mediators.MainControlBarMediator;
+	import org.jbei.registry.mediators.MainMenuMediator;
+	import org.jbei.registry.mediators.MainPanelMediator;
+	import org.jbei.registry.mediators.StatusBarMediator;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.proxies.RegistryAPIProxy;
+	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
+	import org.jbei.registry.utils.StandaloneUtils;
 	import org.puremvc.as3.patterns.facade.Facade;
 
     /**
@@ -38,7 +40,7 @@ package org.jbei.registry
 		private var _entryId:String;
 		private var _sessionId:String;
 		private var _sequenceProvider:SequenceProvider;
-		private var _entry:Entry;
+        private var _entryPermissions:Boolean;
 		private var _sequence:FeaturedDNASequence;
 		private var _orfMapper:ORFMapper;
 		private var _aaMapper:AAMapper;
@@ -97,29 +99,14 @@ package org.jbei.registry
 			}
 		}
 		
-		public function get entry():Entry
-		{
-			return _entry;
-		}
-		
-		public function set entry(value:Entry):void
-		{
-			_entry = value;
-		}
-		
+        public function get registryServiceProxy():RegistryAPIProxy
+        {
+            return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+        }
+        
 		public function get sequence():FeaturedDNASequence
 		{
 			return _sequence;
-		}
-		
-		public function set sequence(value:FeaturedDNASequence):void
-		{
-			_sequence = value;
-		}
-		
-		public function get registryServiceProxy():RegistryAPIProxy
-		{
-			return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
 		}
 		
 		public function get userPreferences():UserPreferences
@@ -127,19 +114,9 @@ package org.jbei.registry
 			return _userPreferences;
 		}
 		
-		public function set userPreferences(value:UserPreferences):void
-		{
-			_userPreferences = value;
-		}
-		
 		public function get isReadOnly():Boolean
 		{
 			return _isReadOnly;
-		}
-		
-		public function set isReadOnly(value:Boolean):void
-		{
-			_isReadOnly = value;
 		}
 		
 		public function get orfMapper():ORFMapper
@@ -147,29 +124,14 @@ package org.jbei.registry
 			return _orfMapper;
 		}
 		
-		public function set orfMapper(value:ORFMapper):void
-		{
-			_orfMapper = value;
-		}
-		
 		public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
 		{
 			return _restrictionEnzymeMapper;
 		}
 		
-		public function set restrictionEnzymeMapper(value:RestrictionEnzymeMapper):void
-		{
-			_restrictionEnzymeMapper = value;
-		}
-		
 		public function get aaMapper():AAMapper
 		{
 			return _aaMapper;
-		}
-		
-		public function set aaMapper(value:AAMapper):void
-		{
-			_aaMapper = value;
 		}
 		
 		public function get selectionStart():int
@@ -229,7 +191,35 @@ package org.jbei.registry
 			_actionStack = new ActionStack();
 			_actionStack.addEventListener(ActionStackEvent.ACTION_STACK_CHANGED, onActionStackChanged);
             
+            // Register Proxy
+            registerProxy(new RegistryAPIProxy());
+            
+            // Register Mediators
+            registerMediator(new ApplicationMediator());
+            registerMediator(new MainControlBarMediator(_application.mainControlBar));
+            registerMediator(new MainMenuMediator(_application.mainMenu));
+            registerMediator(new MainPanelMediator(_application.mainPanel));
+            registerMediator(new StatusBarMediator(_application.statusBar));
+            registerMediator(new FindPanelMediator(_application.findPanel));
+            
             RestrictionEnzymeGroupManager.instance.loadRebaseDatabase();
+            
+            CONFIG::registryEdition {
+                registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
+                registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
+                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+                registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+            }
+            
+            CONFIG::standalone {
+                updateSequence(StandaloneUtils.standaloneSequence());
+                updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+            }
+            
+            CONFIG::toolEdition {
+                updateSequence(new FeaturedDNASequence("", new ArrayCollection()));
+                updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+            }
 		}
 		
 		// Public Methods
@@ -244,25 +234,49 @@ package org.jbei.registry
 			}
 		}
 		
-		public function loadUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
-		{
-			RestrictionEnzymeGroupManager.instance.loadUserRestrictionEnzymes(userRestrictionEnzymes);
-		}
-		
-		// Protected Methods
-		protected override function initializeController():void
-		{
-			super.initializeController();
-			
-			registerCommand(Notifications.INITIALIZATION, InitializationCommand);
-			registerCommand(Notifications.FETCH_USER_PREFERENCES, FetchUserPreferencesCommand);
-			registerCommand(Notifications.FETCH_USER_RESTRICTION_ENZYMES, FetchUserRestrictionEnzymesCommand);
-			registerCommand(Notifications.FETCH_ENTRY, FetchEntryCommand);
-			registerCommand(Notifications.FETCH_SEQUENCE, FetchSequenceCommand);
-			registerCommand(Notifications.FETCH_ENTRY_PERMISSIONS, FetchEntryPermissionsCommand);
-		}
-		
-		// Private Methods
+        public function updateSequence(featuredDNASequence:FeaturedDNASequence):void
+        {
+            _sequence = featuredDNASequence;
+            
+            if(featuredDNASequence == null) {
+                _sequence = new FeaturedDNASequence("", "", true, new ArrayCollection());
+            } else {
+                _sequence = featuredDNASequence;
+            }
+            
+            sequenceFetched();
+            
+            sendNotification(Notifications.LOAD_SEQUENCE);
+            
+            if(ApplicationFacade.getInstance().sequenceProvider.circular) {
+                sendNotification(Notifications.SHOW_PIE);
+            } else {
+                sendNotification(Notifications.SHOW_RAIL);
+            }
+            
+            ApplicationFacade.getInstance().sequenceInitialized = true;
+        }
+        
+        public function updateUserPreferences(userPreferences:UserPreferences):void
+        {
+            _userPreferences = userPreferences;
+            
+            sendNotification(Notifications.USER_PREFERENCES_CHANGED);
+        }
+        
+        public function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
+        {
+            RestrictionEnzymeGroupManager.instance.loadUserRestrictionEnzymes(userRestrictionEnzymes);
+            
+            sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
+        }
+        
+        public function updateEntryPermissions(entryPermissions:Boolean):void
+        {
+            _entryPermissions = entryPermissions;
+        }
+        
+		// Event Handlers
 		private function onActionStackChanged(event:ActionStackEvent):void
 		{
 			sendNotification(Notifications.ACTION_STACK_CHANGED);
@@ -272,5 +286,48 @@ package org.jbei.registry
 		{
 			_actionStack.add(event.data as SequenceProviderMemento);
 		}
+        
+        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
+        {
+            sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
+        }
+        
+        // Private Methods
+        private function sequenceFetched():void
+        {
+            var sequenceProvider:SequenceProvider;
+            
+            //CONFIG::toolEdition {
+                //sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence, (fileReference == null) ? "" : fileReference.name, true);
+            //}
+            
+            CONFIG::registryEdition {
+                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
+            }
+            
+            CONFIG::standalone {
+                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
+            }
+            
+            sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
+            
+            var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
+            
+            var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
+            for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
+                restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
+            }
+            
+            var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(sequenceProvider, restrictionEnzymeGroup);
+            
+            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
+            
+            var aaMapper:AAMapper = new AAMapper(sequenceProvider);
+            
+            _sequenceProvider = sequenceProvider;
+            _orfMapper = orfMapper;
+            _restrictionEnzymeMapper = reMapper;
+            _aaMapper = aaMapper;
+        }
 	}
 }

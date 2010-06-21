@@ -46,7 +46,6 @@ package org.jbei.registry.mediators
 				, Notifications.DATA_FETCHED
 				
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
-				, Notifications.ENTRY_PERMISSIONS_FETCHED
                 
                 , Notifications.ACTION_MESSAGE
 			];
@@ -94,10 +93,10 @@ package org.jbei.registry.mediators
 					}
 					
 					break;
-				case Notifications.ENTRY_PERMISSIONS_FETCHED:
+				/*case Notifications.ENTRY_PERMISSIONS_FETCHED:
 					statusBar.sequenceStatusLabel.text = ApplicationFacade.getInstance().isReadOnly ? "Read Only" : "Writable";
 					
-					break;
+					break;*/
 				case Notifications.FETCHING_DATA:
                     updateActionMessage(notification.getBody() as String);
                     

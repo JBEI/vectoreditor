@@ -167,6 +167,11 @@
                     saveButton.visible = false;
                     saveButton.includeInLayout = false;
                 }
+                
+                CONFIG::registryEdition {
+                    importButton.visible = false;
+                    importButton.includeInLayout = false;
+                }
             }
             
 			private function onChangeViewButtonClick(event:ItemClickEvent):void

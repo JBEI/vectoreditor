@@ -119,7 +119,7 @@ package org.jbei.registry.mediators
 		{
 			// TODO: add context root here
 			
-			goToUrl("/entry/view/" + ApplicationFacade.getInstance().entry.id);
+			goToUrl("/entry/view/" + ApplicationFacade.getInstance().entryId);
 		}
 		
 		private function showSelectionDialog():void

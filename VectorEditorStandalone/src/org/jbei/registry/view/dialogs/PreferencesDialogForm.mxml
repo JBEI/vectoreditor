@@ -29,7 +29,10 @@
 					return;
 				}
 				
-				if(bpPerRowNumberValidator.validate().type == ValidationResultEvent.INVALID || sequenceFontSizeNumberValidator.validate().type == ValidationResultEvent.INVALID || orfMinimumLengthNumberValidator.validate().type == ValidationResultEvent.INVALID) {
+				if(bpPerRowNumberValidator.validate().type == ValidationResultEvent.INVALID 
+                    || sequenceFontSizeNumberValidator.validate().type == ValidationResultEvent.INVALID 
+                    || orfMinimumLengthNumberValidator.validate().type == ValidationResultEvent.INVALID) {
+                    
 					isValid = false;
 				} else {
 					isValid = true;
@@ -40,7 +43,11 @@
 					userPreferences.labelsFontSize = labelsFontSizeNumericStepper.value;
 					userPreferences.maxResitrictionEnzymesCuts = setMaxCutOffCheckBox.selected ? -1 : maxResitrictionEnzymesCutsNumericStepper.value;
 					
-					ApplicationFacade.getInstance().registryServiceProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
+                    CONFIG::registryEdition {
+                        ApplicationFacade.getInstance().registryServiceProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
+                    }
+                    
+                    ApplicationFacade.getInstance().updateUserPreferences(userPreferences);
 				}
 			}
 			

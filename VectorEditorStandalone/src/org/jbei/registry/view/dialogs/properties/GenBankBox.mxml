@@ -20,7 +20,7 @@
 				
 				genbankTextArea.text = "";
 				
-				if (ApplicationFacade.getInstance().entry == null || ApplicationFacade.getInstance().sequenceProvider == null) {
+				if (ApplicationFacade.getInstance().sequenceProvider == null) {
 					return;
 				}
 				

@@ -15,18 +15,8 @@ package org.jbei.registry
 		public static const FETCHING_DATA:String = "FetchingData";
 		public static const DATA_FETCHED:String = "DataFetched";
 		
-		public static const FETCH_USER_PREFERENCES:String = "FetchPreferences";
-		public static const USER_PREFERENCES_FETCHED:String = "UserPreferencesFetched";
 		public static const USER_PREFERENCES_CHANGED:String = "UserPreferencesChanged";
-		public static const FETCH_USER_RESTRICTION_ENZYMES:String = "FetchRestrictionEnzymes";
-		public static const USER_RESTRICTION_ENZYMES_FETCHED:String = "UserRestrictionEnzymesFetched";
 		public static const USER_RESTRICTION_ENZYMES_CHANGED:String = "UserRestrictionEnzymesChanged"
-		public static const FETCH_ENTRY_PERMISSIONS:String = "FetchEntryPermissions";
-		public static const ENTRY_PERMISSIONS_FETCHED:String = "EntryPermissionsFetched";
-		public static const FETCH_ENTRY:String = "FetchEntry";
-		public static const ENTRY_FETCHED:String = "EntryFetched";
-		public static const FETCH_SEQUENCE:String = "FetchSequence";
-		public static const SEQUENCE_FETCHED:String = "SequenceFetched";
 		public static const GENERATE_AND_FETCH_GENBANK:String = "GenerateAndFetchGenbank";
 		public static const GENBANK_FETCHED:String = "GenbankFetched";
 		public static const LOAD_SEQUENCE:String = "LoadSequence";

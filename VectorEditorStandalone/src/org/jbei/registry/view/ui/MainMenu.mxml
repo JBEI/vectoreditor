@@ -85,15 +85,33 @@
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
 				var showEntryInRegistryMenuItem:MenuItem = new MenuItem("showEntryInRegistryMenuItem", "Show in Registry");
                 
-                fileMenuItem.addSubItem(importMenuItem);
-                fileMenuItem.addSubItem(exportMenuItem);
-                
                 CONFIG::registryEdition {
-				    fileMenuItem.addSubItem(saveMenuItem);
+                    fileMenuItem.addSubItem(exportMenuItem);
+                    fileMenuItem.addSubItem(saveMenuItem);
+                }
+                
+                CONFIG::toolEdition {
+                    fileMenuItem.addSubItem(importMenuItem);
+                    fileMenuItem.addSubItem(exportMenuItem);
+                    fileMenuItem.addSubItem(saveMenuItem);
+                }
+                
+                CONFIG::standalone {
+                    fileMenuItem.addSubItem(importMenuItem);
+                    fileMenuItem.addSubItem(exportMenuItem);
+                    fileMenuItem.addSubItem(saveMenuItem);
                 }
                 
                 fileMenuItem.addSubItem(separatorMenuItem);
-				fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
+                
+                CONFIG::standalone {
+				    fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
+                }
+                
+                CONFIG::registryEdition {
+                    fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
+                }
+                
 				fileMenuItem.addSubItem(propertiesMenuItem);
             	fileMenuItem.addSubItem(separatorMenuItem);
 				fileMenuItem.addSubItem(printMenuItem);

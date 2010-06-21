@@ -422,7 +422,7 @@ package org.jbei.registry.mediators
 			}
 			
 			if(!ApplicationFacade.getInstance().isReadOnly) {
-				ApplicationFacade.getInstance().registryServiceProxy.saveSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entry.recordId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider));
+				ApplicationFacade.getInstance().registryServiceProxy.saveSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider));
 			} else {
 				Alert.show("You don't have permissions to save this sequence!");
 			}
