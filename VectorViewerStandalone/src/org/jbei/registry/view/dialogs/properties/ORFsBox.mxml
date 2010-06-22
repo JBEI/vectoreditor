@@ -37,7 +37,7 @@
 				for (var i:int = 0; i < orfMapper.orfs.length; i++) {
 					var orf:ORF = orfMapper.orfs[i] as ORF;
 					
-					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end + 1)), strand : (orf.strand ? "-" : "+"), frame : (orf.frame + 1), length : (orf.end - orf.start)});
+					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end + 1)), strand : (orf.strand == -1 ? "-" : "+"), frame : (orf.frame + 1), length : (orf.end - orf.start)});
 				}
 				
 				var sort:Sort = new Sort();
