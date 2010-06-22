@@ -148,9 +148,9 @@ package org.jbei.components.sequenceClasses
 						g.beginFill(color);
 						
 						if(orf.strand == -1) {
-							g.drawCircle(codonStartPointX + 4, codonStartPointY, 2);
-						} else {
 							g.drawCircle(codonStartPointX + sequenceContentHolder.sequenceSymbolRenderer.textWidth - 2, codonStartPointY, 2);
+						} else {
+							g.drawCircle(codonStartPointX + sequenceContentHolder.sequenceSymbolRenderer.textWidth - 5, codonStartPointY, 2);
 						}
 						g.endFill(); 
 					}
