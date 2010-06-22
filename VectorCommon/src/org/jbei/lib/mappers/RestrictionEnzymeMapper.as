@@ -39,6 +39,20 @@ package org.jbei.lib.mappers
 		}
 		
 		// Properties
+        public function get restrictionEnzymeGroup():RestrictionEnzymeGroup
+        {
+            return _restrictionEnzymeGroup;
+        }
+        
+        public function set restrictionEnzymeGroup(value:RestrictionEnzymeGroup):void
+        {
+            _restrictionEnzymeGroup = value;
+            
+            recalculate();
+            
+            dirty = false;
+        }
+        
 		public function get allCutSites():ArrayCollection /* of CutSite */
 		{
 			if(dirty) {
