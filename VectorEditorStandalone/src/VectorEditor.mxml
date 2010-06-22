@@ -55,11 +55,11 @@
 				
 				Logger.getInstance().info("Build #: " + SystemUtils.applicationVersion(Constants.MAJOR_VERSION));
 				
+                processParameters();
+                
+                facade.registerMediator(new MainMediator());
+                
 				facade.initializeApplication(this);
-				
-				facade.registerMediator(new MainMediator());
-				
-				processParameters();
 			}
 			
 			private function onApplicationComplete(event:Event):void

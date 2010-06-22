@@ -347,7 +347,7 @@ package org.jbei.registry.mediators
 				sendNotification(Notifications.SELECTION_CHANGED, new Array(-1, -1));
 				sendNotification(Notifications.CARET_POSITION_CHANGED, data[0] as int);
 			} else if(kind == EditingEvent.KIND_INSERT_SEQUENCE) {
-				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as DNASequence).length);
+				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as SymbolList).length);
 			} else if(kind == EditingEvent.KIND_INSERT_FEATURED_SEQUENCE) {
 				sendNotification(Notifications.CARET_POSITION_CHANGED, (data[1] as int) + (data[0] as SequenceProvider).sequence.length);
 			}
@@ -421,10 +421,10 @@ package org.jbei.registry.mediators
 				return;
 			}
 			
-			if(!ApplicationFacade.getInstance().isReadOnly) {
-				ApplicationFacade.getInstance().registryServiceProxy.saveSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider));
+			if(!ApplicationFacade.getInstance().hasWritablePermissions) {
+                Alert.show("You don't have permissions to save this sequence!");
 			} else {
-				Alert.show("You don't have permissions to save this sequence!");
+                ApplicationFacade.getInstance().registryServiceProxy.saveSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider));
 			}
 		}
 		

@@ -40,12 +40,11 @@ package org.jbei.registry
 		private var _entryId:String;
 		private var _sessionId:String;
 		private var _sequenceProvider:SequenceProvider;
-        private var _entryPermissions:Boolean;
+        private var _hasWritablePermissions:Boolean = false;
 		private var _sequence:FeaturedDNASequence;
 		private var _orfMapper:ORFMapper;
 		private var _aaMapper:AAMapper;
 		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
-		private var _isReadOnly:Boolean = true;
 		private var _userPreferences:UserPreferences;
 		private var _selectionStart:int = -1;
 		private var _selectionEnd:int = -1;
@@ -114,11 +113,6 @@ package org.jbei.registry
 			return _userPreferences;
 		}
 		
-		public function get isReadOnly():Boolean
-		{
-			return _isReadOnly;
-		}
-		
 		public function get orfMapper():ORFMapper
 		{
 			return _orfMapper;
@@ -174,6 +168,11 @@ package org.jbei.registry
 			_sequenceInitialized = value;
 		}
 		
+        public function get hasWritablePermissions():Boolean
+        {
+            return _hasWritablePermissions; 
+        }
+        
 		// System Public Methods
 		public static function getInstance():ApplicationFacade
 		{
@@ -205,9 +204,9 @@ package org.jbei.registry
             RestrictionEnzymeGroupManager.instance.loadRebaseDatabase();
             
             CONFIG::registryEdition {
+                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
                 registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
                 registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
-                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
                 registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
             }
             
@@ -217,7 +216,7 @@ package org.jbei.registry
             }
             
             CONFIG::toolEdition {
-                updateSequence(new FeaturedDNASequence("", new ArrayCollection()));
+                updateSequence(new FeaturedDNASequence("", "", true, new ArrayCollection()));
                 updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
             }
 		}
@@ -271,9 +270,11 @@ package org.jbei.registry
             sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
         }
         
-        public function updateEntryPermissions(entryPermissions:Boolean):void
+        public function updateEntryPermissions(hasWritablePermissions:Boolean):void
         {
-            _entryPermissions = entryPermissions;
+            _hasWritablePermissions = hasWritablePermissions;
+            
+            sendNotification(Notifications.ENTRY_PERMISSIONS_CHANGED);
         }
         
 		// Event Handlers
@@ -295,19 +296,7 @@ package org.jbei.registry
         // Private Methods
         private function sequenceFetched():void
         {
-            var sequenceProvider:SequenceProvider;
-            
-            //CONFIG::toolEdition {
-                //sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence, (fileReference == null) ? "" : fileReference.name, true);
-            //}
-            
-            CONFIG::registryEdition {
-                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
-            }
-            
-            CONFIG::standalone {
-                sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
-            }
+            sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
             
             sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
             

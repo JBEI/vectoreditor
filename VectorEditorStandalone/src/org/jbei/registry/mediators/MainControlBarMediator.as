@@ -84,10 +84,10 @@ package org.jbei.registry.mediators
 					controlBar.updateSaveButtonState(false);
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
-					if(ApplicationFacade.getInstance().isReadOnly) {
-						controlBar.updateSaveButtonState(false);
-					} else {
+					if(ApplicationFacade.getInstance().hasWritablePermissions) {
 						controlBar.updateSaveButtonState(true);
+					} else {
+						controlBar.updateSaveButtonState(false);
 					}
 					
 					break;
@@ -102,6 +102,7 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.SAFE_EDITING_CHANGED:
 					controlBar.safeEditingButton.selected = (notification.getBody() as Boolean);
+                    
 					break;
 			}
 		}

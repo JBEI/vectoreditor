@@ -117,10 +117,10 @@ package org.jbei.registry.mediators
 					mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
-					if(ApplicationFacade.getInstance().isReadOnly) {
-						mainMenu.menuItemByName("saveMenuItem").enabled = false;
-					} else {
+					if(ApplicationFacade.getInstance().hasWritablePermissions) {
 						mainMenu.menuItemByName("saveMenuItem").enabled = true;
+					} else {
+						mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					}
 					
 					break;
