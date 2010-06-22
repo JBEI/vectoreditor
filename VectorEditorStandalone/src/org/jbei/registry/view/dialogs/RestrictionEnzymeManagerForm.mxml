@@ -88,6 +88,15 @@
                 }
 				
                 ApplicationFacade.getInstance().updateUserRestrictionEnzymes(userRestrictionEnzymes);
+                
+                var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup();
+                
+                var activeEnzymesGroup:ArrayCollection = RestrictionEnzymeGroupManager.instance.activeGroup;
+                for(var k:int = 0; k < activeEnzymesGroup.length; k++) {
+                    restrictionEnzymeGroup.addRestrictionEnzyme(activeEnzymesGroup.getItemAt(k) as RestrictionEnzyme);
+                }
+                
+                ApplicationFacade.getInstance().restrictionEnzymeMapper.restrictionEnzymeGroup = restrictionEnzymeGroup;
 			}
 			
 			// Event Handlers
