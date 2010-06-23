@@ -5,6 +5,7 @@ package org.jbei.registry
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.SequenceProviderEvent;
     import org.jbei.lib.mappers.TraceMapper;
+    import org.jbei.registry.mediators.AlignmentPanelMediator;
     import org.jbei.registry.mediators.ApplicationMediator;
     import org.jbei.registry.mediators.MainControlBarMediator;
     import org.jbei.registry.mediators.MainPanelMediator;
@@ -120,6 +121,7 @@ package org.jbei.registry
             registerMediator(new MainPanelMediator(_application.mainPanel));
             registerMediator(new StatusBarMediator(_application.statusBar));
             registerMediator(new TracesListPanelMediator(_application.tracesListPanel));
+            registerMediator(new AlignmentPanelMediator(_application.alignmentPanel));
             
             CONFIG::registryEdition {
                 registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
