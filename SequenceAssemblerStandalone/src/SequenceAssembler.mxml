@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="1024" height="768" creationComplete="onCreationComplete()">
+    <mx:Script>
+        <![CDATA[
+            import flash.ui.ContextMenu;
+            
+            import mx.collections.ArrayCollection;
+            import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+            import mx.controls.advancedDataGridClasses.AdvancedDataGridHeaderRenderer;
+            import mx.controls.advancedDataGridClasses.AdvancedDataGridItemRenderer;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.controls.dataGridClasses.DataGridHeader;
+            import mx.controls.dataGridClasses.DataGridItemRenderer;
+            import mx.controls.listClasses.ListBaseContentHolder;
+            
+            import org.jbei.lib.ui.dialogs.ModalDialog;
+            import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+            import org.jbei.registry.models.AssemblyItem;
+            import org.jbei.registry.models.AssemblyMatrix;
+            import org.jbei.registry.models.Bin;
+            import org.jbei.registry.models.FeatureType;
+            import org.jbei.registry.utils.StandaloneUtils;
+            import org.jbei.registry.view.dialogs.AddBinDialogForm;
+            
+            private var gridContextMenu:ContextMenu;
+            private var assemblyMatrix:AssemblyMatrix = new AssemblyMatrix();
+            private var assemblyDataProvider:ArrayCollection;
+            
+            // Event Handlers
+            private function onCreationComplete():void
+            {
+                gridContextMenu = new ContextMenu();
+                gridContextMenu.hideBuiltInItems();
+                gridContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onGridContextMenuSelect);
+                
+                mainDataGrid.contextMenu = gridContextMenu;
+                
+                assemblyMatrix = StandaloneUtils.standaloneAssemblyMatrix();
+                
+                assemblyMatrix2DataProvider();
+            }
+            
+            private function onGridContextMenuSelect(event:ContextMenuEvent):void
+            {
+                var customMenuItems:Array = new Array();
+                
+                if(!(event.mouseTarget is AdvancedDataGridItemRenderer) && (event.mouseTarget.parent != null) && event.mouseTarget.parent is AdvancedDataGridHeaderRenderer) {
+                    var addColumnMenuItem:ContextMenuItem = new ContextMenuItem("Add column");
+                    var editColumnMenuItem:ContextMenuItem = new ContextMenuItem("Edit column");
+                    var removeColumnMenuItem:ContextMenuItem = new ContextMenuItem("Remove column");
+                    
+                    addColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onAddColumnMenuItemSelect);
+                    editColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditColumnMenuItemSelect);
+                    removeColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveColumnMenuItemSelect);
+                    
+                    customMenuItems.push(addColumnMenuItem);
+                    customMenuItems.push(editColumnMenuItem);
+                    customMenuItems.push(removeColumnMenuItem);
+                } else {
+                    var addRowMenuItem:ContextMenuItem = new ContextMenuItem("Add row");
+                    var removeRowMenuItem:ContextMenuItem = new ContextMenuItem("Remove row");
+                    
+                    addRowMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onAddRowMenuItemSelect);
+                    removeRowMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveRowMenuItemSelect);
+                    
+                    customMenuItems.push(addRowMenuItem);
+                    customMenuItems.push(removeRowMenuItem);
+                }
+                
+                gridContextMenu.customItems = customMenuItems;
+            }
+            
+            private function onAddColumnButtonClick(event:MouseEvent):void
+            {
+                addBin();
+            }
+            
+            private function onAddRowButtonClick(event:MouseEvent):void
+            {
+                addEmptyRow();
+            }
+            
+            private function onAddColumnMenuItemSelect(event:ContextMenuEvent):void
+            {
+                addBin();
+            }
+            
+            private function onEditColumnMenuItemSelect(event:ContextMenuEvent):void
+            {
+                trace("edit column");
+            }
+            
+            private function onRemoveColumnMenuItemSelect(event:ContextMenuEvent):void
+            {
+                trace("remove column");
+            }
+            
+            private function onAddRowMenuItemSelect(event:ContextMenuEvent):void
+            {
+                addEmptyRow();
+            }
+            
+            private function onRemoveRowMenuItemSelect(event:ContextMenuEvent):void
+            {
+                trace("remove row");
+            }
+            
+            private function onAddBinDialogSubmit(event:ModalDialogEvent):void
+            {
+                if(event.data == null) {
+                    return;
+                }
+                
+                var featureType:FeatureType = event.data as FeatureType;
+                
+                assemblyMatrix.addBin(new Bin(featureType));
+                assemblyMatrix2DataProvider();
+            }
+            
+            // Private Methods
+            private function assemblyMatrix2DataProvider():void
+            {
+                var columns:Array = new Array();
+                assemblyDataProvider = new ArrayCollection();
+                
+                // remove old columns
+                if(mainDataGrid.columns && mainDataGrid.columns is Array && mainDataGrid.columns.length > 0) {
+                    mainDataGrid.columns.splice(0, mainDataGrid.columns.length);
+                }
+                
+                var maxNumberOfRows:int = 0;
+                for(var i:int = 0; i < assemblyMatrix.bins.length; i++) {
+                    var bin:Bin = assemblyMatrix.bins[i] as Bin;
+                    
+                    var dataGridColumn:AdvancedDataGridColumn = new AdvancedDataGridColumn(bin.featureType.name);
+                    dataGridColumn.dataField = bin.uuid;
+                    columns.push(dataGridColumn);
+                    
+                    if(maxNumberOfRows < bin.items.length) {
+                        maxNumberOfRows = bin.items.length;
+                    }
+                }
+                
+                for(var r:int = 0; r < maxNumberOfRows; r++) {
+                    var assemblyData:Object = new Object();
+                    
+                    for(var j:int = 0; j < assemblyMatrix.bins.length; j++) {
+                        var currentBin:Bin = assemblyMatrix.bins[j] as Bin;
+                        
+                        if(r > currentBin.items.length - 1) continue;
+                        
+                        assemblyData[currentBin.uuid] = (currentBin.items[r] as AssemblyItem).sequence;
+                    }
+                    
+                    assemblyDataProvider.addItem(assemblyData);
+                }
+                
+                mainDataGrid.columns = columns;
+                mainDataGrid.dataProvider = assemblyDataProvider;
+            }
+            
+            private function dataProvider2AssemblyMatrix():void
+            {
+                
+            }
+            
+            private function addBin():void
+            {
+                var addBinDialog:ModalDialog = new ModalDialog(AddBinDialogForm, new Object());
+                
+                addBinDialog.title = "Add bin ...";
+                addBinDialog.addEventListener(ModalDialogEvent.SUBMIT, onAddBinDialogSubmit);
+                addBinDialog.open();
+            }
+            
+            private function addEmptyRow():void
+            {
+                
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="100%">
+        <mx:HBox width="100%" height="100%">
+            <mx:AdvancedDataGrid id="mainDataGrid" editable="true" allowDragSelection="true" selectionMode="multipleCells" sortableColumns="false" width="100%" height="100%" />
+            
+            <mx:VBox width="150" height="100%">
+                <mx:Button id="addColumnButton" label="Add column" width="120" click="onAddColumnButtonClick(event)"/>
+                <mx:Button id="addRowButton" label="Add row" width="120" click="onAddRowButtonClick(event)"/>
+            </mx:VBox>
+        </mx:HBox>
+        
+        <mx:HBox width="100%">
+            <mx:Spacer width="100%" />
+            <mx:Button label="Run" />
+        </mx:HBox>
+    </mx:VBox>
+</mx:Application>
