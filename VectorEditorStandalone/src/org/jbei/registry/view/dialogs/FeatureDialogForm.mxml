@@ -221,7 +221,7 @@
 			<mx:NumericStepper id="startNumericStepper" minimum="1" maximum="{ sequenceLength }"/>
 		</mx:FormItem>
 		<mx:FormItem label="End:" direction="horizontal">
-			<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength }"/>
+			<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength + 1 }"/>
 		</mx:FormItem>
 		<mx:FormItem label="Description:" direction="horizontal">
 			<mx:TextArea id="descriptionTextArea" />
