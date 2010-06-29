@@ -34,6 +34,11 @@ package org.jbei.registry.models
             return _uuid;
         }
         
+        public function set uuid(value:String):void
+        {
+            _uuid = value;
+        }
+        
         public function get items():Vector.<AssemblyItem>
         {
             return _items;
