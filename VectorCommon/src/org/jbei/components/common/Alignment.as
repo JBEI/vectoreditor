@@ -40,7 +40,7 @@ package org.jbei.components.common
         // Private Methods
         private function buildAnnotation():void 
         {
-            annotations.sort(sortAnnotationsByLength);
+            annotations.sort(sortAnnotationsByStartPosition);
             
             var numberOfAnnotations:uint = annotations.length;
             for(var i:uint = 0; i < numberOfAnnotations; i++) {
