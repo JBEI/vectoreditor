@@ -16,6 +16,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.view.dialogs.PreferencesDialogForm;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
+    import org.jbei.registry.view.dialogs.GelDigestDialogForm;
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.ui.PropertiesDialog;
 	import org.puremvc.as3.interfaces.INotification;
@@ -47,6 +48,7 @@ package org.jbei.registry.mediators
 				, Notifications.SHOW_ABOUT_DIALOG
 				, Notifications.SHOW_CREATE_NEW_FEATURE_DIALOG
 				, Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG
+                , Notifications.SHOW_SIMULATE_DIGESTION_DIALOG
 				, Notifications.SHOW_GOTO_DIALOG
 				, Notifications.SHOW_SELECTION_BY_RANGE_DIALOG
 			];
@@ -87,6 +89,10 @@ package org.jbei.registry.mediators
 				case Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:
 					showRestrictionEnzymesManagerDialog();
 					
+                    break;
+                case Notifications.SHOW_SIMULATE_DIGESTION_DIALOG:
+                    showSimulateDigestionDialog();
+                    
 					break;
 				case Notifications.SHOW_GOTO_DIALOG:
 					showGoToDialog();
@@ -169,6 +175,13 @@ package org.jbei.registry.mediators
 			restrictionEnzymeManagerDialog.open();
 		}
 		
+        private function showSimulateDigestionDialog():void
+        {
+            var gelDigestDialog:ModalDialog = new ModalDialog(GelDigestDialogForm, null);
+            gelDigestDialog.title = "Gel Digest";
+            gelDigestDialog.open();
+        }
+        
 		private function showGoToDialog():void
 		{
 			var gotoDialog:ModalDialog = new ModalDialog(GoToDialogForm, ApplicationFacade.getInstance().caretPosition);

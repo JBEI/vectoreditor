@@ -61,6 +61,7 @@ package org.jbei.registry
 		public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
 		public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
 		public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
+        public static const SHOW_SIMULATE_DIGESTION_DIALOG:String = "ShowSimulateDigestionDialog";
         public static const REVERSE_COMPLEMENT_SEQUENCE:String = "ReverseComplementSequence";
 		
 		public static const PRINT_SEQUENCE:String = "PrintSequence";

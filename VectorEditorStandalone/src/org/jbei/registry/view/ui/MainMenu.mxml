@@ -47,6 +47,7 @@
 			// Tools
 			public static const SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG:String = "ShowRestrictionEnzymesManagerDialog";
 			public static const SHOW_CREATE_NEW_FEATURE_DIALOG:String = "ShowCreateNewFeatureDialog";
+            public static const SHOW_SIMULATE_DIGESTION_DIALOG:String = "ShowSimulateDigestionDialog";
 			public static const SHOW_PREFERENCES_DIALOG:String = "ShowPreferencesDialog";
 			
 			// About
@@ -181,8 +182,10 @@
             	var preferencesMenuItem:MenuItem = new MenuItem("preferencesMenuItem", "Preferences");
             	var restrictionEnzymesManagerMenuItem:MenuItem = new MenuItem("restrictionEnzymesManagerMenuItem", "Restriction Enzymes Manager");
             	var createNewFeatureMenuItem:MenuItem = new MenuItem("createNewFeatureMenuItem", "Create New Feature");
+                var simulateDigestionMenuItem:MenuItem = new MenuItem("simulateDigestionMenuItem", "Simulate Digestion");
             	toolsMenuItem.addSubItem(createNewFeatureMenuItem);
             	toolsMenuItem.addSubItem(restrictionEnzymesManagerMenuItem);
+                toolsMenuItem.addSubItem(simulateDigestionMenuItem);
             	toolsMenuItem.addSubItem(separatorMenuItem);
             	toolsMenuItem.addSubItem(preferencesMenuItem);
             	
@@ -244,6 +247,7 @@
             	// Tools
             	menuItemsMap["createNewFeatureMenuItem"] = createNewFeatureMenuItem;
             	menuItemsMap["restrictionEnzymesManagerMenuItem"] = restrictionEnzymesManagerMenuItem;
+                menuItemsMap["simulateDigestionMenuItem"] = simulateDigestionMenuItem;
             	menuItemsMap["preferencesMenuItem"] = preferencesMenuItem;
             	
             	// Help
@@ -318,6 +322,8 @@
             		dispatchEvent(new MenuItemEvent(SHOW_CREATE_NEW_FEATURE_DIALOG, menuItem));
             	} else if(menuItem.id == "restrictionEnzymesManagerMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, menuItem));
+                } else if(menuItem.id == "simulateDigestionMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_SIMULATE_DIGESTION_DIALOG, menuItem));
 				} else if(menuItem.id == "gotoMenuItem") {
 					dispatchEvent(new MenuItemEvent(SHOW_GOTO_DIALOG, menuItem));
 				} else if(menuItem.id == "findMenuItem") {

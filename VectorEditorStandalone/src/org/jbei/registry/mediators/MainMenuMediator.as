@@ -52,6 +52,7 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.REDO, onRedo);
 			mainMenu.addEventListener(MainMenu.SHOW_CREATE_NEW_FEATURE_DIALOG, onShowCreateNewFeatureDialog);
 			mainMenu.addEventListener(MainMenu.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
+            mainMenu.addEventListener(MainMenu.SHOW_SIMULATE_DIGESTION_DIALOG, onShowSimulateDigestionDialog);
 			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
@@ -247,6 +248,11 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
+        private function onShowSimulateDigestionDialog(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SHOW_SIMULATE_DIGESTION_DIALOG);
+        }
+        
 		private function onShowGoToDialog(event:MenuItemEvent):void
 		{
 			sendNotification(Notifications.SHOW_GOTO_DIALOG);

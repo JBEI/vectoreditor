@@ -110,7 +110,7 @@
             [Embed(source='../assets/icons/export.png')]
             [Bindable]
             private var exportIcon:Class;
-            
+
 			// Public Methods
 			public function updateSaveButtonState(active:Boolean):void
 			{
