@@ -28,7 +28,7 @@ package org.jbei.registry.components.assemblyTableClasses
         {
             super.update(width);
             
-            label.width = cell.column.metrics.width - 3; // -3 to look pretty
+            label.width = actualWidth - 3; // -3 to look pretty
         }
         
         // Protected Methods

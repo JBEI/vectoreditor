@@ -17,6 +17,8 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private var needsRemeasurement:Boolean = true;
         
+        private var _actualWidth:Number;
+        
         // Contructor
         public function CellRenderer(cell:Cell)
         {
@@ -31,9 +33,16 @@ package org.jbei.registry.components.assemblyTableClasses
             return _cell;
         }
         
+        public function get actualWidth():Number
+        {
+            return _actualWidth;
+        }
+        
         // Public Methods
         public function update(width:Number):void
         {
+            _actualWidth = width;
+            
             needsRemeasurement = true;
             
             invalidateDisplayList();
@@ -58,7 +67,7 @@ package org.jbei.registry.components.assemblyTableClasses
             g.clear();
             g.lineStyle(1, CELL_FRAME_COLOR);
             g.beginFill(cellBackgroundColor());
-            g.drawRoundRect(0, 0, cell.column.metrics.width, CELL_HEIGHT, CELL_CORNER_RADIUS, CELL_CORNER_RADIUS);
+            g.drawRoundRect(0, 0, _actualWidth, CELL_HEIGHT, CELL_CORNER_RADIUS, CELL_CORNER_RADIUS);
             g.endFill();
         }
         

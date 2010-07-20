@@ -98,7 +98,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 }
                 
                 cellRenderer.x = 0;
-                cellRenderer.y = (CellRenderer.CELL_HEIGHT + (i > 0 ? 2 : 0)) * i;
+                cellRenderer.y = CellRenderer.CELL_HEIGHT * i;
                 
                 cellRenderers.push(cellRenderer);
                 

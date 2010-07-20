@@ -1,13 +1,17 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
+    import flash.display.DisplayObject;
     import flash.display.Graphics;
     import flash.display.Stage;
+    import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
+    import flash.ui.Keyboard;
     
     import mx.core.UIComponent;
     
     import org.jbei.registry.components.AssemblyTable;
+    import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
     
     /**
@@ -18,10 +22,12 @@ package org.jbei.registry.components.assemblyTableClasses
         private var assemblyTable:AssemblyTable;
         private var columns:Vector.<ColumnRenderer>;
         private var dataMapper:DataMapper;
+        private var caret:Caret;
         
         private var assemblyProviderChanged:Boolean = false;
         private var needsRemeasurement:Boolean = true;
         
+        private var _activeCell:Cell = null;
         private var _assemblyProvider:AssemblyProvider;
         private var _totalHeight:int = 0;
         private var _totalWidth:int = 0;
@@ -39,6 +45,7 @@ package org.jbei.registry.components.assemblyTableClasses
             dataMapper = new DataMapper();
             
             addEventListener(MouseEvent.CLICK, onMouseClick);
+            assemblyTable.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
         }
         
         // Properties
@@ -56,6 +63,8 @@ package org.jbei.registry.components.assemblyTableClasses
             invalidateProperties();
             
             dataMapper.loadAssemblyProvider(_assemblyProvider);
+            
+            updateActiveCell(null);
         }
         
         public function get totalHeight():Number
@@ -66,6 +75,11 @@ package org.jbei.registry.components.assemblyTableClasses
         public function get totalWidth():Number
         {
             return _totalWidth;
+        }
+        
+        public function get activeCell():Cell
+        {
+            return _activeCell;
         }
         
         // Public Methods
@@ -80,6 +94,13 @@ package org.jbei.registry.components.assemblyTableClasses
         }
         
         // Protected Methods
+        protected override function createChildren():void
+        {
+            super.createChildren();
+            
+            createCaret();
+        }
+        
         protected override function commitProperties():void
         {
             super.commitProperties();
@@ -107,24 +128,83 @@ package org.jbei.registry.components.assemblyTableClasses
                 updateColumnsMetrics();
                 
                 drawBackground();
+                
+                caret.update();
+                
+                if(numChildren > 0) { // swap children to make caret on very top
+                    swapChildren(caret, getChildAt(numChildren - 1));
+                }
             }
         }
         
         // Event Handlers
         private function onMouseClick(event:MouseEvent):void
         {
-            var cellRenderer:CellRenderer = lookupRenderer(event.target);
+            var clickPoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
             
-            if(!cellRenderer) {
+            var mouseActiveCell:Cell = null;
+            
+            for(var i:int = 0; i < columns.length; i++) {
+                var currentColumn:Column = columns[i].column;
+                
+                if(currentColumn.metrics.x > clickPoint.x || currentColumn.metrics.x + currentColumn.metrics.width < clickPoint.x) {
+                    continue;
+                }
+                
+                for(var j:int = 0; j < currentColumn.cells.length; j++) {
+                    var currentCell:Cell = currentColumn.cells[j] as Cell;
+                    
+                    if(currentCell.metrics.y < clickPoint.y && currentCell.metrics.y + currentCell.metrics.height > clickPoint.y) {
+                        mouseActiveCell = currentCell;
+                        
+                        break;
+                    }
+                }
+                
+                if(mouseActiveCell) {
+                    break;
+                }
+            }
+            
+            if(mouseActiveCell == null && activeCell) {
                 return;
             }
             
-            trace("Select: ", cellRenderer.cell.column.metrics.x, cellRenderer.cell.metrics.y, cellRenderer.cell.metrics.width, cellRenderer.cell.metrics.height)
+            updateActiveCell(mouseActiveCell);
+        }
+        
+        private function onKeyDown(event:KeyboardEvent):void
+        {
+            if(activeCell == null) {
+                return;
+            }
             
-            //trace(cellRenderer.cell.data);
+            if(event.keyCode == Keyboard.LEFT) {
+                tryToMoveCaretLeft();
+            } else if(event.keyCode == Keyboard.RIGHT) {
+                tryToMoveCaretRight();
+            } else if(event.keyCode == Keyboard.UP) {
+                tryToMoveCaretUp();
+            } else if(event.keyCode == Keyboard.DOWN) {
+                tryToMoveCaretDown();
+            }
         }
         
         // Private Methods
+        private function createCaret():void
+        {
+            if(!caret) {
+                caret = new Caret(this);
+                
+                caret.x = 0;
+                caret.y = 0;
+                caret.show();
+                caret.includeInLayout = false;
+                
+                addChild(caret);
+            }
+        }
+        
         private function createColumns():void
         {
             if(!columns) {
@@ -214,24 +294,49 @@ package org.jbei.registry.components.assemblyTableClasses
             g.endFill();
         }
         
-        private function lookupRenderer(target:Object):CellRenderer
+        private function updateActiveCell(cell:Cell):void
         {
-            var cellRenderer:CellRenderer = null;
+            var assemblyItem:AssemblyItem = null;
             
-            var index:int = 0;
-            while(target && !(target is Stage) && index < 100) {
-                index++;
-                
-                if(target is CellRenderer) {
-                    cellRenderer = target as CellRenderer;
-                    
-                    break;
-                } else {
-                    target = target.parent;
-                }
+            if(cell is DataCell) {
+                assemblyItem = assemblyProvider.bins[cell.column.index].items[cell.index];
             }
             
-            return cellRenderer;
+            if(_activeCell != cell) {
+                dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, assemblyItem));
+                
+                _activeCell = cell;
+                
+                caret.update();
+            }
+        }
+        
+        private function tryToMoveCaretLeft():void
+        {
+            if(activeCell.column.index > 0) {
+                updateActiveCell(columns[activeCell.column.index - 1].column.cells[activeCell.index]);
+            }
+        }
+        
+        private function tryToMoveCaretRight():void
+        {
+            if(columns.length > activeCell.column.index + 1) {
+                updateActiveCell(columns[activeCell.column.index + 1].column.cells[activeCell.index]);
+            }
+        }
+        
+        private function tryToMoveCaretDown():void
+        {
+            if(activeCell.column.cells.length > activeCell.index + 1) {
+                updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.index + 1]);
+            }
+        }
+        
+        private function tryToMoveCaretUp():void
+        {
+            if(activeCell.index > 0) {
+                updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.index - 1]);
+            }
         }
     }
 }
