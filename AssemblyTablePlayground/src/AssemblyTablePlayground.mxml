@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application width="100%" height="768" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*">
+    <mx:Script>
+        <![CDATA[
+            import org.jbei.registry.utils.StandaloneUtils;
+            
+            private function onRandomizeButtonClick(event:MouseEvent):void
+            {
+                assemblyTable.assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" backgroundColor="0xFFFFFF">
+        <mx:Button id="randomizeButton" label="Randomize" click="onRandomizeButtonClick(event)" />
+    </mx:ApplicationControlBar>
+    
+    <mx:VDividedBox width="100%" height="100%" paddingTop="8">
+        <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="80%" />
+        
+        <mx:TextArea width="100%" height="20%" />
+    </mx:VDividedBox>
+</mx:Application>
