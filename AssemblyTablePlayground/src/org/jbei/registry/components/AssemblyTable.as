@@ -10,8 +10,12 @@ package org.jbei.registry.components
     import mx.events.ScrollEventDirection;
     import mx.managers.IFocusManagerComponent;
     
+    import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
+    import org.jbei.registry.components.assemblyTableClasses.Cell;
     import org.jbei.registry.components.assemblyTableClasses.ContentHolder;
     import org.jbei.registry.models.AssemblyProvider;
+    
+    [Event(name="caretChanged", type="org.jbei.registry.components.assemblyTableClasses.CaretEvent")]
     
     /**
      * @author Zinovii Dmytriv
@@ -24,6 +28,9 @@ package org.jbei.registry.components
         
         private var assemblyProviderChanged:Boolean = false;
         private var needsRemeasurement:Boolean = true;
+        
+        private var actualWidth:Number = 0;
+        private var actualHeight:Number = 0;
         
         private var _assemblyProvider:AssemblyProvider;
         
@@ -91,6 +98,9 @@ package org.jbei.registry.components
             if(needsRemeasurement) {
                 needsRemeasurement = false;
                 
+                actualWidth = unscaledWidth;
+                actualHeight = unscaledHeight;
+                
                 contentHolder.updateMetrics(unscaledWidth, unscaledHeight);
                 contentHolder.validateNow();
                 
@@ -152,12 +162,24 @@ package org.jbei.registry.components
             }
         }
         
+        private function onCaretChanged(event:CaretEvent):void
+        {
+            if(! event.cell) {
+                return;
+            }
+            
+            adjustScrollbarsToActiveCell(event.cell);
+        }
+        
         // Private Methods
         private function createContentHolder():void
         {
             if(!contentHolder) {
                 contentHolder = new ContentHolder(this);
                 contentHolder.includeInLayout = false;
+                
+                contentHolder.addEventListener(CaretEvent.CARET_CHANGED, onCaretChanged);
+                
                 addChild(contentHolder);
                 // Make content fit into ScrollControlBase control
                 // Hide invisible portion of the content
@@ -196,6 +218,29 @@ package org.jbei.registry.components
                 scrollEvent.position = verticalScrollPosition;
                 scrollEvent.delta = verticalScrollPosition - oldPosition;
                 dispatchEvent(scrollEvent);
+            }
+        }
+        
+        private function adjustScrollbarsToActiveCell(cell:Cell):void
+        {
+            if(horizontalScrollBar && horizontalScrollBar.visible) {
+                if(contentHolder.x < 0 && -contentHolder.x > cell.column.metrics.x) {
+                    contentHolder.x = -cell.column.metrics.x;
+                    horizontalScrollPosition = -contentHolder.x;
+                } else if(cell.column.metrics.x + cell.metrics.width > actualWidth - contentHolder.x) {
+                    contentHolder.x += -((cell.column.metrics.x + cell.metrics.width) - (actualWidth - contentHolder.x) + 20);
+                    horizontalScrollPosition = -contentHolder.x;
+                }
+            }
+            
+            if(verticalScrollBar && verticalScrollBar.visible) {
+                if(contentHolder.y < 0 && -contentHolder.y > cell.metrics.y) {
+                    contentHolder.y = -cell.metrics.y;
+                    verticalScrollPosition = -contentHolder.y;
+                } else if(cell.metrics.y + cell.metrics.height > actualHeight - contentHolder.y) {
+                    contentHolder.y += -((cell.metrics.y + cell.metrics.height) - (actualHeight - contentHolder.y) + 20);
+                    verticalScrollPosition = -contentHolder.y;
+                }
             }
         }
     }

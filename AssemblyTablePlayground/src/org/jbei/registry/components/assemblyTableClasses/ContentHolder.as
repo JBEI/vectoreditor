@@ -44,7 +44,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             dataMapper = new DataMapper();
             
-            addEventListener(MouseEvent.CLICK, onMouseClick);
+            addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
             assemblyTable.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
         }
         
@@ -138,7 +138,7 @@ package org.jbei.registry.components.assemblyTableClasses
         }
         
         // Event Handlers
-        private function onMouseClick(event:MouseEvent):void
+        private function onMouseDown(event:MouseEvent):void
         {
             var clickPoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
             
@@ -166,7 +166,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 }
             }
             
-            if(mouseActiveCell == null && activeCell) {
+            if(!mouseActiveCell && activeCell) {
                 return;
             }
             
@@ -303,7 +303,7 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             if(_activeCell != cell) {
-                dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, assemblyItem));
+                dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, assemblyItem, cell));
                 
                 _activeCell = cell;
                 

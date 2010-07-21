@@ -1,6 +1,7 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
     import flash.events.Event;
+    import flash.geom.Rectangle;
     
     import org.jbei.registry.models.AssemblyItem;
     
@@ -11,20 +12,16 @@ package org.jbei.registry.components.assemblyTableClasses
     {
         public static const CARET_CHANGED:String = "caretChanged";
         
-        private var _assemblyItem:AssemblyItem;
+        public var assemblyItem:AssemblyItem;
+        public var cell:Cell;
         
         // Contructor
-        public function CaretEvent(type:String, assemblyItem:AssemblyItem)
+        public function CaretEvent(type:String, assemblyItem:AssemblyItem, cell:Cell)
         {
             super(type, true, true);
             
-            _assemblyItem = assemblyItem;
-        }
-        
-        // Properties
-        public function get assemblyItem():AssemblyItem
-        {
-            return _assemblyItem;
+            this.assemblyItem = assemblyItem;
+            this.cell = cell;
         }
     }
 }
