@@ -23,17 +23,24 @@ package org.jbei.registry.components.assemblyTableClasses
         private var columns:Vector.<ColumnRenderer>;
         private var dataMapper:DataMapper;
         private var caret:Caret;
+        private var selectionLayer:SelectionLayer;
         
         private var assemblyProviderChanged:Boolean = false;
         private var needsRemeasurement:Boolean = true;
         
         private var _activeCell:Cell = null;
+        private var _selectedCells:Vector.<Cell> = null;
         private var _assemblyProvider:AssemblyProvider;
         private var _totalHeight:int = 0;
         private var _totalWidth:int = 0;
         
         private var assemblyTableWidth:Number = 0;
         private var assemblyTableHeight:Number = 0;
+        private var mouseIsDown:Boolean = false;
+        private var previousMouseOverCell:Cell = null;
+        private var mouseSelectionStartCell:Cell = null;
+        private var shiftPressed:Boolean = false;
+        private var shiftSelectionStartCell:Cell = null;
         
         // Constructor
         public function ContentHolder(assemblyTable:AssemblyTable)
@@ -46,6 +53,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
             assemblyTable.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            assemblyTable.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
         }
         
         // Properties
@@ -82,6 +90,11 @@ package org.jbei.registry.components.assemblyTableClasses
             return _activeCell;
         }
         
+        public function get selectedCells():Vector.<Cell>
+        {
+            return _selectedCells;
+        }
+        
         // Public Methods
         public function updateMetrics(assemblyTableWidth:Number, assemblyTableHeight:Number):void
         {
@@ -97,6 +110,8 @@ package org.jbei.registry.components.assemblyTableClasses
         protected override function createChildren():void
         {
             super.createChildren();
+            
+            createSelectionLayer();
             
             createCaret();
         }
@@ -131,7 +146,11 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 caret.update();
                 
+                deselectCells();
+                
                 if(numChildren > 0) { // swap children to make caret on very top
+                    swapChildren(selectionLayer, getChildAt(numChildren - 2));
+                    
                     swapChildren(caret, getChildAt(numChildren - 1));
                 }
             }
@@ -140,43 +159,79 @@ package org.jbei.registry.components.assemblyTableClasses
         // Event Handlers
         private function onMouseDown(event:MouseEvent):void
         {
+            mouseIsDown = true;
+            
+            stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            
             var clickPoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
             
-            var mouseActiveCell:Cell = null;
-            
-            for(var i:int = 0; i < columns.length; i++) {
-                var currentColumn:Column = columns[i].column;
-                
-                if(currentColumn.metrics.x > clickPoint.x || currentColumn.metrics.x + currentColumn.metrics.width < clickPoint.x) {
-                    continue;
-                }
-                
-                for(var j:int = 0; j < currentColumn.cells.length; j++) {
-                    var currentCell:Cell = currentColumn.cells[j] as Cell;
-                    
-                    if(currentCell.metrics.y < clickPoint.y && currentCell.metrics.y + currentCell.metrics.height > clickPoint.y) {
-                        mouseActiveCell = currentCell;
-                        
-                        break;
-                    }
-                }
-                
-                if(mouseActiveCell) {
-                    break;
-                }
-            }
+            var mouseActiveCell:Cell = getCellByPoint(clickPoint);
             
             if(!mouseActiveCell && activeCell) {
                 return;
             }
             
+            deselectCells();
+            
+            mouseSelectionStartCell = mouseActiveCell;
+            
             updateActiveCell(mouseActiveCell);
+        }
+        
+        private function onMouseMove(event:MouseEvent):void
+        {
+            if(!mouseIsDown) {
+                return;
+            }
+            
+            if(!activeCell) {
+                return;
+            }
+            
+            var mousePoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
+            
+            var currentCell:Cell = getCellByPoint(mousePoint);
+            
+            if(!currentCell) {
+                return;
+            }
+            
+            if(currentCell == previousMouseOverCell) {
+                return;
+            }
+            
+            previousMouseOverCell = currentCell;
+            
+            selectCellsInRange(mouseSelectionStartCell, currentCell);
+            
+            updateActiveCell(currentCell);
+        }
+        
+        private function onMouseUp(event:MouseEvent):void
+        {
+            mouseIsDown = false;
+            previousMouseOverCell = null;
+            mouseSelectionStartCell = null;
+            
+            stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
         }
         
         private function onKeyDown(event:KeyboardEvent):void
         {
+            if(!event.shiftKey) {
+                deselectCells();
+            }
+            
             if(activeCell == null) {
                 return;
+            }
+            
+            if(event.shiftKey && !shiftPressed) {
+                shiftPressed = true;
+                
+                shiftSelectionStartCell = activeCell;
             }
             
             if(event.keyCode == Keyboard.LEFT) {
@@ -187,6 +242,17 @@ package org.jbei.registry.components.assemblyTableClasses
                 tryToMoveCaretUp();
             } else if(event.keyCode == Keyboard.DOWN) {
                 tryToMoveCaretDown();
+            }
+            
+            selectCellsInRange(shiftSelectionStartCell, activeCell);
+        }
+        
+        private function onKeyUp(event:KeyboardEvent):void
+        {
+            if(!event.shiftKey && shiftPressed) {
+                shiftPressed = false;
+                
+                shiftSelectionStartCell = null;
             }
         }
         
@@ -202,6 +268,19 @@ package org.jbei.registry.components.assemblyTableClasses
                 caret.includeInLayout = false;
                 
                 addChild(caret);
+            }
+        }
+        
+        private function createSelectionLayer():void
+        {
+            if(!selectionLayer) {
+                selectionLayer = new SelectionLayer(this);
+                selectionLayer.x = 0;
+                selectionLayer.y = 0;
+                
+                selectionLayer.includeInLayout = false;
+                
+                addChild(selectionLayer);
             }
         }
         
@@ -337,6 +416,68 @@ package org.jbei.registry.components.assemblyTableClasses
             if(activeCell.index > 0) {
                 updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.index - 1]);
             }
+        }
+        
+        private function getCellByPoint(point:Point):Cell
+        {
+            var resultCell:Cell = null;
+            
+            for(var i:int = 0; i < columns.length; i++) {
+                var currentColumn:Column = columns[i].column;
+                
+                if(currentColumn.metrics.x > point.x || currentColumn.metrics.x + currentColumn.metrics.width < point.x) {
+                    continue;
+                }
+                
+                for(var j:int = 0; j < currentColumn.cells.length; j++) {
+                    var currentCell:Cell = currentColumn.cells[j] as Cell;
+                    
+                    if(currentCell.metrics.y < point.y && currentCell.metrics.y + currentCell.metrics.height > point.y) {
+                        resultCell = currentCell;
+                        
+                        break;
+                    }
+                }
+                
+                if(resultCell) {
+                    break;
+                }
+            }
+            
+            return resultCell
+        }
+        
+        private function selectCellsInRange(startCell:Cell, endCell:Cell):void
+        {
+            if(!startCell || !endCell || startCell == endCell) {
+                deselectCells();
+                
+                return;
+            }
+            
+            var startColumnIndex:int = startCell.column.index < endCell.column.index ? startCell.column.index : endCell.column.index;
+            var endColumnIndex:int = startCell.column.index < endCell.column.index ? endCell.column.index : startCell.column.index;
+            var startRowIndex:int = startCell.index < endCell.index ? startCell.index : endCell.index;
+            var endRowIndex:int = startCell.index < endCell.index ? endCell.index : startCell.index;
+            
+            var selectedCells:Vector.<Cell> = new Vector.<Cell>();
+            
+            for(var c:int = startColumnIndex; c <= endColumnIndex; c++) {
+                for(var r:int = startRowIndex; r <= endRowIndex; r++) {
+                    selectedCells.push(columns[c].column.cells[r]);
+                }
+            }
+            
+            _selectedCells = selectedCells;
+            
+            selectionLayer.select(selectedCells);
+        }
+        
+        private function deselectCells():void
+        {
+            selectionLayer.deselect();
+            
+            _selectedCells = null;
         }
     }
 }

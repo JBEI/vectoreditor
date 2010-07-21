@@ -13,9 +13,12 @@ package org.jbei.registry.components
     import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
     import org.jbei.registry.components.assemblyTableClasses.Cell;
     import org.jbei.registry.components.assemblyTableClasses.ContentHolder;
+    import org.jbei.registry.components.assemblyTableClasses.DataCell;
+    import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
     
     [Event(name="caretChanged", type="org.jbei.registry.components.assemblyTableClasses.CaretEvent")]
+    [Event(name="selectionChanged", type="org.jbei.registry.components.assemblyTableClasses.SelectionEvent")]
     
     /**
      * @author Zinovii Dmytriv
@@ -64,6 +67,25 @@ package org.jbei.registry.components
             assemblyProviderChanged = true;
             
             invalidateProperties();
+        }
+        
+        public function get selectedItems():Vector.<AssemblyItem>
+        {
+            if(!contentHolder.selectedCells || contentHolder.selectedCells.length == 0) {
+                return null;
+            }
+            
+            var resultItems:Vector.<AssemblyItem> = new Vector.<AssemblyItem>();
+            
+            for(var i:int = 0; i < contentHolder.selectedCells.length; i++) {
+                var cell:Cell = contentHolder.selectedCells[i];
+                
+                if(cell is DataCell) {
+                    resultItems.push(cell);
+                }
+            }
+            
+            return resultItems;
         }
         
         // Public Methods
