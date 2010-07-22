@@ -12,11 +12,11 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.FeatureDialogForm;
+	import org.jbei.registry.view.dialogs.GelDigestDialogForm;
 	import org.jbei.registry.view.dialogs.GoToDialogForm;
 	import org.jbei.registry.view.dialogs.PreferencesDialogForm;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
-    import org.jbei.registry.view.dialogs.GelDigestDialogForm;
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.ui.PropertiesDialog;
 	import org.puremvc.as3.interfaces.INotification;
@@ -177,7 +177,7 @@ package org.jbei.registry.mediators
 		
         private function showSimulateDigestionDialog():void
         {
-            var gelDigestDialog:ModalDialog = new ModalDialog(GelDigestDialogForm, null);
+            var gelDigestDialog:SimpleDialog = new SimpleDialog(GelDigestDialogForm);
             gelDigestDialog.title = "Gel Digest";
             gelDigestDialog.open();
         }
