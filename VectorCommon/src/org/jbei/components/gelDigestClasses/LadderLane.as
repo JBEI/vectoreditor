@@ -7,6 +7,9 @@ package org.jbei.components.gelDigestClasses
     
     public class LadderLane extends UIComponent
     {
+        public static const BAND_COLOR:uint = 0xFFFFFF;
+        public static const CONNECTOR_COLOR:uint = 0x999999;
+
         private var _ladder:Ladder;
         
         private var bandYPositions:Vector.<Number>;
@@ -75,7 +78,8 @@ package org.jbei.components.gelDigestClasses
                 actualWidth = unscaledWidth;
                 actualHeight = unscaledHeight;
                 
-                drawBoundaries();
+                var g:Graphics = graphics;
+                g.clear();
                 
                 redrawBands();
                 redrawBandSizeLabels();
@@ -84,16 +88,6 @@ package org.jbei.components.gelDigestClasses
         }
         
         // Private Methods
-        private function drawBoundaries():void
-        {
-            var g:Graphics = graphics;
-            
-            g.clear();
-            g.lineStyle(1, 0x000000);
-            g.drawRect(0, 0, actualWidth, actualHeight);
-            g.endFill();
-        }
-        
         private function redrawBands():void
         {
             var g:Graphics = graphics;
@@ -102,7 +96,7 @@ package org.jbei.components.gelDigestClasses
                 return;
             }
             
-            g.lineStyle(2, 0x000000);
+            g.lineStyle(2, BAND_COLOR);
             
             var ladderHeight:Number = actualHeight * 0.8;
             
@@ -121,8 +115,10 @@ package org.jbei.components.gelDigestClasses
                 var bandSize:int = _ladder.bandSizes[i];
                 
                 var currentLogDifference:Number = Math.log(_ladder.bandSizes[i] / ladderMin);
+                var normalizedLogDifference:Number = currentLogDifference / totalLogDifference;
+                var scalingFactor:Number = - (.1 * Math.sin(2*Math.PI*normalizedLogDifference)); // adding this makes the ladders look nicer
                 
-                bandYPositions.push(0.9 * actualHeight - currentLogDifference * ladderHeight / totalLogDifference);
+                bandYPositions.push(0.9 * actualHeight - (scalingFactor + normalizedLogDifference) * ladderHeight);
                 
                 g.moveTo(55, bandYPositions[i]);
                 g.lineTo(actualWidth - 10, bandYPositions[i]);
@@ -144,6 +140,7 @@ package org.jbei.components.gelDigestClasses
             for(var i:int = 0; i < bandSizeLabels.length; i++) {
                 var label:Label = bandSizeLabels[i];
                                 
+                label.setStyle("color", BAND_COLOR);
                 label.setStyle("textAlign", "right");
                 
                 label.text = _ladder.bandSizes[i].toString();
@@ -206,7 +203,7 @@ package org.jbei.components.gelDigestClasses
                 return;
             }
             
-            g.lineStyle(1, 0x666666);
+            g.lineStyle(1, CONNECTOR_COLOR);
             
             if(!bandSizeLabels || bandSizeLabels.length == 0) {
                 return;

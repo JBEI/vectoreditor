@@ -91,23 +91,12 @@ package org.jbei.components.gelDigestClasses
                 actualWidth = unscaledWidth;
                 actualHeight = unscaledHeight;
                 
-                drawBoundaries();
-                
                 redrawBands();
             }
         }
         
         // Private Methods
-        private function drawBoundaries():void
-        {
-            var g:Graphics = graphics;
-            
-            g.clear();
-            g.lineStyle(1, 0x000000);
-            g.drawRect(0, 0, actualWidth, actualHeight);
-            g.endFill();
-        }
-        
+
         private function redrawBands():void
         {
             if(!ladder || ladder.bandSizes.length < 2 || !fragments || fragments.length == 0) {
@@ -127,8 +116,11 @@ package org.jbei.components.gelDigestClasses
                 var fragment:DigestionFragment = fragments[i];
                 
                 var currentLogDifference:Number = Math.log(fragment.length / ladderMin);
-                
-                var bandYPosition:Number = 0.9 * actualHeight - currentLogDifference * ladderHeight / totalLogDifference;
+                var normalizedLogDifference:Number = currentLogDifference / totalLogDifference;
+                var scalingFactor:Number = - (.1 * Math.sin(2*Math.PI*normalizedLogDifference)); // adding this makes the ladders look nicer
+
+                var bandYPosition:Number = 0.9 * actualHeight  - (scalingFactor + normalizedLogDifference) * ladderHeight;
+
                 if(bandYPosition < 0) {
                     bandYPosition = 2;
                 }

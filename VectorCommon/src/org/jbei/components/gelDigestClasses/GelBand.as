@@ -12,7 +12,7 @@ package org.jbei.components.gelDigestClasses
     
     public class GelBand extends UIComponent
     {
-        public static const BAND_COLOR:uint = 0x000000;
+        public static const BAND_COLOR:uint = 0xFFFFFF;
         
         private var tip:ToolTip;
         

@@ -15,8 +15,11 @@ package org.jbei.components
     
     public class GelDigestComponent extends UIComponent
     {
-        private var ladderLabel:Label;
-        private var sampleLabel:Label;
+        public static const BACKGROUND_COLOR:uint = 0x000000;
+        public static const TEXT_COLOR:uint = 0xFFFFFF;
+        
+        private var numFragmentsLabel:Label;
+        
         private var ladderLane:LadderLane;
         private var sampleLane:SampleLane;
         
@@ -85,8 +88,8 @@ package org.jbei.components
         {
             super.createChildren();
             
-            createLadderLabel();
-            createSampleLabel();
+            createNumFragmentsLabel();
+            
             createLadderLane();
             createSampleLane();
         }
@@ -103,9 +106,7 @@ package org.jbei.components
                 ladderLane.ladder = _ladder;
                 sampleLane.ladder = _ladder;
                 
-                ladderLabel.text = _ladder ? _ladder.name : "";
-                
-                invalidateDisplayList();
+               invalidateDisplayList();
             }
             
             if(fragmentsChanged) {
@@ -114,6 +115,14 @@ package org.jbei.components
                 needsMeasurement = true;
                 
                 sampleLane.fragments = _fragments;
+                
+                if (!_fragments || _fragments.length == 0) {
+                    numFragmentsLabel.text = "No digestion";
+                } else if (_fragments.length == 1) {
+                    numFragmentsLabel.text = "1 fragment";
+                } else {
+                    numFragmentsLabel.text = _fragments.length + " fragments";
+                }
                 
                 invalidateDisplayList();
             }
@@ -146,25 +155,17 @@ package org.jbei.components
             invalidateDisplayList();
         }
         
-        private function createLadderLabel():void
+        private function createNumFragmentsLabel():void
         {
-            if(!ladderLabel) {
-                ladderLabel = new Label();
-                ladderLabel.height = 20;
-                ladderLabel.text = "Lane Label";
+            if(!numFragmentsLabel) {
+                numFragmentsLabel = new Label();
+                numFragmentsLabel.height = 20;
+                numFragmentsLabel.text = "No digestion";
                 
-                addChild(ladderLabel);
-            }
-        }
-        
-        private function createSampleLabel():void
-        {
-            if(!sampleLabel) {
-                sampleLabel = new Label();
-                sampleLabel.height = 20;
-                sampleLabel.text = "Sample";
-                
-                addChild(sampleLabel);
+                numFragmentsLabel.setStyle("color", TEXT_COLOR);
+                numFragmentsLabel.setStyle("textAlign", "right");
+
+                addChild(numFragmentsLabel);
             }
         }
         
@@ -191,21 +192,17 @@ package org.jbei.components
             var g:Graphics = graphics;
             
             g.clear();
-            g.beginFill(0xFFFFFF);
+            g.beginFill(BACKGROUND_COLOR);
             g.drawRect(0, 0, actualWidth, actualHeight);
             g.endFill();
         }
         
         private function adjustLabelPosition():void
         {
-            ladderLabel.width = actualWidth / 2 - 15;
-            sampleLabel.width = actualWidth / 2 - 15;
+            numFragmentsLabel.width = actualWidth - 20;
             
-            ladderLabel.x = 10;
-            ladderLabel.y = 10;
-            
-            sampleLabel.x = actualWidth / 2 + 5;
-            sampleLabel.y = 10;
+            numFragmentsLabel.x = 10;
+            numFragmentsLabel.y = 10;
         }
         
         private function adjustLanePosition():void
