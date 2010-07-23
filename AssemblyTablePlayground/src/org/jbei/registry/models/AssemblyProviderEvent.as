@@ -7,12 +7,13 @@ package org.jbei.registry.models
      */
     public class AssemblyProviderEvent extends Event
     {
-        public static const ASSEMBLY_PROVIDER_CHANGING:String = "AssemblyProviderChanging";
-        public static const ASSEMBLY_PROVIDER_CHANGED:String = "AssemblyProviderChanged";
+        public static const ASSEMBLY_PROVIDER_CHANGING:String = "assemblyProviderChanging";
+        public static const ASSEMBLY_PROVIDER_CHANGED:String = "assemblyProviderChanged";
         
-        public static const KIND_BIN_ADD:String = "AssemblyProviderKindBinAdd";
-        public static const KIND_BIN_REMOVE:String = "AssemblyProviderKindBinRemove";
-        public static const KIND_BIN_UPDATE:String = "AssemblyProviderKindBinUpdate";
+        public static const KIND_BIN_ADD:String = "assemblyProviderKindBinAdd";
+        public static const KIND_BIN_REMOVE:String = "assemblyProviderKindBinRemove";
+        public static const KIND_BIN_UPDATE:String = "assemblyProviderKindBinUpdate";
+        public static const KIND_BIN_MOVED:String = "assemblyProviderKindBinMoved";
         
         public static const KIND_MANUAL_UPDATE:String = "AssemblyProviderKindManualUpdate";
         

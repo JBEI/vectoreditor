@@ -1,5 +1,6 @@
 package org.jbei.registry.components
 {
+    import flash.events.Event;
     import flash.events.FocusEvent;
     import flash.events.MouseEvent;
     
@@ -12,10 +13,13 @@ package org.jbei.registry.components
     
     import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
     import org.jbei.registry.components.assemblyTableClasses.Cell;
+    import org.jbei.registry.components.assemblyTableClasses.Column;
+    import org.jbei.registry.components.assemblyTableClasses.ColumnHeaderDragEvent;
     import org.jbei.registry.components.assemblyTableClasses.ContentHolder;
     import org.jbei.registry.components.assemblyTableClasses.DataCell;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
+    import org.jbei.registry.models.AssemblyProviderEvent;
     
     [Event(name="caretChanged", type="org.jbei.registry.components.assemblyTableClasses.CaretEvent")]
     [Event(name="selectionChanged", type="org.jbei.registry.components.assemblyTableClasses.SelectionEvent")]
@@ -105,7 +109,16 @@ package org.jbei.registry.components
             if(assemblyProviderChanged) {
                 assemblyProviderChanged = false;
                 
+                if(_assemblyProvider && !_assemblyProvider.hasEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED)) {
+                    _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
+                }
+                
                 contentHolder.assemblyProvider = assemblyProvider;
+                
+                horizontalScrollPosition = 0;
+                verticalScrollPosition = 0;
+                contentHolder.x = 0;
+                contentHolder.y = 0;
                 
                 needsRemeasurement = true;
                 
@@ -146,6 +159,14 @@ package org.jbei.registry.components
             needsRemeasurement = true;
             
             invalidateDisplayList();
+            
+            contentHolder.updateHeaderPosition(0);
+            
+            contentHolder.x = 0;
+            contentHolder.y = 0;
+            
+            horizontalScrollPosition = 0;
+            verticalScrollPosition = 0;
         }
         
         private function onFocusIn(event:FocusEvent):void
@@ -181,6 +202,8 @@ package org.jbei.registry.components
                 if (verticalScrollPosition != -contentHolder.y) {
                     verticalScrollPosition = -contentHolder.y;
                 }
+                
+                contentHolder.updateHeaderPosition(-contentHolder.y);
             }
         }
         
@@ -193,6 +216,18 @@ package org.jbei.registry.components
             adjustScrollbarsToActiveCell(event.cell);
         }
         
+        private function onHeaderDragging(event:ColumnHeaderDragEvent):void
+        {
+            adjustScrollbarsToHeaderColumn(event.columnHeader.column);
+        }
+        
+        private function onAssemblyProviderChanged(event:AssemblyProviderEvent):void
+        {
+            assemblyProviderChanged = true;
+            
+            invalidateProperties();
+        }
+        
         // Private Methods
         private function createContentHolder():void
         {
@@ -201,6 +236,7 @@ package org.jbei.registry.components
                 contentHolder.includeInLayout = false;
                 
                 contentHolder.addEventListener(CaretEvent.CARET_CHANGED, onCaretChanged);
+                contentHolder.addEventListener(ColumnHeaderDragEvent.HEADER_DRAGGING, onHeaderDragging);
                 
                 addChild(contentHolder);
                 // Make content fit into ScrollControlBase control
@@ -259,9 +295,26 @@ package org.jbei.registry.components
                 if(contentHolder.y < 0 && -contentHolder.y > cell.metrics.y) {
                     contentHolder.y = -cell.metrics.y;
                     verticalScrollPosition = -contentHolder.y;
+                    
+                    contentHolder.updateHeaderPosition(-contentHolder.y);
                 } else if(cell.metrics.y + cell.metrics.height > actualHeight - contentHolder.y) {
                     contentHolder.y += -((cell.metrics.y + cell.metrics.height) - (actualHeight - contentHolder.y) + 20);
                     verticalScrollPosition = -contentHolder.y;
+                    
+                    contentHolder.updateHeaderPosition(-contentHolder.y);
+                }
+            }
+        }
+        
+        private function adjustScrollbarsToHeaderColumn(column:Column):void
+        {
+            if(horizontalScrollBar && horizontalScrollBar.visible) {
+                if(contentHolder.x < 0 && -contentHolder.x > column.metrics.x) {
+                    contentHolder.x = -column.metrics.x;
+                    horizontalScrollPosition = -contentHolder.x;
+                } else if(column.metrics.x + column.metrics.width > actualWidth - contentHolder.x) {
+                    contentHolder.x += -((column.metrics.x + column.metrics.width) - (actualWidth - contentHolder.x) + 20);
+                    horizontalScrollPosition = -contentHolder.x;
                 }
             }
         }

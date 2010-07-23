@@ -76,5 +76,30 @@ package org.jbei.registry.models
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_REMOVE));
             }
         }
+        
+        public function swapBins(bin1:Bin, bin2:Bin, quiet:Boolean = false):void
+        {
+            if(bin1 == null || bin2 == null) {
+                return;
+            }
+            
+            var binIndex1:int = _bins.indexOf(bin1);
+            var binIndex2:int = _bins.indexOf(bin2);
+            
+            if(binIndex1 == -1 || binIndex2 == -1) {
+                return;
+            }
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_MOVED));
+            }
+            
+            _bins.splice(binIndex1, 1, bin2);
+            _bins.splice(binIndex2, 1, bin1);
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_MOVED));
+            }
+        }
     }
 }

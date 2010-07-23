@@ -74,7 +74,7 @@ package org.jbei.registry.components.assemblyTableClasses
             var g:Graphics = graphics;
             
             g.beginFill(SELECTION_COLOR, 0.2);
-            g.drawRoundRect(cell.column.metrics.x, cell.metrics.y, cell.metrics.width, cell.metrics.height, CellRenderer.CELL_CORNER_RADIUS, CellRenderer.CELL_CORNER_RADIUS);
+            g.drawRoundRect(cell.column.metrics.x, cell.column.metrics.y + cell.metrics.y, cell.metrics.width, cell.metrics.height, CellRenderer.CELL_CORNER_RADIUS, CellRenderer.CELL_CORNER_RADIUS);
             g.endFill();
         }
     }

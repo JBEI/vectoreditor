@@ -9,6 +9,7 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.ui.Keyboard;
     
     import mx.core.UIComponent;
+    import mx.events.ScrollEvent;
     
     import org.jbei.registry.components.AssemblyTable;
     import org.jbei.registry.models.AssemblyItem;
@@ -24,6 +25,7 @@ package org.jbei.registry.components.assemblyTableClasses
         private var dataMapper:DataMapper;
         private var caret:Caret;
         private var selectionLayer:SelectionLayer;
+        private var headerPanel:HeaderPanel;
         
         private var assemblyProviderChanged:Boolean = false;
         private var needsRemeasurement:Boolean = true;
@@ -41,6 +43,7 @@ package org.jbei.registry.components.assemblyTableClasses
         private var mouseSelectionStartCell:Cell = null;
         private var shiftPressed:Boolean = false;
         private var shiftSelectionStartCell:Cell = null;
+        private var previousHeaderYPosition:Number = 0;
         
         // Constructor
         public function ContentHolder(assemblyTable:AssemblyTable)
@@ -73,6 +76,9 @@ package org.jbei.registry.components.assemblyTableClasses
             dataMapper.loadAssemblyProvider(_assemblyProvider);
             
             updateActiveCell(null);
+            
+            headerPanel.y = 0;
+            headerPanel.updateMetrics();
         }
         
         public function get totalHeight():Number
@@ -106,6 +112,27 @@ package org.jbei.registry.components.assemblyTableClasses
             this.assemblyTableHeight = assemblyTableHeight
         }
         
+        public function updateHeaderPosition(position:Number):void
+        {
+            if(position != previousHeaderYPosition) {
+                previousHeaderYPosition = position;
+                
+                headerPanel.y = position;
+            }
+        }
+        
+        public function select(cells:Vector.<Cell>):void
+        {
+            selectionLayer.select(cells);
+        }
+        
+        public function deselect():void
+        {
+            selectionLayer.deselect();
+            
+            _selectedCells = null;
+        }
+        
         // Protected Methods
         protected override function createChildren():void
         {
@@ -114,6 +141,8 @@ package org.jbei.registry.components.assemblyTableClasses
             createSelectionLayer();
             
             createCaret();
+            
+            createHeaderPanel();
         }
         
         protected override function commitProperties():void
@@ -146,12 +175,17 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 caret.update();
                 
-                deselectCells();
+                deselect();
                 
-                if(numChildren > 0) { // swap children to make caret on very top
-                    swapChildren(selectionLayer, getChildAt(numChildren - 2));
+                headerPanel.width = _totalWidth;
+                headerPanel.updateMetrics();
+                
+                if(numChildren > 0) {
+                    swapChildren(selectionLayer, getChildAt(numChildren - 3));
                     
-                    swapChildren(caret, getChildAt(numChildren - 1));
+                    swapChildren(caret, getChildAt(numChildren - 2));
+                    
+                    swapChildren(headerPanel, getChildAt(numChildren - 1));
                 }
             }
         }
@@ -159,8 +193,6 @@ package org.jbei.registry.components.assemblyTableClasses
         // Event Handlers
         private function onMouseDown(event:MouseEvent):void
         {
-            mouseIsDown = true;
-            
             stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
             stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
             
@@ -172,7 +204,9 @@ package org.jbei.registry.components.assemblyTableClasses
                 return;
             }
             
-            deselectCells();
+            mouseIsDown = true;
+            
+            deselect();
             
             mouseSelectionStartCell = mouseActiveCell;
             
@@ -221,7 +255,7 @@ package org.jbei.registry.components.assemblyTableClasses
         private function onKeyDown(event:KeyboardEvent):void
         {
             if(!event.shiftKey) {
-                deselectCells();
+                deselect();
             }
             
             if(activeCell == null) {
@@ -284,6 +318,21 @@ package org.jbei.registry.components.assemblyTableClasses
             }
         }
         
+        private function createHeaderPanel():void
+        {
+            if(!headerPanel) {
+                headerPanel = new HeaderPanel(this);
+                
+                headerPanel.x = 0;
+                headerPanel.y = 0;
+                headerPanel.height = HeaderPanel.HEADER_HEIGHT;
+                
+                headerPanel.includeInLayout = false;
+                
+                addChild(headerPanel);
+            }
+        }
+        
         private function createColumns():void
         {
             if(!columns) {
@@ -299,6 +348,10 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             updateColumnsMetrics();
+            
+            headerPanel.updateColumns(dataMapper.columns);
+            
+            headerPanel.updateMetrics();
         }
         
         private function removeColumns():void
@@ -319,7 +372,7 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             var totalColumnsWidth:Number = 0;
-            var maxColumnHeight:Number = assemblyTableHeight;
+            var maxColumnHeight:Number = assemblyTableHeight - HeaderPanel.HEADER_HEIGHT;
             
             var columnWidth:Number = calculateColumnWidth();
             
@@ -327,7 +380,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 var assemblyColumn:ColumnRenderer = columns[i] as ColumnRenderer;
                 
                 var xPosition:Number = columnWidth * i;
-                var yPosition:Number = 0;
+                var yPosition:Number = HeaderPanel.HEADER_HEIGHT;
                 
                 assemblyColumn.x = xPosition;
                 assemblyColumn.y = yPosition;
@@ -343,7 +396,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 assemblyColumn.update(columnWidth);
             }
             
-            _totalHeight = maxColumnHeight;
+            _totalHeight = maxColumnHeight + HeaderPanel.HEADER_HEIGHT;
             _totalWidth = totalColumnsWidth;
         }
         
@@ -432,7 +485,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 for(var j:int = 0; j < currentColumn.cells.length; j++) {
                     var currentCell:Cell = currentColumn.cells[j] as Cell;
                     
-                    if(currentCell.metrics.y < point.y && currentCell.metrics.y + currentCell.metrics.height > point.y) {
+                    if(currentCell.metrics.y + currentCell.column.metrics.y < point.y && currentCell.metrics.y + currentCell.column.metrics.y + currentCell.metrics.height > point.y) {
                         resultCell = currentCell;
                         
                         break;
@@ -450,7 +503,7 @@ package org.jbei.registry.components.assemblyTableClasses
         private function selectCellsInRange(startCell:Cell, endCell:Cell):void
         {
             if(!startCell || !endCell || startCell == endCell) {
-                deselectCells();
+                deselect();
                 
                 return;
             }
@@ -471,13 +524,6 @@ package org.jbei.registry.components.assemblyTableClasses
             _selectedCells = selectedCells;
             
             selectionLayer.select(selectedCells);
-        }
-        
-        private function deselectCells():void
-        {
-            selectionLayer.deselect();
-            
-            _selectedCells = null;
         }
     }
 }

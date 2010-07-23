@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application width="100%" height="100%" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*">
+<mx:Application width="100%" height="100%" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]">
     <mx:Script>
         <![CDATA[
             import org.jbei.registry.utils.StandaloneUtils;

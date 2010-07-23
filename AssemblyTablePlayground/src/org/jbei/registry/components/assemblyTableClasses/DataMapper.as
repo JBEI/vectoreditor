@@ -52,8 +52,8 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             for(var i:int = 0; i < assemblyProvider.bins.length; i++) {
-                var newColumn:Column = new Column(i);
                 var currentBin:Bin = assemblyProvider.bins[i] as Bin;
+                var newColumn:Column = new Column(i, currentBin.featureType.name);
                 var numberOfItemsInBin:int = currentBin.items.length;
                 
                 for(var j:int = 0; j < numberOfItemsInBiggestBin + 1; j++) {

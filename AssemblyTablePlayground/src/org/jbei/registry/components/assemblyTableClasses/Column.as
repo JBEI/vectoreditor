@@ -10,13 +10,15 @@ package org.jbei.registry.components.assemblyTableClasses
         private var _metrics:Rectangle;
         private var _index:int;
         private var _cells:Vector.<Cell>;
+        private var _title:String;
         
         // Constructor
-        public function Column(index:int)
+        public function Column(index:int, title:String)
         {
             _index = index;
             _cells = new Vector.<Cell>();
             _metrics = new Rectangle();
+            _title = title;
         }
         
         // Properties
@@ -33,6 +35,11 @@ package org.jbei.registry.components.assemblyTableClasses
         public function get index():int
         {
             return _index;
+        }
+        
+        public function get title():String
+        {
+            return _title;
         }
         
         public function get cells():Vector.<Cell>

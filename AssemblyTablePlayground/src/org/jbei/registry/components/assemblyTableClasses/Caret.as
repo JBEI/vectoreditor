@@ -67,7 +67,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             g.lineStyle(2, CARET_FRAME_COLOR);
             g.beginFill(CARET_COLOR, 0.35);
-            g.drawRoundRect(cell.column.metrics.x, cell.metrics.y, cell.metrics.width, CellRenderer.CELL_HEIGHT, CellRenderer.CELL_CORNER_RADIUS, CellRenderer.CELL_CORNER_RADIUS);
+            g.drawRoundRect(cell.column.metrics.x, cell.column.metrics.y + cell.metrics.y, cell.metrics.width, CellRenderer.CELL_HEIGHT, CellRenderer.CELL_CORNER_RADIUS, CellRenderer.CELL_CORNER_RADIUS);
             g.endFill();
         }
     }

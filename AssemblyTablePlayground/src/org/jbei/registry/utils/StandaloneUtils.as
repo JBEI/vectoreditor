@@ -46,14 +46,19 @@ package org.jbei.registry.utils
         {
             var assemblyProvider:AssemblyProvider = new AssemblyProvider();
             
-            var maxBins:int = 10;
+            var maxBins:int = 15;
             
             var numberOfBins:int = Math.round(Math.random() * maxBins);
             
+            var typeKeys:Array = ["promoters", "rbs", "gene", "terminator"];
+            var typeValues:Array = ["Promoters", "RBS", "Gene", "Terminator"];
+            
             for(var i:int = 0; i < numberOfBins; i++) {
-                var newBin:Bin = new Bin(new FeatureType("Promoters", "promoters"));
+                var typeIndex:int = Math.round(Math.random() * 3);
                 
-                var maxItems:int = 10;
+                var newBin:Bin = new Bin(new FeatureType(typeValues[typeIndex], typeKeys[typeIndex]));
+                
+                var maxItems:int = 15;
                 var numberOfItems:int = Math.round(Math.random() * maxItems);
                 
                 for(var j:int = 0; j < numberOfItems; j++) {
