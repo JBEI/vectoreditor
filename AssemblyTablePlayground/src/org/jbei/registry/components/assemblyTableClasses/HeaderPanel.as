@@ -20,11 +20,13 @@ package org.jbei.registry.components.assemblyTableClasses
     {
         public static const HEADER_HEIGHT:Number = 25;
         public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0x666666;
+        public static const DRAGGING_DIMMED_COLUMN_COLOR:uint = 0x888888;
         
         private var contentHolder:ContentHolder;
         private var columnHeaders:Vector.<ColumnHeader>;
         private var draggingHeader:UIComponent;
         private var draggingCaret:UIComponent;
+        private var draggingDimColumn:UIComponent;
         
         private var dragging:Boolean = false;
         private var clickPoint:Point;
@@ -70,6 +72,8 @@ package org.jbei.registry.components.assemblyTableClasses
             createDraggingHeader();
             
             createDraggingCaret();
+            
+            createDraggingDimColumn();
         }
         
         protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
@@ -84,10 +88,12 @@ package org.jbei.registry.components.assemblyTableClasses
                 actualWidth = unscaledWidth;
                 actualHeight = unscaledHeight;
                 
-                if(draggingHeader) { // make draggingHeader above all children
-                    swapChildren(draggingHeader, getChildAt(numChildren - 2));
+                if(draggingHeader) { // reorder children
+                    swapChildren(draggingHeader, getChildAt(numChildren - 3));
                     
-                    swapChildren(draggingCaret, getChildAt(numChildren - 1));
+                    swapChildren(draggingCaret, getChildAt(numChildren - 2));
+                    
+                    swapChildren(draggingHeader, getChildAt(numChildren - 1));
                 }
             }
         }
@@ -100,12 +106,14 @@ package org.jbei.registry.components.assemblyTableClasses
             
             showDraggingHeader(event.columnHeader);
             showDraggingCaret(event.columnHeader);
+            showDraggingDimColumn(event.columnHeader);
         }
         
         private function onColumnHeaderStopDragging(event:ColumnHeaderDragEvent):void
         {
             hideDraggingHeader();
             hideDraggingCaret();
+            hideDraggingDimColumn();
         }
         
         private function onMouseDown(event:MouseEvent):void
@@ -172,10 +180,9 @@ package org.jbei.registry.components.assemblyTableClasses
                             dropIndex = columnHeaders.length - 1; // last
                         }
                         
-                        var dropBin:Bin = contentHolder.assemblyProvider.bins[dropIndex];
                         var dragBin:Bin = contentHolder.assemblyProvider.bins[dragIndex];
                         
-                        contentHolder.assemblyProvider.swapBins(dropBin, dragBin);
+                        contentHolder.assemblyProvider.moveBin(dragBin, dropIndex);
                     }
                 }
             }
@@ -215,6 +222,21 @@ package org.jbei.registry.components.assemblyTableClasses
                 draggingCaret.visible = false;
                 
                 addChild(draggingCaret);
+            }
+        }
+        
+        private function createDraggingDimColumn():void
+        {
+            if(!draggingDimColumn) {
+                draggingDimColumn = new UIComponent();
+                
+                draggingDimColumn.x = 0;
+                draggingDimColumn.y = 0;
+                
+                draggingCaret.includeInLayout = false;
+                draggingCaret.visible = false;
+                
+                addChild(draggingDimColumn);
             }
         }
         
@@ -336,6 +358,23 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             return result;
+        }
+        
+        private function showDraggingDimColumn(columnHeader:ColumnHeader):void
+        {
+            var g:Graphics = draggingDimColumn.graphics;
+            
+            g.clear();
+            g.beginFill(DRAGGING_DIMMED_COLUMN_COLOR, 0.5);
+            g.drawRect(columnHeader.column.metrics.x, columnHeader.column.metrics.y, columnHeader.column.metrics.width, columnHeader.column.metrics.height);
+            g.endFill();
+            
+            draggingDimColumn.visible = true;
+        }
+        
+        private function hideDraggingDimColumn():void
+        {
+            draggingDimColumn.visible = false;
         }
     }
 }

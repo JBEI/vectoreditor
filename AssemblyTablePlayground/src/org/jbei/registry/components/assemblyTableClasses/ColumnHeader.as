@@ -26,10 +26,11 @@ package org.jbei.registry.components.assemblyTableClasses
         private static const DRAGGING_THRESHOLD:Number = 5;
         
         private var label:Label;
-        private var _column:Column;
         private var contentHolder:ContentHolder;
         private var dropDownMenuButton:UIComponent;
         private var dropDownList:ColumnHeaderDropDownList;
+        
+        private var _column:Column;
         
         private var needsRemeasurement:Boolean = true;
         private var actualWidth:Number = 0;
@@ -130,6 +131,7 @@ package org.jbei.registry.components.assemblyTableClasses
             clickPoint = globalToLocal(new Point(event.stageX, event.stageY));
             
             drawSelectedBackground();
+            drawDropDownMenuSelectedBackground();
         }
         
         private function onMouseMove(event:MouseEvent):void
@@ -165,6 +167,7 @@ package org.jbei.registry.components.assemblyTableClasses
             dragging = false;
             
             drawBackground();
+            drawDropDownMenuBackground();
             
             if(stage) {
                 stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);

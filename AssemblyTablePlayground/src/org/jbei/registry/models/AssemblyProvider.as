@@ -77,16 +77,15 @@ package org.jbei.registry.models
             }
         }
         
-        public function swapBins(bin1:Bin, bin2:Bin, quiet:Boolean = false):void
+        public function moveBin(bin:Bin, newPosition:int, quiet:Boolean = false):void
         {
-            if(bin1 == null || bin2 == null) {
+            if(bin == null) {
                 return;
             }
             
-            var binIndex1:int = _bins.indexOf(bin1);
-            var binIndex2:int = _bins.indexOf(bin2);
+            var currentBinPosition:int = _bins.indexOf(bin);
             
-            if(binIndex1 == -1 || binIndex2 == -1) {
+            if(currentBinPosition == -1) {
                 return;
             }
             
@@ -94,8 +93,8 @@ package org.jbei.registry.models
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_MOVED));
             }
             
-            _bins.splice(binIndex1, 1, bin2);
-            _bins.splice(binIndex2, 1, bin1);
+            _bins.splice(currentBinPosition, 1);
+            _bins.splice(newPosition, 0, bin);
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_MOVED));
