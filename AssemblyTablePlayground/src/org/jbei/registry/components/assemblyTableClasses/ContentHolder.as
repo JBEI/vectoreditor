@@ -276,6 +276,10 @@ package org.jbei.registry.components.assemblyTableClasses
                 tryToMoveCaretUp();
             } else if(event.keyCode == Keyboard.DOWN) {
                 tryToMoveCaretDown();
+            } else if(event.keyCode == Keyboard.PAGE_DOWN) {
+                tryToMoveCaretPageDown();
+            } else if(event.keyCode == Keyboard.PAGE_UP) {
+                tryToMoveCaretPageUp();
             }
             
             selectCellsInRange(shiftSelectionStartCell, activeCell);
@@ -471,6 +475,36 @@ package org.jbei.registry.components.assemblyTableClasses
             }
         }
         
+        private function tryToMoveCaretPageDown():void
+        {
+            var numberOfCellsPerPage:int = calculateCellsPerPage();
+            
+            if(activeCell.column.cells.length == activeCell.index + numberOfCellsPerPage) {
+                return; // already at last cell
+            }
+            
+            if(activeCell.index + numberOfCellsPerPage >= activeCell.column.cells.length) {
+                updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.column.cells.length - 1]);
+            } else {
+                updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.index + numberOfCellsPerPage]);
+            }
+        }
+        
+        private function tryToMoveCaretPageUp():void
+        {
+            var numberOfCellsPerPage:int = calculateCellsPerPage();
+            
+            if(activeCell.index == 0) {
+                return; // nothing to scroll up
+            }
+            
+            if(activeCell.index - numberOfCellsPerPage <= 0) {
+                updateActiveCell(columns[activeCell.column.index].column.cells[0]);
+            } else {
+                updateActiveCell(columns[activeCell.column.index].column.cells[activeCell.index - numberOfCellsPerPage]);
+            }
+        }
+        
         private function getCellByPoint(point:Point):Cell
         {
             var resultCell:Cell = null;
@@ -524,6 +558,15 @@ package org.jbei.registry.components.assemblyTableClasses
             _selectedCells = selectedCells;
             
             selectionLayer.select(selectedCells);
+        }
+        
+        private function calculateCellsPerPage():Number
+        {
+            var result:int = int(Math.floor(assemblyTableHeight / CellRenderer.CELL_HEIGHT));
+            
+            result = (result <= 1) ? 1 : (result - 1);
+            
+            return result;
         }
     }
 }
