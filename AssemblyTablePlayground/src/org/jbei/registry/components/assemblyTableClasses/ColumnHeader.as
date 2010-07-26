@@ -3,6 +3,7 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.display.BitmapData;
     import flash.display.GradientType;
     import flash.display.Graphics;
+    import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.geom.Matrix;
     import flash.geom.Point;
@@ -10,6 +11,12 @@ package org.jbei.registry.components.assemblyTableClasses
     
     import mx.controls.Label;
     import mx.core.UIComponent;
+    import mx.events.FlexMouseEvent;
+    import mx.events.SandboxMouseEvent;
+    import mx.managers.ISystemManager;
+    import mx.managers.PopUpManager;
+    
+    import org.jbei.registry.models.FeatureTypeManager;
     
     /**
      * @author Zinovii Dmytriv
@@ -22,6 +29,7 @@ package org.jbei.registry.components.assemblyTableClasses
         private var _column:Column;
         private var contentHolder:ContentHolder;
         private var dropDownMenuButton:UIComponent;
+        private var dropDownList:ColumnHeaderDropDownList;
         
         private var needsRemeasurement:Boolean = true;
         private var actualWidth:Number = 0;
@@ -72,6 +80,14 @@ package org.jbei.registry.components.assemblyTableClasses
             return bitmapData;
         }
         
+        /*
+        * @private
+        */
+        public function changeColumnType(newType:String):void
+        {
+            contentHolder.assemblyProvider.changeBinType(contentHolder.assemblyProvider.bins[column.index], FeatureTypeManager.instance.getTypeByValue(newType));
+        }
+        
         // Protected Methods
         protected override function createChildren():void
         {
@@ -80,6 +96,8 @@ package org.jbei.registry.components.assemblyTableClasses
             createLabel();
             
             createDropDownMenuButton();
+            
+            createDropDownList();
         }
         
         protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
@@ -148,13 +166,15 @@ package org.jbei.registry.components.assemblyTableClasses
             
             drawBackground();
             
-            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-            stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            if(stage) {
+                stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+                stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+            }
         }
         
         private function onDropDownMenuButtonClick(event:MouseEvent):void
         {
-            trace("click");
+            openDropDownList();
         }
         
         private function onDropDownMenuButtonRollOver(event:MouseEvent):void
@@ -165,6 +185,31 @@ package org.jbei.registry.components.assemblyTableClasses
         private function onDropDownMenuButtonRollOut(event:MouseEvent):void
         {
             drawDropDownMenuBackground();
+        }
+        
+        private function onMouseDownOutside(event:FlexMouseEvent):void
+        {
+            closeDropDownList();
+        }
+        
+        private function onMouseWheelOutside(event:FlexMouseEvent):void
+        {
+            closeDropDownList();
+        }
+        
+        private function onSandboxMouseDownOutside(event:FlexMouseEvent):void
+        {
+            closeDropDownList();
+        }
+        
+        private function onSandboxMouseWheelOutside(event:FlexMouseEvent):void
+        {
+            closeDropDownList();
+        }
+        
+        private function onStageResize(event:Event):void 
+        {
+            closeDropDownList();
         }
         
         // Private Methods
@@ -200,6 +245,29 @@ package org.jbei.registry.components.assemblyTableClasses
                 drawDropDownMenuBackground();
                 
                 addChild(dropDownMenuButton);
+            }
+        }
+        
+        private function createDropDownList():void
+        {
+            if(!dropDownList) {
+                dropDownList = new ColumnHeaderDropDownList(this);
+                
+                dropDownList.visible = false;
+                dropDownList.includeInLayout = false;
+                dropDownList.x = column.metrics.width - ColumnHeaderDropDownList.DEFAULT_LIST_WIDTH;
+                dropDownList.y = HeaderPanel.HEADER_HEIGHT;
+                
+                dropDownList.addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, onMouseDownOutside);
+                dropDownList.addEventListener(FlexMouseEvent.MOUSE_WHEEL_OUTSIDE, onMouseWheelOutside);
+                dropDownList.addEventListener(SandboxMouseEvent.MOUSE_DOWN_SOMEWHERE, onSandboxMouseDownOutside);
+                dropDownList.addEventListener(SandboxMouseEvent.MOUSE_WHEEL_SOMEWHERE, onSandboxMouseWheelOutside);
+                
+                //weak reference to stage
+                var sm:ISystemManager = systemManager.topLevelSystemManager;
+                sm.getSandboxRoot().addEventListener(Event.RESIZE, onStageResize, false, 0, true);
+                
+                dropDownList.owner = this;
             }
         }
         
@@ -310,10 +378,10 @@ package org.jbei.registry.components.assemblyTableClasses
             g.lineStyle(1, 0x666666);
             
             g.beginFill(0x666666);
-            g.moveTo(8, 10);
-            g.lineTo(14, 10);
-            g.lineTo(11, 14);
-            g.lineTo(8, 10);
+            g.moveTo(8, 11);
+            g.lineTo(14, 11);
+            g.lineTo(11, 15);
+            g.lineTo(8, 11);
             g.endFill();
         }
         
@@ -350,11 +418,36 @@ package org.jbei.registry.components.assemblyTableClasses
             g.lineStyle(1, 0x666666);
             
             g.beginFill(0x666666);
-            g.moveTo(8, 10);
-            g.lineTo(14, 10);
-            g.lineTo(11, 14);
-            g.lineTo(8, 10);
+            g.moveTo(8, 11);
+            g.lineTo(14, 11);
+            g.lineTo(11, 15);
+            g.lineTo(8, 11);
             g.endFill();
+        }
+        
+        private function openDropDownList():void
+        {
+            if(dropDownList.parent == null) {
+                PopUpManager.addPopUp(dropDownList, this, false);
+                
+                dropDownList.owner = this;
+            } else {
+                PopUpManager.bringToFront(dropDownList);
+            }
+            
+            var point:Point = localToGlobal(new Point(column.metrics.width - ColumnHeaderDropDownList.DEFAULT_LIST_WIDTH, HeaderPanel.HEADER_HEIGHT));
+            
+            dropDownList.x = point.x;
+            dropDownList.y = point.y;
+            
+            dropDownList.open(column.title.toLowerCase()); // TODO: fix this
+        }
+        
+        private function closeDropDownList():void
+        {
+            if(dropDownList.isOpen) {
+                dropDownList.close();
+            }
         }
     }
 }

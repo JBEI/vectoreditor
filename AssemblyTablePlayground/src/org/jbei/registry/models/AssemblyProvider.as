@@ -101,5 +101,18 @@ package org.jbei.registry.models
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_MOVED));
             }
         }
+        
+        public function changeBinType(bin:Bin, newFeatureType:FeatureType, quiet:Boolean = false):void
+        {
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
+            }
+            
+            bin.featureType = newFeatureType;
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
+            }
+        }
     }
 }

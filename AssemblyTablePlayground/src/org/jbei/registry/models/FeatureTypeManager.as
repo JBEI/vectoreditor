@@ -34,6 +34,22 @@ package org.jbei.registry.models
             return _featureTypes;
         }
         
+        // Public Methods
+        public function getTypeByValue(type:String):FeatureType
+        {
+            var result:FeatureType = null;
+            
+            for(var i:int = 0; i < _featureTypes.length; i++) {
+                if(_featureTypes[i].key == type) {
+                    result = _featureTypes[i];
+                    
+                    break;
+                }
+            }
+            
+            return result;
+        }
+        
         // Private Methods
         private function initializeFeatureTypes():void
         {

@@ -14,6 +14,7 @@ package org.jbei.registry.models
         public static const KIND_BIN_REMOVE:String = "assemblyProviderKindBinRemove";
         public static const KIND_BIN_UPDATE:String = "assemblyProviderKindBinUpdate";
         public static const KIND_BIN_MOVED:String = "assemblyProviderKindBinMoved";
+        public static const KIND_BIN_CHANGE_TYPE:String = "assemblyProviderKindBinChangeType";
         
         public static const KIND_MANUAL_UPDATE:String = "AssemblyProviderKindManualUpdate";
         
