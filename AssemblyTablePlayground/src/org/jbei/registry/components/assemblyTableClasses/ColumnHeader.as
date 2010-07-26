@@ -1,21 +1,30 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
     import flash.display.BitmapData;
+    import flash.display.DisplayObject;
     import flash.display.GradientType;
     import flash.display.Graphics;
+    import flash.display.Sprite;
+    import flash.events.ContextMenuEvent;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
+    import flash.ui.ContextMenu;
+    import flash.ui.ContextMenuItem;
     
+    import mx.controls.Alert;
     import mx.controls.Label;
+    import mx.core.Application;
     import mx.core.UIComponent;
+    import mx.events.CloseEvent;
     import mx.events.FlexMouseEvent;
     import mx.events.SandboxMouseEvent;
     import mx.managers.ISystemManager;
     import mx.managers.PopUpManager;
     
+    import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.FeatureTypeManager;
     
     /**
@@ -93,6 +102,8 @@ package org.jbei.registry.components.assemblyTableClasses
         protected override function createChildren():void
         {
             super.createChildren();
+            
+            createContextMenu();
             
             createLabel();
             
@@ -215,6 +226,48 @@ package org.jbei.registry.components.assemblyTableClasses
             closeDropDownList();
         }
         
+        private function onContextMenuSelect(event:ContextMenuEvent):void
+        {
+            contentHolder.select(column.cells);
+            
+            contextMenu.clipboardItems.copy = true;
+            contextMenu.clipboardItems.paste = true;
+            contextMenu.clipboardItems.cut = true;
+            contextMenu.clipboardItems.clear = true;
+            contextMenu.clipboardItems.selectAll = true;
+        }
+        
+        private function onInsertOneLeftContextMenuItemClick(event:ContextMenuEvent):void
+        {
+            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            
+            contentHolder.assemblyProvider.insertBin(newBin, column.index == 0 ? 0 : column.index);
+        }
+        
+        private function onInsertOneRightContextMenuItemClick(event:ContextMenuEvent):void
+        {
+            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            
+            contentHolder.assemblyProvider.insertBin(newBin, column.index + 1);
+        }
+        
+        private function onDeleteColumnContextMenuItemClick(event:ContextMenuEvent):void
+        {
+            Alert.show("Are you sure you want to delete column?", "Delete column", Alert.YES | Alert.NO, contentHolder.parent as Sprite, onAlertDeleteColumnClose, null, Alert.NO);
+        }
+        
+        private function onAlertDeleteColumnClose(event:CloseEvent):void
+        {
+            if(event.detail == Alert.YES) {
+                contentHolder.assemblyProvider.removeBin(contentHolder.assemblyProvider.bins[column.index]);
+            }
+        }
+        
+        private function onCopy(event:Event):void
+        {
+            trace("copy");
+        }
+        
         // Private Methods
         private function createLabel():void
         {
@@ -271,6 +324,40 @@ package org.jbei.registry.components.assemblyTableClasses
                 sm.getSandboxRoot().addEventListener(Event.RESIZE, onStageResize, false, 0, true);
                 
                 dropDownList.owner = this;
+            }
+        }
+        
+        private function createContextMenu():void
+        {
+            if(!contextMenu) {
+                contextMenu = new ContextMenu();
+                
+                contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
+                
+                contextMenu.hideBuiltInItems();
+                
+                contextMenu.customItems = new Array();
+                
+                contextMenu.clipboardMenu = true;
+                contextMenu.clipboardItems.copy = true;
+                contextMenu.clipboardItems.paste = true;
+                contextMenu.clipboardItems.cut = true;
+                contextMenu.clipboardItems.clear = true;
+                contextMenu.clipboardItems.selectAll = false;
+                
+                contextMenu.addEventListener(Event.COPY, onCopy);
+                
+                var insertOneLeftContextMenuItem:ContextMenuItem = new ContextMenuItem("Insert 1 left");
+                insertOneLeftContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onInsertOneLeftContextMenuItemClick);
+                contextMenu.customItems.push(insertOneLeftContextMenuItem);
+                
+                var insertOneRightContextMenuItem:ContextMenuItem = new ContextMenuItem("Insert 1 right");
+                insertOneRightContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onInsertOneRightContextMenuItemClick);
+                contextMenu.customItems.push(insertOneRightContextMenuItem);
+                
+                var deleteColumnContextMenuItem:ContextMenuItem = new ContextMenuItem("Delete column");
+                deleteColumnContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onDeleteColumnContextMenuItemClick);
+                contextMenu.customItems.push(deleteColumnContextMenuItem);
             }
         }
         

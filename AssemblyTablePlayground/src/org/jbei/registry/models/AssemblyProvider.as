@@ -60,6 +60,19 @@ package org.jbei.registry.models
             }
         }
         
+        public function insertBin(bin:Bin, position:int, quiet:Boolean = false):void
+        {
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_ADD));
+            }
+            
+            _bins.splice(position, 0, bin);
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_ADD));
+            }
+        }
+        
         public function removeBin(bin:Bin, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {

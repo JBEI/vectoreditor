@@ -13,9 +13,6 @@
     
     <mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" backgroundColor="0xFFFFFF">
         <mx:Button id="randomizeButton" label="Randomize" click="onRandomizeButtonClick(event)" />
-        <mx:PopUpButton>
-            
-        </mx:PopUpButton>
     </mx:ApplicationControlBar>
     
     <mx:VDividedBox width="100%" height="100%" paddingTop="8">

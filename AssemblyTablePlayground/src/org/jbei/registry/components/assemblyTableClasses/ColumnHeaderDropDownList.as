@@ -87,10 +87,11 @@ package org.jbei.registry.components.assemblyTableClasses
             
             types = new ArrayCollection();
             
-            types.addItem({value : "rbs", name : "RBS"});
+            types.addItem({value : "general", name : "General"});
             types.addItem({value : "promoter", name : "Promoter"});
-            types.addItem({value : "terminator", name : "Terminator"});
+            types.addItem({value : "rbs", name : "RBS"});
             types.addItem({value : "gene", name : "Gene"});
+            types.addItem({value : "terminator", name : "Terminator"});
         }
         
         private function getTypeIndex(type:String):int
