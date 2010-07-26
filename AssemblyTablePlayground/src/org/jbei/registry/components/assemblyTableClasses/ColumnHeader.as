@@ -76,9 +76,9 @@ package org.jbei.registry.components.assemblyTableClasses
         {
             var bitmapData:BitmapData = new BitmapData(actualWidth, actualHeight);
             
-            bitmapData.draw(this, new Matrix(), null, null, new Rectangle(0, 0, actualWidth - 19, actualHeight));
+            bitmapData.draw(this, new Matrix(), null, null, new Rectangle(0, 0, actualWidth, actualHeight));
             
-            return bitmapData;
+            return makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.7)
         }
         
         /*
@@ -451,6 +451,25 @@ package org.jbei.registry.components.assemblyTableClasses
             if(dropDownList.isOpen) {
                 dropDownList.close();
             }
+        }
+        
+        // TODO: Use Method from VectorCommon.GraphicUtils. Remove this method
+        private function makeBitmapTrasparent(bitmapData:BitmapData, bitmapWidth:int, bitmapHeight:int, transparencyFactor:Number):BitmapData
+        {
+            var resultBitmapData:BitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, 0xFFFFFFFF);
+            
+            for(var i:int = 0; i < bitmapWidth; i++) {
+                for(var j:int = 0; j < bitmapHeight; j++) {
+                    var pixelValue:uint = bitmapData.getPixel32(i, j);
+                    var alphaValue:uint = pixelValue >> 24 & 0xFF;
+                    var rgbValue:uint = pixelValue & 0xffffff;
+                    var resultAlpha:uint = alphaValue * (transparencyFactor);
+                    
+                    resultBitmapData.setPixel32(i, j, resultAlpha << 24 | rgbValue);
+                }
+            }
+            
+            return resultBitmapData;
         }
     }
 }
