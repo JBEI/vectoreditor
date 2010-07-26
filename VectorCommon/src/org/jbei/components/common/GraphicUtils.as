@@ -1,5 +1,6 @@
 package org.jbei.components.common
 {
+	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	
@@ -287,5 +288,24 @@ package org.jbei.components.common
 			
 			return point;
 		}
+        
+        /* Makes bitmap transparent from regular bitmap. Transparency level depends on transparencyFactor variable. */
+        public static function makeBitmapTrasparent(bitmapData:BitmapData, bitmapWidth:int, bitmapHeight:int, transparencyFactor:Number):BitmapData
+        {
+            var resultBitmapData:BitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, 0xFFFFFFFF);
+            
+            for(var i:int = 0; i < bitmapWidth; i++) {
+                for(var j:int = 0; j < bitmapHeight; j++) {
+                    var pixelValue:uint = bitmapData.getPixel32(i, j);
+                    var alphaValue:uint = pixelValue >> 24 & 0xFF;
+                    var rgbValue:uint = pixelValue & 0xffffff;
+                    var resultAlpha:uint = alphaValue * (transparencyFactor);
+                    
+                    resultBitmapData.setPixel32(i, j, resultAlpha << 24 | rgbValue);
+                }
+            }
+            
+            return resultBitmapData;
+        }
 	}
 }
