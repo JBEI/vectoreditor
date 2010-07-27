@@ -122,6 +122,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 label.width = column.metrics.width;
                 
                 drawBackground();
+                drawLabel();
                 
                 dropDownMenuButton.x = column.metrics.width - 20;
             }
@@ -276,6 +277,8 @@ package org.jbei.registry.components.assemblyTableClasses
                 label.x = 4;
                 label.y = 4;
                 label.height = 23;
+                label.includeInLayout = false;
+                label.visible = false;
                 
                 label.text = column.title;
                 
@@ -359,6 +362,25 @@ package org.jbei.registry.components.assemblyTableClasses
                 deleteColumnContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onDeleteColumnContextMenuItemClick);
                 contextMenu.customItems.push(deleteColumnContextMenuItem);
             }
+        }
+        
+        private function drawLabel():void
+        {
+            label.validateNow();
+            
+            var bitmapData:BitmapData = new BitmapData(label.width, label.height, true, 0x00FFFFFF);
+            
+            var matrix:Matrix = new Matrix();
+            matrix.tx = 4;
+            matrix.ty = 4;
+            
+            bitmapData.draw(label, matrix, null, null, new Rectangle(0, 0, label.width, label.height));
+            
+            var g:Graphics = graphics;
+            g.lineStyle(0, 0xffffff, 0);
+            g.beginBitmapFill(bitmapData);
+            g.drawRect(0, 0, label.width, label.height);
+            g.endFill();
         }
         
         private function drawBackground():void
