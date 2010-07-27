@@ -33,6 +33,8 @@ package org.jbei.registry.components.assemblyTableClasses
         public function deselect():void
         {
             doDeselect();
+            
+            dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, null));
         }
         
         public function select(cells:Vector.<Cell>):void
@@ -44,6 +46,8 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             doSelect(cells);
+            
+            dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, cells));
         }
         
         // Private Methods

@@ -144,6 +144,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             drawSelectedBackground();
             drawDropDownMenuSelectedBackground();
+            drawLabel();
         }
         
         private function onMouseMove(event:MouseEvent):void
@@ -180,6 +181,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             drawBackground();
             drawDropDownMenuBackground();
+            drawLabel();
             
             if(stage) {
                 stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -230,12 +232,6 @@ package org.jbei.registry.components.assemblyTableClasses
         private function onContextMenuSelect(event:ContextMenuEvent):void
         {
             contentHolder.select(column.cells);
-            
-            contextMenu.clipboardItems.copy = true;
-            contextMenu.clipboardItems.paste = true;
-            contextMenu.clipboardItems.cut = true;
-            contextMenu.clipboardItems.clear = true;
-            contextMenu.clipboardItems.selectAll = true;
         }
         
         private function onInsertOneLeftContextMenuItemClick(event:ContextMenuEvent):void
@@ -262,11 +258,6 @@ package org.jbei.registry.components.assemblyTableClasses
             if(event.detail == Alert.YES) {
                 contentHolder.assemblyProvider.removeBin(contentHolder.assemblyProvider.bins[column.index]);
             }
-        }
-        
-        private function onCopy(event:Event):void
-        {
-            trace("copy");
         }
         
         // Private Methods
@@ -346,9 +337,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 contextMenu.clipboardItems.paste = true;
                 contextMenu.clipboardItems.cut = true;
                 contextMenu.clipboardItems.clear = true;
-                contextMenu.clipboardItems.selectAll = false;
-                
-                contextMenu.addEventListener(Event.COPY, onCopy);
+                contextMenu.clipboardItems.selectAll = true;
                 
                 var insertOneLeftContextMenuItem:ContextMenuItem = new ContextMenuItem("Insert 1 left");
                 insertOneLeftContextMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onInsertOneLeftContextMenuItemClick);

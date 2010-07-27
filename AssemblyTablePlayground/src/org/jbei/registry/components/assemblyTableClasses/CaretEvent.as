@@ -12,15 +12,13 @@ package org.jbei.registry.components.assemblyTableClasses
     {
         public static const CARET_CHANGED:String = "caretChanged";
         
-        public var assemblyItem:AssemblyItem;
         public var cell:Cell;
         
         // Contructor
-        public function CaretEvent(type:String, assemblyItem:AssemblyItem, cell:Cell)
+        public function CaretEvent(type:String, cell:Cell)
         {
             super(type, true, true);
             
-            this.assemblyItem = assemblyItem;
             this.cell = cell;
         }
     }

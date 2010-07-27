@@ -5,6 +5,9 @@ package org.jbei.registry.components.assemblyTableClasses
     import mx.core.UIComponent;
     import mx.events.ListEvent;
     
+    import org.jbei.registry.models.FeatureType;
+    import org.jbei.registry.models.FeatureTypeManager;
+    
     /**
      * @author Zinovii Dmytriv
      */
@@ -12,6 +15,9 @@ package org.jbei.registry.components.assemblyTableClasses
     {
         public static const DEFAULT_LIST_WIDTH:int = 200;
         public static const DEFAULT_LIST_HEIGHT:int = 150;
+        public static const SELECTION_COLOR:uint = 0x969DAB;
+        public static const ROLL_OVER_COLOR:uint = 0xE0E0E0;
+        public static const TEXT_SELECTED_COLOR:uint = 0xFFFFFF;
         
         private var columnHeader:ColumnHeader;
         
@@ -25,6 +31,10 @@ package org.jbei.registry.components.assemblyTableClasses
             super();
             
             this.columnHeader = columnHeader;
+            
+            setStyle("selectionColor", SELECTION_COLOR);
+            setStyle("rollOverColor", ROLL_OVER_COLOR);
+            setStyle("textSelectedColor", TEXT_SELECTED_COLOR);
             
             initializeTypes();
             
@@ -83,15 +93,15 @@ package org.jbei.registry.components.assemblyTableClasses
         // Private Methods
         private function initializeTypes():void
         {
-            // TODO: HARDCODED FOR NOW, FIX IT LATER
-            
             types = new ArrayCollection();
             
-            types.addItem({value : "general", name : "General"});
-            types.addItem({value : "promoter", name : "Promoter"});
-            types.addItem({value : "rbs", name : "RBS"});
-            types.addItem({value : "gene", name : "Gene"});
-            types.addItem({value : "terminator", name : "Terminator"});
+            var featureTypes:Vector.<FeatureType> = FeatureTypeManager.instance.featureTypes;
+            
+            for(var i:int = 0; i < featureTypes.length; i++) {
+                var featureType:FeatureType = featureTypes[i] as FeatureType;
+                
+                types.addItem({value : featureType.key, name : featureType.name});
+            }
         }
         
         private function getTypeIndex(type:String):int

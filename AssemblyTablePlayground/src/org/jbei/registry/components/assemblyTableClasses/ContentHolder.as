@@ -375,8 +375,9 @@ package org.jbei.registry.components.assemblyTableClasses
                 return;
             }
             
+            var hScrollBarSpace:Number = 20;
             var totalColumnsWidth:Number = 0;
-            var maxColumnHeight:Number = assemblyTableHeight - HeaderPanel.HEADER_HEIGHT;
+            var maxColumnHeight:Number = assemblyTableHeight - HeaderPanel.HEADER_HEIGHT - hScrollBarSpace;
             
             var columnWidth:Number = calculateColumnWidth();
             
@@ -400,8 +401,13 @@ package org.jbei.registry.components.assemblyTableClasses
                 assemblyColumn.update(columnWidth);
             }
             
-            _totalHeight = maxColumnHeight + HeaderPanel.HEADER_HEIGHT;
             _totalWidth = totalColumnsWidth;
+            
+            if(_totalWidth < assemblyTableWidth) {
+                hScrollBarSpace = 5;
+            }
+            
+            _totalHeight = maxColumnHeight + HeaderPanel.HEADER_HEIGHT + hScrollBarSpace;
         }
         
         private function calculateColumnWidth():Number
@@ -410,8 +416,29 @@ package org.jbei.registry.components.assemblyTableClasses
                 return 0;
             }
             
+            var maxColumnHeight:Number = 0;
+            for(var i:int = 0; i < columns.length; i++) {
+                var assemblyColumn:ColumnRenderer = columns[i] as ColumnRenderer;
+                
+                if(maxColumnHeight < assemblyColumn.column.metrics.height) {
+                    maxColumnHeight = assemblyColumn.column.metrics.height;
+                }
+            }
+            
+            maxColumnHeight += HeaderPanel.HEADER_HEIGHT;
+            
+            var vScrollbarSpace:Number = 3; // to look pretty
+            
+            if(_totalHeight > assemblyTableWidth) {
+                maxColumnHeight += 20; // space for horizontal scrollbar;
+            }
+            
+            if(maxColumnHeight > assemblyTableHeight) {
+                vScrollbarSpace = 20; // space for vertical scrollbar;
+            }
+            
             var numberOfColumns:int = columns.length;
-            var potentialColumnWidth:int = (assemblyTable.width - 20) / numberOfColumns; // -20 for scrollbar
+            var potentialColumnWidth:int = (assemblyTable.width - vScrollbarSpace) / numberOfColumns; // -20 for scrollbar
             
             if(potentialColumnWidth < ColumnRenderer.MIN_COLUMN_WIDTH) {
                 potentialColumnWidth = ColumnRenderer.MIN_COLUMN_WIDTH;
@@ -426,7 +453,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             g.clear();
             g.beginFill(AssemblyTable.BACKGROUND_COLOR);
-            g.drawRect(0, 0, _totalWidth + 20, _totalHeight); // +20 for scrollbar
+            g.drawRect(0, 0, _totalWidth, _totalHeight); // +20 for scrollbar
             g.endFill();
         }
         
@@ -439,7 +466,7 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             if(_activeCell != cell) {
-                dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, assemblyItem, cell));
+                dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, cell));
                 
                 _activeCell = cell;
                 

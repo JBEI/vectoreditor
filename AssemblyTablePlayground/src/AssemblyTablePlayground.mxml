@@ -2,11 +2,32 @@
 <mx:Application width="100%" height="100%" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]">
     <mx:Script>
         <![CDATA[
+            import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
+            import org.jbei.registry.components.assemblyTableClasses.DataCell;
+            import org.jbei.registry.components.assemblyTableClasses.SelectionEvent;
             import org.jbei.registry.utils.StandaloneUtils;
             
             private function onRandomizeButtonClick(event:MouseEvent):void
             {
                 assemblyTable.assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
+            }
+            
+            private function onCaretChanged(event:CaretEvent):void
+            {
+                if(event.cell is DataCell) {
+                    caretTextArea.text = (event.cell as DataCell).data;
+                } else {
+                    caretTextArea.text = "";
+                }
+            }
+            
+            private function onSelectionChanged(event:SelectionEvent):void
+            {
+                if(event.cells) {
+                    selectionTextArea.text = String(event.cells.length);
+                } else {
+                    selectionTextArea.text = "";
+                }
             }
         ]]>
     </mx:Script>
@@ -16,8 +37,10 @@
     </mx:ApplicationControlBar>
     
     <mx:VDividedBox width="100%" height="100%" paddingTop="8">
-        <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="80%" />
-        
-        <mx:TextArea width="100%" height="20%" />
+        <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="80%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+        <mx:HDividedBox width="100%" height="10%">
+            <mx:TextArea id="caretTextArea" width="50%" height="100%" />
+            <mx:TextArea id="selectionTextArea" width="50%" height="100%" />
+        </mx:HDividedBox>
     </mx:VDividedBox>
 </mx:Application>

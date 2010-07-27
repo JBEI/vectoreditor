@@ -298,7 +298,7 @@ package org.jbei.registry.components
                     
                     contentHolder.updateHeaderPosition(-contentHolder.y);
                 } else if(cell.metrics.y + cell.metrics.height > actualHeight - contentHolder.y) {
-                    contentHolder.y += -((cell.metrics.y + cell.metrics.height) - (actualHeight - contentHolder.y) + 20);
+                    contentHolder.y += -((cell.metrics.y + cell.metrics.height) - (actualHeight - contentHolder.y) + 20) - ((horizontalScrollBar && horizontalScrollBar.visible) ? 25 : 0);
                     verticalScrollPosition = -contentHolder.y;
                     
                     contentHolder.updateHeaderPosition(-contentHolder.y);
