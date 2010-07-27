@@ -23,11 +23,7 @@
             
             private function onSelectionChanged(event:SelectionEvent):void
             {
-                if(event.cells) {
-                    selectionTextArea.text = String(event.cells.length);
-                } else {
-                    selectionTextArea.text = "";
-                }
+                // not implemented
             }
         ]]>
     </mx:Script>
@@ -36,11 +32,14 @@
         <mx:Button id="randomizeButton" label="Randomize" click="onRandomizeButtonClick(event)" />
     </mx:ApplicationControlBar>
     
-    <mx:VDividedBox width="100%" height="100%" paddingTop="8">
-        <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="80%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
-        <mx:HDividedBox width="100%" height="10%">
-            <mx:TextArea id="caretTextArea" width="50%" height="100%" />
-            <mx:TextArea id="selectionTextArea" width="50%" height="100%" />
-        </mx:HDividedBox>
-    </mx:VDividedBox>
+    <mx:HDividedBox width="100%" height="100%" paddingTop="8">
+        <mx:Panel title="Assembly Table" width="80%" height="100%">
+            <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+        </mx:Panel>
+        
+        <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">
+            <mx:Label text="Sequence:" paddingBottom="0"/>
+            <mx:TextArea id="caretTextArea" width="100%" height="200" />
+        </mx:Panel>
+    </mx:HDividedBox>
 </mx:Application>

@@ -13,7 +13,7 @@ package org.jbei.registry.components.assemblyTableClasses
      */
     public class ColumnHeaderDropDownList extends List
     {
-        public static const DEFAULT_LIST_WIDTH:int = 200;
+        public static const DEFAULT_LIST_WIDTH:int = 100;
         public static const DEFAULT_LIST_HEIGHT:int = 150;
         public static const SELECTION_COLOR:uint = 0x969DAB;
         public static const ROLL_OVER_COLOR:uint = 0xE0E0E0;

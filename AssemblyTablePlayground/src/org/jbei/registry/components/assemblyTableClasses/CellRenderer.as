@@ -9,7 +9,7 @@ package org.jbei.registry.components.assemblyTableClasses
      */
     public class CellRenderer extends UIComponent
     {
-        public static const CELL_HEIGHT:Number = 50;
+        public static const CELL_HEIGHT:Number = 30;
         public static const CELL_FRAME_COLOR:uint = 0xCCCCCC;
         public static const CELL_CORNER_RADIUS:Number = 8;
         

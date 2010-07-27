@@ -336,7 +336,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 contextMenu.clipboardItems.copy = true;
                 contextMenu.clipboardItems.paste = true;
                 contextMenu.clipboardItems.cut = true;
-                contextMenu.clipboardItems.clear = true;
+                contextMenu.clipboardItems.clear = false;
                 contextMenu.clipboardItems.selectAll = true;
                 
                 var insertOneLeftContextMenuItem:ContextMenuItem = new ContextMenuItem("Insert 1 left");

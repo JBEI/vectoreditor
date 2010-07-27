@@ -3,9 +3,11 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.display.DisplayObject;
     import flash.display.Graphics;
     import flash.display.Stage;
+    import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
+    import flash.ui.ContextMenu;
     import flash.ui.Keyboard;
     
     import mx.core.UIComponent;
@@ -137,6 +139,8 @@ package org.jbei.registry.components.assemblyTableClasses
         protected override function createChildren():void
         {
             super.createChildren();
+            
+            createContextMenu();
             
             createSelectionLayer();
             
@@ -294,7 +298,48 @@ package org.jbei.registry.components.assemblyTableClasses
             }
         }
         
+        private function onCopy(event:Event):void
+        {
+            trace("copy");
+        }
+        
+        private function onCut(event:Event):void
+        {
+            trace("cut");
+        }
+        
+        private function onPaste(event:Event):void
+        {
+            trace("paste");
+        }
+        
+        private function onSelectAll(event:Event):void
+        {
+            trace("select all");
+        }
+        
         // Private Methods
+        private function createContextMenu():void
+        {
+            if(!contextMenu) {
+                contextMenu = new ContextMenu();
+                
+                contextMenu.hideBuiltInItems();
+                
+                contextMenu.clipboardMenu = true;
+                contextMenu.clipboardItems.copy = true;
+                contextMenu.clipboardItems.paste = true;
+                contextMenu.clipboardItems.cut = true;
+                contextMenu.clipboardItems.clear = false;
+                contextMenu.clipboardItems.selectAll = true;
+                
+                addEventListener(Event.COPY, onCopy);
+                addEventListener(Event.CUT, onCut);
+                addEventListener(Event.PASTE, onPaste);
+                addEventListener(Event.SELECT_ALL, onSelectAll);
+            }
+        }
+        
         private function createCaret():void
         {
             if(!caret) {
@@ -427,7 +472,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             maxColumnHeight += HeaderPanel.HEADER_HEIGHT;
             
-            var vScrollbarSpace:Number = 3; // to look pretty
+            var vScrollbarSpace:Number = 2; // to look pretty
             
             if(_totalHeight > assemblyTableWidth) {
                 maxColumnHeight += 20; // space for horizontal scrollbar;

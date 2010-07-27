@@ -13,7 +13,7 @@ package org.jbei.registry.components.assemblyTableClasses
      */
     public class ColumnRenderer extends UIComponent
     {
-        public static const MIN_COLUMN_WIDTH:int = 200;
+        public static const MIN_COLUMN_WIDTH:int = 100;
         
         private var contentHolder:ContentHolder;
         private var cellRenderers:Vector.<CellRenderer> = new Vector.<CellRenderer>();
