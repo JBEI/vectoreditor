@@ -1,7 +1,10 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
+    import flash.desktop.Clipboard;
+    import flash.desktop.ClipboardFormats;
     import flash.display.DisplayObject;
     import flash.display.Graphics;
+    import flash.display.Sprite;
     import flash.display.Stage;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
@@ -10,7 +13,9 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.ui.ContextMenu;
     import flash.ui.Keyboard;
     
+    import mx.controls.Alert;
     import mx.core.UIComponent;
+    import mx.events.CloseEvent;
     import mx.events.ScrollEvent;
     
     import org.jbei.registry.components.AssemblyTable;
@@ -33,7 +38,8 @@ package org.jbei.registry.components.assemblyTableClasses
         private var needsRemeasurement:Boolean = true;
         
         private var _activeCell:Cell = null;
-        private var _selectedCells:Vector.<Cell> = null;
+        private var _selectedCells:Vector.<Vector.<Cell>> = null;
+        private var _selectedDataCells:Vector.<Vector.<DataCell>> = null;
         private var _assemblyProvider:AssemblyProvider;
         private var _totalHeight:int = 0;
         private var _totalWidth:int = 0;
@@ -98,9 +104,14 @@ package org.jbei.registry.components.assemblyTableClasses
             return _activeCell;
         }
         
-        public function get selectedCells():Vector.<Cell>
+        public function get selectedCells():Vector.<Vector.<Cell>>
         {
             return _selectedCells;
+        }
+        
+        public function get selectedDataCells():Vector.<Vector.<DataCell>>
+        {
+            return _selectedDataCells;
         }
         
         // Public Methods
@@ -126,6 +137,9 @@ package org.jbei.registry.components.assemblyTableClasses
         public function select(cells:Vector.<Cell>):void
         {
             selectionLayer.select(cells);
+            
+            _selectedCells = Vector.<Vector.<Cell>>([cells]);
+            _selectedDataCells = getSelectedDataCells();
         }
         
         public function deselect():void
@@ -133,6 +147,7 @@ package org.jbei.registry.components.assemblyTableClasses
             selectionLayer.deselect();
             
             _selectedCells = null;
+            _selectedDataCells = null;
         }
         
         // Protected Methods
@@ -258,12 +273,22 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onKeyDown(event:KeyboardEvent):void
         {
-            if(!event.shiftKey) {
-                deselect();
+            if(event.ctrlKey || event.altKey) {
+                return;
+            }
+            
+            if(event.keyCode == Keyboard.DELETE) {
+                deleteSelectedCells();
+                
+                return;
             }
             
             if(activeCell == null) {
                 return;
+            }
+            
+            if(!event.shiftKey) {
+                deselect();
             }
             
             if(event.shiftKey && !shiftPressed) {
@@ -300,12 +325,32 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onCopy(event:Event):void
         {
-            trace("copy");
+            if(!_selectedCells || _selectedCells.length == 0) {
+                if(activeCell && activeCell is DataCell) {
+                    _selectedDataCells = new Vector.<Vector.<DataCell>>();
+                    _selectedDataCells.push(new Vector.<DataCell>);
+                    _selectedDataCells[0].push(activeCell);
+                } else {
+                    return;
+                }
+            }
+            
+            copyToClipboard();
         }
         
         private function onCut(event:Event):void
         {
-            trace("cut");
+            if(!_selectedCells || _selectedCells.length == 0) {
+                if(activeCell && activeCell is DataCell) {
+                    _selectedDataCells = new Vector.<Vector.<DataCell>>();
+                    _selectedDataCells.push(new Vector.<DataCell>);
+                    _selectedDataCells[0].push(activeCell);
+                } else {
+                    return;
+                }
+            }
+            
+            cutToClipboard();
         }
         
         private function onPaste(event:Event):void
@@ -333,10 +378,10 @@ package org.jbei.registry.components.assemblyTableClasses
                 contextMenu.clipboardItems.clear = false;
                 contextMenu.clipboardItems.selectAll = true;
                 
-                addEventListener(Event.COPY, onCopy);
-                addEventListener(Event.CUT, onCut);
-                addEventListener(Event.PASTE, onPaste);
-                addEventListener(Event.SELECT_ALL, onSelectAll);
+                assemblyTable.addEventListener(Event.COPY, onCopy);
+                assemblyTable.addEventListener(Event.CUT, onCut);
+                assemblyTable.addEventListener(Event.PASTE, onPaste);
+                assemblyTable.addEventListener(Event.SELECT_ALL, onSelectAll);
             }
         }
         
@@ -619,17 +664,25 @@ package org.jbei.registry.components.assemblyTableClasses
             var startRowIndex:int = startCell.index < endCell.index ? startCell.index : endCell.index;
             var endRowIndex:int = startCell.index < endCell.index ? endCell.index : startCell.index;
             
-            var selectedCells:Vector.<Cell> = new Vector.<Cell>();
+            _selectedCells = new Vector.<Vector.<Cell>>();
+            var selectedCellsList:Vector.<Cell> = new Vector.<Cell>();
             
+            var index:int = 0;
             for(var c:int = startColumnIndex; c <= endColumnIndex; c++) {
+                _selectedCells.push(new Vector.<Cell>());
+                
                 for(var r:int = startRowIndex; r <= endRowIndex; r++) {
-                    selectedCells.push(columns[c].column.cells[r]);
+                    _selectedCells[index].push(columns[c].column.cells[r]);
+                    
+                    selectedCellsList.push(columns[c].column.cells[r]);
                 }
+                
+                index++;
             }
             
-            _selectedCells = selectedCells;
+            _selectedDataCells = getSelectedDataCells();
             
-            selectionLayer.select(selectedCells);
+            selectionLayer.select(selectedCellsList);
         }
         
         private function calculateCellsPerPage():Number
@@ -639,6 +692,148 @@ package org.jbei.registry.components.assemblyTableClasses
             result = (result <= 1) ? 1 : (result - 1);
             
             return result;
+        }
+        
+        private function getSelectedDataCells():Vector.<Vector.<DataCell>>
+        {
+            var dataCells:Vector.<Vector.<DataCell>> = new Vector.<Vector.<DataCell>>();
+            
+            var index:int = 0;
+            var nonEmptyColumn:Boolean = false;
+            for(var i:int = 0; i < _selectedCells.length; i++) {
+                nonEmptyColumn = false;
+                
+                for(var j:int = 0; j < _selectedCells[i].length; j++) {
+                    if(_selectedCells[i][j] is DataCell) {
+                        var dataCell:DataCell = _selectedCells[i][j] as DataCell;
+                        
+                        if(!nonEmptyColumn) {
+                            nonEmptyColumn = true;
+                            
+                            dataCells.push(new Vector.<DataCell>());
+                            dataCells[index].push(dataCell);
+                        } else {
+                            dataCells[index].push(dataCell);
+                        }
+                    }
+                }
+                
+                if(nonEmptyColumn) {
+                    index++;
+                }
+            }
+            
+            return dataCells;
+        }
+        
+        private function copyToClipboard():void
+        {
+            if(!_selectedDataCells || _selectedDataCells.length == 0) {
+                return;
+            }
+            
+            var dataItems:Vector.<Vector.<AssemblyItem>> = new Vector.<Vector.<AssemblyItem>>();
+            
+            for(var i:int = 0; i < _selectedDataCells.length; i++) {
+                dataItems.push(new Vector.<AssemblyItem>());
+                
+                for(var j:int = 0; j < _selectedDataCells[i].length; j++) {
+                    dataItems[i].push(_selectedDataCells[i][j].assemblyItem);
+                }
+            }
+            
+            var dataAsString:String = "";
+            var flag:Boolean = true;
+            var currentRowIndex:int = 0;
+            var emptyCells:int = 0;
+            var rowDataAsString:String = "";
+            
+            while(flag) {
+                flag = false;
+                emptyCells = 0;
+                rowDataAsString = "";
+                
+                for(var k:int = 0; k < dataItems.length; k++) {
+                    if(dataItems[k].length - 1 >= currentRowIndex) {
+                        flag = true;
+                        
+                        var parsedData:String = dataItems[k][currentRowIndex].toString();
+                        
+                        if(parsedData.indexOf("\t") >=0 || parsedData.indexOf("\n") >=0 || parsedData.indexOf("\r") >=0) {
+                            parsedData = "\"" + parsedData.replace("\"", "\\\"") + "\"";
+                        }
+                        
+                        rowDataAsString += parsedData;
+                        
+                        if(k < dataItems.length - 1) {
+                            rowDataAsString += ",";
+                        }
+                    } else {
+                        emptyCells++;
+                        
+                        if(k < dataItems.length - 1) {
+                            rowDataAsString += ",";
+                        }
+                    }
+                }
+                
+                if(emptyCells == dataItems.length) {
+                    break;
+                }
+                
+                dataAsString += rowDataAsString + "\n";
+                currentRowIndex++;
+            }
+            
+            Clipboard.generalClipboard.clear();
+            Clipboard.generalClipboard.setData(Constants.ASSEMBLY_TABLE_CELLS_COPY_CLIPBOARD_KEY, dataItems, true);
+            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, dataAsString, true);
+        }
+        
+        private function cutToClipboard():void
+        {
+            copyToClipboard();
+            
+            doDeleteSelectedCells();
+        }
+        
+        private function deleteSelectedCells():void
+        {
+            if(!_selectedDataCells || _selectedDataCells.length == 0) {
+                if(activeCell && activeCell is DataCell) {
+                    _selectedDataCells = new Vector.<Vector.<DataCell>>();
+                    _selectedDataCells.push(new Vector.<DataCell>);
+                    _selectedDataCells[0].push(activeCell);
+                } else {
+                    return;
+                }
+            }
+            
+            Alert.show("Are you sure you want to delete selected items?", "Delete items", Alert.YES | Alert.NO, this.parent as Sprite, onAlertDeleteItemsClose, null, Alert.NO);            
+        }
+        
+        private function onAlertDeleteItemsClose(event:CloseEvent):void
+        {
+            if(event.detail == 1) {
+                doDeleteSelectedCells();
+            }
+        }
+        
+        private function doDeleteSelectedCells():void
+        {
+            _assemblyProvider.manualUpdateStart();
+            
+            try {
+                for(var i:int = 0; i < _selectedDataCells.length; i++) {
+                    for(var j:int = 0; j < _selectedDataCells[i].length; j++) {
+                        var dataCell:DataCell = _selectedDataCells[i][j];
+                        
+                        _assemblyProvider.deleteAssemblyItem(_assemblyProvider.bins[dataCell.column.index], dataCell.assemblyItem);
+                    }
+                }
+            } finally {
+                _assemblyProvider.manualUpdateEnd();
+            }
         }
     }
 }

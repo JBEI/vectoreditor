@@ -50,7 +50,7 @@ package org.jbei.registry.components.assemblyTableClasses
             if(!label) {
                 label = new Label();
                 
-                label.text = (cell as DataCell).data;
+                label.text = (cell as DataCell).assemblyItem.sequence;
                 label.x = 3;
                 label.y = 3;
                 label.height = 30;

@@ -60,7 +60,7 @@ package org.jbei.registry.components.assemblyTableClasses
                     if(j < numberOfItemsInBin) {
                         var assemblyItem:AssemblyItem = currentBin.items[j] as AssemblyItem;
                         
-                        var newDataCell:DataCell = new DataCell(newColumn, assemblyItem.sequence, j);
+                        var newDataCell:DataCell = new DataCell(newColumn, assemblyItem, j);
                         
                         newColumn.addCell(newDataCell);
                     } else {

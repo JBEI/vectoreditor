@@ -20,7 +20,7 @@ package org.jbei.registry.utils
             promotersBin.addItem(new AssemblyItem("gcatgctagctagctagctagtatgatgcatgctagctagctagctagctagctacgcatgctagctagctagctag"));
             
             var rbsBin:Bin = new Bin(new FeatureType("RBS", "rbs"));
-            rbsBin.addItem(new AssemblyItem("tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
+            rbsBin.addItem(new AssemblyItem("tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagct\tagctagctac"));
             rbsBin.addItem(new AssemblyItem("actagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
             rbsBin.addItem(new AssemblyItem("cctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
             rbsBin.addItem(new AssemblyItem("gctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
@@ -54,7 +54,7 @@ package org.jbei.registry.utils
             var typeValues:Array = ["General", "Promoter", "RBS", "Gene", "Terminator"];
             
             for(var i:int = 0; i < numberOfBins; i++) {
-                var typeIndex:int = Math.round(Math.random() * 3);
+                var typeIndex:int = Math.round(Math.random() * 4);
                 
                 var newBin:Bin = new Bin(new FeatureType(typeValues[typeIndex], typeKeys[typeIndex]));
                 

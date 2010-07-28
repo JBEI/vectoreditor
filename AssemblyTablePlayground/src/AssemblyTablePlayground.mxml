@@ -15,7 +15,7 @@
             private function onCaretChanged(event:CaretEvent):void
             {
                 if(event.cell is DataCell) {
-                    caretTextArea.text = (event.cell as DataCell).data;
+                    caretTextArea.text = (event.cell as DataCell).assemblyItem.sequence;
                 } else {
                     caretTextArea.text = "";
                 }

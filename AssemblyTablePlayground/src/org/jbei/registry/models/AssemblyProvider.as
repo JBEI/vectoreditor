@@ -126,5 +126,18 @@ package org.jbei.registry.models
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
             }
         }
+        
+        public function deleteAssemblyItem(bin:Bin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
+        {
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
+            }
+            
+            bin.deleteItem(assemblyItem);
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
+            }
+        }
     }
 }

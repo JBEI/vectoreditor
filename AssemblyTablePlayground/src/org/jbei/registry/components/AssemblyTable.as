@@ -73,23 +73,9 @@ package org.jbei.registry.components
             invalidateProperties();
         }
         
-        public function get selectedItems():Vector.<AssemblyItem>
+        public function get selectedItems():Vector.<Vector.<Cell>>
         {
-            if(!contentHolder.selectedCells || contentHolder.selectedCells.length == 0) {
-                return null;
-            }
-            
-            var resultItems:Vector.<AssemblyItem> = new Vector.<AssemblyItem>();
-            
-            for(var i:int = 0; i < contentHolder.selectedCells.length; i++) {
-                var cell:Cell = contentHolder.selectedCells[i];
-                
-                if(cell is DataCell) {
-                    resultItems.push(cell);
-                }
-            }
-            
-            return resultItems;
+            return contentHolder.selectedCells;
         }
         
         // Public Methods

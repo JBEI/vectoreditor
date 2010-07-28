@@ -1,24 +1,26 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
+    import org.jbei.registry.models.AssemblyItem;
+
     /**
      * @author Zinovii Dmytriv
      */
     public class DataCell extends Cell
     {
-        private var _data:String;
+        private var _assemblyItem:AssemblyItem;
         
         // Contructor
-        public function DataCell(column:Column, data:String, index:uint)
+        public function DataCell(column:Column, assemblyItem:AssemblyItem, index:uint)
         {
             super(column, index);
             
-            _data = data;
+            _assemblyItem = assemblyItem;
         }
         
         // Properties
-        public function get data():String
+        public function get assemblyItem():AssemblyItem
         {
-            return _data;
+            return _assemblyItem;
         }
     }
 }
