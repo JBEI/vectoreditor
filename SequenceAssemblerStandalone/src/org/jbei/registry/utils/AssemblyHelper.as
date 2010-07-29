@@ -3,7 +3,7 @@ package org.jbei.registry.utils
     import mx.utils.StringUtil;
     
     import org.jbei.registry.models.AssemblyItem;
-    import org.jbei.registry.models.AssemblyMatrix;
+    import org.jbei.registry.models.AssemblyProvider;
     import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.Permutation;
     import org.jbei.registry.models.PermutationSet;
@@ -13,16 +13,16 @@ package org.jbei.registry.utils
      */
     public class AssemblyHelper
     {
-        private static var assemblyMatrix:AssemblyMatrix;
+        private static var assemblyProvider:AssemblyProvider;
         private static var permutationSet:PermutationSet;
         
         // Public Methods
-        public static function buildPermutationSet(assemblyMatrix:AssemblyMatrix):PermutationSet
+        public static function buildPermutationSet(assemblyProvider:AssemblyProvider):PermutationSet
         {
-            AssemblyHelper.assemblyMatrix = assemblyMatrix;
+            AssemblyHelper.assemblyProvider = assemblyProvider;
             AssemblyHelper.permutationSet = new PermutationSet();
             
-            if(assemblyMatrix != null && assemblyMatrix.bins != null || assemblyMatrix.bins.length > 0) {
+            if(assemblyProvider != null && assemblyProvider.bins != null || assemblyProvider.bins.length > 0) {
                 assemble(0, new Permutation());
             }
             
@@ -32,7 +32,7 @@ package org.jbei.registry.utils
         // Private Methods
         private static function assemble(binIndex:int, permutation:Permutation):void
         {
-            if(binIndex == assemblyMatrix.bins.length) {
+            if(binIndex == assemblyProvider.bins.length) {
                 if(binIndex == 0) {
                     return;
                 } else {
@@ -42,7 +42,7 @@ package org.jbei.registry.utils
                 }
             }
             
-            var currentBin:Bin = assemblyMatrix.bins[binIndex] as Bin;
+            var currentBin:Bin = assemblyProvider.bins[binIndex] as Bin;
             var binSize:int = currentBin.items.length;
             
             if(binSize > 0) {

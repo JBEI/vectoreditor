@@ -1,312 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="1024" height="768" creationComplete="onCreationComplete()">
+<mx:Application width="100%" height="100%" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]">
     <mx:Script>
         <![CDATA[
-            import flash.ui.ContextMenu;
-            
-            import mx.collections.ArrayCollection;
-            import mx.controls.AdvancedDataGridBaseEx;
-            import mx.controls.Alert;
-            import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
-            import mx.controls.advancedDataGridClasses.AdvancedDataGridHeaderRenderer;
-            import mx.controls.advancedDataGridClasses.AdvancedDataGridItemRenderer;
-            import mx.controls.dataGridClasses.DataGridColumn;
-            import mx.controls.dataGridClasses.DataGridHeader;
-            import mx.controls.dataGridClasses.DataGridItemRenderer;
-            import mx.controls.listClasses.ListBaseContentHolder;
-            import mx.events.AdvancedDataGridEvent;
-            import mx.events.CollectionEvent;
-            import mx.events.FlexEvent;
-            import mx.events.IndexChangedEvent;
-            import mx.events.ListEvent;
-            import mx.events.PropertyChangeEvent;
-            import mx.utils.StringUtil;
-            
-            import org.jbei.lib.ui.dialogs.ModalDialog;
-            import org.jbei.lib.ui.dialogs.ModalDialogEvent;
-            import org.jbei.registry.models.AssemblyItem;
-            import org.jbei.registry.models.AssemblyMatrix;
-            import org.jbei.registry.models.Bin;
-            import org.jbei.registry.models.FeatureType;
-            import org.jbei.registry.models.Permutation;
-            import org.jbei.registry.models.PermutationSet;
-            import org.jbei.registry.utils.AssemblyHelper;
+            import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
+            import org.jbei.registry.components.assemblyTableClasses.DataCell;
+            import org.jbei.registry.components.assemblyTableClasses.SelectionEvent;
             import org.jbei.registry.utils.StandaloneUtils;
-            import org.jbei.registry.view.dialogs.AddBinDialogForm;
             
-            private var gridContextMenu:ContextMenu;
-            private var assemblyMatrix:AssemblyMatrix = new AssemblyMatrix();
-            private var assemblyDataProvider:ArrayCollection;
-            private var assemblyColumns:Array;
-            private var permutationsDataProvider:ArrayCollection;
-            
-            private var dataChanged:Boolean = false;
-            private var changeDataOldValue:String = "";
-            private var currentHeader:AdvancedDataGridHeaderRenderer = null;
-            
-            // Event Handlers
-            private function onCreationComplete():void
+            private function onRandomizeButtonClick(event:MouseEvent):void
             {
-                gridContextMenu = new ContextMenu();
-                gridContextMenu.hideBuiltInItems();
-                gridContextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onGridContextMenuSelect);
+                assemblyTable.assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
                 
-                mainDataGrid.contextMenu = gridContextMenu;
-                
-                assemblyMatrix = StandaloneUtils.standaloneAssemblyMatrix();
-                
-                assemblyMatrix2DataProvider();
+                assemblyTable.setFocus();
             }
             
-            private function onGridContextMenuSelect(event:ContextMenuEvent):void
+            private function onCaretChanged(event:CaretEvent):void
             {
-                var customMenuItems:Array = new Array();
-                
-                if(!(event.mouseTarget is AdvancedDataGridItemRenderer) && (event.mouseTarget.parent != null) && event.mouseTarget.parent is AdvancedDataGridHeaderRenderer) {
-                    var addColumnMenuItem:ContextMenuItem = new ContextMenuItem("Add column");
-                    var editColumnMenuItem:ContextMenuItem = new ContextMenuItem("Edit column");
-                    var removeColumnMenuItem:ContextMenuItem = new ContextMenuItem("Remove column");
-                    
-                    addColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onAddColumnMenuItemSelect);
-                    editColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onEditColumnMenuItemSelect);
-                    removeColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onRemoveColumnMenuItemSelect);
-                    
-                    customMenuItems.push(addColumnMenuItem);
-                    customMenuItems.push(editColumnMenuItem);
-                    customMenuItems.push(removeColumnMenuItem);
-                    
-                    currentHeader = event.mouseTarget.parent as AdvancedDataGridHeaderRenderer;
+                if(event.cell is DataCell) {
+                    caretTextArea.text = (event.cell as DataCell).assemblyItem.sequence;
                 } else {
-                    var addRowMenuItem:ContextMenuItem = new ContextMenuItem("Add row");
-                    var removeRowMenuItem:ContextMenuItem = new ContextMenuItem("Remove row");
-                    
-                    addRowMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onAddRowMenuItemSelect);
-                    
-                    customMenuItems.push(addRowMenuItem);
-                }
-                
-                gridContextMenu.customItems = customMenuItems;
-            }
-            
-            private function onAddColumnButtonClick(event:MouseEvent):void
-            {
-                addBin();
-            }
-            
-            private function onAddRowButtonClick(event:MouseEvent):void
-            {
-                addEmptyRow();
-            }
-            
-            private function onAddColumnMenuItemSelect(event:ContextMenuEvent):void
-            {
-                addBin();
-            }
-            
-            private function onEditColumnMenuItemSelect(event:ContextMenuEvent):void
-            {
-                if(currentHeader != null) {
-                    Alert.show("Not implemented yet!");
-                    
-                    currentHeader = null;
+                    caretTextArea.text = "";
                 }
             }
             
-            private function onRemoveColumnMenuItemSelect(event:ContextMenuEvent):void
+            private function onSelectionChanged(event:SelectionEvent):void
             {
-                if(currentHeader != null) {
-                    var bin:Bin = assemblyMatrix.getBinByUUID((currentHeader.data as AdvancedDataGridColumn).dataField);
-                    if(bin != null) {
-                        assemblyMatrix.removeBin(bin);
-                        
-                        assemblyMatrix2DataProvider();
-                    }
-                    
-                    currentHeader = null;
-                }
-            }
-            
-            private function onAddRowMenuItemSelect(event:ContextMenuEvent):void
-            {
-                addEmptyRow();
-            }
-            
-            private function onAddBinDialogSubmit(event:ModalDialogEvent):void
-            {
-                if(event.data == null) {
-                    return;
-                }
-                
-                var featureType:FeatureType = event.data as FeatureType;
-                
-                assemblyMatrix.addBin(new Bin(featureType));
-                assemblyMatrix2DataProvider();
-            }
-            
-            private function onRunButtonClick(event:MouseEvent):void
-            {
-                var permutationSet:PermutationSet = AssemblyHelper.buildPermutationSet(assemblyMatrix);
-                
-                var permutationColumns:Array = new Array();
-                permutationsDataProvider = new ArrayCollection();
-                
-                var indexGridColumn:DataGridColumn = new DataGridColumn("#");
-                indexGridColumn.dataField = "0";
-                indexGridColumn.width = 45;
-                permutationColumns.push(indexGridColumn);
-                
-                for(var z:int = 0; z < assemblyMatrix.bins.length; z++) {
-                    var bin:Bin = assemblyMatrix.bins[z] as Bin;
-                    
-                    var dataGridColumn:DataGridColumn = new DataGridColumn(bin.featureType.key);
-                    dataGridColumn.dataField = String(z + 1);
-                    permutationColumns.push(dataGridColumn);
-                }
-                
-                for(var i:int = 0; i < permutationSet.permutations.length; i++) {
-                    var currentPermutation:Permutation = permutationSet.permutations[i] as Permutation;
-                    
-                    var permutationData:Object = new Object();
-                    
-                    permutationData[0] = i + 1;
-                    
-                    for(var j:int = 0; j < currentPermutation.items.length; j++) {
-                        permutationData[j + 1] = (currentPermutation.items[j] as AssemblyItem).sequence;
-                    }
-                    
-                    permutationsDataProvider.addItem(permutationData);
-                }
-                
-                permutationsDataGrid.columns = permutationColumns;
-                permutationsDataGrid.dataProvider = permutationsDataProvider;
-            }
-            
-            private function onItemEditEnd(event:AdvancedDataGridEvent):void
-            {
-                var object:Object = assemblyDataProvider.getItemAt(event.rowIndex);
-                
-                dataChanged = true;
-                changeDataOldValue = object[event.dataField];
-            }
-            
-            private function onDataChange(event:CollectionEvent):void
-            {
-                if(dataChanged) {
-                    dataChanged = false;
-                    
-                    if(event.kind == "update" && event.items != null && event.items.length > 0 && (event.items[0] is PropertyChangeEvent) && (event.items[0] as PropertyChangeEvent).property != null) {
-                        //trace(changeDataOldValue, (event.items[0] as PropertyChangeEvent).source[(event.items[0] as PropertyChangeEvent).property]);
-                        
-                        dataProvider2AssemblyMatrix();
-                    }
-                }
-            }
-            
-            private function onHeaderShift(event:IndexChangedEvent):void
-            {
-                swapColumns(event.oldIndex, event.newIndex);
-            }
-            
-            // Private Methods
-            private function assemblyMatrix2DataProvider():void
-            {
-                assemblyColumns = new Array();
-                assemblyDataProvider = new ArrayCollection();
-                assemblyDataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onDataChange);
-                
-                // remove old columns
-                if(mainDataGrid.columns && mainDataGrid.columns is Array && mainDataGrid.columns.length > 0) {
-                    mainDataGrid.columns.splice(0, mainDataGrid.columns.length);
-                }
-                
-                var maxNumberOfRows:int = 0;
-                for(var i:int = 0; i < assemblyMatrix.bins.length; i++) {
-                    var bin:Bin = assemblyMatrix.bins[i] as Bin;
-                    
-                    var dataGridColumn:AdvancedDataGridColumn = new AdvancedDataGridColumn(bin.featureType.key);
-                    dataGridColumn.dataField = bin.uuid;
-                    assemblyColumns.push(dataGridColumn);
-                    
-                    if(maxNumberOfRows < bin.items.length) {
-                        maxNumberOfRows = bin.items.length;
-                    }
-                }
-                
-                for(var r:int = 0; r < maxNumberOfRows; r++) {
-                    var assemblyData:Object = new Object();
-                    
-                    for(var j:int = 0; j < assemblyMatrix.bins.length; j++) {
-                        var currentBin:Bin = assemblyMatrix.bins[j] as Bin;
-                        
-                        if(r > currentBin.items.length - 1) continue;
-                        
-                        assemblyData[currentBin.uuid] = (currentBin.items[r] as AssemblyItem).sequence;
-                    }
-                    
-                    assemblyDataProvider.addItem(assemblyData);
-                }
-                
-                mainDataGrid.columns = assemblyColumns;
-                mainDataGrid.dataProvider = assemblyDataProvider;
-            }
-            
-            private function dataProvider2AssemblyMatrix():void
-            {
-                assemblyMatrix = new AssemblyMatrix();
-                
-                for(var i:int = 0; i < assemblyColumns.length; i++) {
-                    var bin:Bin = new Bin(new FeatureType((assemblyColumns[i] as AdvancedDataGridColumn).headerText, (assemblyColumns[i] as AdvancedDataGridColumn).headerText));
-                    bin.uuid = (assemblyColumns[i] as AdvancedDataGridColumn).dataField;
-                    
-                    assemblyMatrix.addBin(bin);
-                }
-                
-                for(var k:int = 0; k < assemblyMatrix.bins.length; k++) {
-                    var currentBin:Bin = assemblyMatrix.bins[k] as Bin;
-                    
-                    for(var j:int = 0; j < assemblyDataProvider.length; j++) {
-                        var object:Object = assemblyDataProvider.getItemAt(j);
-                        
-                        if(object && object[currentBin.uuid] != null && StringUtil.trim(object[currentBin.uuid]).length > 0) {
-                            currentBin.addItem(new AssemblyItem(object[currentBin.uuid]));
-                        }
-                    }
-                }
-            }
-            
-            private function addBin():void
-            {
-                var addBinDialog:ModalDialog = new ModalDialog(AddBinDialogForm, new Object());
-                
-                addBinDialog.title = "Add bin ...";
-                addBinDialog.addEventListener(ModalDialogEvent.SUBMIT, onAddBinDialogSubmit);
-                addBinDialog.open();
-            }
-            
-            private function addEmptyRow():void
-            {
-                assemblyDataProvider.addItem(new Object());
-            }
-            
-            private function swapColumns(oldIndex:int, newIndex:int):void
-            {
-                assemblyMatrix.swapBins(oldIndex, newIndex);
-                
-                assemblyMatrix2DataProvider();
+                // not implemented
             }
         ]]>
     </mx:Script>
     
-    <mx:VBox width="100%" height="100%">
-        <mx:AdvancedDataGrid id="mainDataGrid" editable="true" allowDragSelection="true" selectionMode="multipleCells" sortableColumns="false" itemEditEnd="onItemEditEnd(event)" headerShift="onHeaderShift(event)" width="100%" height="100%" />
+    <mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" backgroundColor="0xFFFFFF">
+        <mx:Button id="randomizeButton" label="Randomize" click="onRandomizeButtonClick(event)" />
+    </mx:ApplicationControlBar>
+    
+    <mx:HDividedBox width="100%" height="100%" paddingTop="8">
+        <mx:Panel title="Assembly Table" width="80%" height="100%">
+            <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+        </mx:Panel>
         
-        <mx:HBox width="100%" height="25">
-            <mx:Button id="addColumnButton" label="Add column" width="120" click="onAddColumnButtonClick(event)"/>
-            <mx:Button id="addRowButton" label="Add row" width="120" click="onAddRowButtonClick(event)"/>
-            <mx:Spacer width="100%" />
-            <mx:Button id="runButton" label="Run" click="onRunButtonClick(event)" />
-        </mx:HBox>
-        
-        <mx:DataGrid id="permutationsDataGrid" width="100%" height="100%" />
-    </mx:VBox>
+        <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">
+            <mx:Label text="Sequence:" paddingBottom="0"/>
+            <mx:TextArea id="caretTextArea" width="100%" height="200" />
+        </mx:Panel>
+    </mx:HDividedBox>
 </mx:Application>

@@ -23,5 +23,10 @@ package org.jbei.registry.models
         {
             _sequence = value;
         }
+        
+        public function toString():String
+        {
+            return _sequence;
+        }
     }
 }

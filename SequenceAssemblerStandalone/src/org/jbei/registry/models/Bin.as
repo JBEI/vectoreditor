@@ -50,9 +50,24 @@ package org.jbei.registry.models
         }
         
         // Public Methods
+        /*
+        * @private
+        * */
         public function addItem(item:AssemblyItem):void
         {
             _items.push(item);
+        }
+        
+        /*
+        * @private
+        * */
+        public function deleteItem(item:AssemblyItem):void
+        {
+            var index:int = _items.indexOf(item);
+            
+            if(index >= 0) {
+                _items.splice(index, 1);
+            }
         }
     }
 }
