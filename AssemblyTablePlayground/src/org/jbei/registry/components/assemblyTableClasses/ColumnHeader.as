@@ -95,7 +95,7 @@ package org.jbei.registry.components.assemblyTableClasses
         */
         public function changeColumnType(newType:String):void
         {
-            contentHolder.assemblyProvider.changeBinType(contentHolder.assemblyProvider.bins[column.index], FeatureTypeManager.instance.getTypeByValue(newType));
+            contentHolder.changeBinType(column.index, newType);
         }
         
         // Protected Methods
@@ -169,7 +169,7 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             if(mouseIsDown && !dragging) {
-                contentHolder.select(column.cells);
+                contentHolder.selectColumn(column.index);
             }
             
             if(mouseIsDown && dragging) {
@@ -231,7 +231,7 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onContextMenuSelect(event:ContextMenuEvent):void
         {
-            contentHolder.select(column.cells);
+            contentHolder.selectColumn(column.index);
         }
         
         private function onInsertOneLeftContextMenuItemClick(event:ContextMenuEvent):void
@@ -336,7 +336,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 contextMenu.clipboardItems.copy = true;
                 contextMenu.clipboardItems.paste = true;
                 contextMenu.clipboardItems.cut = true;
-                contextMenu.clipboardItems.clear = false;
+                contextMenu.clipboardItems.clear = true;
                 contextMenu.clipboardItems.selectAll = true;
                 
                 var insertOneLeftContextMenuItem:ContextMenuItem = new ContextMenuItem("Insert 1 left");

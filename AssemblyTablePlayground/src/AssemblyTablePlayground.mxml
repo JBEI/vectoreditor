@@ -10,6 +10,8 @@
             private function onRandomizeButtonClick(event:MouseEvent):void
             {
                 assemblyTable.assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
+                
+                assemblyTable.setFocus();
             }
             
             private function onCaretChanged(event:CaretEvent):void

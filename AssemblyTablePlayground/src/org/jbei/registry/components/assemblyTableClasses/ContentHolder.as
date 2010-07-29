@@ -21,6 +21,8 @@ package org.jbei.registry.components.assemblyTableClasses
     import org.jbei.registry.components.AssemblyTable;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
+    import org.jbei.registry.models.Bin;
+    import org.jbei.registry.models.FeatureTypeManager;
     
     /**
      * @author Zinovii Dmytriv
@@ -52,6 +54,9 @@ package org.jbei.registry.components.assemblyTableClasses
         private var shiftPressed:Boolean = false;
         private var shiftSelectionStartCell:Cell = null;
         private var previousHeaderYPosition:Number = 0;
+        private var pasteAssemblyItems:Vector.<Vector.<AssemblyItem>> = null;
+        private var activeColumnIndex:int = -1;
+        private var activeCellIndex:int = -1;
         
         // Constructor
         public function ContentHolder(assemblyTable:AssemblyTable)
@@ -82,8 +87,6 @@ package org.jbei.registry.components.assemblyTableClasses
             invalidateProperties();
             
             dataMapper.loadAssemblyProvider(_assemblyProvider);
-            
-            updateActiveCell(null);
             
             headerPanel.y = 0;
             headerPanel.updateMetrics();
@@ -134,12 +137,51 @@ package org.jbei.registry.components.assemblyTableClasses
             }
         }
         
-        public function select(cells:Vector.<Cell>):void
+        public function selectColumn(index:int):void
         {
-            selectionLayer.select(cells);
+            selectionLayer.select(columns[index].column.cells);
             
-            _selectedCells = Vector.<Vector.<Cell>>([cells]);
+            _selectedCells = Vector.<Vector.<Cell>>([columns[index].column.cells]);
             _selectedDataCells = getSelectedDataCells();
+        }
+        
+        public function select(cells:Vector.<Vector.<Cell>>):void
+        {
+            if(!cells || cells.length == 0) {
+                return;
+            }
+            
+            var sCells:Vector.<Cell> = new Vector.<Cell>();
+            
+            for(var i:int = 0; i < cells.length; i++) {
+                for(var j:int = 0; j < cells[i].length; j++) {
+                    sCells.push(cells[i][j]);
+                }
+            }
+            
+            selectionLayer.select(sCells);
+            
+            _selectedCells = cells;
+            _selectedDataCells = getSelectedDataCells();
+        }
+        
+        public function selectAll():void
+        {
+            if(!columns) {
+                return;
+            }
+            
+            var allCells:Vector.<Vector.<Cell>> = new Vector.<Vector.<Cell>>();
+            
+            for(var i:int = 0; i < columns.length; i++) {
+                allCells.push(new Vector.<Cell>());
+                
+                for(var j:int = 0; j < columns[i].column.cells.length; j++) {
+                    allCells[i].push(columns[i].column.cells[j]);
+                }
+            }
+            
+            select(allCells);
         }
         
         public function deselect():void
@@ -148,6 +190,11 @@ package org.jbei.registry.components.assemblyTableClasses
             
             _selectedCells = null;
             _selectedDataCells = null;
+        }
+        
+        public function changeBinType(binIndex:int, newType:String):void
+        {
+            _assemblyProvider.changeBinType(_assemblyProvider.bins[binIndex], FeatureTypeManager.instance.getTypeByValue(newType));
         }
         
         // Protected Methods
@@ -175,6 +222,8 @@ package org.jbei.registry.components.assemblyTableClasses
                 createColumns();
                 
                 needsRemeasurement = true;
+                
+                updateCaretPosition();
             }
         }
         
@@ -355,12 +404,49 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onPaste(event:Event):void
         {
-            trace("paste");
+            if(Clipboard.generalClipboard.hasFormat(Constants.ASSEMBLY_TABLE_CELLS_COPY_CLIPBOARD_KEY)) {
+                var pasteObject:Object = Clipboard.generalClipboard.getData(Constants.ASSEMBLY_TABLE_CELLS_COPY_CLIPBOARD_KEY);
+                
+                if(!pasteObject || !(pasteObject is Vector.<Vector.<AssemblyItem>>)) {
+                    return; // invalid paste object
+                }
+                
+                var items:Vector.<Vector.<AssemblyItem>> = pasteObject as Vector.<Vector.<AssemblyItem>>;
+                
+                if(items.length == 0) {
+                    return; // nothing to paste
+                }
+                
+                pasteAssemblyItems = items;
+                
+                pasteFromClipboard();
+            } else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
+                trace("paste as text!");
+            }
         }
         
         private function onSelectAll(event:Event):void
         {
-            trace("select all");
+            selectAll();
+        }
+        
+        private function onClear(event:Event):void
+        {
+            deleteSelectedCells();
+        }
+        
+        private function onAlertPasteOverrideItemsClose(event:CloseEvent):void
+        {
+            if(event.detail == 1) {
+                doPasteCells();
+            }
+        }
+        
+        private function onAlertDeleteItemsClose(event:CloseEvent):void
+        {
+            if(event.detail == 1) {
+                doDeleteSelectedCells();
+            }
         }
         
         // Private Methods
@@ -373,15 +459,16 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 contextMenu.clipboardMenu = true;
                 contextMenu.clipboardItems.copy = true;
-                contextMenu.clipboardItems.paste = true;
                 contextMenu.clipboardItems.cut = true;
-                contextMenu.clipboardItems.clear = false;
+                contextMenu.clipboardItems.paste = true;
+                contextMenu.clipboardItems.clear = true;
                 contextMenu.clipboardItems.selectAll = true;
                 
                 assemblyTable.addEventListener(Event.COPY, onCopy);
                 assemblyTable.addEventListener(Event.CUT, onCut);
                 assemblyTable.addEventListener(Event.PASTE, onPaste);
                 assemblyTable.addEventListener(Event.SELECT_ALL, onSelectAll);
+                assemblyTable.addEventListener(Event.CLEAR, onClear);
             }
         }
         
@@ -559,6 +646,14 @@ package org.jbei.registry.components.assemblyTableClasses
                 dispatchEvent(new CaretEvent(CaretEvent.CARET_CHANGED, cell));
                 
                 _activeCell = cell;
+                
+                if(cell) {
+                    activeColumnIndex = cell.column.index;
+                    activeCellIndex = cell.index;
+                } else {
+                    activeColumnIndex = -1;
+                    activeCellIndex = -1;
+                }
                 
                 caret.update();
             }
@@ -812,13 +907,6 @@ package org.jbei.registry.components.assemblyTableClasses
             Alert.show("Are you sure you want to delete selected items?", "Delete items", Alert.YES | Alert.NO, this.parent as Sprite, onAlertDeleteItemsClose, null, Alert.NO);            
         }
         
-        private function onAlertDeleteItemsClose(event:CloseEvent):void
-        {
-            if(event.detail == 1) {
-                doDeleteSelectedCells();
-            }
-        }
-        
         private function doDeleteSelectedCells():void
         {
             _assemblyProvider.manualUpdateStart();
@@ -833,6 +921,100 @@ package org.jbei.registry.components.assemblyTableClasses
                 }
             } finally {
                 _assemblyProvider.manualUpdateEnd();
+            }
+        }
+        
+        private function pasteFromClipboard():void
+        {
+            if(activeCell == null) {
+                return; // no paste position selected
+            }
+            
+            var overlapsWithExistingCells:Boolean = cellOverlaps();
+            
+            if(overlapsWithExistingCells) {
+                Alert.show("Pasting data overlaps with existing data. Are you sure you want to override existing cells?", "Paste ...", Alert.YES | Alert.NO, this.parent as Sprite, onAlertPasteOverrideItemsClose, null, Alert.NO);
+            } else {
+                doPasteCells();
+            }
+        }
+        
+        private function cellOverlaps():Boolean
+        {
+            var startingColumnIndex:int = activeCell.column.index;
+            var startingCellIndex:int = activeCell.index;
+            var totalColumns:int = columns.length;
+            var totalColumnCells:int = activeCell.column.cells.length;
+            
+            for(var i:int = 0; i < pasteAssemblyItems.length; i++) {
+                if(startingColumnIndex + i >= totalColumns) { 
+                    break;
+                }
+                
+                for(var j:int = 0; j < pasteAssemblyItems[i].length; j++) {
+                    if(startingCellIndex + j >= totalColumnCells) { 
+                        break;
+                    }
+                    
+                    if(columns[startingColumnIndex + i].column.cells[startingCellIndex + j] is DataCell) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        private function doPasteCells():void
+        {
+            var startingColumnIndex:int = activeCell.column.index;
+            var startingCellIndex:int = activeCell.index;
+            
+            _assemblyProvider.manualUpdateStart();
+            
+            for(var i:int = 0; i < pasteAssemblyItems.length; i++) {
+                if(startingColumnIndex + i >= _assemblyProvider.bins.length) { 
+                    _assemblyProvider.bins.push(new Bin(FeatureTypeManager.instance.getTypeByValue("general")));
+                }
+                
+                for(var j:int = 0; j < pasteAssemblyItems[i].length; j++) {
+                    if(startingCellIndex + j >= _assemblyProvider.bins[startingColumnIndex + i].items.length) {
+                        _assemblyProvider.bins[startingColumnIndex + i].items.push(pasteAssemblyItems[i][j]);
+                    } else {
+                        _assemblyProvider.bins[startingColumnIndex + i].items[startingCellIndex + j] = pasteAssemblyItems[i][j];
+                    }
+                }
+            }
+            
+            _assemblyProvider.manualUpdateEnd();
+        }
+        
+        private function updateCaretPosition():void
+        {
+            if(!columns || columns.length == 0) {
+                activeColumnIndex = -1;
+                activeCellIndex = -1;
+                _activeCell = null;
+                
+                updateActiveCell(null);
+                
+                return;
+            }
+            
+            if(activeCellIndex == -1 || activeColumnIndex == -1) {
+                updateActiveCell(columns[0].column.cells[0]);
+                
+                return;
+            }
+            
+            if(activeColumnIndex < _assemblyProvider.bins.length) {
+                if(activeCellIndex < columns[0].column.cells.length) {
+                    updateActiveCell(columns[activeColumnIndex].column.cells[activeCellIndex]);
+                } else {
+                    updateActiveCell(columns[activeColumnIndex].column.cells[columns[0].column.cells.length - 1]);
+                }
+            } else {
+                updateActiveCell(columns[_assemblyProvider.bins.length - 1].column.cells[0]);
             }
         }
     }

@@ -35,6 +35,7 @@ package org.jbei.registry.components
         
         private var assemblyProviderChanged:Boolean = false;
         private var needsRemeasurement:Boolean = true;
+        private var nullifyContentHolderPosition:Boolean = false;
         
         private var actualWidth:Number = 0;
         private var actualHeight:Number = 0;
@@ -125,8 +126,12 @@ package org.jbei.registry.components
                 contentHolder.updateMetrics(unscaledWidth, unscaledHeight);
                 contentHolder.validateNow();
                 
-                contentHolder.x = 0;
-                contentHolder.y = 0;
+                if(!nullifyContentHolderPosition) {
+                    nullifyContentHolderPosition = true;
+                } else {
+                    contentHolder.x = 0;
+                    contentHolder.y = 0;
+                }
                 
                 adjustScrollBars();
             }
@@ -271,9 +276,13 @@ package org.jbei.registry.components
                 if(contentHolder.x < 0 && -contentHolder.x > cell.column.metrics.x) {
                     contentHolder.x = -cell.column.metrics.x;
                     horizontalScrollPosition = -contentHolder.x;
+                    
+                    nullifyContentHolderPosition = false;
                 } else if(cell.column.metrics.x + cell.metrics.width > actualWidth - contentHolder.x) {
                     contentHolder.x += -((cell.column.metrics.x + cell.metrics.width) - (actualWidth - contentHolder.x) + 20);
                     horizontalScrollPosition = -contentHolder.x;
+                    
+                    nullifyContentHolderPosition = false;
                 }
             }
             
@@ -283,11 +292,14 @@ package org.jbei.registry.components
                     verticalScrollPosition = -contentHolder.y;
                     
                     contentHolder.updateHeaderPosition(-contentHolder.y);
+                    nullifyContentHolderPosition = false;
                 } else if(cell.metrics.y + cell.metrics.height > actualHeight - contentHolder.y) {
                     contentHolder.y += -((cell.metrics.y + cell.metrics.height) - (actualHeight - contentHolder.y) + 20) - ((horizontalScrollBar && horizontalScrollBar.visible) ? 25 : 0);
                     verticalScrollPosition = -contentHolder.y;
                     
                     contentHolder.updateHeaderPosition(-contentHolder.y);
+                    
+                    nullifyContentHolderPosition = false;
                 }
             }
         }
