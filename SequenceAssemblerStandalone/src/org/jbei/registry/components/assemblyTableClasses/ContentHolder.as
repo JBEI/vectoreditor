@@ -437,14 +437,14 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onAlertPasteOverrideItemsClose(event:CloseEvent):void
         {
-            if(event.detail == 1) {
+            if(event.detail == Alert.YES) {
                 doPasteCells();
             }
         }
         
         private function onAlertDeleteItemsClose(event:CloseEvent):void
         {
-            if(event.detail == 1) {
+            if(event.detail == Alert.YES) {
                 doDeleteSelectedCells();
             }
         }

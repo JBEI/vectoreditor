@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application width="100%" height="100%" layout="absolute" xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]">
+<mx:Application width="100%" height="100%" layout="absolute" creationComplete="onCreationComplete(event)"  xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="org.jbei.registry.components.*" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]">
     <mx:Script>
         <![CDATA[
             import org.jbei.registry.components.assemblyTableClasses.CaretEvent;
             import org.jbei.registry.components.assemblyTableClasses.DataCell;
             import org.jbei.registry.components.assemblyTableClasses.SelectionEvent;
+            import org.jbei.registry.models.AssemblyProvider;
             import org.jbei.registry.utils.StandaloneUtils;
+            
+            [Bindable]
+            private var assemblyProvider:AssemblyProvider = null;
+            
+            private function onCreationComplete(event:Event):void
+            {
+                assemblyProvider = StandaloneUtils.standaloneAssemblyProvider();
+            }
             
             private function onRandomizeButtonClick(event:MouseEvent):void
             {
-                assemblyTable.assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
+                assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
                 
                 assemblyTable.setFocus();
             }
@@ -36,7 +45,11 @@
     
     <mx:HDividedBox width="100%" height="100%" paddingTop="8">
         <mx:Panel title="Assembly Table" width="80%" height="100%">
-            <components:AssemblyTable id="assemblyTable" assemblyProvider="{ StandaloneUtils.standaloneAssemblyProvider() }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+            <mx:VBox width="100%" height="100%">
+                <components:AssemblyRail id="assemblyRail" assemblyProvider="{ assemblyProvider }"  width="100%" height="80" />
+                
+                <components:AssemblyTable id="assemblyTable" assemblyProvider="{ assemblyProvider }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+            </mx:VBox>
         </mx:Panel>
         
         <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">

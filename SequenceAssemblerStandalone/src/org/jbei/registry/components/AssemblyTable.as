@@ -96,7 +96,7 @@ package org.jbei.registry.components
             if(assemblyProviderChanged) {
                 assemblyProviderChanged = false;
                 
-                if(_assemblyProvider && !_assemblyProvider.hasEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED)) {
+                if(_assemblyProvider) {
                     _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
                 }
                 
