@@ -12,6 +12,10 @@ package org.jbei.registry.components.assemblyRail
      */
     public class ContentHolder extends UIComponent
     {
+        public static const BACKGROUND_COLOR:uint = 0xFFFFFF;
+        public static const WIDGETS_GAP:int = 5;
+        public static const SIDE_GAP:int = 5;
+        
         private var assemblyRail:AssemblyRail;
         
         private var widgets:Vector.<ItemWidget> = new Vector.<ItemWidget>();
@@ -22,6 +26,8 @@ package org.jbei.registry.components.assemblyRail
         private var assemblyProviderChanged:Boolean = false;
         
         private var _assemblyProvider:AssemblyProvider;
+        private var _totalHeight:int = 0;
+        private var _totalWidth:int = 0;
         
         // Contructor
         public function ContentHolder(assemblyRail:AssemblyRail)
@@ -44,6 +50,16 @@ package org.jbei.registry.components.assemblyRail
             assemblyProviderChanged = true;
             
             invalidateProperties();
+        }
+        
+        public function get totalHeight():Number
+        {
+            return _totalHeight;
+        }
+        
+        public function get totalWidth():Number
+        {
+            return _totalWidth;
         }
         
         // Public Methods
@@ -78,6 +94,17 @@ package org.jbei.registry.components.assemblyRail
             
             if(needsRemeasurement) {
                 needsRemeasurement = false;
+                
+                _totalWidth = assemblyRailWidth;
+                _totalHeight = assemblyRailHeight;
+                
+                if(widgets && widgets.length > 0) {
+                    var currentWidth:Number = ItemWidget.ITEM_WIDGET_WIDTH * widgets.length + WIDGETS_GAP * (widgets.length - 1) + 2 * SIDE_GAP;
+                    
+                    if(currentWidth > _totalWidth) {
+                        _totalWidth = currentWidth;
+                    }
+                }
                 
                 drawBackground();
                 
@@ -125,8 +152,13 @@ package org.jbei.registry.components.assemblyRail
             }
             
             for(var i:int = 0; i < widgets.length; i++) {
-                widgets[i].x = (assemblyRailWidth - (ItemWidget.ITEM_WIDGET_WIDTH + 5) * widgets.length) / 2 + (ItemWidget.ITEM_WIDGET_WIDTH + 5) * i;
-                widgets[i].y = (assemblyRailHeight - ItemWidget.ITEM_WIDGET_HEIGHT) / 2;
+                widgets[i].x = SIDE_GAP + (_totalWidth - 2 * SIDE_GAP - (ItemWidget.ITEM_WIDGET_WIDTH * widgets.length + WIDGETS_GAP * (widgets.length - 1))) / 2 + (ItemWidget.ITEM_WIDGET_WIDTH + WIDGETS_GAP) * i;
+                
+                if(assemblyRailWidth < _totalWidth) { // if horizontal scroll exist then move widgets 20 pixels ups 
+                    widgets[i].y = (_totalHeight - 20 - ItemWidget.ITEM_WIDGET_HEIGHT) / 2; // -20 for scroll
+                } else {
+                    widgets[i].y = (_totalHeight - ItemWidget.ITEM_WIDGET_HEIGHT) / 2;
+                }
             }
         }
         
@@ -136,8 +168,8 @@ package org.jbei.registry.components.assemblyRail
             
             g.clear();
             
-            g.beginFill(0xFFFFFF);
-            g.drawRect(0, 0, assemblyRailWidth, assemblyRailHeight);
+            g.beginFill(BACKGROUND_COLOR);
+            g.drawRect(0, 0, _totalWidth, _totalHeight);
             g.endFill();
         }
     }

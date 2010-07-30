@@ -3,6 +3,8 @@ package org.jbei.registry.components
     import mx.core.ScrollControlBase;
     import mx.core.ScrollPolicy;
     import mx.events.ResizeEvent;
+    import mx.events.ScrollEvent;
+    import mx.events.ScrollEventDirection;
     
     import org.jbei.registry.components.assemblyRail.ContentHolder;
     import org.jbei.registry.models.AssemblyProvider;
@@ -32,6 +34,7 @@ package org.jbei.registry.components
             verticalScrollPolicy = ScrollPolicy.OFF;
             
             addEventListener(ResizeEvent.RESIZE, onResize);
+            addEventListener(ScrollEvent.SCROLL, onScroll);
         }
         
         // Properties
@@ -90,6 +93,9 @@ package org.jbei.registry.components
                 actualHeight = unscaledHeight;
                 
                 contentHolder.updateMetrics(actualWidth, actualHeight);
+                contentHolder.validateNow();
+                
+                adjustScrollBars();
             }
         }
         
@@ -112,6 +118,19 @@ package org.jbei.registry.components
             invalidateProperties();
         }
         
+        private function onScroll(event:ScrollEvent):void
+        {
+            if(event.direction == ScrollEventDirection.HORIZONTAL) {
+                // Adjust content position. Content moves into oposide direction to scroll.
+                contentHolder.x = -event.position;
+                
+                // Adjust scroll position to content position
+                if (horizontalScrollPosition != -contentHolder.x) {
+                    horizontalScrollPosition = -contentHolder.x;
+                }
+            }
+        }
+        
         // Private Methods
         public function createContentHolder():void
         {
@@ -127,6 +146,11 @@ package org.jbei.registry.components
                 // Hide invisible portion of the content
                 contentHolder.mask = maskShape;
             }
+        }
+        
+        private function adjustScrollBars():void
+        {
+            setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
         }
     }
 }
