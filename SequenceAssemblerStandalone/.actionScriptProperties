@@ -9,6 +9,8 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
+      <libraryPathEntry kind="3" linkType="1" path="/BioFlex/bin/BioFlex.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/VectorCommon/bin/VectorCommon.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
