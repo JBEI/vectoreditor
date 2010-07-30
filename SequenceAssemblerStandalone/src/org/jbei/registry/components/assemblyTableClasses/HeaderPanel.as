@@ -9,6 +9,7 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.utils.flash_proxy;
     
     import mx.core.UIComponent;
+    import mx.events.IndexChangedEvent;
     import mx.styles.StyleManager;
     
     import org.jbei.registry.models.Bin;
@@ -19,18 +20,19 @@ package org.jbei.registry.components.assemblyTableClasses
     public class HeaderPanel extends UIComponent
     {
         public static const HEADER_HEIGHT:Number = 25;
-        public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0x666666;
+        public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0xFF0000;
         public static const DRAGGING_DIMMED_COLUMN_COLOR:uint = 0x888888;
         
         private var contentHolder:ContentHolder;
         private var columnHeaders:Vector.<ColumnHeader>;
-        private var draggingHeader:UIComponent;
+        //private var draggingHeader:UIComponent;
         private var draggingCaret:UIComponent;
         private var draggingDimColumn:UIComponent;
+        private var draggingColumn:UIComponent;
         
         private var dragging:Boolean = false;
         private var clickPoint:Point;
-        private var draggingColumn:Column = null;
+        private var dragColumn:Column = null;
         
         private var actualWidth:Number = 0;
         private var actualHeight:Number = 0;
@@ -69,11 +71,13 @@ package org.jbei.registry.components.assemblyTableClasses
         {
             super.createChildren();
             
-            createDraggingHeader();
+            //createDraggingHeader();
             
             createDraggingCaret();
             
             createDraggingDimColumn();
+            
+            createDraggingColumn();
         }
         
         protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
@@ -88,13 +92,13 @@ package org.jbei.registry.components.assemblyTableClasses
                 actualWidth = unscaledWidth;
                 actualHeight = unscaledHeight;
                 
-                if(draggingHeader) { // reorder children
-                    swapChildren(draggingHeader, getChildAt(numChildren - 3));
-                    
-                    swapChildren(draggingCaret, getChildAt(numChildren - 2));
-                    
-                    swapChildren(draggingHeader, getChildAt(numChildren - 1));
-                }
+                //swapChildren(draggingHeader, getChildAt(numChildren - 4));
+                
+                swapChildren(draggingCaret, getChildAt(numChildren - 3));
+                
+                swapChildren(draggingDimColumn, getChildAt(numChildren - 2));
+                
+                swapChildren(draggingColumn, getChildAt(numChildren - 1));
             }
         }
         
@@ -102,18 +106,20 @@ package org.jbei.registry.components.assemblyTableClasses
         private function onColumnHeaderStartDragging(event:ColumnHeaderDragEvent):void
         {
             dragging = true;
-            draggingColumn = event.columnHeader.column;
+            dragColumn = event.columnHeader.column;
             
-            showDraggingHeader(event.columnHeader);
+            //showDraggingHeader(event.columnHeader);
             showDraggingCaret(event.columnHeader);
             showDraggingDimColumn(event.columnHeader);
+            showDraggingColumn(contentHolder.getColumnRendererByIndex(event.columnHeader.column.index), event.columnHeader);
         }
         
         private function onColumnHeaderStopDragging(event:ColumnHeaderDragEvent):void
         {
-            hideDraggingHeader();
+            //hideDraggingHeader();
             hideDraggingCaret();
             hideDraggingDimColumn();
+            hideDraggingColumn();
         }
         
         private function onMouseDown(event:MouseEvent):void
@@ -129,14 +135,14 @@ package org.jbei.registry.components.assemblyTableClasses
             if(dragging) {
                 var currentPoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
                 
-                if(currentPoint.x > draggingHeader.width / 2) {
-                    draggingHeader.x = currentPoint.x - draggingHeader.width / 2;
+                if(currentPoint.x > draggingColumn.width / 2) {
+                    draggingColumn.x = currentPoint.x - draggingColumn.width / 2;
                 } else {
-                    draggingHeader.x = 0;
+                    draggingColumn.x = 0;
                 }
                 
-                if(currentPoint.x + draggingHeader.width / 2 > actualWidth) {
-                    draggingHeader.x = actualWidth - draggingHeader.width;
+                if(currentPoint.x + draggingColumn.width / 2 > actualWidth) {
+                    draggingColumn.x = actualWidth - draggingColumn.width;
                 }
                 
                 var dropIndex:int = getDropColumnIndex(currentPoint);
@@ -168,8 +174,8 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 var dropIndex:int = getDropColumnIndex(currentPoint);
                 
-                if(dropIndex >= 0 && draggingColumn) {
-                    var dragIndex:int = draggingColumn.index;
+                if(dropIndex >= 0 && dragColumn) {
+                    var dragIndex:int = dragColumn.index;
                     
                     if(dragIndex != dropIndex) {
                         if(dropIndex > dragIndex) {
@@ -188,14 +194,14 @@ package org.jbei.registry.components.assemblyTableClasses
             }
             
             dragging = false;
-            draggingColumn = null;
+            dragColumn = null;
             
             stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
             stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
         }
         
         // Private Methods
-        private function createDraggingHeader():void
+        /*private function createDraggingHeader():void
         {
             if(!draggingHeader) {
                 draggingHeader = new UIComponent();
@@ -208,7 +214,7 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 addChild(draggingHeader);
             }
-        }
+        }*/
         
         private function createDraggingCaret():void
         {
@@ -233,10 +239,25 @@ package org.jbei.registry.components.assemblyTableClasses
                 draggingDimColumn.x = 0;
                 draggingDimColumn.y = 0;
                 
-                draggingCaret.includeInLayout = false;
-                draggingCaret.visible = false;
+                draggingDimColumn.includeInLayout = false;
+                draggingDimColumn.visible = false;
                 
                 addChild(draggingDimColumn);
+            }
+        }
+        
+        private function createDraggingColumn():void
+        {
+            if(!draggingColumn) {
+                draggingColumn = new UIComponent();
+                
+                draggingColumn.x = 0;
+                draggingColumn.y = 0;
+                
+                draggingColumn.includeInLayout = false;
+                draggingColumn.visible = false;
+                
+                addChild(draggingColumn);
             }
         }
         
@@ -295,7 +316,7 @@ package org.jbei.registry.components.assemblyTableClasses
             }
         }
         
-        private function showDraggingHeader(columnHeader:ColumnHeader):void
+        /*private function showDraggingHeader(columnHeader:ColumnHeader):void
         {
             var headerBitmapData:BitmapData = columnHeader.headerBitmapData();
             
@@ -305,14 +326,14 @@ package org.jbei.registry.components.assemblyTableClasses
             
             draggingHeader.graphics.clear();
             draggingHeader.graphics.beginBitmapFill(headerBitmapData);
-            draggingHeader.graphics.drawRect(0, 0, columnHeader.column.metrics.width - 19, HEADER_HEIGHT); // -20 to remove drop down button 
+            draggingHeader.graphics.drawRect(0, 0, columnHeader.column.metrics.width + 1, HEADER_HEIGHT); // -20 to remove drop down button 
             draggingHeader.graphics.endFill();
         }
         
         private function hideDraggingHeader():void
         {
             draggingHeader.visible = false;
-        }
+        }*/
         
         private function showDraggingCaret(columnHeader:ColumnHeader):void
         {
@@ -369,12 +390,45 @@ package org.jbei.registry.components.assemblyTableClasses
             g.drawRect(columnHeader.column.metrics.x, columnHeader.column.metrics.y, columnHeader.column.metrics.width, columnHeader.column.metrics.height);
             g.endFill();
             
-            draggingDimColumn.visible = true;
+            //draggingDimColumn.visible = true;
         }
         
         private function hideDraggingDimColumn():void
         {
             draggingDimColumn.visible = false;
+        }
+        
+        private function showDraggingColumn(columnRenderer:ColumnRenderer, columnHeader:ColumnHeader):void
+        {
+            var columnBitmapData:BitmapData = columnRenderer.bitmapData();
+            
+            draggingColumn.visible = true;
+            draggingColumn.width = columnBitmapData.width;
+            draggingColumn.height = columnBitmapData.height + HEADER_HEIGHT;
+            
+            var g:Graphics = draggingColumn.graphics;
+            
+            g.clear();
+            
+            var headerBitmapData:BitmapData = columnHeader.headerBitmapData();
+            g.beginBitmapFill(headerBitmapData);
+            g.drawRect(0, 0, headerBitmapData.width, headerBitmapData.height); 
+            g.endFill();
+            
+            var matrix:Matrix = new Matrix();
+            matrix.ty = HEADER_HEIGHT;
+            
+            g.beginBitmapFill(columnBitmapData, matrix);
+            g.drawRect(0, HEADER_HEIGHT, columnBitmapData.width, columnBitmapData.height); 
+            g.endFill();
+            
+            g.lineStyle(2, 0x666666);
+            g.drawRect(0, 2, draggingColumn.width, draggingColumn.height);
+        }
+        
+        private function hideDraggingColumn():void
+        {
+            draggingColumn.visible = false;
         }
     }
 }

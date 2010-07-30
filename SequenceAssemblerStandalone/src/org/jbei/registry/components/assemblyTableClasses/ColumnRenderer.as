@@ -1,6 +1,8 @@
 package org.jbei.registry.components.assemblyTableClasses
 {
+    import flash.display.BitmapData;
     import flash.display.Graphics;
+    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
@@ -50,6 +52,21 @@ package org.jbei.registry.components.assemblyTableClasses
             updateRenderers();
             
             invalidateDisplayList();
+        }
+        
+        /*
+        * @private
+        */
+        public function bitmapData():BitmapData
+        {
+            var actualWidth:Number = column.metrics.width;
+            var actualHeight:Number = column.metrics.height < contentHolder.totalHeight ? column.metrics.height : contentHolder.totalHeight;
+            
+            var bitmapData:BitmapData = new BitmapData(actualWidth, actualHeight);
+            
+            bitmapData.draw(this, new Matrix(), null, null, new Rectangle(0, 0, actualWidth, actualHeight));
+            
+            return SystemUtils.makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.1)
         }
         
         // Protected Methods

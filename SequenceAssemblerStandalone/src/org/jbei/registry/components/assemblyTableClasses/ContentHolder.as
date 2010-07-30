@@ -196,6 +196,15 @@ package org.jbei.registry.components.assemblyTableClasses
         {
             _assemblyProvider.changeBinType(_assemblyProvider.bins[binIndex], FeatureTypeManager.instance.getTypeByValue(newType));
         }
+
+        public function getColumnRendererByIndex(index:int):ColumnRenderer
+        {
+            if(columns && index >= 0 && index < columns.length) {
+                return columns[index];
+            } else {
+                return null;
+            }
+        }
         
         // Protected Methods
         protected override function createChildren():void

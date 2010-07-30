@@ -26,6 +26,7 @@ package org.jbei.registry.components.assemblyTableClasses
     
     import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.FeatureTypeManager;
+    import org.jbei.registry.utils.SystemUtils;
     
     /**
      * @author Zinovii Dmytriv
@@ -87,7 +88,7 @@ package org.jbei.registry.components.assemblyTableClasses
             
             bitmapData.draw(this, new Matrix(), null, null, new Rectangle(0, 0, actualWidth, actualHeight));
             
-            return makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.7)
+            return SystemUtils.makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.7)
         }
         
         /*
@@ -191,7 +192,11 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onDropDownMenuButtonClick(event:MouseEvent):void
         {
-            openDropDownList();
+            if(dropDownList.isOpen) {
+                closeDropDownList();
+            } else {
+                openDropDownList();
+            }
         }
         
         private function onDropDownMenuButtonRollOver(event:MouseEvent):void
@@ -206,7 +211,9 @@ package org.jbei.registry.components.assemblyTableClasses
         
         private function onMouseDownOutside(event:FlexMouseEvent):void
         {
-            closeDropDownList();
+            if(!event.target is ColumnHeaderDropDownList) {
+                closeDropDownList();
+            }
         }
         
         private function onMouseWheelOutside(event:FlexMouseEvent):void
@@ -549,25 +556,6 @@ package org.jbei.registry.components.assemblyTableClasses
             if(dropDownList.isOpen) {
                 dropDownList.close();
             }
-        }
-        
-        // TODO: Use Method from VectorCommon.GraphicUtils. Remove this method
-        private function makeBitmapTrasparent(bitmapData:BitmapData, bitmapWidth:int, bitmapHeight:int, transparencyFactor:Number):BitmapData
-        {
-            var resultBitmapData:BitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, 0xFFFFFFFF);
-            
-            for(var i:int = 0; i < bitmapWidth; i++) {
-                for(var j:int = 0; j < bitmapHeight; j++) {
-                    var pixelValue:uint = bitmapData.getPixel32(i, j);
-                    var alphaValue:uint = pixelValue >> 24 & 0xFF;
-                    var rgbValue:uint = pixelValue & 0xffffff;
-                    var resultAlpha:uint = alphaValue * (transparencyFactor);
-                    
-                    resultBitmapData.setPixel32(i, j, resultAlpha << 24 | rgbValue);
-                }
-            }
-            
-            return resultBitmapData;
         }
     }
 }
