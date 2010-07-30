@@ -10,6 +10,7 @@ package org.jbei.registry.components.assemblyTableClasses
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
+    import flash.text.TextField;
     import flash.ui.ContextMenu;
     import flash.ui.Keyboard;
     
@@ -17,6 +18,7 @@ package org.jbei.registry.components.assemblyTableClasses
     import mx.core.UIComponent;
     import mx.events.CloseEvent;
     import mx.events.ScrollEvent;
+    import mx.utils.StringUtil;
     
     import org.jbei.registry.components.AssemblyTable;
     import org.jbei.registry.models.AssemblyItem;
@@ -430,8 +432,51 @@ package org.jbei.registry.components.assemblyTableClasses
                 
                 pasteFromClipboard();
             } else if(Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) {
-                trace("paste as text!");
+                var pasteText:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
+                
+                if(pasteText && pasteText != "") {
+                    pasteAssemblyItems = assemblyItemsFromText(pasteText);
+                    
+                    pasteFromClipboard();
+                }
             }
+        }
+        
+        private function assemblyItemsFromText(text:String):Vector.<Vector.<AssemblyItem>>
+        {
+            var resultItems:Vector.<Vector.<AssemblyItem>> = new Vector.<Vector.<AssemblyItem>>();
+            
+            var lines:Array = text.split("\n");
+            
+            if(!lines || lines.length == 0) {
+                return null;
+            }
+            
+            for(var i:int = 0; i < lines.length; i++) {
+                var line:String = StringUtil.trim(lines[i]);
+                
+                if(!line || line == "") {
+                    continue;
+                }
+                
+                var fields:Array = line.split("\t");
+                
+                if(!fields || fields.length == 0) {
+                    continue;
+                }
+                
+                for(var j:int = 0; j < fields.length; j++) {
+                    var newAssemblyItem:AssemblyItem = new AssemblyItem(fields[j]);
+                    
+                    if(resultItems.length == j) {
+                        resultItems.push(new Vector.<AssemblyItem>());
+                    }
+                    
+                    resultItems[j].push(newAssemblyItem);
+                }
+            }
+            
+            return resultItems;
         }
         
         private function onSelectAll(event:Event):void
