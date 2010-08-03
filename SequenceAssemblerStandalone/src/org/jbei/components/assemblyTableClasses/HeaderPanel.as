@@ -20,8 +20,9 @@ package org.jbei.components.assemblyTableClasses
     public class HeaderPanel extends UIComponent
     {
         public static const HEADER_HEIGHT:Number = 25;
-        public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0xFF0000;
+        public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0x000000;
         public static const DRAGGING_DIMMED_COLUMN_COLOR:uint = 0x888888;
+        public static const DRAGGING_COLUMN_FRAME_COLOR:uint = 0xAAAAAA;
         
         private var contentHolder:ContentHolder;
         private var columnHeaders:Vector.<ColumnHeader>;
@@ -422,7 +423,7 @@ package org.jbei.components.assemblyTableClasses
             g.drawRect(0, HEADER_HEIGHT, columnBitmapData.width, columnBitmapData.height); 
             g.endFill();
             
-            g.lineStyle(2, 0x666666);
+            g.lineStyle(2, DRAGGING_COLUMN_FRAME_COLOR);
             g.drawRect(0, 2, draggingColumn.width, draggingColumn.height);
         }
         

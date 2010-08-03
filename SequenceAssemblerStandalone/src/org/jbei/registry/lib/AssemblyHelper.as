@@ -1,4 +1,4 @@
-package org.jbei.registry.utils
+package org.jbei.registry.lib
 {
     import mx.utils.StringUtil;
     

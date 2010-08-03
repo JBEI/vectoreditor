@@ -2,10 +2,16 @@
 <mx:Application width="100%" height="100%" layout="absolute" creationComplete="onCreationComplete(event)"  xmlns:local="*" xmlns:mx="http://www.adobe.com/2006/mxml" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]" xmlns:components="org.jbei.components.*">
     <mx:Script>
         <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            
             import org.jbei.components.assemblyTableClasses.CaretEvent;
             import org.jbei.components.assemblyTableClasses.DataCell;
             import org.jbei.components.assemblyTableClasses.SelectionEvent;
+            import org.jbei.registry.lib.AssemblyHelper;
             import org.jbei.registry.models.AssemblyProvider;
+            import org.jbei.registry.models.Permutation;
+            import org.jbei.registry.models.PermutationSet;
             import org.jbei.registry.utils.StandaloneUtils;
             
             [Bindable]
@@ -21,6 +27,45 @@
                 assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
                 
                 assemblyTable.setFocus();
+            }
+            
+            private function onRunButtonClick(event:MouseEvent):void
+            {
+                if(!assemblyProvider) {
+                    return;
+                }
+                
+                var columns:Array = new Array();
+                
+                for(var i:int = 0; i < assemblyProvider.bins.length; i++) {
+                    var dataGridColumn:DataGridColumn = new DataGridColumn(assemblyProvider.bins[i].featureType.name);
+                    
+                    dataGridColumn.dataField = "col" + String(i);
+                    
+                    columns.push(dataGridColumn);
+                }
+                
+                resultsDataGrid.dataProvider = null;
+                
+                resultsDataGrid.columns = columns;
+                
+                var permutationSet:PermutationSet = AssemblyHelper.buildPermutationSet(assemblyProvider);
+                
+                var permutationDataProvider:ArrayCollection = new ArrayCollection();
+                
+                for(var j:int = 0; j < permutationSet.permutations.length; j++) {
+                    var permutation:Permutation = permutationSet.permutations[j];
+                    
+                    var providerItem:Dictionary = new Dictionary();
+                    
+                    for(var k:int = 0; k < permutation.items.length; k++) {
+                        providerItem["col" + String(k)] = permutation.items[k];
+                    }
+                    
+                    permutationDataProvider.addItem(providerItem);
+                }
+                
+                resultsDataGrid.dataProvider = permutationDataProvider;
             }
             
             private function onCaretChanged(event:CaretEvent):void
@@ -41,20 +86,28 @@
     
     <mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" backgroundColor="0xFFFFFF">
         <mx:Button id="randomizeButton" label="Randomize" click="onRandomizeButtonClick(event)" />
+        <mx:Button id="runButton" label="Run" click="onRunButtonClick(event)" />
     </mx:ApplicationControlBar>
     
-    <mx:HDividedBox width="100%" height="100%" paddingTop="8">
-        <mx:Panel title="Assembly Table" width="80%" height="100%">
-            <mx:VBox width="100%" height="100%">
-                <components:AssemblyRail id="assemblyRail" assemblyProvider="{ assemblyProvider }"  width="100%" height="85" />
-                
-                <components:AssemblyTable id="assemblyTable" assemblyProvider="{ assemblyProvider }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
-            </mx:VBox>
-        </mx:Panel>
+    <mx:VDividedBox width="100%" height="100%">
+        <mx:HDividedBox width="100%" height="70%" paddingTop="8">
+            <mx:Panel title="Assembly Table" width="80%" height="100%">
+                <mx:VBox width="100%" height="100%">
+                    <components:AssemblyRail id="assemblyRail" assemblyProvider="{ assemblyProvider }"  width="100%" height="85" />
+                    
+                    <components:AssemblyTable id="assemblyTable" assemblyProvider="{ assemblyProvider }" width="100%" height="100%" caretChanged="onCaretChanged(event)" selectionChanged="onSelectionChanged(event)"/>
+                </mx:VBox>
+            </mx:Panel>
+            
+            <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">
+                <mx:Label text="Sequence:" paddingBottom="0"/>
+                <mx:TextArea id="caretTextArea" width="100%" height="200" />
+            </mx:Panel>
+        </mx:HDividedBox>
         
-        <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">
-            <mx:Label text="Sequence:" paddingBottom="0"/>
-            <mx:TextArea id="caretTextArea" width="100%" height="200" />
+        <mx:Panel title="Results Table" width="100%" height="30%">
+            <mx:DataGrid id="resultsDataGrid" width="100%" height="100%">
+            </mx:DataGrid>
         </mx:Panel>
-    </mx:HDividedBox>
+    </mx:VDividedBox>
 </mx:Application>

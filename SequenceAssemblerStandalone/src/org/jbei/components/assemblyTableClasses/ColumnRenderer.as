@@ -66,7 +66,7 @@ package org.jbei.components.assemblyTableClasses
             
             bitmapData.draw(this, new Matrix(), null, null, new Rectangle(0, 0, actualWidth, actualHeight));
             
-            return SystemUtils.makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.25)
+            return SystemUtils.makeBitmapTrasparent(bitmapData, actualWidth, actualHeight, 0.4)
         }
         
         // Protected Methods

@@ -49,6 +49,7 @@ package org.jbei.components.assemblyTableClasses
         private var mouseIsDown:Boolean = false;
         private var dragging:Boolean = false;
         private var clickPoint:Point;
+        private var wasDropDownListOpened:Boolean = false;
         
         // Contructor
         public function ColumnHeader(column:Column, contentHolder:ContentHolder)
@@ -133,6 +134,8 @@ package org.jbei.components.assemblyTableClasses
         private function onMouseDown(event:MouseEvent):void
         {
             if(event.target == dropDownMenuButton) {
+                wasDropDownListOpened = dropDownList.isOpen;
+                
                 return;
             }
             
@@ -192,7 +195,7 @@ package org.jbei.components.assemblyTableClasses
         
         private function onDropDownMenuButtonClick(event:MouseEvent):void
         {
-            if(dropDownList.isOpen) {
+            if(dropDownList.isOpen || wasDropDownListOpened) {
                 closeDropDownList();
             } else {
                 openDropDownList();
@@ -211,9 +214,7 @@ package org.jbei.components.assemblyTableClasses
         
         private function onMouseDownOutside(event:FlexMouseEvent):void
         {
-            if(!event.target is ColumnHeaderDropDownList) {
-                closeDropDownList();
-            }
+            closeDropDownList();
         }
         
         private function onMouseWheelOutside(event:FlexMouseEvent):void
