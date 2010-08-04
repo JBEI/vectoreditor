@@ -1,5 +1,6 @@
 package org.jbei.registry
 {
+    import org.jbei.lib.utils.Logger;
     import org.jbei.registry.mediators.ApplicationMediator;
     import org.jbei.registry.mediators.AssemblyPanelMediator;
     import org.jbei.registry.mediators.AssemblyStatusBarMediator;
@@ -69,6 +70,8 @@ package org.jbei.registry
             registerMediator(new AssemblyPanelMediator(mainPanel.assemblyPanel));
             
             initialized = true;
+            
+            Logger.getInstance().info("Application initialized");
             
             sendNotification(Notifications.SWITCH_TO_ASSEMBLY_VIEW);
         }

@@ -29,6 +29,7 @@ package org.jbei.registry.mediators
         // Event Handlers
         private function onRunButtonMouseClick(event:MouseEvent):void
         {
+            sendNotification(Notifications.ASSEMBLY_ACTION_MESSAGE, "Building permutation set ...");
             sendNotification(Notifications.RUN_ASSEMBLY);
         }
         
