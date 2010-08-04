@@ -1,10 +1,10 @@
 package org.jbei.registry.mediators
 {
+	import org.jbei.lib.ui.menu.MenuItem;
+	import org.jbei.lib.ui.menu.MenuItemEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.view.ui.MainMenu;
-	import org.jbei.registry.view.ui.menu.MenuItem;
-	import org.jbei.registry.view.ui.menu.MenuItemEvent;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 

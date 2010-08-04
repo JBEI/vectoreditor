@@ -2,10 +2,10 @@
 <mx:Box creationComplete="onCreationComplete()" width="100%" xmlns:mx="http://www.adobe.com/2006/mxml" borderThickness="0" paddingBottom="0" paddingTop="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
-			import mx.events.MenuEvent;
-			
-			import org.jbei.registry.view.ui.menu.MenuItem;
-			import org.jbei.registry.view.ui.menu.MenuItemEvent;
+            import mx.events.MenuEvent;
+            
+            import org.jbei.lib.ui.menu.MenuItem;
+            import org.jbei.lib.ui.menu.MenuItemEvent;
 			
 			// File
 			public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
