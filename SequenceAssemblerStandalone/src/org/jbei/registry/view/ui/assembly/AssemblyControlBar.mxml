@@ -10,6 +10,5 @@
     </mx:Script>
     <mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" toolTip="Save Project" />
     
-    <mx:Button id="runButton" label="Run" />
     <mx:Button id="randomizeButton" label="Randomize" />
 </mx:ApplicationControlBar>

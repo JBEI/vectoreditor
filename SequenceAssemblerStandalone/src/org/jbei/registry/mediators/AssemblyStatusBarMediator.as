@@ -3,6 +3,7 @@ package org.jbei.registry.mediators
     import flash.events.TimerEvent;
     import flash.utils.Timer;
     
+    import org.jbei.components.assemblyTableClasses.Cell;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.view.ui.assembly.AssemblyStatusBar;
     import org.puremvc.as3.interfaces.INotification;
@@ -37,12 +38,22 @@ package org.jbei.registry.mediators
                     updateActionMessage(notification.getBody() as String);
                     
                     break;
+                case Notifications.ASSEMBLY_TABLE_CARET_POSITION_CHANGED:
+                    updateCaretPosition(notification.getBody() as Cell);
+                    
+                    break;
+                case Notifications.SWITCH_TO_ASSEMBLY_VIEW:
+                    updateActionMessage("");
+                    
+                    break;
             }
         }
         
         public override function listNotificationInterests():Array
         {
-            return [Notifications.ASSEMBLY_ACTION_MESSAGE];
+            return [Notifications.ASSEMBLY_ACTION_MESSAGE
+                , Notifications.ASSEMBLY_TABLE_CARET_POSITION_CHANGED
+                , Notifications.SWITCH_TO_ASSEMBLY_VIEW];
         }
         
         // Event Handlers
@@ -64,6 +75,15 @@ package org.jbei.registry.mediators
             timer.start();
             
             assemblyStatusBar.statusLabel.text = message;
+        }
+        
+        private function updateCaretPosition(cell:Cell):void
+        {
+            if(cell) {
+                assemblyStatusBar.caretPositionLabel.text = String(cell.column.index + 1) + " : " + String(cell.index + 1) + " ";
+            } else {
+                assemblyStatusBar.caretPositionLabel.text = "- : - ";
+            }
         }
     }
 }

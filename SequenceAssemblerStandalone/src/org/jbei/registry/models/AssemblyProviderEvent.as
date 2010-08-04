@@ -18,6 +18,9 @@ package org.jbei.registry.models
         
         public static const KIND_MANUAL_UPDATE:String = "AssemblyProviderKindManualUpdate";
         
+        public static const KIND_ITEM_UPDATE:String = "AssemblyProviderKindItemUpdate";
+        public static const KIND_ITEM_ADD:String = "AssemblyProviderKindItemAdd";
+        
         private var _kind:String;
         private var _data:Object;
         

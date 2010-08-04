@@ -14,5 +14,7 @@ package org.jbei.registry
         public static const RANDOMIZE_ASSEMBLY_PROVIDER:String = "RANDOMIZE_ASSEMBLY_PROVIDER";
         public static const RUN_ASSEMBLY:String = "RUN_ASSEMBLY";
         public static const UPDATE_RESULTS_PERMUTATIONS_TABLE:String = "UPDATE_RESULTS_PERMUTATIONS_TABLE";
+        
+        public static const ASSEMBLY_TABLE_CARET_POSITION_CHANGED:String = "ASSEMBLY_TABLE_CARET_POSITION_CHANGED";
 	}
 }

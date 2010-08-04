@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application creationComplete="onCreationComplete(event)" width="100%" height="100%" layout="absolute" xmlns:mx="http://www.adobe.com/2006/mxml" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]" xmlns:ui="org.jbei.registry.view.ui.*">
+<mx:Application creationComplete="onCreationComplete(event)" width="100%" height="100%" layout="horizontal" styleName="plain" verticalScrollPolicy="off" xmlns:mx="http://www.adobe.com/2006/mxml" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]" xmlns:ui="org.jbei.registry.view.ui.*">
     <mx:Script>
         <![CDATA[
             import org.jbei.lib.utils.Logger;

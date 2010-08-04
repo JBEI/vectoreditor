@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:results="org.jbei.registry.view.ui.results.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="0" width="100%" height="100%" xmlns:results="org.jbei.registry.view.ui.results.*">
     <results:ResultsMenu id="resultsMenu" />
     
     <results:ResultsControlBar id="resultsControlBar" />

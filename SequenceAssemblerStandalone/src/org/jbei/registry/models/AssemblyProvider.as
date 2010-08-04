@@ -139,5 +139,31 @@ package org.jbei.registry.models
                 dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
             }
         }
+        
+        public function updateAssemblyItem(assemblyItem:AssemblyItem, sequence:String, quiet:Boolean = false):void
+        {
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_ITEM_UPDATE));
+            }
+            
+            assemblyItem.sequence = sequence;
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_ITEM_UPDATE));
+            }
+        }
+        
+        public function addAssemblyItem(bin:Bin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
+        {
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_ITEM_UPDATE));
+            }
+            
+            bin.items.push(assemblyItem);
+            
+            if(!quiet && !_manualUpdateStarted) {
+                dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_ITEM_UPDATE));
+            }
+        }
     }
 }

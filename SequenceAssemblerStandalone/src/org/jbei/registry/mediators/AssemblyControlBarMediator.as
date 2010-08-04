@@ -22,17 +22,10 @@ package org.jbei.registry.mediators
             
             assemblyControlBar = viewComponent as AssemblyControlBar;
             
-            assemblyControlBar.runButton.addEventListener(MouseEvent.CLICK, onRunButtonMouseClick);
             assemblyControlBar.randomizeButton.addEventListener(MouseEvent.CLICK, onRandomizeButtonClick);
         }
         
         // Event Handlers
-        private function onRunButtonMouseClick(event:MouseEvent):void
-        {
-            sendNotification(Notifications.ASSEMBLY_ACTION_MESSAGE, "Building permutation set ...");
-            sendNotification(Notifications.RUN_ASSEMBLY);
-        }
-        
         private function onRandomizeButtonClick(event:MouseEvent):void
         {
             sendNotification(Notifications.RANDOMIZE_ASSEMBLY_PROVIDER);
