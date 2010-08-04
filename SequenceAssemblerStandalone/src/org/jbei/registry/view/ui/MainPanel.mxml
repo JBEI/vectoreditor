@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:assembly="org.jbei.registry.view.ui.assembly.*" xmlns:results="org.jbei.registry.view.ui.results.*">
+    <assembly:AssemblyPanel id="assemblyPanel" width="100%" height="100%" visible="false" includeInLayout="false"/>
+    
+    <results:ResultsPanel id="resultsPanel" width="100%" height="100%" visible="false" includeInLayout="false"/>
+</mx:Box>

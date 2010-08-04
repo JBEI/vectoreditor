@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box creationComplete="onCreationComplete(event)" width="100%" borderThickness="0" paddingBottom="0" paddingTop="0" verticalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Script>
+        <![CDATA[
+            import org.jbei.lib.ui.menu.MenuItem;
+            
+            [Bindable]
+            private var menuItems:Array;
+            
+            // Event Handlers
+            private function onCreationComplete(event:Event):void
+            {
+                var separatorMenuItem:MenuItem = new MenuItem("", "", "separator");
+                
+                // File
+                var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
+                
+                // Edit
+                var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
+                
+                // Help
+                var helpMenuItem:MenuItem = new MenuItem("helpMenuItem", "Help");
+                
+                menuItems = [fileMenuItem, editMenuItem, helpMenuItem];
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Style>
+        .subMenu { openDuration: 0; }
+    </mx:Style>
+    
+    <mx:MenuBar 
+        id="mainMenu" 
+        dataProvider="{ menuItems }" 
+        labelField="label" 
+        width="100%"
+        menuStyleName ="subMenu" />
+</mx:Box>
