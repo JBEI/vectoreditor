@@ -2,6 +2,7 @@ package org.jbei.components.common
 {
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
+	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	
     /**
@@ -306,6 +307,19 @@ package org.jbei.components.common
             }
             
             return resultBitmapData;
+        }
+        
+        public static function randomColor():uint
+        {
+            var redBias:Number = 0xFF;
+            var greenBias:Number = 0xFF;
+            var blueBias:Number = 0xFF;
+            
+            var ct:ColorTransform = new ColorTransform(1, 1, 1, 1, Math.random() * redBias, Math.random() * greenBias, Math.random() * blueBias);
+            
+            var color:uint = ct.color;
+            
+            return color
         }
 	}
 }
