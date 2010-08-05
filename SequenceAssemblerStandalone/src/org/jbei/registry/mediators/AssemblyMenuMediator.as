@@ -22,6 +22,8 @@ package org.jbei.registry.mediators
             assemblyMenu = viewComponent as AssemblyMenu;
             
             assemblyMenu.addEventListener(AssemblyMenu.SAVE, onSave);
+            assemblyMenu.addEventListener(AssemblyMenu.SAVE_AS, onSaveAs);
+            assemblyMenu.addEventListener(AssemblyMenu.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
             assemblyMenu.addEventListener(AssemblyMenu.UNDO, onUndo);
             assemblyMenu.addEventListener(AssemblyMenu.REDO, onRedo);
             assemblyMenu.addEventListener(AssemblyMenu.COPY, onCopy);
@@ -38,6 +40,16 @@ package org.jbei.registry.mediators
         private function onSave(event:MenuItemEvent):void
         {
             sendNotification(Notifications.SAVE_PROJECT);
+        }
+        
+        private function onSaveAs(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SAVE_AS_PROJECT);
+        }
+        
+        private function onShowPropertiesDialog(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SHOW_PROPERTIES_DIALOG);
         }
         
         private function onUndo(event:MenuItemEvent):void

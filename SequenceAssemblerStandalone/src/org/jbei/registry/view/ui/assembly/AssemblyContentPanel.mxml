@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:components="org.jbei.components.*">
-    <mx:HDividedBox width="100%" height="70%" paddingTop="8">
-        <mx:Panel title="Assembly Table" width="80%" height="100%">
+    <mx:HDividedBox width="100%" height="100%" paddingTop="8">
+        <mx:Panel title="Properties" height="100%" paddingLeft="5" paddingRight="5" width="250">
+            <mx:Label text="Sequence:" paddingBottom="0"/>
+            
+            <mx:TextArea id="propertiesSequenceTextArea" width="100%" height="200" />
+        </mx:Panel>
+        
+        <mx:Panel title="Assembly Table" width="100%" height="100%">
             <mx:VBox width="100%" height="100%">
                 <components:AssemblyRail id="assemblyRail" width="100%" height="85" />
                 
@@ -9,20 +15,10 @@
             </mx:VBox>
         </mx:Panel>
         
-        <mx:Panel title="Properties" width="20%" height="100%" paddingLeft="5" paddingRight="5">
-            <mx:Label text="Sequence:" paddingBottom="0"/>
+        <mx:Panel title="Algorithms" width="250" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5">
+            <mx:ComboBox id="algorithmsComboBox" width="150"/>
             
-            <mx:TextArea id="propertiesSequenceTextArea" width="100%" height="200" />
+            <mx:Button id="runButton" label="Run &gt;" />
         </mx:Panel>
     </mx:HDividedBox>
-    
-    <mx:Panel title="Algorithms" width="100%" height="30%">
-        <mx:VBox width="100%" height="100%" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="0">
-            <mx:HBox width="100%" height="100%">
-                <mx:ComboBox id="algorithmsComboBox" width="150"/>
-                
-                <mx:Button id="runButton" label="Run &gt;" />
-            </mx:HBox>
-        </mx:VBox>
-    </mx:Panel>
 </mx:Box>

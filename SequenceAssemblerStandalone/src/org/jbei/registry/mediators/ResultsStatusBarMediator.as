@@ -38,12 +38,19 @@ package org.jbei.registry.mediators
                     updateActionMessage(notification.getBody() as String);
                     
                     break;
+                case Notifications.GLOBAL_ACTION_MESSAGE:
+                    updateActionMessage(notification.getBody() as String);
+                    
+                    break;
             }
         }
         
         public override function listNotificationInterests():Array
         {
-            return [Notifications.RESULTS_ACTION_MESSAGE];
+            return [
+                Notifications.RESULTS_ACTION_MESSAGE
+                , Notifications.GLOBAL_ACTION_MESSAGE
+            ];
         }
         
         // Event Handlers

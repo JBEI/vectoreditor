@@ -9,6 +9,8 @@
             
             // File
             public static const SAVE:String = "Save";
+            public static const SAVE_AS:String = "SaveAs";
+            public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
             
             // Edit
             public static const UNDO:String = "Undo";
@@ -36,8 +38,13 @@
                 
                 // File
                 var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
-                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save Project");
+                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
+                var saveAsMenuItem:MenuItem = new MenuItem("saveAsMenuItem", "Save As ...");
+                var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
                 fileMenuItem.addSubItem(saveMenuItem);
+                fileMenuItem.addSubItem(saveAsMenuItem);
+                fileMenuItem.addSubItem(separatorMenuItem);
+                fileMenuItem.addSubItem(propertiesMenuItem);
                 
                 // Edit
                 var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
@@ -73,6 +80,8 @@
                 // File
                 menuItemsMap["fileMenuItem"] = fileMenuItem;
                 menuItemsMap["saveMenuItem"] = saveMenuItem;
+                menuItemsMap["saveAsMenuItem"] = saveAsMenuItem;
+                menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
                 
                 // Edit
                 menuItemsMap["editMenuItem"] = editMenuItem;
@@ -117,6 +126,10 @@
                     dispatchEvent(new MenuItemEvent(SHOW_ABOUT_DIALOG, menuItem));
                 } else if(menuItem.id == "saveMenuItem") {
                     dispatchEvent(new MenuItemEvent(SAVE, menuItem));
+                } else if(menuItem.id == "saveAsMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SAVE_AS, menuItem));
+                } else if(menuItem.id == "propertiesMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_PROPERTIES_DIALOG, menuItem));
                 }
             }
         ]]>

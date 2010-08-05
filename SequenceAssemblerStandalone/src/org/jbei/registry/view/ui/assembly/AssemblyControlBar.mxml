@@ -49,6 +49,6 @@
     <mx:Button width="32" height="32" id="copyButton" icon="{ copyIcon }" toolTip="Copy" />
     <mx:Button width="32" height="32" id="cutButton" icon="{ cutIcon }" toolTip="Cut" />
     <mx:Button width="32" height="32" id="pasteButton" icon="{ pasteIcon }" toolTip="Paste" />
-    <mx:Spacer width="5" />
+    <mx:Spacer width="100%" />
     <mx:Button id="randomizeButton" label="Randomize" />
 </mx:ApplicationControlBar>

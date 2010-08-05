@@ -3,6 +3,7 @@ package org.jbei.registry.mediators
     import mx.containers.VBox;
     
     import org.jbei.lib.ui.dialogs.SimpleDialog;
+    import org.jbei.lib.utils.Logger;
     import org.jbei.lib.utils.SystemUtils;
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Constants;
@@ -22,6 +23,7 @@ package org.jbei.registry.mediators
     {
         public static const MEDIATOR_NAME:String = "ApplicationMediator";
         
+        private var mainPanel:MainPanel;
         private var resultsPanel:ResultsPanel;
         private var assemblyPanel:AssemblyPanel;
         
@@ -32,7 +34,7 @@ package org.jbei.registry.mediators
         {
             super(MEDIATOR_NAME, viewComponent);
             
-            var mainPanel:MainPanel = viewComponent as MainPanel;
+            mainPanel = viewComponent as MainPanel;
             
             assemblyPanel = mainPanel.assemblyPanel;
             resultsPanel = mainPanel.resultsPanel;
@@ -42,6 +44,30 @@ package org.jbei.registry.mediators
         public override function handleNotification(notification:INotification):void
         {
             switch(notification.getName()) {
+                case Notifications.APPLICATION_FAILURE:
+                    lockApplication(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.GLOBAL_ACTION_MESSAGE:
+                    logActionMessage(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.ASSEMBLY_ACTION_MESSAGE:
+                    logActionMessage(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.RESULTS_ACTION_MESSAGE:
+                    logActionMessage(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.LOCK:
+                    lockApplication(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.UNLOCK:
+                    unlockApplication();
+                    
+                    break;
                 case Notifications.SWITCH_TO_ASSEMBLY_VIEW:
                     switchToAssemblyView();
                     
@@ -66,22 +92,54 @@ package org.jbei.registry.mediators
                     goReportBug();
                     
                     break;
+                case Notifications.SHOW_PROPERTIES_DIALOG:
+                    showPropertiesDialog();
+                    
+                    break;
             }
         }
         
         public override function listNotificationInterests():Array
         {
             return [
-                Notifications.SWITCH_TO_ASSEMBLY_VIEW
+                Notifications.SAVE_PROJECT
+                , Notifications.SAVE_AS_PROJECT
+                , Notifications.LOCK
+                , Notifications.UNLOCK
+                , Notifications.APPLICATION_FAILURE
+                , Notifications.GLOBAL_ACTION_MESSAGE
+                , Notifications.ASSEMBLY_ACTION_MESSAGE
+                , Notifications.RESULTS_ACTION_MESSAGE
+                , Notifications.SWITCH_TO_ASSEMBLY_VIEW
                 , Notifications.SWITCH_TO_RESULTS_VIEW
                 , Notifications.RUN_ASSEMBLY
                 , Notifications.SHOW_ABOUT_DIALOG
                 , Notifications.GO_SUGGEST_FEATURE
                 , Notifications.GO_REPORT_BUG
+                , Notifications.SHOW_PROPERTIES_DIALOG
             ];
         }
         
         // Private Methods
+        private function logActionMessage(message:String):void
+        {
+            Logger.getInstance().info(message);
+        }
+        
+        private function lockApplication(lockMessage:String = ""):void
+        {
+            mainPanel.enabled = false;
+            
+            if(lockMessage != null && lockMessage != "") {
+                sendNotification(Notifications.GLOBAL_ACTION_MESSAGE, lockMessage);
+            }
+        }
+        
+        private function unlockApplication():void
+        {
+            mainPanel.enabled = true;
+        }
+        
         private function switchToAssemblyView():void
         {
             if(activeViewPanel == assemblyPanel) {
@@ -131,6 +189,11 @@ package org.jbei.registry.mediators
             var aboutDialog:SimpleDialog = new SimpleDialog(AboutDialogForm);
             aboutDialog.title = Constants.APPLICATION_NAME;
             aboutDialog.open();
+        }
+        
+        private function showPropertiesDialog():void
+        {
+            // Not implemented yet
         }
         
         private function goSuggestFeature():void

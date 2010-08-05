@@ -38,6 +38,10 @@ package org.jbei.registry.mediators
                     updateActionMessage(notification.getBody() as String);
                     
                     break;
+                case Notifications.GLOBAL_ACTION_MESSAGE:
+                    updateActionMessage(notification.getBody() as String);
+                    
+                    break;
                 case Notifications.ASSEMBLY_TABLE_CARET_POSITION_CHANGED:
                     updateCaretPosition(notification.getBody() as Cell);
                     
@@ -53,7 +57,8 @@ package org.jbei.registry.mediators
         {
             return [Notifications.ASSEMBLY_ACTION_MESSAGE
                 , Notifications.ASSEMBLY_TABLE_CARET_POSITION_CHANGED
-                , Notifications.SWITCH_TO_ASSEMBLY_VIEW];
+                , Notifications.SWITCH_TO_ASSEMBLY_VIEW
+                , Notifications.GLOBAL_ACTION_MESSAGE];
         }
         
         // Event Handlers
