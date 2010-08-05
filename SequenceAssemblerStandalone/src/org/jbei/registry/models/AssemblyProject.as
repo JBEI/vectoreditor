@@ -10,19 +10,19 @@ package org.jbei.registry.models
         private var _uuid:String;
         private var _ownerName:String;
         private var _ownerEmail:String;
-        private var _data:AssemblyProvider;
+        private var _assemblyProvider:AssemblyProvider;
         private var _creationTime:Date;
         private var _modificationTime:Date;
         
         // Contructor
-        public function AssemblyProject(name:String = "", description:String = "", uuid:String = "", ownerName:String, ownerEmail:String, data:AssemblyProvider = null, creationTime:Date = null, modificationTime:Date = null)
+        public function AssemblyProject(name:String = "", description:String = "", uuid:String = "", ownerName:String = "", ownerEmail:String = "", assemblyProvider:AssemblyProvider = null, creationTime:Date = null, modificationTime:Date = null)
         {
             _name = name;
             _description = description;
             _uuid = uuid;
             _ownerName = ownerName;
             _ownerEmail = ownerEmail;
-            _data = data;
+            _assemblyProvider = assemblyProvider;
             _creationTime = creationTime;
             _modificationTime = modificationTime;
         }
@@ -78,14 +78,14 @@ package org.jbei.registry.models
             _ownerEmail = value;
         }
         
-        public function get data():AssemblyProvider
+        public function get assemblyProvider():AssemblyProvider
         {
-            return _data;
+            return _assemblyProvider;
         }
         
-        public function set data(value:AssemblyProvider):void
+        public function set assemblyProvider(value:AssemblyProvider):void
         {
-            _data = value;
+            _assemblyProvider = value;
         }
         
         public function get creationTime():Date

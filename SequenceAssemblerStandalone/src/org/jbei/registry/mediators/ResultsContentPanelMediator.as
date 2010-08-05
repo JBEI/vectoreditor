@@ -50,7 +50,7 @@ package org.jbei.registry.mediators
         // Private Methods
         private function updateResultsPermutationsTable(resultPermutations:PermutationSet):void
         {
-            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
             
             var columns:Array = new Array();
             

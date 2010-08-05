@@ -5,6 +5,7 @@ package org.jbei.registry
     import org.jbei.registry.mediators.AssemblyPanelMediator;
     import org.jbei.registry.mediators.AssemblyStatusBarMediator;
     import org.jbei.registry.mediators.ResultsPanelMediator;
+    import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.models.AssemblyProvider;
     import org.jbei.registry.models.PermutationSet;
     import org.jbei.registry.utils.StandaloneUtils;
@@ -20,7 +21,7 @@ package org.jbei.registry
     {
         private var initialized:Boolean = false;
         
-        private var _assemblyProvider:AssemblyProvider;
+        private var _project:AssemblyProject;
         private var _resultPermutations:PermutationSet;
         
         // Constructor
@@ -28,18 +29,18 @@ package org.jbei.registry
         {
             super();
             
-            _assemblyProvider = StandaloneUtils.standaloneAssemblyProvider();
+            _project = StandaloneUtils.standaloneAssemblyProject();
         }
         
         // Properties
-        public function get assemblyProvider():AssemblyProvider
+        public function get project():AssemblyProject
         {
-            return _assemblyProvider;
+            return _project;
         }
         
-        public function set assemblyProvider(value:AssemblyProvider):void
+        public function set project(value:AssemblyProject):void
         {
-            _assemblyProvider = value;
+            _project = value;
         }
         
         public function get resultPermutations():PermutationSet

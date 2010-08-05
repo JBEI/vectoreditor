@@ -42,8 +42,8 @@ package org.jbei.registry.mediators
             
             assemblyContentPanel = viewComponent as AssemblyContentPanel;
             
-            assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
-            assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+            assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+            assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
             
             assemblyContentPanel.assemblyTable.addEventListener(CaretEvent.CARET_CHANGED, onAssemblyTableCaretChange);
             assemblyContentPanel.assemblyTable.addEventListener(SelectionEvent.SELECTION_CHANGED, onAssemblyTableSelectionChanged);
@@ -62,10 +62,10 @@ package org.jbei.registry.mediators
         {
             switch(notification.getName()) {
                 case Notifications.RANDOMIZE_ASSEMBLY_PROVIDER:
-                    ApplicationFacade.getInstance().assemblyProvider = StandaloneUtils.standaloneRandomAssemblyProvider();
+                    ApplicationFacade.getInstance().project = StandaloneUtils.standaloneRandomAssemblyProject();
                     
-                    assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
-                    assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+                    assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+                    assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
                     
                     break;
                 case Notifications.ASSEMBLY_COPY:
@@ -151,7 +151,7 @@ package org.jbei.registry.mediators
                 return;
             }
             
-            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
             
             if(focusSelectedCell is DataCell) {
                 var selectedDataCell:DataCell = focusSelectedCell as DataCell;

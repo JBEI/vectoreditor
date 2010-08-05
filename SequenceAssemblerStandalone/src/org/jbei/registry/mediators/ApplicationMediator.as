@@ -2,6 +2,7 @@ package org.jbei.registry.mediators
 {
     import mx.containers.VBox;
     
+    import org.jbei.lib.ui.dialogs.ModalDialog;
     import org.jbei.lib.ui.dialogs.SimpleDialog;
     import org.jbei.lib.utils.Logger;
     import org.jbei.lib.utils.SystemUtils;
@@ -12,6 +13,7 @@ package org.jbei.registry.mediators
     import org.jbei.registry.view.ui.MainPanel;
     import org.jbei.registry.view.ui.assembly.AssemblyPanel;
     import org.jbei.registry.view.ui.dialogs.AboutDialogForm;
+    import org.jbei.registry.view.ui.dialogs.PropertiesDialogForm;
     import org.jbei.registry.view.ui.results.ResultsPanel;
     import org.puremvc.as3.interfaces.INotification;
     import org.puremvc.as3.patterns.mediator.Mediator;
@@ -172,11 +174,11 @@ package org.jbei.registry.mediators
         
         private function runAssembly():void
         {
-            if(!ApplicationFacade.getInstance().assemblyProvider) {
+            if(!ApplicationFacade.getInstance().project.assemblyProvider) {
                 return;
             }
             
-            ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().assemblyProvider);
+            ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().project.assemblyProvider);
             
             if(ApplicationFacade.getInstance().resultPermutations) {
                 sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
@@ -193,7 +195,9 @@ package org.jbei.registry.mediators
         
         private function showPropertiesDialog():void
         {
-            // Not implemented yet
+            var propertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, null);
+            propertiesDialog.title = "Properties";
+            propertiesDialog.open();
         }
         
         private function goSuggestFeature():void

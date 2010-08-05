@@ -29,12 +29,18 @@ package org.jbei.registry.mediators
             assemblyControlBar.pasteButton.addEventListener(MouseEvent.CLICK, onPasteButtonClick);
             assemblyControlBar.undoButton.addEventListener(MouseEvent.CLICK, onUndoButtonClick);
             assemblyControlBar.redoButton.addEventListener(MouseEvent.CLICK, onRedoButtonClick);
+            assemblyControlBar.propertiesButton.addEventListener(MouseEvent.CLICK, onPropertiesButtonClick);
         }
         
         // Event Handlers
         private function onSaveButtonClick(event:MouseEvent):void
         {
             sendNotification(Notifications.SAVE_PROJECT);
+        }
+        
+        private function onPropertiesButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.SHOW_PROPERTIES_DIALOG);
         }
         
         private function onUndoButtonClick(event:MouseEvent):void

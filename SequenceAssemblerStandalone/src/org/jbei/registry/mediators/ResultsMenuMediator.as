@@ -21,6 +21,7 @@ package org.jbei.registry.mediators
             
             resultsMenu = viewComponent as ResultsMenu;
             
+            resultsMenu.addEventListener(ResultsMenu.BACK_TO_ASSEMBLY, onBackToAssembly);
             resultsMenu.addEventListener(ResultsMenu.COPY, onCopy);
             resultsMenu.addEventListener(ResultsMenu.SHOW_ABOUT_DIALOG, onShowAboutDialog);
             resultsMenu.addEventListener(ResultsMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
@@ -28,6 +29,11 @@ package org.jbei.registry.mediators
         }
         
         // Event Handlers
+        private function onBackToAssembly(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SWITCH_TO_ASSEMBLY_VIEW);
+        }
+        
         private function onCopy(event:MenuItemEvent):void
         {
             sendNotification(Notifications.RESULTS_COPY);

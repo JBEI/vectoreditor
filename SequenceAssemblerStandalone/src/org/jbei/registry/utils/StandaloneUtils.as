@@ -1,6 +1,7 @@
 package org.jbei.registry.utils
 {
     import org.jbei.registry.models.AssemblyItem;
+    import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.models.AssemblyProvider;
     import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.FeatureType;
@@ -10,8 +11,10 @@ package org.jbei.registry.utils
      */
     public class StandaloneUtils
     {
-        public static function standaloneAssemblyProvider():AssemblyProvider
+        public static function standaloneAssemblyProject():AssemblyProject
         {
+            var newAssemblyProject:AssemblyProject = new AssemblyProject();
+            
             var assemblyProvider:AssemblyProvider = new AssemblyProvider();
             
             var promotersBin:Bin = new Bin(new FeatureType("Promoter", "promoter"));
@@ -39,11 +42,15 @@ package org.jbei.registry.utils
             assemblyProvider.addBin(geneBin);
             assemblyProvider.addBin(terminatorBin);
             
-            return assemblyProvider;
+            newAssemblyProject.assemblyProvider = assemblyProvider;
+            
+            return newAssemblyProject;
         }
         
-        public static function standaloneRandomAssemblyProvider():AssemblyProvider
+        public static function standaloneRandomAssemblyProject():AssemblyProject
         {
+            var newAssemblyProject:AssemblyProject = new AssemblyProject();
+            
             var assemblyProvider:AssemblyProvider = new AssemblyProvider();
             
             var maxBins:int = 15;
@@ -68,7 +75,9 @@ package org.jbei.registry.utils
                 assemblyProvider.addBin(newBin);
             }
             
-            return assemblyProvider;
+            newAssemblyProject.assemblyProvider = assemblyProvider;
+            
+            return newAssemblyProject;
         }
     }
 }
