@@ -194,6 +194,21 @@ package org.jbei.components.assemblyTableClasses
             _selectedDataCells = null;
         }
         
+        public function deleteSelectedCells():void
+        {
+            if(!_selectedDataCells || _selectedDataCells.length == 0) {
+                if(activeCell && activeCell is DataCell) {
+                    _selectedDataCells = new Vector.<Vector.<DataCell>>();
+                    _selectedDataCells.push(new Vector.<DataCell>);
+                    _selectedDataCells[0].push(activeCell);
+                } else {
+                    return;
+                }
+            }
+            
+            Alert.show("Are you sure you want to delete selected items?", "Delete items", Alert.YES | Alert.NO, this.parent as Sprite, onAlertDeleteItemsClose, null, Alert.NO);            
+        }
+        
         public function changeBinType(binIndex:int, newType:String):void
         {
             _assemblyProvider.changeBinType(_assemblyProvider.bins[binIndex], FeatureTypeManager.instance.getTypeByValue(newType));
@@ -944,21 +959,6 @@ package org.jbei.components.assemblyTableClasses
             copyToClipboard();
             
             doDeleteSelectedCells();
-        }
-        
-        private function deleteSelectedCells():void
-        {
-            if(!_selectedDataCells || _selectedDataCells.length == 0) {
-                if(activeCell && activeCell is DataCell) {
-                    _selectedDataCells = new Vector.<Vector.<DataCell>>();
-                    _selectedDataCells.push(new Vector.<DataCell>);
-                    _selectedDataCells[0].push(activeCell);
-                } else {
-                    return;
-                }
-            }
-            
-            Alert.show("Are you sure you want to delete selected items?", "Delete items", Alert.YES | Alert.NO, this.parent as Sprite, onAlertDeleteItemsClose, null, Alert.NO);            
         }
         
         private function doDeleteSelectedCells():void

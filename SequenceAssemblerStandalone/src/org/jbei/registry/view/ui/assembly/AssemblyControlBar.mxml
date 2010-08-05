@@ -6,9 +6,49 @@
             [Bindable]
             private var saveIcon:Class;
             
+            [Embed(source='../assets/icons/properties.png')]
+            [Bindable]
+            private var propertiesIcon:Class;
+            
+            [Embed(source='../assets/icons/copy.png')]
+            [Bindable]
+            private var copyIcon:Class;
+            
+            [Embed(source='../assets/icons/cut.png')]
+            [Bindable]
+            private var cutIcon:Class;
+            
+            [Embed(source='../assets/icons/paste.png')]
+            [Bindable]
+            private var pasteIcon:Class;
+            
+            [Embed(source='../assets/icons/undo.png')]
+            [Bindable]
+            private var undoIcon:Class;
+            
+            [Embed(source='../assets/icons/redo.png')]
+            [Bindable]
+            private var redoIcon:Class;
+            
+            [Embed(source='../assets/icons/undo_disabled.png')]
+            [Bindable]
+            private var undoDisabledIcon:Class;
+            
+            [Embed(source='../assets/icons/redo_disabled.png')]
+            [Bindable]
+            private var redoDisabledIcon:Class;
         ]]>
     </mx:Script>
     <mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" toolTip="Save Project" />
-    
+    <mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" />
+    <mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="undoButton" icon="{ undoDisabledIcon }" enabled="false" toolTip="Undo" />
+    <mx:Button width="32" height="32" id="redoButton" icon="{ redoDisabledIcon }" enabled="false" toolTip="Redo" />
+    <mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="copyButton" icon="{ copyIcon }" toolTip="Copy" />
+    <mx:Button width="32" height="32" id="cutButton" icon="{ cutIcon }" toolTip="Cut" />
+    <mx:Button width="32" height="32" id="pasteButton" icon="{ pasteIcon }" toolTip="Paste" />
+    <mx:Spacer width="5" />
     <mx:Button id="randomizeButton" label="Randomize" />
 </mx:ApplicationControlBar>

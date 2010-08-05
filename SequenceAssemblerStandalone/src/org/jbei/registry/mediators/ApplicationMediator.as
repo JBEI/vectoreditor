@@ -2,11 +2,15 @@ package org.jbei.registry.mediators
 {
     import mx.containers.VBox;
     
+    import org.jbei.lib.ui.dialogs.SimpleDialog;
+    import org.jbei.lib.utils.SystemUtils;
     import org.jbei.registry.ApplicationFacade;
+    import org.jbei.registry.Constants;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.lib.AssemblyHelper;
     import org.jbei.registry.view.ui.MainPanel;
     import org.jbei.registry.view.ui.assembly.AssemblyPanel;
+    import org.jbei.registry.view.ui.dialogs.AboutDialogForm;
     import org.jbei.registry.view.ui.results.ResultsPanel;
     import org.puremvc.as3.interfaces.INotification;
     import org.puremvc.as3.patterns.mediator.Mediator;
@@ -50,6 +54,18 @@ package org.jbei.registry.mediators
                     runAssembly();
                     
                     break;
+                case Notifications.SHOW_ABOUT_DIALOG:
+                    showAboutDialog();
+                    
+                    break;
+                case Notifications.GO_SUGGEST_FEATURE:
+                    goSuggestFeature();
+                    
+                    break;
+                case Notifications.GO_REPORT_BUG:
+                    goReportBug();
+                    
+                    break;
             }
         }
         
@@ -59,6 +75,9 @@ package org.jbei.registry.mediators
                 Notifications.SWITCH_TO_ASSEMBLY_VIEW
                 , Notifications.SWITCH_TO_RESULTS_VIEW
                 , Notifications.RUN_ASSEMBLY
+                , Notifications.SHOW_ABOUT_DIALOG
+                , Notifications.GO_SUGGEST_FEATURE
+                , Notifications.GO_REPORT_BUG
             ];
         }
         
@@ -105,6 +124,23 @@ package org.jbei.registry.mediators
                 sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
                 sendNotification(Notifications.SWITCH_TO_RESULTS_VIEW);
             }
+        }
+        
+        private function showAboutDialog():void
+        {
+            var aboutDialog:SimpleDialog = new SimpleDialog(AboutDialogForm);
+            aboutDialog.title = Constants.APPLICATION_NAME;
+            aboutDialog.open();
+        }
+        
+        private function goSuggestFeature():void
+        {
+            SystemUtils.goToUrl(Constants.SUGGEST_FEATURE_URL);
+        }
+        
+        private function goReportBug():void
+        {
+            SystemUtils.goToUrl(Constants.REPORT_BUG_URL);
         }
     }
 }

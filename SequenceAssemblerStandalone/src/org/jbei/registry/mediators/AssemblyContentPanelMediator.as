@@ -5,6 +5,7 @@ package org.jbei.registry.mediators
     import flash.events.MouseEvent;
     
     import mx.collections.ArrayCollection;
+    import mx.controls.Alert;
     import mx.controls.TextInput;
     import mx.utils.StringUtil;
     
@@ -67,12 +68,39 @@ package org.jbei.registry.mediators
                     assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
                     
                     break;
+                case Notifications.ASSEMBLY_COPY:
+                    // Broadcasting COPY event
+                    assemblyContentPanel.assemblyTable.dispatchEvent(new Event(Event.COPY, true, true));
+                    
+                    break;
+                case Notifications.ASSEMBLY_CUT:
+                    // Broadcasting COPY event
+                    assemblyContentPanel.assemblyTable.dispatchEvent(new Event(Event.CUT, true, true));
+                    
+                    break;
+                case Notifications.ASSEMBLY_PASTE:
+                    Alert.show("To use the Paste command in this browser, please press Ctrl+V.");
+                    
+                    break;
+                case Notifications.ASSEMBLY_DELETE:
+                    assemblyContentPanel.assemblyTable.deleteSelected();
+                    
+                    break;
+                case Notifications.ASSEMBLY_SELECT_ALL:
+                    assemblyContentPanel.assemblyTable.selectAll();
+                    
+                    break;
             }
         }
         
         public override function listNotificationInterests():Array
         {
-            return [Notifications.RANDOMIZE_ASSEMBLY_PROVIDER];
+            return [Notifications.RANDOMIZE_ASSEMBLY_PROVIDER
+                , Notifications.ASSEMBLY_COPY
+                , Notifications.ASSEMBLY_CUT
+                , Notifications.ASSEMBLY_PASTE
+                , Notifications.ASSEMBLY_SELECT_ALL
+                , Notifications.ASSEMBLY_DELETE];
         }
         
         // Event Handler

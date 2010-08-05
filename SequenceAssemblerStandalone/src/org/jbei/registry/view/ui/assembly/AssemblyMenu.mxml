@@ -2,10 +2,32 @@
 <mx:Box creationComplete="onCreationComplete(event)" width="100%" borderThickness="0" paddingBottom="0" paddingTop="0" verticalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
     <mx:Script>
         <![CDATA[
+            import mx.events.MenuEvent;
+            
             import org.jbei.lib.ui.menu.MenuItem;
+            import org.jbei.lib.ui.menu.MenuItemEvent;
+            
+            // File
+            public static const SAVE:String = "Save";
+            
+            // Edit
+            public static const UNDO:String = "Undo";
+            public static const REDO:String = "Redo";
+            public static const COPY:String = "Copy";
+            public static const CUT:String = "Cut";
+            public static const PASTE:String = "Paste";
+            public static const DELETE:String = "Delete";
+            public static const SELECT_ALL:String = "SelectAll";
+            
+            // About
+            public static const GO_REPORT_BUG_WEB_LINK:String = "GoReportBugWebLink";
+            public static const GO_SUGGEST_FEATURE_WEB_LINK:String = "GoSuggestFeatureWebLink";
+            public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
             
             [Bindable]
             private var menuItems:Array;
+            
+            private var menuItemsMap:Dictionary = new Dictionary();
             
             // Event Handlers
             private function onCreationComplete(event:Event):void
@@ -14,14 +36,88 @@
                 
                 // File
                 var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
+                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save Project");
+                fileMenuItem.addSubItem(saveMenuItem);
                 
                 // Edit
                 var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
+                var undoMenuItem:MenuItem = new MenuItem("undoMenuItem", "Undo");
+                var redoMenuItem:MenuItem = new MenuItem("redoMenuItem", "Redo");
+                var copyMenuItem:MenuItem = new MenuItem("copyMenuItem", "Copy");
+                var cutMenuItem:MenuItem = new MenuItem("cutMenuItem", "Cut");
+                var pasteMenuItem:MenuItem = new MenuItem("pasteMenuItem", "Paste");
+                var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
+                var deleteMenuItem:MenuItem = new MenuItem("deleteMenuItem", "Delete");
+                editMenuItem.addSubItem(undoMenuItem);
+                editMenuItem.addSubItem(redoMenuItem);
+                editMenuItem.addSubItem(separatorMenuItem);
+                editMenuItem.addSubItem(copyMenuItem);
+                editMenuItem.addSubItem(cutMenuItem);
+                editMenuItem.addSubItem(pasteMenuItem);
+                editMenuItem.addSubItem(deleteMenuItem);
+                editMenuItem.addSubItem(separatorMenuItem);
+                editMenuItem.addSubItem(selectAllMenuItem);
                 
                 // Help
                 var helpMenuItem:MenuItem = new MenuItem("helpMenuItem", "Help");
+                var aboutMenuItem:MenuItem = new MenuItem("aboutMenuItem", "About");
+                var suggestFeatureMenuItem:MenuItem = new MenuItem("suggestFeatureMenuItem", "Suggest Feature");
+                var reportBugMenuItem:MenuItem = new MenuItem("reportBugMenuItem", "Report Bug");
+                helpMenuItem.addSubItem(suggestFeatureMenuItem);
+                helpMenuItem.addSubItem(reportBugMenuItem);
+                helpMenuItem.addSubItem(separatorMenuItem);
+                helpMenuItem.addSubItem(aboutMenuItem);
                 
                 menuItems = [fileMenuItem, editMenuItem, helpMenuItem];
+                
+                // File
+                menuItemsMap["fileMenuItem"] = fileMenuItem;
+                menuItemsMap["saveMenuItem"] = saveMenuItem;
+                
+                // Edit
+                menuItemsMap["editMenuItem"] = editMenuItem;
+                menuItemsMap["undoMenuItem"] = undoMenuItem;
+                menuItemsMap["redoMenuItem"] = redoMenuItem;
+                menuItemsMap["copyMenuItem"] = copyMenuItem;
+                menuItemsMap["cutMenuItem"] = cutMenuItem;
+                menuItemsMap["pasteMenuItem"] = pasteMenuItem;
+                menuItemsMap["deleteMenuItem"] = deleteMenuItem;
+                menuItemsMap["selectAllMenuItem"] = selectAllMenuItem;
+                
+                // Help
+                menuItemsMap["helpMenuItem"] = helpMenuItem;
+                menuItemsMap["suggestFeatureMenuItem"] = suggestFeatureMenuItem;
+                menuItemsMap["reportBugMenuItem"] = reportBugMenuItem;
+                menuItemsMap["aboutMenuItem"] = aboutMenuItem;
+            }
+            
+            private function onMenuItemClick(event:MenuEvent):void
+            {
+                var menuItem:MenuItem = event.item as MenuItem;
+                
+                if(menuItem.id == "undoMenuItem") {
+                    dispatchEvent(new MenuItemEvent(UNDO, menuItem));
+                } else if(menuItem.id == "redoMenuItem") {
+                    dispatchEvent(new MenuItemEvent(REDO, menuItem));
+                } else if(menuItem.id == "copyMenuItem") {
+                    dispatchEvent(new MenuItemEvent(COPY, menuItem));
+                } else if(menuItem.id == "cutMenuItem") {
+                    dispatchEvent(new MenuItemEvent(CUT, menuItem));
+                } else if(menuItem.id == "pasteMenuItem") {
+                    dispatchEvent(new MenuItemEvent(PASTE, menuItem));
+                } else if(menuItem.id == "deleteMenuItem") {
+                    dispatchEvent(new MenuItemEvent(DELETE, menuItem));
+                } else if(menuItem.id == "selectAllMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SELECT_ALL, menuItem));
+                } else if(menuItem.id == "reportBugMenuItem") {
+                    dispatchEvent(new MenuItemEvent(GO_REPORT_BUG_WEB_LINK, menuItem));
+                } else if(menuItem.id == "suggestFeatureMenuItem") {
+                    dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
+                } else if(menuItem.id == "aboutMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_ABOUT_DIALOG, menuItem));
+                } else if(menuItem.id == "saveMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SAVE, menuItem));
+                }
             }
         ]]>
     </mx:Script>
@@ -35,5 +131,6 @@
         dataProvider="{ menuItems }" 
         labelField="label" 
         width="100%"
-        menuStyleName ="subMenu" />
+        menuStyleName ="subMenu"  
+        itemClick="onMenuItemClick(event)"/>
 </mx:Box>

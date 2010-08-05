@@ -80,6 +80,15 @@ package org.jbei.components
         }
         
         // Public Methods
+        public function selectAll():void
+        {
+            contentHolder.selectAll();
+        }
+        
+        public function deleteSelected():void
+        {
+            contentHolder.deleteSelectedCells();
+        }
         
         // Protected Methods
         protected override function createChildren():void

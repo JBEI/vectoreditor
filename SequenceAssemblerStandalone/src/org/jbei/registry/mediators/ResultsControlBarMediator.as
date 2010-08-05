@@ -23,12 +23,18 @@ package org.jbei.registry.mediators
             resultsControlBar = viewComponent as ResultsControlBar;
             
             resultsControlBar.backToAssemblyButton.addEventListener(MouseEvent.CLICK, onBackToAssemblyButtonMouseClick);
+            resultsControlBar.copyButton.addEventListener(MouseEvent.CLICK, onCopyButtonMouseClick);
         }
         
         // Event Handlers
         private function onBackToAssemblyButtonMouseClick(event:MouseEvent):void
         {
             sendNotification(Notifications.SWITCH_TO_ASSEMBLY_VIEW);
+        }
+        
+        private function onCopyButtonMouseClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.RESULTS_COPY);
         }
     }
 }

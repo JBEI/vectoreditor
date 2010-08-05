@@ -59,6 +59,7 @@ package org.jbei.registry.mediators
                 
                 dataGridColumn.dataField = "col" + String(i);
                 dataGridColumn.sortable = false;
+                dataGridColumn.draggable = false;
                 
                 columns.push(dataGridColumn);
             }

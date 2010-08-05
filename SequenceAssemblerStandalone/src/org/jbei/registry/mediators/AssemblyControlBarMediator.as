@@ -23,9 +23,45 @@ package org.jbei.registry.mediators
             assemblyControlBar = viewComponent as AssemblyControlBar;
             
             assemblyControlBar.randomizeButton.addEventListener(MouseEvent.CLICK, onRandomizeButtonClick);
+            assemblyControlBar.saveButton.addEventListener(MouseEvent.CLICK, onSaveButtonClick);
+            assemblyControlBar.copyButton.addEventListener(MouseEvent.CLICK, onCopyButtonClick);
+            assemblyControlBar.cutButton.addEventListener(MouseEvent.CLICK, onCutButtonClick);
+            assemblyControlBar.pasteButton.addEventListener(MouseEvent.CLICK, onPasteButtonClick);
+            assemblyControlBar.undoButton.addEventListener(MouseEvent.CLICK, onUndoButtonClick);
+            assemblyControlBar.redoButton.addEventListener(MouseEvent.CLICK, onRedoButtonClick);
         }
         
         // Event Handlers
+        private function onSaveButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.SAVE_PROJECT);
+        }
+        
+        private function onUndoButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_UNDO);
+        }
+        
+        private function onRedoButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_REDO);
+        }
+        
+        private function onCopyButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_COPY);
+        }
+        
+        private function onCutButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_CUT);
+        }
+        
+        private function onPasteButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_PASTE);
+        }
+        
         private function onRandomizeButtonClick(event:MouseEvent):void
         {
             sendNotification(Notifications.RANDOMIZE_ASSEMBLY_PROVIDER);

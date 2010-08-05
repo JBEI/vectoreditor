@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
-    <mx:Button id="backToAssemblyButton" label="&lt; Back to Assembly" />    
+    <mx:Script>
+        <![CDATA[
+            [Embed(source='../assets/icons/copy.png')]
+            [Bindable]
+            private var copyIcon:Class;
+        ]]>
+    </mx:Script>
+    
+    <mx:Button id="backToAssemblyButton" label="&lt; Back to Assembly" />
+    <mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="copyButton" icon="{ copyIcon }" toolTip="Copy" />
 </mx:ApplicationControlBar>
