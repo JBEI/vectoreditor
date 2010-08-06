@@ -1,5 +1,6 @@
 package org.jbei.registry.proxies
 {
+    import mx.rpc.events.FaultEvent;
     import mx.rpc.events.InvokeEvent;
     import mx.rpc.events.ResultEvent;
     
@@ -31,9 +32,9 @@ package org.jbei.registry.proxies
             service.getAssemblyProject(sessionId, projectId);
         }
         
-        public function saveAssemblyProject(sessionId:String, projectId:String):void
+        public function saveAssemblyProject(sessionId:String, project:AssemblyProject):void
         {
-            service.saveAssemblyProject(sessionId, projectId);
+            service.saveAssemblyProject(sessionId, project);
         }
         
         public function assembleAssemblyProject(sessionId:String, project:AssemblyProject):void

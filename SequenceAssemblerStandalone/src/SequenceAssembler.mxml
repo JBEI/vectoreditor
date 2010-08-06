@@ -5,18 +5,39 @@
             import org.jbei.lib.utils.Logger;
             import org.jbei.lib.utils.LoggerEvent;
             import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.Notifications;
             
             // Event Handlers
             private function onCreationComplete(event:Event):void
             {
+                ApplicationFacade.getInstance().initialize(mainPanel);
+                
                 Logger.getInstance().addEventListener(LoggerEvent.LOG, onLogMessage);
                 
-                ApplicationFacade.getInstance().initialize(mainPanel);
+                processParameters();
             }
             
             private function onLogMessage(event:LoggerEvent):void
             {
                 loggerTextArea.text += event.message + "\n";
+            }
+            
+            // Private Methods
+            private function processParameters():void
+            {
+                CONFIG::registryEdition {
+                    var facade:ApplicationFacade = ApplicationFacade.getInstance();
+                    
+                    if(Application.application.parameters.sessionId && (Application.application.parameters.sessionId as String).length > 0) {
+                        facade.sessionId = Application.application.parameters.sessionId;
+                        
+                        Logger.getInstance().info("Session ID: " + facade.sessionId);
+                    } else {
+                        facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
+                        
+                        return;
+                    }
+                }
             }
         ]]>
     </mx:Script>

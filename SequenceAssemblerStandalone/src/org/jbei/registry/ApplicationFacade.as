@@ -23,6 +23,7 @@ package org.jbei.registry
         
         private var _project:AssemblyProject;
         private var _resultPermutations:PermutationSet;
+        private var _sessionId:String;
         
         // Constructor
         public function ApplicationFacade()
@@ -41,6 +42,16 @@ package org.jbei.registry
         public function set project(value:AssemblyProject):void
         {
             _project = value;
+        }
+        
+        public function get sessionId():String
+        {
+            return _sessionId;
+        }
+        
+        public function set sessionId(value:String):void
+        {
+            _sessionId = value;
         }
         
         public function get resultPermutations():PermutationSet

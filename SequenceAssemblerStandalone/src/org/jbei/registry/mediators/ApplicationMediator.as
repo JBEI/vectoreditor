@@ -1,6 +1,7 @@
 package org.jbei.registry.mediators
 {
     import mx.containers.VBox;
+    import mx.controls.Alert;
     
     import org.jbei.lib.ui.dialogs.ModalDialog;
     import org.jbei.lib.ui.dialogs.SimpleDialog;
@@ -10,6 +11,8 @@ package org.jbei.registry.mediators
     import org.jbei.registry.Constants;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.lib.AssemblyHelper;
+    import org.jbei.registry.models.AssemblyProject;
+    import org.jbei.registry.proxies.RegistryAPIProxy;
     import org.jbei.registry.view.ui.MainPanel;
     import org.jbei.registry.view.ui.assembly.AssemblyPanel;
     import org.jbei.registry.view.ui.dialogs.AboutDialogForm;
@@ -47,7 +50,11 @@ package org.jbei.registry.mediators
         {
             switch(notification.getName()) {
                 case Notifications.APPLICATION_FAILURE:
-                    lockApplication(notification.getBody() as String);
+                    var failureMessage:String = notification.getBody() as String;
+                    
+                    lockApplication(failureMessage);
+                    
+                    Alert.show(failureMessage, "Application Failure");
                     
                     break;
                 case Notifications.GLOBAL_ACTION_MESSAGE:
@@ -96,6 +103,14 @@ package org.jbei.registry.mediators
                     break;
                 case Notifications.SHOW_PROPERTIES_DIALOG:
                     showPropertiesDialog();
+                    
+                    break;
+                case Notifications.SAVE_PROJECT:
+                    saveProject();
+                    
+                    break;
+                case Notifications.SAVE_AS_PROJECT:
+                    saveAsProject();
                     
                     break;
             }
@@ -208,6 +223,24 @@ package org.jbei.registry.mediators
         private function goReportBug():void
         {
             SystemUtils.goToUrl(Constants.REPORT_BUG_URL);
+        }
+        
+        private function saveProject():void
+        {
+            var project:AssemblyProject = ApplicationFacade.getInstance().project;
+            
+            if(project.uuid == null || project.uuid == "") { // project not saved
+                // display project properties dialog
+            } else { // project was saved
+                var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+                
+                proxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, project);
+            }
+        }
+        
+        private function saveAsProject():void
+        {
+            
         }
     }
 }
