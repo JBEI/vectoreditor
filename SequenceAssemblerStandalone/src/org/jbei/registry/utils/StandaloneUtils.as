@@ -53,7 +53,7 @@ package org.jbei.registry.utils
             
             var maxBins:int = 15;
             
-            var numberOfBins:int = Math.round(Math.random() * maxBins);
+            var numberOfBins:int = 1 + Math.round(Math.random() * maxBins);
             
             var typeKeys:Array = ["general", "promoter", "rbs", "gene", "terminator"];
             var typeValues:Array = ["General", "Promoter", "RBS", "Gene", "Terminator"];

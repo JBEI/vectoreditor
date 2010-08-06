@@ -6,12 +6,14 @@ package org.jbei.components.assemblyTableClasses
     import flash.display.Graphics;
     import flash.display.Sprite;
     import flash.display.Stage;
+    import flash.events.ContextMenuEvent;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     import flash.text.TextField;
     import flash.ui.ContextMenu;
+    import flash.ui.ContextMenuItem;
     import flash.ui.Keyboard;
     
     import mx.controls.Alert;
@@ -457,6 +459,26 @@ package org.jbei.components.assemblyTableClasses
             }
         }
         
+        private function onContextMenuSelect(event:ContextMenuEvent):void
+        {
+            if(columns.length == 0) {
+                var addColumnMenuItem:ContextMenuItem = new ContextMenuItem("Add column");
+                addColumnMenuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onAddColumnContextMenuItemClick);
+                
+                contextMenu.customItems = [addColumnMenuItem];
+            } else {
+                contextMenu.customItems = new Array();
+            }
+        }
+        
+        private function onAddColumnContextMenuItemClick(event:ContextMenuEvent):void
+        {
+            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            
+            _assemblyProvider.addBin(newBin);
+        }
+        
+        // Private Methods
         private function assemblyItemsFromText(text:String):Vector.<Vector.<AssemblyItem>>
         {
             var resultItems:Vector.<Vector.<AssemblyItem>> = new Vector.<Vector.<AssemblyItem>>();
@@ -532,6 +554,7 @@ package org.jbei.components.assemblyTableClasses
                 contextMenu.clipboardItems.paste = true;
                 contextMenu.clipboardItems.clear = true;
                 contextMenu.clipboardItems.selectAll = true;
+                contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT, onContextMenuSelect);
                 
                 assemblyTable.addEventListener(Event.COPY, onCopy);
                 assemblyTable.addEventListener(Event.CUT, onCut);
@@ -622,7 +645,7 @@ package org.jbei.components.assemblyTableClasses
             }
             
             var hScrollBarSpace:Number = 20;
-            var totalColumnsWidth:Number = 0;
+            var totalColumnsWidth:Number = HeaderPanel.HEADER_PLUS_BUTTON_WIDTH;
             var maxColumnHeight:Number = assemblyTableHeight - HeaderPanel.HEADER_HEIGHT - hScrollBarSpace;
             
             var columnWidth:Number = calculateColumnWidth();
@@ -659,7 +682,7 @@ package org.jbei.components.assemblyTableClasses
         private function calculateColumnWidth():Number
         {
             if(!columns || columns.length == 0 || (assemblyTable.width == 0 && assemblyTable.height == 0)) {
-                return 0;
+                return HeaderPanel.HEADER_PLUS_BUTTON_WIDTH;
             }
             
             var maxColumnHeight:Number = 0;
@@ -683,8 +706,7 @@ package org.jbei.components.assemblyTableClasses
                 vScrollbarSpace = 20; // space for vertical scrollbar;
             }
             
-            var numberOfColumns:int = columns.length;
-            var potentialColumnWidth:int = (assemblyTable.width - vScrollbarSpace) / numberOfColumns; // -20 for scrollbar
+            var potentialColumnWidth:Number = (assemblyTable.width - vScrollbarSpace - HeaderPanel.HEADER_PLUS_BUTTON_WIDTH) / columns.length;
             
             if(potentialColumnWidth < ColumnRenderer.MIN_COLUMN_WIDTH) {
                 potentialColumnWidth = ColumnRenderer.MIN_COLUMN_WIDTH;

@@ -8,11 +8,13 @@ package org.jbei.components.assemblyTableClasses
     import flash.geom.Point;
     import flash.utils.flash_proxy;
     
+    import mx.core.BitmapAsset;
     import mx.core.UIComponent;
     import mx.events.IndexChangedEvent;
     import mx.styles.StyleManager;
     
     import org.jbei.registry.models.Bin;
+    import org.jbei.registry.models.FeatureTypeManager;
     
     /**
      * @author Zinovii Dmytriv
@@ -20,9 +22,13 @@ package org.jbei.components.assemblyTableClasses
     public class HeaderPanel extends UIComponent
     {
         public static const HEADER_HEIGHT:Number = 25;
+        public static const HEADER_PLUS_BUTTON_WIDTH:Number = 25;
         public static const DRAGGING_COLUMN_CARET_COLOR:uint = 0x000000;
         public static const DRAGGING_DIMMED_COLUMN_COLOR:uint = 0x888888;
         public static const DRAGGING_COLUMN_FRAME_COLOR:uint = 0xAAAAAA;
+        
+        [Embed(source="assets/plus.png")]
+        private var plusIcon:Class;
         
         private var contentHolder:ContentHolder;
         private var columnHeaders:Vector.<ColumnHeader>;
@@ -30,6 +36,7 @@ package org.jbei.components.assemblyTableClasses
         private var draggingCaret:UIComponent;
         private var draggingDimColumn:UIComponent;
         private var draggingColumn:UIComponent;
+        private var headerPlusButton:UIComponent;
         
         private var dragging:Boolean = false;
         private var clickPoint:Point;
@@ -72,6 +79,8 @@ package org.jbei.components.assemblyTableClasses
         {
             super.createChildren();
             
+            createHeaderPlusButton();
+            
             //createDraggingHeader();
             
             createDraggingCaret();
@@ -87,8 +96,6 @@ package org.jbei.components.assemblyTableClasses
             
             if(needsRemeasurement) {
                 needsRemeasurement = false;
-                
-                renderBottomLine();
                 
                 actualWidth = unscaledWidth;
                 actualHeight = unscaledHeight;
@@ -201,6 +208,23 @@ package org.jbei.components.assemblyTableClasses
             stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
         }
         
+        private function onHeaderPlusButtonMouseOver(event:MouseEvent):void
+        {
+            drawSelectedHeaderPlusButton();
+        }
+        
+        private function onHeaderPlusButtonMouseOut(event:MouseEvent):void
+        {
+            drawHeaderPlusButton();
+        }
+        
+        private function onHeaderPlusButtonMouseClick(event:MouseEvent):void
+        {
+            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            
+            contentHolder.assemblyProvider.addBin(newBin);
+        }
+        
         // Private Methods
         /*private function createDraggingHeader():void
         {
@@ -262,12 +286,24 @@ package org.jbei.components.assemblyTableClasses
             }
         }
         
-        private function renderBottomLine():void
+        private function createHeaderPlusButton():void
         {
-            var g:Graphics = graphics;
-            g.clear();
-            
-            g.lineStyle(2, 0x999999, 0.5);
+            if(!headerPlusButton) {
+                headerPlusButton = new UIComponent;
+                
+                headerPlusButton.x = 0;
+                headerPlusButton.y = 0;
+                
+                drawHeaderPlusButton();
+                
+                headerPlusButton.addEventListener(MouseEvent.CLICK, onHeaderPlusButtonMouseClick);
+                headerPlusButton.addEventListener(MouseEvent.ROLL_OVER, onHeaderPlusButtonMouseOver);
+                headerPlusButton.addEventListener(MouseEvent.ROLL_OUT, onHeaderPlusButtonMouseOut);
+                
+                headerPlusButton.toolTip = "Add column";
+                
+                addChild(headerPlusButton);
+            }
         }
         
         private function createColumnHeaders(columns:Vector.<Column>):void
@@ -306,6 +342,8 @@ package org.jbei.components.assemblyTableClasses
         
         private function updateColumnHeadersMetrics():void
         {
+            headerPlusButton.x = 0;
+            
             if(columnHeaders) {
                 for(var i:int = 0; i < columnHeaders.length; i++) {
                     var columnHeader:ColumnHeader = columnHeaders[i];
@@ -313,6 +351,8 @@ package org.jbei.components.assemblyTableClasses
                     columnHeader.x = columnHeader.column.metrics.x;
                     
                     columnHeader.updateMetrics(columnHeader.column.metrics.width, HeaderPanel.HEADER_HEIGHT);
+                    
+                    headerPlusButton.x = columnHeader.x + columnHeader.column.metrics.width;
                 }
             }
         }
@@ -430,6 +470,82 @@ package org.jbei.components.assemblyTableClasses
         private function hideDraggingColumn():void
         {
             draggingColumn.visible = false;
+        }
+        
+        private function drawHeaderPlusButton():void
+        {
+            var g:Graphics = headerPlusButton.graphics;
+            
+            g.lineStyle(1, 0xBFBFBF); 
+            
+            var hh:Number = HeaderPanel.HEADER_HEIGHT;
+            var ww:Number = HEADER_PLUS_BUTTON_WIDTH;
+            
+            var colors:Array = [ 0xFFFFFF, 0xFFFFFF, 0xE6E6E6 ];
+            
+            var matrix:Matrix = new Matrix();
+            matrix.createGradientBox(ww, hh, Math.PI/2, 0, 0);
+            
+            var ratios:Array = [ 0, 60, 255 ];
+            var alphas:Array = [ 1.0, 1.0, 1.0 ];
+            
+            g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matrix);
+            
+            g.moveTo(0, 0);
+            g.lineTo(ww, 0);
+            g.lineTo(ww, hh);
+            g.lineTo(0, hh);
+            
+            g.endFill();
+            
+            g.lineStyle(0, 0x000000, 0);
+            
+            var shiftMatrix:Matrix = new Matrix();
+            shiftMatrix.tx = 5;
+            shiftMatrix.ty = 5;
+            
+            var iconBitmapAsset:BitmapAsset = new plusIcon() as BitmapAsset;
+            g.beginBitmapFill(iconBitmapAsset.bitmapData, shiftMatrix);
+            g.drawRect(5, 5, 16, 16);
+            g.endFill();
+        }
+        
+        private function drawSelectedHeaderPlusButton():void
+        {
+            var g:Graphics = headerPlusButton.graphics;
+            
+            g.lineStyle(1, 0xBFBFBF); 
+            
+            var hh:Number = HeaderPanel.HEADER_HEIGHT;
+            var ww:Number = HEADER_PLUS_BUTTON_WIDTH;
+            
+            var colors:Array = [ 0xE6E6E6, 0xE6E6E6, 0xBBBBBB ];
+            
+            var matrix:Matrix = new Matrix();
+            matrix.createGradientBox(ww, hh, Math.PI/2, 0, 0);
+            
+            var ratios:Array = [ 0, 60, 255 ];
+            var alphas:Array = [ 1.0, 1.0, 1.0 ];
+            
+            g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, matrix);
+            
+            g.moveTo(0, 0);
+            g.lineTo(ww, 0);
+            g.lineTo(ww, hh);
+            g.lineTo(0, hh);
+            
+            g.endFill();
+            
+            g.lineStyle(0, 0x000000, 0);
+            
+            var shiftMatrix:Matrix = new Matrix();
+            shiftMatrix.tx = 5;
+            shiftMatrix.ty = 5;
+            
+            var iconBitmapAsset:BitmapAsset = new plusIcon() as BitmapAsset;
+            g.beginBitmapFill(iconBitmapAsset.bitmapData, shiftMatrix);
+            g.drawRect(5, 5, 16, 16);
+            g.endFill();
         }
     }
 }
