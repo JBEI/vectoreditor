@@ -24,9 +24,20 @@ package org.jbei.registry.models
             _sequence = value;
         }
         
+        // Public Methods
         public function toString():String
         {
             return _sequence;
+        }
+        
+        /*
+        * @private
+        * */
+        public function clone():AssemblyItem
+        {
+            var clonedItem:AssemblyItem = new AssemblyItem(_sequence);
+            
+            return clonedItem;
         }
     }
 }

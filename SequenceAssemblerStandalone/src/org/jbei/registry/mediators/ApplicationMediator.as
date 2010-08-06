@@ -114,6 +114,14 @@ package org.jbei.registry.mediators
                     saveAsProject();
                     
                     break;
+                case Notifications.ASSEMBLY_UNDO:
+                    undoAssembly();
+                    
+                    break;
+                case Notifications.ASSEMBLY_REDO:
+                    redoAssembly();
+                    
+                    break;
             }
         }
         
@@ -135,6 +143,8 @@ package org.jbei.registry.mediators
                 , Notifications.GO_SUGGEST_FEATURE
                 , Notifications.GO_REPORT_BUG
                 , Notifications.SHOW_PROPERTIES_DIALOG
+                , Notifications.ASSEMBLY_UNDO
+                , Notifications.ASSEMBLY_REDO
             ];
         }
         
@@ -270,6 +280,16 @@ package org.jbei.registry.mediators
             createProjectPropertiesDialog.title = "Save As ...";
             createProjectPropertiesDialog.addEventListener(ModalDialogEvent.SUBMIT, onCreateProjectPropertiesDialogSubmit);
             createProjectPropertiesDialog.open();
+        }
+        
+        private function undoAssembly():void
+        {
+            ApplicationFacade.getInstance().actionStack.undo();
+        }
+        
+        private function redoAssembly():void
+        {
+            ApplicationFacade.getInstance().actionStack.redo();
         }
     }
 }

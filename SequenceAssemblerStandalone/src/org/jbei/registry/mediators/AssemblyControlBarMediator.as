@@ -2,8 +2,10 @@ package org.jbei.registry.mediators
 {
     import flash.events.MouseEvent;
     
+    import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.view.ui.assembly.AssemblyControlBar;
+    import org.puremvc.as3.interfaces.INotification;
     import org.puremvc.as3.patterns.mediator.Mediator;
     
     /**
@@ -30,6 +32,22 @@ package org.jbei.registry.mediators
             assemblyControlBar.undoButton.addEventListener(MouseEvent.CLICK, onUndoButtonClick);
             assemblyControlBar.redoButton.addEventListener(MouseEvent.CLICK, onRedoButtonClick);
             assemblyControlBar.propertiesButton.addEventListener(MouseEvent.CLICK, onPropertiesButtonClick);
+        }
+        
+        // Public Methods
+        public override function handleNotification(notification:INotification):void
+        {
+            switch(notification.getName()) {
+                case Notifications.ACTION_STACK_CHANGED:
+                    updateUndoRedoButtons();
+                    
+                    break;
+            }
+        }
+        
+        public override function listNotificationInterests():Array
+        {
+            return [Notifications.ACTION_STACK_CHANGED];
         }
         
         // Event Handlers
@@ -71,6 +89,13 @@ package org.jbei.registry.mediators
         private function onRandomizeButtonClick(event:MouseEvent):void
         {
             sendNotification(Notifications.RANDOMIZE_ASSEMBLY_PROVIDER);
+        }
+        
+        // Private Methods
+        private function updateUndoRedoButtons():void
+        {
+            assemblyControlBar.updateUndoButton(!ApplicationFacade.getInstance().actionStack.undoStackIsEmpty);
+            assemblyControlBar.updateRedoButton(!ApplicationFacade.getInstance().actionStack.redoStackIsEmpty);
         }
     }
 }

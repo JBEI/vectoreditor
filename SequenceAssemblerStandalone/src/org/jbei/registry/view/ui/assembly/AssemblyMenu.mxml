@@ -48,8 +48,8 @@
                 
                 // Edit
                 var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
-                var undoMenuItem:MenuItem = new MenuItem("undoMenuItem", "Undo");
-                var redoMenuItem:MenuItem = new MenuItem("redoMenuItem", "Redo");
+                var undoMenuItem:MenuItem = new MenuItem("undoMenuItem", "Undo", "", false, false, false);
+                var redoMenuItem:MenuItem = new MenuItem("redoMenuItem", "Redo", "", false, false, false);
                 var copyMenuItem:MenuItem = new MenuItem("copyMenuItem", "Copy");
                 var cutMenuItem:MenuItem = new MenuItem("cutMenuItem", "Cut");
                 var pasteMenuItem:MenuItem = new MenuItem("pasteMenuItem", "Paste");
@@ -131,6 +131,16 @@
                 } else if(menuItem.id == "propertiesMenuItem") {
                     dispatchEvent(new MenuItemEvent(SHOW_PROPERTIES_DIALOG, menuItem));
                 }
+            }
+            
+            public function updateUndoMenuItem(enable:Boolean):void
+            {
+                menuItemsMap["undoMenuItem"].enabled = enable;
+            }
+            
+            public function updateRedoMenuItem(enable:Boolean):void
+            {
+                menuItemsMap["redoMenuItem"].enabled = enable;
             }
         ]]>
     </mx:Script>

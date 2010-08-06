@@ -69,5 +69,19 @@ package org.jbei.registry.models
                 _items.splice(index, 1);
             }
         }
+        
+        /*
+        * @private
+        * */
+        public function clone():Bin
+        {
+            var clonedBin:Bin = new Bin(_featureType);
+            
+            for(var i:int = 0; i < _items.length; i++) {
+                clonedBin.addItem(_items[i].clone());
+            }
+            
+            return clonedBin;
+        }
     }
 }

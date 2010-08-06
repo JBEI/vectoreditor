@@ -1,8 +1,10 @@
 package org.jbei.registry.mediators
 {
     import org.jbei.lib.ui.menu.MenuItemEvent;
+    import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.view.ui.assembly.AssemblyMenu;
+    import org.puremvc.as3.interfaces.INotification;
     import org.puremvc.as3.patterns.mediator.Mediator;
     
     /**
@@ -34,6 +36,22 @@ package org.jbei.registry.mediators
             assemblyMenu.addEventListener(AssemblyMenu.SHOW_ABOUT_DIALOG, onShowAboutDialog);
             assemblyMenu.addEventListener(AssemblyMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
             assemblyMenu.addEventListener(AssemblyMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
+        }
+        
+        // Public Methods
+        public override function handleNotification(notification:INotification):void
+        {
+            switch(notification.getName()) {
+                case Notifications.ACTION_STACK_CHANGED:
+                    updateUndoRedoMenuItems();
+                    
+                    break;
+            }
+        }
+        
+        public override function listNotificationInterests():Array
+        {
+            return [Notifications.ACTION_STACK_CHANGED];
         }
         
         // Event Handlers
@@ -100,6 +118,13 @@ package org.jbei.registry.mediators
         private function onGoReportBugWebLink(event:MenuItemEvent):void
         {
             sendNotification(Notifications.GO_REPORT_BUG);
+        }
+        
+        // Private Methods
+        private function  updateUndoRedoMenuItems():void
+        {
+            assemblyMenu.updateUndoMenuItem(!ApplicationFacade.getInstance().actionStack.undoStackIsEmpty);
+            assemblyMenu.updateRedoMenuItem(!ApplicationFacade.getInstance().actionStack.redoStackIsEmpty);
         }
     }
 }

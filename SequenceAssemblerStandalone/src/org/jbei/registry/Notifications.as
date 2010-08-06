@@ -15,6 +15,8 @@ package org.jbei.registry
         public static const ASSEMBLY_ACTION_MESSAGE:String = "ASSEMBLY_ACTION_MESSAGE";
         public static const RESULTS_ACTION_MESSAGE:String = "RESULTS_ACTION_MESSAGE";
         public static const GLOBAL_ACTION_MESSAGE:String = "GLOBAL_ACTION_MESSAGE";
+        public static const ASSEMBLY_PROVIDER_CHANGED:String = "ASSEMBLY_PROVIDER_CHANGED";
+        public static const ACTION_STACK_CHANGED:String = "ACTION_STACK_CHANGED";
         
         public static const RANDOMIZE_ASSEMBLY_PROVIDER:String = "RANDOMIZE_ASSEMBLY_PROVIDER";
         public static const RUN_ASSEMBLY:String = "RUN_ASSEMBLY";

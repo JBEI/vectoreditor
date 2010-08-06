@@ -1,12 +1,16 @@
 package org.jbei.registry
 {
     import org.jbei.lib.utils.Logger;
+    import org.jbei.registry.lib.ActionStack;
+    import org.jbei.registry.lib.ActionStackEvent;
     import org.jbei.registry.mediators.ApplicationMediator;
     import org.jbei.registry.mediators.AssemblyPanelMediator;
     import org.jbei.registry.mediators.AssemblyStatusBarMediator;
     import org.jbei.registry.mediators.ResultsPanelMediator;
     import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.models.AssemblyProvider;
+    import org.jbei.registry.models.AssemblyProviderEvent;
+    import org.jbei.registry.models.AssemblyProviderMemento;
     import org.jbei.registry.models.PermutationSet;
     import org.jbei.registry.proxies.RegistryAPIProxy;
     import org.jbei.registry.utils.StandaloneAPIProxy;
@@ -27,13 +31,14 @@ package org.jbei.registry
         private var _resultPermutations:PermutationSet;
         private var _sessionId:String;
         private var _serviceProxy:RegistryAPIProxy;
+        private var _actionStack:ActionStack;
         
         // Constructor
         public function ApplicationFacade()
         {
             super();
             
-            _project = StandaloneUtils.standaloneAssemblyProject();
+            project = StandaloneUtils.standaloneAssemblyProject();
         }
         
         // Properties
@@ -45,6 +50,11 @@ package org.jbei.registry
         public function set project(value:AssemblyProject):void
         {
             _project = value;
+            
+            if(_project && _project.assemblyProvider) {
+                _project.assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
+                _project.assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, onAssemblyProviderChanging);
+            }
         }
         
         public function get sessionId():String
@@ -77,6 +87,11 @@ package org.jbei.registry
             _serviceProxy = value;
         }
         
+        public function get actionStack():ActionStack
+        {
+            return _actionStack;
+        }
+        
         // System Methods
         public static function getInstance():ApplicationFacade
         {
@@ -90,6 +105,9 @@ package org.jbei.registry
         // Public Methods
         public function initialize(mainPanel:MainPanel):void
         {
+            _actionStack = new ActionStack();
+            _actionStack.addEventListener(ActionStackEvent.ACTION_STACK_CHANGED, onActionStackChanged);
+            
             registerMediator(new ApplicationMediator(mainPanel));
             registerMediator(new ResultsPanelMediator(mainPanel.resultsPanel));
             registerMediator(new AssemblyPanelMediator(mainPanel.assemblyPanel));
@@ -109,6 +127,26 @@ package org.jbei.registry
             Logger.getInstance().info("Application initialized");
             
             sendNotification(Notifications.SWITCH_TO_ASSEMBLY_VIEW);
+        }
+        
+        // Event Handlers
+        private function onAssemblyProviderChanged(event:AssemblyProviderEvent):void
+        {
+            sendNotification(Notifications.ASSEMBLY_PROVIDER_CHANGED);
+        }
+        
+        private function onAssemblyProviderChanging(event:AssemblyProviderEvent):void
+        {
+            var memento:AssemblyProviderMemento = event.data as AssemblyProviderMemento;
+            
+            if(memento) {
+                _actionStack.add(memento);
+            }
+        }
+        
+        private function onActionStackChanged(event:ActionStackEvent):void
+        {
+            sendNotification(Notifications.ACTION_STACK_CHANGED);
         }
     }
 }
