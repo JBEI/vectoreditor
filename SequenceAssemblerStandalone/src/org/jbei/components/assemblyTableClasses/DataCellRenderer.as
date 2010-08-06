@@ -1,6 +1,9 @@
 package org.jbei.components.assemblyTableClasses
 {
+    import flash.display.BitmapData;
     import flash.display.Graphics;
+    import flash.geom.Matrix;
+    import flash.geom.Rectangle;
     
     import mx.controls.Label;
     import mx.core.UIComponent;
@@ -44,6 +47,13 @@ package org.jbei.components.assemblyTableClasses
             return CELL_BACKGROUND;
         }
         
+        protected override function render():void
+        {
+            super.render();
+            
+            drawLabel();
+        }
+        
         // Private Methods
         private function createLabel():void
         {
@@ -55,9 +65,30 @@ package org.jbei.components.assemblyTableClasses
                 label.y = 3;
                 label.height = 30;
                 label.truncateToFit = true;
+                label.visible = false;
+                label.includeInLayout = false;
                 
                 addChild(label);
             }
+        }
+        
+        private function drawLabel():void
+        {
+            label.validateNow();
+            
+            var bitmapData:BitmapData = new BitmapData(label.width, label.height, true, 0x00FFFFFF);
+            
+            var matrix:Matrix = new Matrix();
+            matrix.tx = 3;
+            matrix.ty = 3;
+            
+            bitmapData.draw(label, matrix, null, null, new Rectangle(0, 0, label.width, label.height));
+            
+            var g:Graphics = graphics;
+            g.lineStyle(0, 0xffffff, 0);
+            g.beginBitmapFill(bitmapData);
+            g.drawRect(0, 0, label.width, label.height);
+            g.endFill();
         }
     }
 }
