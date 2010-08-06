@@ -8,6 +8,8 @@ package org.jbei.registry
     import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.models.AssemblyProvider;
     import org.jbei.registry.models.PermutationSet;
+    import org.jbei.registry.proxies.RegistryAPIProxy;
+    import org.jbei.registry.utils.StandaloneAPIProxy;
     import org.jbei.registry.utils.StandaloneUtils;
     import org.jbei.registry.view.ui.MainPanel;
     import org.jbei.registry.view.ui.assembly.AssemblyStatusBar;
@@ -24,6 +26,7 @@ package org.jbei.registry
         private var _project:AssemblyProject;
         private var _resultPermutations:PermutationSet;
         private var _sessionId:String;
+        private var _serviceProxy:RegistryAPIProxy;
         
         // Constructor
         public function ApplicationFacade()
@@ -64,6 +67,16 @@ package org.jbei.registry
             _resultPermutations = value;
         }
         
+        public function get serviceProxy():RegistryAPIProxy
+        {
+            return _serviceProxy;
+        }
+        
+        public function set serviceProxy(value:RegistryAPIProxy):void
+        {
+            _serviceProxy = value;
+        }
+        
         // System Methods
         public static function getInstance():ApplicationFacade
         {
@@ -80,6 +93,16 @@ package org.jbei.registry
             registerMediator(new ApplicationMediator(mainPanel));
             registerMediator(new ResultsPanelMediator(mainPanel.resultsPanel));
             registerMediator(new AssemblyPanelMediator(mainPanel.assemblyPanel));
+            
+            CONFIG::registryEdition {
+                _serviceProxy = new RegistryAPIProxy();
+            }
+            
+            CONFIG::standalone {
+                _serviceProxy = new StandaloneAPIProxy();
+            }
+            
+            registerProxy(_serviceProxy);
             
             initialized = true;
             

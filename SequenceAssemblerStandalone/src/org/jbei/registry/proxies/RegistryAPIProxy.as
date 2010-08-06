@@ -66,21 +66,41 @@ package org.jbei.registry.proxies
         // Private Methods: Response handlers
         private function onCreateAssemblyProjectResult(event:ResultEvent):void
         {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to create project on the server!");
+                
+                return;
+            }
+            
             sendNotification(Notifications.UNLOCK);
         }
         
         private function onGetAssemblyProjectResult(event:ResultEvent):void
         {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch project from the server!");
+                
+                return;
+            }
+            
             sendNotification(Notifications.UNLOCK);
         }
         
         private function onSaveAssemblyProjectResult(event:ResultEvent):void
         {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save project on the server!");
+                
+                return;
+            }
+            
             sendNotification(Notifications.UNLOCK);
         }
         
         private function onAssembleAssemblyProjectResult(event:ResultEvent):void
         {
+            // Not implemented
+            
             sendNotification(Notifications.UNLOCK);
         }
     }

@@ -4,6 +4,7 @@ package org.jbei.registry.mediators
     import mx.controls.Alert;
     
     import org.jbei.lib.ui.dialogs.ModalDialog;
+    import org.jbei.lib.ui.dialogs.ModalDialogEvent;
     import org.jbei.lib.ui.dialogs.SimpleDialog;
     import org.jbei.lib.utils.Logger;
     import org.jbei.lib.utils.SystemUtils;
@@ -137,6 +138,25 @@ package org.jbei.registry.mediators
             ];
         }
         
+        // Event Handlers
+        private function onCreateProjectPropertiesDialogSubmit(event:ModalDialogEvent):void
+        {
+            var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+            
+            proxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+        }
+        
+        private function onPropertiesDialogSubmit(event:ModalDialogEvent):void
+        {
+            var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+            
+            if(ApplicationFacade.getInstance().project.uuid != null && ApplicationFacade.getInstance().project.uuid != "") {
+                proxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+            } else {
+                proxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+            }
+        }
+        
         // Private Methods
         private function logActionMessage(message:String):void
         {
@@ -210,8 +230,9 @@ package org.jbei.registry.mediators
         
         private function showPropertiesDialog():void
         {
-            var propertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, null);
+            var propertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, ApplicationFacade.getInstance().project);
             propertiesDialog.title = "Properties";
+            propertiesDialog.addEventListener(ModalDialogEvent.SUBMIT, onPropertiesDialogSubmit);
             propertiesDialog.open();
         }
         
@@ -230,7 +251,10 @@ package org.jbei.registry.mediators
             var project:AssemblyProject = ApplicationFacade.getInstance().project;
             
             if(project.uuid == null || project.uuid == "") { // project not saved
-                // display project properties dialog
+                var createProjectPropertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, project);
+                createProjectPropertiesDialog.title = "Save Project";
+                createProjectPropertiesDialog.addEventListener(ModalDialogEvent.SUBMIT, onCreateProjectPropertiesDialogSubmit);
+                createProjectPropertiesDialog.open();
             } else { // project was saved
                 var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
                 
@@ -240,7 +264,12 @@ package org.jbei.registry.mediators
         
         private function saveAsProject():void
         {
+            var project:AssemblyProject = ApplicationFacade.getInstance().project;
             
+            var createProjectPropertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, project);
+            createProjectPropertiesDialog.title = "Save As ...";
+            createProjectPropertiesDialog.addEventListener(ModalDialogEvent.SUBMIT, onCreateProjectPropertiesDialogSubmit);
+            createProjectPropertiesDialog.open();
         }
     }
 }
