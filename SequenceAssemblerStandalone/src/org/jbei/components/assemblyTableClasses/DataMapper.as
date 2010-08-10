@@ -1,8 +1,9 @@
 package org.jbei.components.assemblyTableClasses
 {
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
-    import org.jbei.registry.models.Bin;
+    import org.jbei.registry.models.FeatureTypeManager;
 
     /**
      * @author Zinovii Dmytriv
@@ -44,7 +45,7 @@ package org.jbei.components.assemblyTableClasses
             var numberOfItemsInBiggestBin:int = 0;
             
             for(var z:int = 0; z < assemblyProvider.bins.length; z++) {
-                var bin:Bin = assemblyProvider.bins[z] as Bin;
+                var bin:AssemblyBin = assemblyProvider.bins[z] as AssemblyBin;
                 
                 if(bin.items.length > numberOfItemsInBiggestBin) {
                     numberOfItemsInBiggestBin = bin.items.length;
@@ -52,8 +53,8 @@ package org.jbei.components.assemblyTableClasses
             }
             
             for(var i:int = 0; i < assemblyProvider.bins.length; i++) {
-                var currentBin:Bin = assemblyProvider.bins[i] as Bin;
-                var newColumn:Column = new Column(i, currentBin.featureType.name);
+                var currentBin:AssemblyBin = assemblyProvider.bins[i] as AssemblyBin;
+                var newColumn:Column = new Column(i, FeatureTypeManager.instance.nameByKey(currentBin.type));
                 var numberOfItemsInBin:int = currentBin.items.length;
                 
                 for(var j:int = 0; j < numberOfItemsInBiggestBin + 1; j++) {

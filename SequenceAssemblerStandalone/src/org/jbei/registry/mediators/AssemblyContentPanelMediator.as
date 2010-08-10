@@ -17,6 +17,7 @@ package org.jbei.registry.mediators
     import org.jbei.registry.Notifications;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
+    import org.jbei.registry.models.FeaturedDNASequence;
     import org.jbei.registry.utils.StandaloneUtils;
     import org.jbei.registry.view.ui.assembly.AssemblyContentPanel;
     import org.puremvc.as3.interfaces.INotification;
@@ -42,8 +43,8 @@ package org.jbei.registry.mediators
             
             assemblyContentPanel = viewComponent as AssemblyContentPanel;
             
-            assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
-            assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+            assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+            assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
             
             assemblyContentPanel.assemblyTable.addEventListener(CaretEvent.CARET_CHANGED, onAssemblyTableCaretChange);
             assemblyContentPanel.assemblyTable.addEventListener(SelectionEvent.SELECTION_CHANGED, onAssemblyTableSelectionChanged);
@@ -64,8 +65,8 @@ package org.jbei.registry.mediators
                 case Notifications.RANDOMIZE_ASSEMBLY_PROVIDER:
                     ApplicationFacade.getInstance().project = StandaloneUtils.standaloneRandomAssemblyProject();
                     
-                    assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
-                    assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+                    assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+                    assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
                     
                     break;
                 case Notifications.ASSEMBLY_COPY:
@@ -115,7 +116,7 @@ package org.jbei.registry.mediators
             selectedCell = event.cell;
             
             if(selectedCell is DataCell) {
-                assemblyContentPanel.propertiesSequenceTextArea.text = (selectedCell as DataCell).assemblyItem.sequence;
+                assemblyContentPanel.propertiesSequenceTextArea.text = (selectedCell as DataCell).assemblyItem.sequence.sequence;
             } else {
                 assemblyContentPanel.propertiesSequenceTextArea.text = "";
             }
@@ -139,7 +140,7 @@ package org.jbei.registry.mediators
             focusSelectedCell = selectedCell;
             
             if(focusSelectedCell is DataCell) {
-                selectedCellData = (focusSelectedCell as DataCell).assemblyItem.sequence;
+                selectedCellData = (focusSelectedCell as DataCell).assemblyItem.sequence.sequence;
             } else {
                 selectedCellData = "";
             }
@@ -151,7 +152,7 @@ package org.jbei.registry.mediators
                 return;
             }
             
-            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
             
             if(focusSelectedCell is DataCell) {
                 var selectedDataCell:DataCell = focusSelectedCell as DataCell;
@@ -163,7 +164,7 @@ package org.jbei.registry.mediators
                 var cellData:String = StringUtil.trim(currentCellData);
                 
                 if(cellData != "") {
-                    assemblyProvider.addAssemblyItem(assemblyProvider.bins[focusSelectedCell.column.index], new AssemblyItem(cellData));
+                    assemblyProvider.addAssemblyItem(assemblyProvider.bins[focusSelectedCell.column.index], new AssemblyItem(new FeaturedDNASequence("", cellData)));
                 }
             }
             

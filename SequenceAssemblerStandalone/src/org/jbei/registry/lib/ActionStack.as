@@ -32,9 +32,9 @@ package org.jbei.registry.lib
 			
 			var item:IMemento = undoStack[0] as IMemento;
 			undoStack.removeItemAt(0);
-			redoStack.addItemAt(ApplicationFacade.getInstance().project.assemblyProvider.createMemento(), 0);
+			redoStack.addItemAt(ApplicationFacade.getInstance().assemblyProvider.createMemento(), 0);
 			
-            ApplicationFacade.getInstance().project.assemblyProvider.setMemento(item);
+            ApplicationFacade.getInstance().assemblyProvider.setMemento(item);
 			
 			dispatchEvent(new ActionStackEvent(ActionStackEvent.ACTION_STACK_CHANGED));
 		}
@@ -45,9 +45,9 @@ package org.jbei.registry.lib
 			
 			var item:IMemento = redoStack[0] as IMemento;
 			redoStack.removeItemAt(0);
-			undoStack.addItemAt(ApplicationFacade.getInstance().project.assemblyProvider.createMemento(), 0);
+			undoStack.addItemAt(ApplicationFacade.getInstance().assemblyProvider.createMemento(), 0);
 			
-            ApplicationFacade.getInstance().project.assemblyProvider.setMemento(item);
+            ApplicationFacade.getInstance().assemblyProvider.setMemento(item);
 			
 			dispatchEvent(new ActionStackEvent(ActionStackEvent.ACTION_STACK_CHANGED));
 		}

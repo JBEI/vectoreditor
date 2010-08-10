@@ -1,10 +1,11 @@
 package org.jbei.registry.utils
 {
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.models.AssemblyProvider;
-    import org.jbei.registry.models.Bin;
-    import org.jbei.registry.models.FeatureType;
+    import org.jbei.registry.models.AssemblyTable;
+    import org.jbei.registry.models.FeaturedDNASequence;
 
     /**
      * @author Zinovii Dmytriv
@@ -13,43 +14,42 @@ package org.jbei.registry.utils
     {
         public static function standaloneAssemblyProject():AssemblyProject
         {
-            var assemblyProvider:AssemblyProvider = new AssemblyProvider();
+            var promotersBin:AssemblyBin = new AssemblyBin("promoter");
+            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctac")));
+            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctactatgatgcatgctagctagctagctagctagctac")));
+            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "gcatgctagctagctagctagtatgatgcatgctagctagctagctagctagctacgcatgctagctagctagctag")));
             
-            var promotersBin:Bin = new Bin(new FeatureType("Promoter", "promoter"));
-            promotersBin.addItem(new AssemblyItem("tatgatgcatgctagctagctagctagctagctac"));
-            promotersBin.addItem(new AssemblyItem("tatgatgcatgctagctagctagctagctagctactatgatgcatgctagctagctagctagctagctac"));
-            promotersBin.addItem(new AssemblyItem("gcatgctagctagctagctagtatgatgcatgctagctagctagctagctagctacgcatgctagctagctagctag"));
+            var rbsBin:AssemblyBin = new AssemblyBin("rbs");
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagct\tagctagctac")));
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "actagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "cctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "gctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "aactagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "ttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
-            var rbsBin:Bin = new Bin(new FeatureType("RBS", "rbs"));
-            rbsBin.addItem(new AssemblyItem("tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagct\tagctagctac"));
-            rbsBin.addItem(new AssemblyItem("actagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
-            rbsBin.addItem(new AssemblyItem("cctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
-            rbsBin.addItem(new AssemblyItem("gctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
-            rbsBin.addItem(new AssemblyItem("aactagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
-            rbsBin.addItem(new AssemblyItem("ttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
+            var geneBin:AssemblyBin = new AssemblyBin("gene");
+            geneBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "ccccttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            geneBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "aaaattctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
-            var geneBin:Bin = new Bin(new FeatureType("Gene", "gene"));
-            geneBin.addItem(new AssemblyItem("ccccttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
-            geneBin.addItem(new AssemblyItem("aaaattctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
+            var terminatorBin:AssemblyBin = new AssemblyBin("terminator");
+            terminatorBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tttttttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
-            var terminatorBin:Bin = new Bin(new FeatureType("Terminator", "terminator"));
-            terminatorBin.addItem(new AssemblyItem("tttttttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac"));
+            var assemblyTable:AssemblyTable = new AssemblyTable();
             
-            assemblyProvider.addBin(promotersBin);
-            assemblyProvider.addBin(rbsBin);
-            assemblyProvider.addBin(geneBin);
-            assemblyProvider.addBin(terminatorBin);
+            assemblyTable.items.addItem(promotersBin);
+            assemblyTable.items.addItem(rbsBin);
+            assemblyTable.items.addItem(geneBin);
+            assemblyTable.items.addItem(terminatorBin);
             
             var newAssemblyProject:AssemblyProject = new AssemblyProject();
-            //newAssemblyProject.uuid = "asdf";
-            newAssemblyProject.assemblyProvider = assemblyProvider;
+            newAssemblyProject.assemblyTable = assemblyTable;
             
             return newAssemblyProject;
         }
         
         public static function standaloneRandomAssemblyProject():AssemblyProject
         {
-            var assemblyProvider:AssemblyProvider = new AssemblyProvider();
+            /*var assemblyProvider:AssemblyProvider = new AssemblyProvider();
             
             var maxBins:int = 15;
             
@@ -77,7 +77,8 @@ package org.jbei.registry.utils
             newAssemblyProject.uuid = "asdf";
             newAssemblyProject.assemblyProvider = assemblyProvider;
             
-            return newAssemblyProject;
+            return newAssemblyProject;*/
+            return null;
         }
     }
 }

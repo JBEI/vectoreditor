@@ -3,6 +3,7 @@ package org.jbei.registry.mediators
     import mx.containers.VBox;
     import mx.controls.Alert;
     
+    import org.jbei.components.AssemblyTable;
     import org.jbei.lib.ui.dialogs.ModalDialog;
     import org.jbei.lib.ui.dialogs.ModalDialogEvent;
     import org.jbei.lib.ui.dialogs.SimpleDialog;
@@ -14,6 +15,7 @@ package org.jbei.registry.mediators
     import org.jbei.registry.lib.AssemblyHelper;
     import org.jbei.registry.models.AssemblyProject;
     import org.jbei.registry.proxies.RegistryAPIProxy;
+    import org.jbei.registry.utils.AssemblyTableUtils;
     import org.jbei.registry.view.ui.MainPanel;
     import org.jbei.registry.view.ui.assembly.AssemblyPanel;
     import org.jbei.registry.view.ui.dialogs.AboutDialogForm;
@@ -151,6 +153,8 @@ package org.jbei.registry.mediators
         // Event Handlers
         private function onCreateProjectPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
+            ApplicationFacade.getInstance().project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
+            
             var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
             
             proxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
@@ -158,6 +162,8 @@ package org.jbei.registry.mediators
         
         private function onPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
+            ApplicationFacade.getInstance().project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
+            
             var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
             
             if(ApplicationFacade.getInstance().project.uuid != null && ApplicationFacade.getInstance().project.uuid != "") {
@@ -219,11 +225,11 @@ package org.jbei.registry.mediators
         
         private function runAssembly():void
         {
-            if(!ApplicationFacade.getInstance().project.assemblyProvider) {
+            if(!ApplicationFacade.getInstance().assemblyProvider) {
                 return;
             }
             
-            ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().project.assemblyProvider);
+            ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().assemblyProvider);
             
             if(ApplicationFacade.getInstance().resultPermutations) {
                 sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);

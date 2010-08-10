@@ -3,6 +3,7 @@ package org.jbei.registry.models
     /**
      * @author Zinovii Dmytriv
      */
+    [RemoteClass(alias="org.jbei.ice.lib.vo.AssemblyProject")]
     public class AssemblyProject
     {
         private var _name:String;
@@ -10,19 +11,19 @@ package org.jbei.registry.models
         private var _uuid:String;
         private var _ownerName:String;
         private var _ownerEmail:String;
-        private var _assemblyProvider:AssemblyProvider;
+        private var _assemblyTable:AssemblyTable;
         private var _creationTime:Date;
         private var _modificationTime:Date;
         
         // Contructor
-        public function AssemblyProject(name:String = "", description:String = "", uuid:String = "", ownerName:String = "", ownerEmail:String = "", assemblyProvider:AssemblyProvider = null, creationTime:Date = null, modificationTime:Date = null)
+        public function AssemblyProject(name:String = "", description:String = "", uuid:String = "", ownerName:String = "", ownerEmail:String = "", assemblyTable:AssemblyTable = null, creationTime:Date = null, modificationTime:Date = null)
         {
             _name = name;
             _description = description;
             _uuid = uuid;
             _ownerName = ownerName;
             _ownerEmail = ownerEmail;
-            _assemblyProvider = assemblyProvider;
+            _assemblyTable = assemblyTable;
             _creationTime = creationTime;
             _modificationTime = modificationTime;
         }
@@ -78,14 +79,14 @@ package org.jbei.registry.models
             _ownerEmail = value;
         }
         
-        public function get assemblyProvider():AssemblyProvider
+        public function get assemblyTable():AssemblyTable
         {
-            return _assemblyProvider;
+            return _assemblyTable;
         }
         
-        public function set assemblyProvider(value:AssemblyProvider):void
+        public function set assemblyTable(value:AssemblyTable):void
         {
-            _assemblyProvider = value;
+            _assemblyTable = value;
         }
         
         public function get creationTime():Date

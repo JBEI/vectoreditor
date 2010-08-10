@@ -13,6 +13,7 @@ package org.jbei.registry
     import org.jbei.registry.models.AssemblyProviderMemento;
     import org.jbei.registry.models.PermutationSet;
     import org.jbei.registry.proxies.RegistryAPIProxy;
+    import org.jbei.registry.utils.AssemblyTableUtils;
     import org.jbei.registry.utils.StandaloneAPIProxy;
     import org.jbei.registry.utils.StandaloneUtils;
     import org.jbei.registry.view.ui.MainPanel;
@@ -28,6 +29,7 @@ package org.jbei.registry
         private var initialized:Boolean = false;
         
         private var _project:AssemblyProject;
+        private var _assemblyProvider:AssemblyProvider;
         private var _resultPermutations:PermutationSet;
         private var _sessionId:String;
         private var _serviceProxy:RegistryAPIProxy;
@@ -51,9 +53,23 @@ package org.jbei.registry
         {
             _project = value;
             
-            if(_project && _project.assemblyProvider) {
-                _project.assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
-                _project.assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, onAssemblyProviderChanging);
+            if(_project && _project.assemblyTable) {
+                assemblyProvider = AssemblyTableUtils.assemblyTableToAssemblyProvider(_project.assemblyTable);
+            }
+        }
+        
+        public function get assemblyProvider():AssemblyProvider
+        {
+            return _assemblyProvider;
+        }
+        
+        public function set assemblyProvider(value:AssemblyProvider):void
+        {
+            _assemblyProvider = value;
+            
+            if(_assemblyProvider) {
+                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
+                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, onAssemblyProviderChanging);
             }
         }
         

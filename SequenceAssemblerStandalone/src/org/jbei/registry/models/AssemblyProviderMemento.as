@@ -7,10 +7,10 @@ package org.jbei.registry.models
      */
     public class AssemblyProviderMemento implements IMemento
     {
-        public var bins:Vector.<Bin>;
+        public var bins:Vector.<AssemblyBin>;
         
         // Constructor
-        public function AssemblyProviderMemento(bins:Vector.<Bin>)
+        public function AssemblyProviderMemento(bins:Vector.<AssemblyBin>)
         {
             this.bins = bins;
         }

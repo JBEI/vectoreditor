@@ -50,12 +50,12 @@ package org.jbei.registry.mediators
         // Private Methods
         private function updateResultsPermutationsTable(resultPermutations:PermutationSet):void
         {
-            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().project.assemblyProvider;
+            var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
             
             var columns:Array = new Array();
             
             for(var i:int = 0; i < assemblyProvider.bins.length; i++) {
-                var dataGridColumn:DataGridColumn = new DataGridColumn(assemblyProvider.bins[i].featureType.name);
+                var dataGridColumn:DataGridColumn = new DataGridColumn(assemblyProvider.bins[i].type);
                 
                 dataGridColumn.dataField = "col" + String(i);
                 dataGridColumn.sortable = false;

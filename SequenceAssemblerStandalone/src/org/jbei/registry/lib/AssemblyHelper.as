@@ -2,9 +2,9 @@ package org.jbei.registry.lib
 {
     import mx.utils.StringUtil;
     
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
-    import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.Permutation;
     import org.jbei.registry.models.PermutationSet;
 
@@ -42,7 +42,7 @@ package org.jbei.registry.lib
                 }
             }
             
-            var currentBin:Bin = assemblyProvider.bins[binIndex] as Bin;
+            var currentBin:AssemblyBin = assemblyProvider.bins[binIndex] as AssemblyBin;
             var binSize:int = currentBin.items.length;
             
             if(binSize > 0) {

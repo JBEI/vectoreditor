@@ -11,7 +11,7 @@ package org.jbei.registry.models
      */
     public class AssemblyProvider implements IOriginator
     {
-        private var _bins:Vector.<Bin>;
+        private var _bins:Vector.<AssemblyBin>;
         
         private var _manualUpdateStarted:Boolean = false;
         
@@ -20,11 +20,11 @@ package org.jbei.registry.models
         // Constructor
         public function AssemblyProvider()
         {
-            _bins = new Vector.<Bin>();
+            _bins = new Vector.<AssemblyBin>();
         }
         
         // Properties
-        public final function get bins():Vector.<Bin>
+        public final function get bins():Vector.<AssemblyBin>
         {
             return _bins;
         }
@@ -37,11 +37,11 @@ package org.jbei.registry.models
         // Public Methods: IOriginator implementation
         public function createMemento():IMemento
         {
-            var clonedBins:Vector.<Bin> = new Vector.<Bin>();
+            var clonedBins:Vector.<AssemblyBin> = new Vector.<AssemblyBin>();
             
             if(_bins && _bins.length > 0) {
                 for(var i:int = 0; i < _bins.length; i++) {
-                    clonedBins.push((_bins[i] as Bin).clone());
+                    clonedBins.push((_bins[i] as AssemblyBin).clone());
                 }
             }
             
@@ -92,7 +92,7 @@ package org.jbei.registry.models
             }
         }
         
-        public function addBin(bin:Bin, quiet:Boolean = false):void
+        public function addBin(bin:AssemblyBin, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_ADD, createMemento()));
@@ -105,7 +105,7 @@ package org.jbei.registry.models
             }
         }
         
-        public function insertBin(bin:Bin, position:int, quiet:Boolean = false):void
+        public function insertBin(bin:AssemblyBin, position:int, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_ADD, createMemento()));
@@ -118,7 +118,7 @@ package org.jbei.registry.models
             }
         }
         
-        public function removeBin(bin:Bin, quiet:Boolean = false):void
+        public function removeBin(bin:AssemblyBin, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_REMOVE, createMemento()));
@@ -135,7 +135,7 @@ package org.jbei.registry.models
             }
         }
         
-        public function moveBin(bin:Bin, newPosition:int, quiet:Boolean = false):void
+        public function moveBin(bin:AssemblyBin, newPosition:int, quiet:Boolean = false):void
         {
             if(bin == null) {
                 return;
@@ -159,20 +159,20 @@ package org.jbei.registry.models
             }
         }
         
-        public function changeBinType(bin:Bin, newFeatureType:FeatureType, quiet:Boolean = false):void
+        public function changeBinType(bin:AssemblyBin, newType:String, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE, createMemento()));
             }
             
-            bin.featureType = newFeatureType;
+            bin.type = newType;
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE));
             }
         }
         
-        public function deleteAssemblyItem(bin:Bin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
+        public function deleteAssemblyItem(bin:AssemblyBin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_BIN_CHANGE_TYPE, createMemento()));
@@ -191,20 +191,20 @@ package org.jbei.registry.models
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_ITEM_UPDATE, createMemento()));
             }
             
-            assemblyItem.sequence = sequence;
+            assemblyItem.sequence = new FeaturedDNASequence("", sequence);
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_ITEM_UPDATE));
             }
         }
         
-        public function addAssemblyItem(bin:Bin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
+        public function addAssemblyItem(bin:AssemblyBin, assemblyItem:AssemblyItem, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_ITEM_UPDATE, createMemento()));
             }
             
-            bin.items.push(assemblyItem);
+            bin.items.addItem(assemblyItem);
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_ITEM_UPDATE));

@@ -24,8 +24,7 @@ package org.jbei.components.assemblyTableClasses
     import mx.managers.ISystemManager;
     import mx.managers.PopUpManager;
     
-    import org.jbei.registry.models.Bin;
-    import org.jbei.registry.models.FeatureTypeManager;
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.utils.SystemUtils;
     
     /**
@@ -244,16 +243,16 @@ package org.jbei.components.assemblyTableClasses
         
         private function onInsertOneLeftContextMenuItemClick(event:ContextMenuEvent):void
         {
-            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            var newAssemblyBin:AssemblyBin = new AssemblyBin("general");
             
-            contentHolder.assemblyProvider.insertBin(newBin, column.index == 0 ? 0 : column.index);
+            contentHolder.assemblyProvider.insertBin(newAssemblyBin, column.index == 0 ? 0 : column.index);
         }
         
         private function onInsertOneRightContextMenuItemClick(event:ContextMenuEvent):void
         {
-            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            var newAssemblyBin:AssemblyBin = new AssemblyBin("general");
             
-            contentHolder.assemblyProvider.insertBin(newBin, column.index + 1);
+            contentHolder.assemblyProvider.insertBin(newAssemblyBin, column.index + 1);
         }
         
         private function onDeleteColumnContextMenuItemClick(event:ContextMenuEvent):void

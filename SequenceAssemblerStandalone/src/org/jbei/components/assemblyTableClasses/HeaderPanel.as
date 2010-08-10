@@ -13,7 +13,7 @@ package org.jbei.components.assemblyTableClasses
     import mx.events.IndexChangedEvent;
     import mx.styles.StyleManager;
     
-    import org.jbei.registry.models.Bin;
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.FeatureTypeManager;
     
     /**
@@ -194,7 +194,7 @@ package org.jbei.components.assemblyTableClasses
                             dropIndex = columnHeaders.length - 1; // last
                         }
                         
-                        var dragBin:Bin = contentHolder.assemblyProvider.bins[dragIndex];
+                        var dragBin:AssemblyBin = contentHolder.assemblyProvider.bins[dragIndex];
                         
                         contentHolder.assemblyProvider.moveBin(dragBin, dropIndex);
                     }
@@ -220,7 +220,7 @@ package org.jbei.components.assemblyTableClasses
         
         private function onHeaderPlusButtonMouseClick(event:MouseEvent):void
         {
-            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            var newBin:AssemblyBin = new AssemblyBin("general");
             
             contentHolder.assemblyProvider.addBin(newBin);
         }

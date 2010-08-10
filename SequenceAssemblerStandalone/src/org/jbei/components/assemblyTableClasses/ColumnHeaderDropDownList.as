@@ -1,11 +1,12 @@
 package org.jbei.components.assemblyTableClasses
 {
+    import flash.utils.Dictionary;
+    
     import mx.collections.ArrayCollection;
     import mx.controls.List;
     import mx.core.UIComponent;
     import mx.events.ListEvent;
     
-    import org.jbei.registry.models.FeatureType;
     import org.jbei.registry.models.FeatureTypeManager;
     
     /**
@@ -95,12 +96,10 @@ package org.jbei.components.assemblyTableClasses
         {
             types = new ArrayCollection();
             
-            var featureTypes:Vector.<FeatureType> = FeatureTypeManager.instance.featureTypes;
+            var featureTypes:Dictionary = FeatureTypeManager.instance.types;
             
-            for(var i:int = 0; i < featureTypes.length; i++) {
-                var featureType:FeatureType = featureTypes[i] as FeatureType;
-                
-                types.addItem({value : featureType.key, name : featureType.name});
+            for(var key:String in featureTypes) {
+                types.addItem({value : key, name : featureTypes[key]});
             }
         }
         

@@ -23,9 +23,9 @@ package org.jbei.components.assemblyTableClasses
     import mx.utils.StringUtil;
     
     import org.jbei.components.AssemblyTable;
+    import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProvider;
-    import org.jbei.registry.models.Bin;
     import org.jbei.registry.models.FeatureTypeManager;
     
     /**
@@ -213,7 +213,7 @@ package org.jbei.components.assemblyTableClasses
         
         public function changeBinType(binIndex:int, newType:String):void
         {
-            _assemblyProvider.changeBinType(_assemblyProvider.bins[binIndex], FeatureTypeManager.instance.getTypeByValue(newType));
+            _assemblyProvider.changeBinType(_assemblyProvider.bins[binIndex], newType);
         }
 
         public function getColumnRendererByIndex(index:int):ColumnRenderer
@@ -473,7 +473,7 @@ package org.jbei.components.assemblyTableClasses
         
         private function onAddColumnContextMenuItemClick(event:ContextMenuEvent):void
         {
-            var newBin:Bin = new Bin(FeatureTypeManager.instance.getTypeByValue("general"));
+            var newBin:AssemblyBin = new AssemblyBin("general");
             
             _assemblyProvider.addBin(newBin);
         }
@@ -1050,12 +1050,12 @@ package org.jbei.components.assemblyTableClasses
             
             for(var i:int = 0; i < pasteAssemblyItems.length; i++) {
                 if(startingColumnIndex + i >= _assemblyProvider.bins.length) { 
-                    _assemblyProvider.bins.push(new Bin(FeatureTypeManager.instance.getTypeByValue("general")));
+                    _assemblyProvider.bins.push(new AssemblyBin("general"));
                 }
                 
                 for(var j:int = 0; j < pasteAssemblyItems[i].length; j++) {
                     if(startingCellIndex + j >= _assemblyProvider.bins[startingColumnIndex + i].items.length) {
-                        _assemblyProvider.bins[startingColumnIndex + i].items.push(pasteAssemblyItems[i][j]);
+                        _assemblyProvider.bins[startingColumnIndex + i].items.addItem(pasteAssemblyItems[i][j]);
                     } else {
                         _assemblyProvider.bins[startingColumnIndex + i].items[startingCellIndex + j] = pasteAssemblyItems[i][j];
                     }

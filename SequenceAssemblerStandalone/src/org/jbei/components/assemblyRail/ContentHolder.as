@@ -124,7 +124,7 @@ package org.jbei.components.assemblyRail
             }
             
             for(var i:int = 0; i < _assemblyProvider.bins.length; i++) {
-                var newWidget:ItemWidget = new ItemWidget(_assemblyProvider.bins[i].featureType.key);
+                var newWidget:ItemWidget = new ItemWidget(_assemblyProvider.bins[i].type);
                 
                 widgets.push(newWidget);
                 
