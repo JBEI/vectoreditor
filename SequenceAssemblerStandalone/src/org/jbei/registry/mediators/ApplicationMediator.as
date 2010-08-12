@@ -155,21 +155,17 @@ package org.jbei.registry.mediators
         {
             ApplicationFacade.getInstance().project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
             
-            var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
-            
-            proxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+            ApplicationFacade.getInstance().serviceProxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
         }
         
         private function onPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
             ApplicationFacade.getInstance().project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
             
-            var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
-            
             if(ApplicationFacade.getInstance().project.uuid != null && ApplicationFacade.getInstance().project.uuid != "") {
-                proxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+                ApplicationFacade.getInstance().serviceProxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
             } else {
-                proxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
+                ApplicationFacade.getInstance().serviceProxy.createAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project);
             }
         }
         
@@ -265,6 +261,7 @@ package org.jbei.registry.mediators
         private function saveProject():void
         {
             var project:AssemblyProject = ApplicationFacade.getInstance().project;
+            project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
             
             if(project.uuid == null || project.uuid == "") { // project not saved
                 var createProjectPropertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, project);
@@ -272,15 +269,14 @@ package org.jbei.registry.mediators
                 createProjectPropertiesDialog.addEventListener(ModalDialogEvent.SUBMIT, onCreateProjectPropertiesDialogSubmit);
                 createProjectPropertiesDialog.open();
             } else { // project was saved
-                var proxy:RegistryAPIProxy = ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
-                
-                proxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, project);
+                ApplicationFacade.getInstance().serviceProxy.saveAssemblyProject(ApplicationFacade.getInstance().sessionId, project);
             }
         }
         
         private function saveAsProject():void
         {
             var project:AssemblyProject = ApplicationFacade.getInstance().project;
+            project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
             
             var createProjectPropertiesDialog:ModalDialog = new ModalDialog(PropertiesDialogForm, project);
             createProjectPropertiesDialog.title = "Save As ...";

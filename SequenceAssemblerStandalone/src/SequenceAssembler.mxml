@@ -6,6 +6,8 @@
             import org.jbei.lib.utils.LoggerEvent;
             import org.jbei.registry.ApplicationFacade;
             import org.jbei.registry.Notifications;
+            import org.jbei.registry.models.AssemblyProject;
+            import org.jbei.registry.models.AssemblyTable;
             
             // Event Handlers
             private function onCreationComplete(event:Event):void
@@ -36,6 +38,17 @@
                         facade.sendNotification(Notifications.APPLICATION_FAILURE, "Parameter sessionId is mandatory!");
                         
                         return;
+                    }
+                    
+                    if(Application.application.parameters.projectId && (Application.application.parameters.projectId as String).length > 0) {
+                        facade.fetchProject(Application.application.parameters.projectId);
+                        
+                        Logger.getInstance().info("Project ID: " + facade.projectId);
+                    } else {
+                        var newAssemblyProject:AssemblyProject = new AssemblyProject();
+                        newAssemblyProject.assemblyTable = new AssemblyTable();
+                        
+                        facade.loadProject(newAssemblyProject);
                     }
                 }
             }

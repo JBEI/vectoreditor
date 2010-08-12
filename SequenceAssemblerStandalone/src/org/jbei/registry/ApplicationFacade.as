@@ -32,6 +32,7 @@ package org.jbei.registry
         private var _assemblyProvider:AssemblyProvider;
         private var _resultPermutations:PermutationSet;
         private var _sessionId:String;
+        private var _projectId:String;
         private var _serviceProxy:RegistryAPIProxy;
         private var _actionStack:ActionStack;
         
@@ -40,7 +41,13 @@ package org.jbei.registry
         {
             super();
             
-            project = StandaloneUtils.standaloneAssemblyProject();
+            CONFIG::registryEdition {
+                loadProject(new AssemblyProject());
+            }
+            
+            CONFIG::standalone {
+                loadProject(StandaloneUtils.standaloneAssemblyProject());
+            }
         }
         
         // Properties
@@ -49,28 +56,9 @@ package org.jbei.registry
             return _project;
         }
         
-        public function set project(value:AssemblyProject):void
-        {
-            _project = value;
-            
-            if(_project && _project.assemblyTable) {
-                assemblyProvider = AssemblyTableUtils.assemblyTableToAssemblyProvider(_project.assemblyTable);
-            }
-        }
-        
         public function get assemblyProvider():AssemblyProvider
         {
             return _assemblyProvider;
-        }
-        
-        public function set assemblyProvider(value:AssemblyProvider):void
-        {
-            _assemblyProvider = value;
-            
-            if(_assemblyProvider) {
-                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
-                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, onAssemblyProviderChanging);
-            }
         }
         
         public function get sessionId():String
@@ -81,6 +69,11 @@ package org.jbei.registry
         public function set sessionId(value:String):void
         {
             _sessionId = value;
+        }
+        
+        public function get projectId():String
+        {
+            return _projectId;
         }
         
         public function get resultPermutations():PermutationSet
@@ -145,6 +138,22 @@ package org.jbei.registry
             sendNotification(Notifications.SWITCH_TO_ASSEMBLY_VIEW);
         }
         
+        public function fetchProject(projectId:String):void
+        {
+            _projectId = projectId;
+            
+            _serviceProxy.getAssemblyProject(_sessionId, _projectId);
+        }
+        
+        public function loadProject(assemblyProject:AssemblyProject):void
+        {
+            _project = assemblyProject;
+            
+            if(_project && _project.assemblyTable) {
+                loadAssemblyProvider(AssemblyTableUtils.assemblyTableToAssemblyProvider(_project.assemblyTable));
+            }
+        }
+        
         // Event Handlers
         private function onAssemblyProviderChanged(event:AssemblyProviderEvent):void
         {
@@ -163,6 +172,19 @@ package org.jbei.registry
         private function onActionStackChanged(event:ActionStackEvent):void
         {
             sendNotification(Notifications.ACTION_STACK_CHANGED);
+        }
+        
+        // Private Methods
+        private function loadAssemblyProvider(assemblyProvider:AssemblyProvider):void
+        {
+            _assemblyProvider = assemblyProvider;
+            
+            if(_assemblyProvider) {
+                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, onAssemblyProviderChanged);
+                _assemblyProvider.addEventListener(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, onAssemblyProviderChanging);
+                
+                sendNotification(Notifications.ASSEMBLY_PROVIDER_CHANGED);
+            }
         }
     }
 }

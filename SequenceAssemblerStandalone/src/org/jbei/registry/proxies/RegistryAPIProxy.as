@@ -4,6 +4,7 @@ package org.jbei.registry.proxies
     import mx.rpc.events.InvokeEvent;
     import mx.rpc.events.ResultEvent;
     
+    import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.models.AssemblyProject;
 
@@ -73,6 +74,10 @@ package org.jbei.registry.proxies
             }
             
             sendNotification(Notifications.UNLOCK);
+            
+            ApplicationFacade.getInstance().loadProject(event.result as AssemblyProject);
+            
+            sendNotification(Notifications.GLOBAL_ACTION_MESSAGE, "Project created successfully");
         }
         
         private function onGetAssemblyProjectResult(event:ResultEvent):void
@@ -84,6 +89,10 @@ package org.jbei.registry.proxies
             }
             
             sendNotification(Notifications.UNLOCK);
+            
+            ApplicationFacade.getInstance().loadProject(event.result as AssemblyProject);
+            
+            sendNotification(Notifications.GLOBAL_ACTION_MESSAGE, "Project fetched successfully");
         }
         
         private function onSaveAssemblyProjectResult(event:ResultEvent):void
@@ -95,6 +104,10 @@ package org.jbei.registry.proxies
             }
             
             sendNotification(Notifications.UNLOCK);
+            
+            ApplicationFacade.getInstance().loadProject(event.result as AssemblyProject);
+            
+            sendNotification(Notifications.GLOBAL_ACTION_MESSAGE, "Project saved successfully");
         }
         
         private function onAssembleAssemblyProjectResult(event:ResultEvent):void

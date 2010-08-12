@@ -63,7 +63,7 @@ package org.jbei.registry.mediators
         {
             switch(notification.getName()) {
                 case Notifications.RANDOMIZE_ASSEMBLY_PROVIDER:
-                    ApplicationFacade.getInstance().project = StandaloneUtils.standaloneRandomAssemblyProject();
+                    ApplicationFacade.getInstance().loadProject(StandaloneUtils.standaloneRandomAssemblyProject());
                     
                     assemblyContentPanel.assemblyTable.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
                     assemblyContentPanel.assemblyRail.assemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
@@ -91,6 +91,13 @@ package org.jbei.registry.mediators
                     assemblyContentPanel.assemblyTable.selectAll();
                     
                     break;
+                case Notifications.ASSEMBLY_PROVIDER_CHANGED:
+                    var assemblyProvider:AssemblyProvider = ApplicationFacade.getInstance().assemblyProvider;
+                    
+                    assemblyContentPanel.assemblyTable.assemblyProvider = assemblyProvider;
+                    assemblyContentPanel.assemblyRail.assemblyProvider = assemblyProvider;
+                    
+                    break;
             }
         }
         
@@ -101,7 +108,8 @@ package org.jbei.registry.mediators
                 , Notifications.ASSEMBLY_CUT
                 , Notifications.ASSEMBLY_PASTE
                 , Notifications.ASSEMBLY_SELECT_ALL
-                , Notifications.ASSEMBLY_DELETE];
+                , Notifications.ASSEMBLY_DELETE
+                , Notifications.ASSEMBLY_PROVIDER_CHANGED];
         }
         
         // Event Handler

@@ -3,6 +3,8 @@ package org.jbei.components.assemblyTableClasses
     import flash.utils.Dictionary;
     
     import mx.collections.ArrayCollection;
+    import mx.collections.Sort;
+    import mx.collections.SortField;
     import mx.controls.List;
     import mx.core.UIComponent;
     import mx.events.ListEvent;
@@ -101,6 +103,12 @@ package org.jbei.components.assemblyTableClasses
             for(var key:String in featureTypes) {
                 types.addItem({value : key, name : featureTypes[key]});
             }
+            
+            var sort:Sort = new Sort();
+            sort.fields = [new SortField("value", true)];
+            
+            types.sort = sort;
+            types.refresh();
         }
         
         private function getTypeIndex(type:String):int
