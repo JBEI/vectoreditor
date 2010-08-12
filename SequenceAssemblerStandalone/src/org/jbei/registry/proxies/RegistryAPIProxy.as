@@ -7,6 +7,7 @@ package org.jbei.registry.proxies
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.models.AssemblyProject;
+    import org.jbei.registry.models.PermutationSet;
 
     /**
      * @author Zinovii Dmytriv
@@ -112,9 +113,18 @@ package org.jbei.registry.proxies
         
         private function onAssembleAssemblyProjectResult(event:ResultEvent):void
         {
-            // Not implemented
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to assemble project!");
+                
+                return;
+            }
             
             sendNotification(Notifications.UNLOCK);
+            
+            ApplicationFacade.getInstance().resultPermutations = event.result as PermutationSet;
+            
+            sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
+            sendNotification(Notifications.SWITCH_TO_RESULTS_VIEW);
         }
     }
 }

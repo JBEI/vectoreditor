@@ -14,6 +14,7 @@ package org.jbei.registry.mediators
     import org.jbei.registry.Notifications;
     import org.jbei.registry.lib.AssemblyHelper;
     import org.jbei.registry.models.AssemblyProject;
+    import org.jbei.registry.models.AssemblyProvider;
     import org.jbei.registry.proxies.RegistryAPIProxy;
     import org.jbei.registry.utils.AssemblyTableUtils;
     import org.jbei.registry.view.ui.MainPanel;
@@ -225,11 +226,19 @@ package org.jbei.registry.mediators
                 return;
             }
             
-            ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().assemblyProvider);
+            CONFIG::standalone {
+                ApplicationFacade.getInstance().resultPermutations = AssemblyHelper.buildPermutationSet(ApplicationFacade.getInstance().assemblyProvider);
+                
+                if(ApplicationFacade.getInstance().resultPermutations) {
+                    sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
+                    sendNotification(Notifications.SWITCH_TO_RESULTS_VIEW);
+                }
+            }
             
-            if(ApplicationFacade.getInstance().resultPermutations) {
-                sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
-                sendNotification(Notifications.SWITCH_TO_RESULTS_VIEW);
+            CONFIG::registryEdition {
+                ApplicationFacade.getInstance().project.assemblyTable = AssemblyTableUtils.assemblyProviderToAssemblyTable(ApplicationFacade.getInstance().assemblyProvider);
+                
+                ApplicationFacade.getInstance().serviceProxy.assembleAssemblyProject(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().project); 
             }
         }
         

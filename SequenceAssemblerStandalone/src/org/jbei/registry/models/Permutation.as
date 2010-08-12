@@ -1,11 +1,14 @@
 package org.jbei.registry.models
 {
+    import mx.collections.ArrayCollection;
+
     /**
      * @author Zinovii Dmytriv
      */
+    [RemoteClass(alias="org.jbei.ice.lib.vo.Permutation")]
     public class Permutation
     {
-        private var _items:Vector.<AssemblyItem> = new Vector.<AssemblyItem>();
+        private var _items:ArrayCollection /* of AssemblyItem */ = new ArrayCollection();
         
         // Constructor
         public function Permutation()
@@ -13,15 +16,20 @@ package org.jbei.registry.models
         }
         
         // Properties
-        public function get items():Vector.<AssemblyItem>
+        public function get items():ArrayCollection /* of AssemblyItem */
         {
             return _items;
+        }
+        
+        public function set items(value:ArrayCollection /* of AssemblyItem */):void
+        {
+            _items = value;
         }
         
         // Public Methods
         public function addAssemblyItem(assemblyItem:AssemblyItem):void
         {
-            _items.push(assemblyItem);
+            _items.addItem(assemblyItem);
         }
         
         public function clone():Permutation
