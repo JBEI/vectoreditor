@@ -1,5 +1,7 @@
 package org.jbei.registry.utils
 {
+    import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.dna.DNASequence;
     import org.jbei.registry.models.AssemblyBin;
     import org.jbei.registry.models.AssemblyItem;
     import org.jbei.registry.models.AssemblyProject;
@@ -15,24 +17,24 @@ package org.jbei.registry.utils
         public static function standaloneAssemblyProject():AssemblyProject
         {
             var promotersBin:AssemblyBin = new AssemblyBin("promoter");
-            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctac")));
-            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctactatgatgcatgctagctagctagctagctagctac")));
-            promotersBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "gcatgctagctagctagctagtatgatgcatgctagctagctagctagctagctacgcatgctagctagctagctag")));
+            promotersBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctac")));
+            promotersBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "tatgatgcatgctagctagctagctagctagctactatgatgcatgctagctagctagctagctagctac")));
+            promotersBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "gcatgctagctagctagctagtatgatgcatgctagctagctagctagctagctacgcatgctagctagctagctag")));
             
             var rbsBin:AssemblyBin = new AssemblyBin("rbs");
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagct\tagctagctac")));
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "actagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "cctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "gctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "aactagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
-            rbsBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "ttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "tctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "actagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "cctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "gctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "aactagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            rbsBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "ttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
             var geneBin:AssemblyBin = new AssemblyBin("gene");
-            geneBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "ccccttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
-            geneBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "aaaattctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            geneBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "ccccttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            geneBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "aaaattctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
             var terminatorBin:AssemblyBin = new AssemblyBin("terminator");
-            terminatorBin.addItem(new AssemblyItem(new FeaturedDNASequence("", "tttttttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
+            terminatorBin.addItem(new AssemblyItem("", new FeaturedDNASequence("", "tttttttctagctagctagctagctagctatatgatgcatgctagctagctagctagctagctactagctagctagctagctagctac")));
             
             var assemblyTable:AssemblyTable = new AssemblyTable();
             

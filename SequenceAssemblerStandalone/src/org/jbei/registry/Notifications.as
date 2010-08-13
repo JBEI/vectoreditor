@@ -42,5 +42,7 @@ package org.jbei.registry
         public static const GO_REPORT_BUG:String = "GO_REPORT_BUG";
         public static const SHOW_ABOUT_DIALOG:String = "SHOW_ABOUT_DIALOG";
         public static const SHOW_PROPERTIES_DIALOG:String = "SHOW_PROPERTIES_DIALOG";
+        
+        public static const PARSED_IMPORT_SEQUENCE_FILE:String = "PARSED_IMPORT_SEQUENCE_FILE";
 	}
 }

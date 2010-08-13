@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:components="org.jbei.components.*">
     <mx:HDividedBox width="100%" height="100%" paddingTop="8">
-        <mx:Panel title="Properties" height="100%" paddingLeft="5" paddingRight="5" width="250">
-            <mx:Label text="Sequence:" paddingBottom="0"/>
-            
-            <mx:TextArea id="propertiesSequenceTextArea" width="100%" height="200" />
-        </mx:Panel>
-        
         <mx:Panel title="Assembly Table" width="100%" height="100%">
             <mx:VBox width="100%" height="100%">
                 <components:AssemblyRail id="assemblyRail" width="100%" height="85" />
@@ -15,10 +9,36 @@
             </mx:VBox>
         </mx:Panel>
         
-        <mx:Panel title="Algorithms" width="250" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5">
-            <mx:ComboBox id="algorithmsComboBox" width="150"/>
+        <mx:VDividedBox width="35%" height="100%" minWidth="300">
+            <mx:Panel title="Properties" height="410" width="100%" paddingLeft="5" paddingRight="5" minHeight="410">
+                <mx:Label text="Name:" paddingBottom="0"/>
+                <mx:TextInput id="propertiesNameTextInput" width="100%" />
+                
+                <mx:Label text="Sequence:" paddingBottom="0"/>
+                <mx:TextArea id="propertiesSequenceTextArea" width="100%" height="200" />
+                
+                <mx:HBox width="100%">
+                    <mx:Spacer width="100%" />
+                    
+                    <mx:Button id="updatePropertiesButton" label="Update" width="85"/>
+                    <mx:Button id="clearPropertiesButton" label="Clear" width="85"/>
+                </mx:HBox>
+                
+                <mx:HRule width="100%" />
+                
+                <mx:HBox width="100%">
+                    <mx:Spacer width="100%" />
+                    
+                    <mx:Label text="Import from file: " />
+                    <mx:Button id="importPropertiesButton" label="Browse" width="85"/>
+                </mx:HBox>
+            </mx:Panel>
             
-            <mx:Button id="runButton" label="Run &gt;" />
-        </mx:Panel>
+            <mx:Panel title="Algorithms" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5">
+                <mx:ComboBox id="algorithmsComboBox" width="150"/>
+                
+                <mx:Button id="runButton" label="Run &gt;" />
+            </mx:Panel>
+        </mx:VDividedBox>
     </mx:HDividedBox>
 </mx:Box>

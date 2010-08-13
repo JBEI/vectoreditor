@@ -3,6 +3,8 @@ package org.jbei.registry.models
     import flash.events.Event;
     import flash.events.EventDispatcher;
     
+    import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.dna.DNASequence;
     import org.jbei.registry.lib.IMemento;
     import org.jbei.registry.lib.IOriginator;
     
@@ -185,13 +187,16 @@ package org.jbei.registry.models
             }
         }
         
-        public function updateAssemblyItem(assemblyItem:AssemblyItem, sequence:String, quiet:Boolean = false):void
+        public function updateAssemblyItem(assemblyItem:AssemblyItem, name:String = "", sequence:FeaturedDNASequence = null, original:String = "", meta:String = "", quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGING, AssemblyProviderEvent.KIND_ITEM_UPDATE, createMemento()));
             }
             
-            assemblyItem.sequence = new FeaturedDNASequence("", sequence);
+            assemblyItem.name = name;
+            assemblyItem.sequence = sequence;
+            assemblyItem.original = original;
+            assemblyItem.meta = meta;
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new AssemblyProviderEvent(AssemblyProviderEvent.ASSEMBLY_PROVIDER_CHANGED, AssemblyProviderEvent.KIND_ITEM_UPDATE));

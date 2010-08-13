@@ -1,22 +1,48 @@
 package org.jbei.registry.models
 {
+    import mx.collections.ArrayCollection;
+    
     /**
      * @author Zinovii Dmytriv
      */
     [RemoteClass(alias="org.jbei.ice.lib.vo.AssemblyItem")]
     public class AssemblyItem
     {
+        private var _name:String;
+        private var _original:String;
         private var _sequence:FeaturedDNASequence;
-        private var _originalSequence:String;
+        private var _meta:String;
         
         // Constructor
-        public function AssemblyItem(sequence:FeaturedDNASequence = null, originalSequence:String = "")
+        public function AssemblyItem(name:String = "", sequence:FeaturedDNASequence = null, original:String = "", meta:String = "")
         {
-            _originalSequence = originalSequence;
+            _name = name;
+            _original = original;
             _sequence = sequence;
+            _meta = meta;
         }
         
         // Properties
+        public function get name():String
+        {
+            return _name;
+        }
+        
+        public function set name(value:String):void
+        {
+            _name = value;
+        }
+        
+        public function get original():String
+        {
+            return _original;
+        }
+        
+        public function set original(value:String):void
+        {
+            _original = value;
+        }
+        
         public function get sequence():FeaturedDNASequence
         {
             return _sequence;
@@ -27,14 +53,14 @@ package org.jbei.registry.models
             _sequence = value;
         }
         
-        public function get originalSequence():String
+        public function get meta():String
         {
-            return _originalSequence;
+            return _meta;
         }
         
-        public function set originalSequence(value:String):void
+        public function set meta(value:String):void
         {
-            _originalSequence = value;
+            _meta = value;
         }
         
         // Public Methods
@@ -48,7 +74,7 @@ package org.jbei.registry.models
         * */
         public function clone():AssemblyItem
         {
-            return new AssemblyItem(_sequence, _originalSequence);
+            return new AssemblyItem(_name, _sequence, _original, _meta);
         }
     }
 }

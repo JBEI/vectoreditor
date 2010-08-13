@@ -60,7 +60,21 @@ package org.jbei.components.assemblyTableClasses
             if(!label) {
                 label = new Label();
                 
-                label.text = (cell as DataCell).assemblyItem.sequence.sequence;
+                var dataCell:DataCell = cell as DataCell;
+                
+                var itemName:String = dataCell.assemblyItem.name;
+                var itemSequence:String = dataCell.assemblyItem.sequence.sequence;
+                
+                if(itemName != null && itemName != "") {
+                    label.text = itemName;
+                    
+                    label.setStyle("fontWeight", "bold");
+                } else {
+                    label.text = (itemSequence.length > 100) ? (itemSequence.substr(0, 100) + "...") : itemSequence;
+                    
+                    label.setStyle("fontWeight", "normal");
+                }
+                
                 label.x = 3;
                 label.y = 3;
                 label.height = 30;

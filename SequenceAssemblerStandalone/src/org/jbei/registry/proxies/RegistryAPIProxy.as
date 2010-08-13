@@ -52,6 +52,13 @@ package org.jbei.registry.proxies
             service.assembleAssemblyProject(sessionId, project);
         }
         
+        public function parseSequenceFile(data:String):void
+        {
+            sendNotification(Notifications.LOCK, "Parsing sequence file ...");
+            
+            service.parseSequenceFile(data);
+        }
+        
         // Protected Methods
         protected override function onServiceFault(event:FaultEvent):void
         {
@@ -64,6 +71,7 @@ package org.jbei.registry.proxies
             service.getAssemblyProject.addEventListener(ResultEvent.RESULT, onGetAssemblyProjectResult);
             service.saveAssemblyProject.addEventListener(ResultEvent.RESULT, onSaveAssemblyProjectResult);
             service.assembleAssemblyProject.addEventListener(ResultEvent.RESULT, onAssembleAssemblyProjectResult);
+            service.parseSequenceFile.addEventListener(ResultEvent.RESULT, onParseSequenceFileResult);
         }
         
         // Private Methods: Response handlers
@@ -126,6 +134,13 @@ package org.jbei.registry.proxies
             
             sendNotification(Notifications.UPDATE_RESULTS_PERMUTATIONS_TABLE);
             sendNotification(Notifications.SWITCH_TO_RESULTS_VIEW);
+        }
+        
+        private function onParseSequenceFileResult(event:ResultEvent):void
+        {
+            sendNotification(Notifications.UNLOCK);
+            
+            sendNotification(Notifications.PARSED_IMPORT_SEQUENCE_FILE, event.result);
         }
     }
 }
