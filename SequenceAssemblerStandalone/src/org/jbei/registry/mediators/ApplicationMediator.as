@@ -2,6 +2,7 @@ package org.jbei.registry.mediators
 {
     import mx.containers.VBox;
     import mx.controls.Alert;
+    import mx.core.UIComponent;
     
     import org.jbei.components.AssemblyTable;
     import org.jbei.lib.ui.dialogs.ModalDialog;
@@ -81,6 +82,14 @@ package org.jbei.registry.mediators
                     unlockApplication();
                     
                     break;
+                case Notifications.SHOW_ACTION_PROGRESSBAR:
+                    showActionProgressBar(notification.getBody() as String);
+                    
+                    break;
+                case Notifications.HIDE_ACTION_PROGRESSBAR:
+                    hideActionProgressBar();
+                    
+                    break;
                 case Notifications.SWITCH_TO_ASSEMBLY_VIEW:
                     switchToAssemblyView();
                     
@@ -135,6 +144,8 @@ package org.jbei.registry.mediators
                 , Notifications.SAVE_AS_PROJECT
                 , Notifications.LOCK
                 , Notifications.UNLOCK
+                , Notifications.SHOW_ACTION_PROGRESSBAR
+                , Notifications.HIDE_ACTION_PROGRESSBAR
                 , Notifications.APPLICATION_FAILURE
                 , Notifications.GLOBAL_ACTION_MESSAGE
                 , Notifications.ASSEMBLY_ACTION_MESSAGE
@@ -178,16 +189,35 @@ package org.jbei.registry.mediators
         
         private function lockApplication(lockMessage:String = ""):void
         {
-            mainPanel.enabled = false;
+            mainPanel.assemblyPanel.enabled = false;
+            mainPanel.resultsPanel.enabled = false;
             
             if(lockMessage != null && lockMessage != "") {
                 sendNotification(Notifications.GLOBAL_ACTION_MESSAGE, lockMessage);
             }
+            
+            sendNotification(Notifications.SHOW_ACTION_PROGRESSBAR, lockMessage);
         }
         
         private function unlockApplication():void
         {
-            mainPanel.enabled = true;
+            mainPanel.assemblyPanel.enabled = true;
+            mainPanel.resultsPanel.enabled = true;
+            
+            sendNotification(Notifications.HIDE_ACTION_PROGRESSBAR);
+        }
+        
+        private function showActionProgressBar(message:String = ""):void
+        {
+            mainPanel.actionProgressBar.visible = true;
+            mainPanel.actionProgressBar.label = message;
+            mainPanel.actionProgressBar.x = mainPanel.width / 2 - mainPanel.actionProgressBar.width / 2;
+            mainPanel.actionProgressBar.y = mainPanel.height / 2 - mainPanel.actionProgressBar.height / 2;
+        }
+        
+        private function hideActionProgressBar():void
+        {
+            mainPanel.actionProgressBar.visible = false;
         }
         
         private function switchToAssemblyView():void

@@ -8,6 +8,8 @@ package org.jbei.registry
         public static const APPLICATION_FAILURE:String = "APPLICATION_FAILURE";
         public static const LOCK:String = "LOCK";
         public static const UNLOCK:String = "UNLOCK";
+        public static const SHOW_ACTION_PROGRESSBAR:String = "SHOW_ACTION_PROGRESSBAR";
+        public static const HIDE_ACTION_PROGRESSBAR:String = "HIDE_ACTION_PROGRESSBAR";
         
         public static const SWITCH_TO_ASSEMBLY_VIEW:String = "SWITCH_TO_ASSEMBLY_VIEW";
         public static const SWITCH_TO_RESULTS_VIEW:String = "SWITCH_TO_RESULTS_VIEW";

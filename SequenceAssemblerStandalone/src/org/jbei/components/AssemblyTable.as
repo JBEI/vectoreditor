@@ -249,6 +249,15 @@ package org.jbei.components
         {
             setScrollBarProperties(contentHolder.totalWidth, width, contentHolder.totalHeight, height);
             
+            var totalWidth:Number = contentHolder.totalWidth;
+            
+            // Hack to fix HScrollbar issue
+            if(verticalScrollBar && verticalScrollBar.visible) {
+                totalWidth += 20;
+            }
+            
+            setScrollBarProperties(totalWidth, width, contentHolder.totalHeight, height);
+            
             if(verticalScrollBar) {
                 verticalScrollBar.lineScrollSize = 20;
                 verticalScrollBar.pageScrollSize = verticalScrollBar.lineScrollSize * 10;

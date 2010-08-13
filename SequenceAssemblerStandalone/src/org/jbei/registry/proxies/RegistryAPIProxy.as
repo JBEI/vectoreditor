@@ -26,32 +26,33 @@ package org.jbei.registry.proxies
         // Public Methods
         public function createAssemblyProject(sessionId:String, project:AssemblyProject):void
         {
+            sendNotification(Notifications.LOCK, "Creating project on the server ...");
+            
             service.createAssemblyProject(sessionId, project);
         }
         
         public function getAssemblyProject(sessionId:String, projectId:String):void
         {
+            sendNotification(Notifications.LOCK, "Fetching project from the server ...");
+            
             service.getAssemblyProject(sessionId, projectId);
         }
         
         public function saveAssemblyProject(sessionId:String, project:AssemblyProject):void
         {
+            sendNotification(Notifications.LOCK, "Saving project to the server ...");
+            
             service.saveAssemblyProject(sessionId, project);
         }
         
         public function assembleAssemblyProject(sessionId:String, project:AssemblyProject):void
         {
+            sendNotification(Notifications.LOCK, "Assembling project ...");
+            
             service.assembleAssemblyProject(sessionId, project);
         }
         
         // Protected Methods
-        protected override function onServiceInvoke(event:InvokeEvent):void
-        {
-            super.onServiceInvoke(event);
-            
-            sendNotification(Notifications.LOCK);
-        }
-        
         protected override function onServiceFault(event:FaultEvent):void
         {
             sendNotification(Notifications.APPLICATION_FAILURE, "Service call failed!\n" + event.fault.faultString);
