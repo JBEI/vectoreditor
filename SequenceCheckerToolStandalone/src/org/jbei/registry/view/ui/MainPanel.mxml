@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="0" width="100%" height="100%" xmlns:ui="org.jbei.registry.view.ui.*">
+    <ui:MainMenu id="mainMenu" />
+    
+    <ui:MainControlBar id="mainControlBar" />
+    
+    <ui:MainContentPanel id="mainContentPanel" />
+    
+    <ui:MainStatusBar id="mainStatusBar" />
+</mx:VBox>

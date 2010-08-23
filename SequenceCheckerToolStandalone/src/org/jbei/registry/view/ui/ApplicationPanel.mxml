@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox width="100%" height="100%" borderThickness="0" dividerThickness="0.5" dividerAffordance="3" verticalGap="3" paddingBottom="0" paddingTop="0" paddingLeft="0" paddingRight="0" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ui="org.jbei.registry.view.ui.*">
+    <ui:MainPanel id="mainPanel" width="100%" height="100%"/>
+    
+    <mx:TextArea id="loggerTextArea" height="0" width="100%"/>
+    
+    <mx:ProgressBar id="actionProgressBar" indeterminate="true" minimum="0" maximum="100" visible="false" includeInLayout="false" />
+</mx:VDividedBox>

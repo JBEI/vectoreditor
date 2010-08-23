@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box creationComplete="onCreationComplete(event)" width="100%" borderThickness="0" paddingBottom="0" paddingTop="0" verticalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Script>
+        <![CDATA[
+            import mx.events.MenuEvent;
+            
+            import org.jbei.lib.ui.menu.MenuItem;
+            import org.jbei.lib.ui.menu.MenuItemEvent;
+            
+            // File
+            public static const SAVE:String = "Save";
+            public static const SAVE_AS:String = "SaveAs";
+            public static const IMPORT_SEQUENCE:String = "ImportSequence";
+            public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
+            
+            // Edit
+            public static const COPY:String = "Copy";
+            public static const SELECT_ALL:String = "SelectAll";
+            
+            // View
+            public static const CIRCULAR_VIEW:String = "Circular View";
+            public static const LINEAR_VIEW:String = "Linear View";
+            public static const SHOW_FEATURES:String = "Show Features";
+            
+            // About
+            public static const GO_REPORT_BUG_WEB_LINK:String = "GoReportBugWebLink";
+            public static const GO_SUGGEST_FEATURE_WEB_LINK:String = "GoSuggestFeatureWebLink";
+            public static const SHOW_ABOUT_DIALOG:String = "ShowAboutDialog";
+            
+            [Bindable]
+            private var menuItems:Array;
+            
+            private var menuItemsMap:Dictionary = new Dictionary();
+            
+            // Public Methods
+            public function updateSequenceViewType(type:String):void
+            {
+                if(type == "pie") {
+                    (menuItemsMap["circularViewMenuItem"] as MenuItem).toggled = true;
+                    (menuItemsMap["linearViewMenuItem"] as MenuItem).toggled = false;
+                } else if(type == "rail") {
+                    (menuItemsMap["circularViewMenuItem"] as MenuItem).toggled = false;
+                    (menuItemsMap["linearViewMenuItem"] as MenuItem).toggled = true;
+                }
+            }
+            
+            public function updateShowFeatures(active:Boolean):void
+            {
+                (menuItemsMap["showFeaturesMenuItem"] as MenuItem).toggled = active;
+            }
+            
+            public function updateCopy(active:Boolean):void
+            {
+                (menuItemsMap["copyMenuItem"] as MenuItem).enabled = active;
+            }
+            
+            // Event Handlers
+            private function onCreationComplete(event:Event):void
+            {
+                var separatorMenuItem:MenuItem = new MenuItem("", "", "separator");
+                
+                // File
+                var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
+                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
+                var saveAsMenuItem:MenuItem = new MenuItem("saveAsMenuItem", "Save As ...");
+                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Sequence");
+                var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
+                fileMenuItem.addSubItem(saveMenuItem);
+                fileMenuItem.addSubItem(saveAsMenuItem);
+                fileMenuItem.addSubItem(separatorMenuItem);
+                fileMenuItem.addSubItem(importSequenceMenuItem);
+                fileMenuItem.addSubItem(separatorMenuItem);
+                fileMenuItem.addSubItem(propertiesMenuItem);
+                
+                // Edit
+                var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
+                var copyMenuItem:MenuItem = new MenuItem("copyMenuItem", "Copy", "", false, false, false);
+                var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
+                editMenuItem.addSubItem(copyMenuItem);
+                editMenuItem.addSubItem(separatorMenuItem);
+                editMenuItem.addSubItem(selectAllMenuItem);
+                
+                // View
+                var viewMenuItem:MenuItem = new MenuItem("viewMenuItem", "View");
+                var circularViewMenuItem:MenuItem = new MenuItem("circularViewMenuItem", "Circular", "check", true);
+                var linearViewMenuItem:MenuItem = new MenuItem("linearViewMenuItem", "Linear", "check", false);
+                var showFeaturesMenuItem:MenuItem = new MenuItem("showFeaturesMenuItem", "Show Features", "check", true);
+                viewMenuItem.addSubItem(circularViewMenuItem);
+                viewMenuItem.addSubItem(linearViewMenuItem);
+                viewMenuItem.addSubItem(separatorMenuItem);
+                viewMenuItem.addSubItem(showFeaturesMenuItem);
+                
+                // Help
+                var helpMenuItem:MenuItem = new MenuItem("helpMenuItem", "Help");
+                var aboutMenuItem:MenuItem = new MenuItem("aboutMenuItem", "About");
+                var suggestFeatureMenuItem:MenuItem = new MenuItem("suggestFeatureMenuItem", "Suggest Feature");
+                var reportBugMenuItem:MenuItem = new MenuItem("reportBugMenuItem", "Report Bug");
+                helpMenuItem.addSubItem(suggestFeatureMenuItem);
+                helpMenuItem.addSubItem(reportBugMenuItem);
+                helpMenuItem.addSubItem(separatorMenuItem);
+                helpMenuItem.addSubItem(aboutMenuItem);
+                
+                menuItems = [fileMenuItem, editMenuItem, viewMenuItem, helpMenuItem];
+                
+                // File
+                menuItemsMap["fileMenuItem"] = fileMenuItem;
+                menuItemsMap["saveMenuItem"] = saveMenuItem;
+                menuItemsMap["saveAsMenuItem"] = saveAsMenuItem;
+                menuItemsMap["importSequenceMenuItem"] = importSequenceMenuItem;
+                menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
+                
+                // Edit
+                menuItemsMap["editMenuItem"] = editMenuItem;
+                menuItemsMap["copyMenuItem"] = copyMenuItem;
+                menuItemsMap["selectAllMenuItem"] = selectAllMenuItem;
+                
+                // View
+                menuItemsMap["viewMenuItem"] = viewMenuItem;
+                menuItemsMap["circularViewMenuItem"] = circularViewMenuItem;
+                menuItemsMap["linearViewMenuItem"] = linearViewMenuItem;
+                menuItemsMap["showFeaturesMenuItem"] = showFeaturesMenuItem;
+                
+                // Help
+                menuItemsMap["helpMenuItem"] = helpMenuItem;
+                menuItemsMap["suggestFeatureMenuItem"] = suggestFeatureMenuItem;
+                menuItemsMap["reportBugMenuItem"] = reportBugMenuItem;
+                menuItemsMap["aboutMenuItem"] = aboutMenuItem;
+            }
+            
+            private function onMenuItemClick(event:MenuEvent):void
+            {
+                var menuItem:MenuItem = event.item as MenuItem;
+                
+                if(menuItem.id == "copyMenuItem") {
+                    dispatchEvent(new MenuItemEvent(COPY, menuItem));
+                } else if(menuItem.id == "selectAllMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SELECT_ALL, menuItem));
+                } else if(menuItem.id == "reportBugMenuItem") {
+                    dispatchEvent(new MenuItemEvent(GO_REPORT_BUG_WEB_LINK, menuItem));
+                } else if(menuItem.id == "suggestFeatureMenuItem") {
+                    dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
+                } else if(menuItem.id == "aboutMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_ABOUT_DIALOG, menuItem));
+                } else if(menuItem.id == "saveMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SAVE, menuItem));
+                } else if(menuItem.id == "saveAsMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SAVE_AS, menuItem));
+                } else if(menuItem.id == "propertiesMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_PROPERTIES_DIALOG, menuItem));
+                } else if(menuItem.id == "circularViewMenuItem") {
+                    dispatchEvent(new MenuItemEvent(CIRCULAR_VIEW, menuItem));
+                } else if(menuItem.id == "linearViewMenuItem") {
+                    dispatchEvent(new MenuItemEvent(LINEAR_VIEW, menuItem));
+                } else if(menuItem.id == "showFeaturesMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_FEATURES, menuItem));
+                } else if(menuItem.id == "importSequenceMenuItem") {
+                    dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE, menuItem));
+                }
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Style>
+        .subMenu { openDuration: 0; }
+    </mx:Style>
+    
+    <mx:MenuBar 
+        id="mainMenu" 
+        dataProvider="{ menuItems }" 
+        labelField="label" 
+        width="100%"
+        menuStyleName ="subMenu"  
+        itemClick="onMenuItemClick(event)"/>
+</mx:Box>
