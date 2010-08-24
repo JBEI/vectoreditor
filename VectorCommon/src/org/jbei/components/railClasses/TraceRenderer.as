@@ -69,11 +69,19 @@ package org.jbei.components.railClasses
 			// render matches
 			g.lineStyle(2, MATCH_COLOR);
 			
-			var matchStartPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryStart;
-			var matchEndPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryEnd;
-			
-			g.moveTo(matchStartPosition, yPosition);
-			g.lineTo(matchEndPosition, yPosition);
+            var matchStartPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryStart;
+            var matchEndPosition:Number = railMetrics.x + bpWidth * traceAnnotation.traceSequence.traceSequenceAlignment.queryEnd;
+            
+            if(traceAnnotation.start > traceAnnotation.end) { // circular
+                g.moveTo(railMetrics.x, yPosition);
+                g.lineTo(matchEndPosition, yPosition);
+                
+                g.moveTo(matchStartPosition, yPosition);
+                g.lineTo(railMetrics.x + bpWidth * contentHolder.sequenceProvider.sequence.length, yPosition);
+            } else { // linear
+                g.moveTo(matchStartPosition, yPosition);
+                g.lineTo(matchEndPosition, yPosition);
+            }
 			
 			// render mismatches
 			if(mismatches != null && mismatches.length > 0) {
