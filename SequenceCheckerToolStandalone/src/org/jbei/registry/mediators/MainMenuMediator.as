@@ -28,6 +28,7 @@ package org.jbei.registry.mediators
             mainMenu.addEventListener(MainMenu.SAVE, onSave);
             mainMenu.addEventListener(MainMenu.SAVE_AS, onSaveAs);
             mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE, onImportSequence);
+            mainMenu.addEventListener(MainMenu.ADD_TRACE, onAddTrace);
             mainMenu.addEventListener(MainMenu.SHOW_PROPERTIES_DIALOG, onShowProperties);
             mainMenu.addEventListener(MainMenu.COPY, onCopy);
             mainMenu.addEventListener(MainMenu.SELECT_ALL, onSelectAll);
@@ -127,6 +128,11 @@ package org.jbei.registry.mediators
         private function onImportSequence(event:MenuItemEvent):void
         {
             sendNotification(Notifications.IMPORT_SEQUENCE);
+        }
+        
+        private function onAddTrace(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.IMPORT_TRACE);
         }
     }
 }

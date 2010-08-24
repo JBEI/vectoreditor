@@ -28,8 +28,8 @@
                 </mx:DataGrid>
                 
                 <mx:ControlBar width="100%" height="35" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0">
-                    <mx:Button width="32" height="32" id="addTraceButton" icon="{ plusIcon }" toolTip="Add Trace" />
-                    <mx:Button width="32" height="32" id="removeTraceButton" icon="{ minusIcon }" toolTip="Remove Trace" />
+                    <mx:Button width="32" height="32" id="addTraceButton" icon="{ plusIcon }" toolTip="Import Traces" />
+                    <mx:Button width="32" height="32" id="removeTraceButton" icon="{ minusIcon }" toolTip="Remove Selected Traces" />
                 </mx:ControlBar>
             </mx:VBox>
         </mx:HDividedBox>

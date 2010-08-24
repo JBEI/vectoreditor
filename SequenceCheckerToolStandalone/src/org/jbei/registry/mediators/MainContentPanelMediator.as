@@ -1,10 +1,14 @@
 package org.jbei.registry.mediators
 {
+    import flash.display.Sprite;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.text.StyleSheet;
+    import flash.ui.Mouse;
     
     import mx.collections.ArrayCollection;
+    import mx.controls.Alert;
+    import mx.events.CloseEvent;
     import mx.events.ListEvent;
     
     import org.jbei.components.Pie;
@@ -177,7 +181,16 @@ package org.jbei.registry.mediators
         
         private function onRemoveTraceButtonClick(event:MouseEvent):void
         {
-            if(mainContentPanel.tracesDataGrid.selectedIndex >= 0) {
+            if(mainContentPanel.tracesDataGrid.selectedIndex < 0) {
+                return;
+            }
+            
+            Alert.show("Are you sure you want to remove selected trace file from the project?", "Remove trace", Alert.YES | Alert.NO, mainContentPanel.parent as Sprite, onAlertRemoveTraceClose, null, Alert.NO);
+        }
+        
+        private function onAlertRemoveTraceClose(event:CloseEvent):void
+        {
+            if(event.detail == Alert.YES) {
                 sendNotification(Notifications.REMOVE_TRACE, mainContentPanel.tracesDataGrid.selectedIndex);
             }
         }
@@ -345,11 +358,11 @@ package org.jbei.registry.mediators
         
         private function updateSelectionForSequenceComponents(traceSequence:TraceSequence):void
         {
-            if(!traceSequence || !traceSequence.traceSequenceAlignment) {
+            if(!traceSequence || !traceSequence.traceSequenceAlignment || !activeSequenceComponent) {
                 return;
             }
             
-            activeSequenceComponent.select(traceSequence.traceSequenceAlignment.queryStart, traceSequence.traceSequenceAlignment.queryEnd);
+            activeSequenceComponent.select(traceSequence.traceSequenceAlignment.queryStart - 1, traceSequence.traceSequenceAlignment.queryEnd - 1);
         }
     }
 }

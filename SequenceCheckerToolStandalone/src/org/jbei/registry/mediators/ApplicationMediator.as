@@ -238,11 +238,11 @@ package org.jbei.registry.mediators
         {
             applicationPanel.mainPanel.enabled = false;
             
+            sendNotification(Notifications.SHOW_ACTION_PROGRESSBAR, lockMessage);
+            
             if(lockMessage != null && lockMessage != "") {
                 sendNotification(Notifications.ACTION_MESSAGE, lockMessage);
             }
-            
-            sendNotification(Notifications.SHOW_ACTION_PROGRESSBAR, lockMessage);
         }
         
         private function unlockApplication():void

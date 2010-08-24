@@ -11,6 +11,7 @@
             public static const SAVE:String = "Save";
             public static const SAVE_AS:String = "SaveAs";
             public static const IMPORT_SEQUENCE:String = "ImportSequence";
+            public static const ADD_TRACE:String = "AddTrace";
             public static const SHOW_PROPERTIES_DIALOG:String = "ShowPropertiesDialog";
             
             // Edit
@@ -64,11 +65,13 @@
                 var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
                 var saveAsMenuItem:MenuItem = new MenuItem("saveAsMenuItem", "Save As ...");
                 var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Sequence");
+                var addTraceMenuItem:MenuItem = new MenuItem("addTraceMenuItem", "Import Traces");
                 var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
                 fileMenuItem.addSubItem(saveMenuItem);
                 fileMenuItem.addSubItem(saveAsMenuItem);
                 fileMenuItem.addSubItem(separatorMenuItem);
                 fileMenuItem.addSubItem(importSequenceMenuItem);
+                fileMenuItem.addSubItem(addTraceMenuItem);
                 fileMenuItem.addSubItem(separatorMenuItem);
                 fileMenuItem.addSubItem(propertiesMenuItem);
                 
@@ -107,6 +110,7 @@
                 menuItemsMap["saveMenuItem"] = saveMenuItem;
                 menuItemsMap["saveAsMenuItem"] = saveAsMenuItem;
                 menuItemsMap["importSequenceMenuItem"] = importSequenceMenuItem;
+                menuItemsMap["addTraceMenuItem"] = addTraceMenuItem;
                 menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
                 
                 // Edit
@@ -155,6 +159,8 @@
                     dispatchEvent(new MenuItemEvent(SHOW_FEATURES, menuItem));
                 } else if(menuItem.id == "importSequenceMenuItem") {
                     dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE, menuItem));
+                } else if(menuItem.id == "addTraceMenuItem") {
+                    dispatchEvent(new MenuItemEvent(ADD_TRACE, menuItem));
                 }
             }
         ]]>

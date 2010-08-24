@@ -1,6 +1,8 @@
 package org.jbei.registry.mediators
 {
     import flash.events.Event;
+    import flash.events.TimerEvent;
+    import flash.utils.Timer;
     
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
@@ -16,7 +18,10 @@ package org.jbei.registry.mediators
     {
         public static const MEDIATOR_NAME:String = "MainStatusBarMediator";
         
+        private static const ACTION_MESSAGE_DELAY_TIME:int = 8000;
+        
         private var mainStatusBar:MainStatusBar;
+        private var timer:Timer;
         
         // Constructor
         public function MainStatusBarMediator(viewComponent:Object=null)
@@ -24,6 +29,8 @@ package org.jbei.registry.mediators
             super(MEDIATOR_NAME, viewComponent);
             
             mainStatusBar = viewComponent as MainStatusBar;
+            
+            createTimer();
         }
         
         // Public Methods
@@ -74,6 +81,12 @@ package org.jbei.registry.mediators
             ];
         }
         
+        // Event Handlers
+        private function onActionMessageTimerComplete(event:TimerEvent):void
+        {
+            mainStatusBar.actionMessageLabel.text = "";
+        }
+        
         // Private Methods
         private function updateCaretPosition(newPosition:int):void
         {
@@ -110,11 +123,6 @@ package org.jbei.registry.mediators
             }
         }
         
-        private function updateActionMessage(message:String):void
-        {
-            mainStatusBar.actionMessageLabel.text = message;
-        }
-        
         private function updateSelectedTrace(traceSequence:TraceSequence):void
         {
             if(!traceSequence) {
@@ -122,6 +130,20 @@ package org.jbei.registry.mediators
             }
             
             mainStatusBar.selectedTraceLabel.text = traceSequence.filename;
+        }
+        
+        private function createTimer():void
+        {
+            timer = new Timer(ACTION_MESSAGE_DELAY_TIME, 1);
+            timer.addEventListener(TimerEvent.TIMER_COMPLETE, onActionMessageTimerComplete);
+        }
+        
+        private function updateActionMessage(message:String):void
+        {
+            timer.reset();
+            timer.start();
+            
+            mainStatusBar.actionMessageLabel.text = message;
         }
     }
 }

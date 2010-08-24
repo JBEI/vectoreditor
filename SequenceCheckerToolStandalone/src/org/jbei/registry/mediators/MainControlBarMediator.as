@@ -27,6 +27,7 @@ package org.jbei.registry.mediators
             mainControlBar = viewComponent as MainControlBar;
             
             mainControlBar.saveButton.addEventListener(MouseEvent.CLICK, onSaveButtonClick);
+            mainControlBar.importSequenceButton.addEventListener(MouseEvent.CLICK, onImportSequenceButtonClick);
             mainControlBar.propertiesButton.addEventListener(MouseEvent.CLICK, onPropertiesButtonClick);
             mainControlBar.showFeaturesButton.addEventListener(MouseEvent.CLICK, onShowFeaturesButtonClick);
             mainControlBar.viewToggleButtonBar.addEventListener(ItemClickEvent.ITEM_CLICK, onChangeViewButtonClick);
@@ -85,6 +86,11 @@ package org.jbei.registry.mediators
         private function onSaveButtonClick(event:MouseEvent):void
         {
             sendNotification(Notifications.SAVE_PROJECT);
+        }
+        
+        private function onImportSequenceButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.IMPORT_SEQUENCE);
         }
         
         private function onPropertiesButtonClick(event:MouseEvent):void

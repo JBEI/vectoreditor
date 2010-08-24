@@ -7,6 +7,10 @@
             [Bindable]
             private var saveIcon:Class;
             
+            [Embed(source='../assets/icons/import.png')]
+            [Bindable]
+            private var importIcon:Class;
+            
             [Embed(source='../assets/icons/properties.png')]
             [Bindable]
             private var propertiesIcon:Class;
@@ -45,6 +49,8 @@
         ]]>
     </mx:Script>
     <mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" toolTip="Save Project" />
+    <mx:Spacer width="5" />
+    <mx:Button width="32" height="32" id="importSequenceButton" icon="{ importIcon }" toolTip="Import Sequence" />
     <mx:Spacer width="5" />
     <mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" />
     <mx:Spacer width="5" />
