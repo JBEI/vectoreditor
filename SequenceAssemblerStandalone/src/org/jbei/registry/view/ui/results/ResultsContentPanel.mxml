@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
-    <mx:Panel title="Results Table" width="100%" height="100%">
-        <mx:DataGrid id="resultsDataGrid" width="100%" height="100%" />
-    </mx:Panel>
-</mx:Box>
