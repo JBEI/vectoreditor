@@ -5,7 +5,9 @@ package org.jbei.registry
      */
 	public final class Constants
 	{
-		public static const MAJOR_VERSION:String = "1";
+        public static const APPLICATION_NAME:String = "Vector Editor";
+        
+		public static const VERSION:String = "1.3.1";
 		
 		public static const ENTRY_REGISTRY_URL:String = "https://registry.jbei.org/entry/view/";
 		

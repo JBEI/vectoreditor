@@ -83,10 +83,8 @@
 					}
 				}
 				
-                CONFIG::registryEdition {
-				    ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymes);
-                }
-				
+                //ApplicationFacade.getInstance().registryServiceProxy.saveUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId, userRestrictionEnzymes);
+                
                 ApplicationFacade.getInstance().updateUserRestrictionEnzymes(userRestrictionEnzymes);
                 
                 var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup();

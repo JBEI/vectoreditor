@@ -24,7 +24,6 @@
             import org.jbei.lib.mappers.AAMapper;
             import org.jbei.registry.ApplicationFacade;
             import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-            import org.jbei.registry.mediators.GelDigestMediator;
             import org.jbei.registry.models.FeaturedDNASequence;
             
             [Bindable]
@@ -47,10 +46,6 @@
             // Event Handlers
             private function onCreationComplete():void
             {
-                if(!ApplicationFacade.getInstance().hasMediator(GelDigestMediator.NAME)) {
-                    ApplicationFacade.getInstance().registerMediator(new GelDigestMediator(this));
-                }
-                
                 for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.systemGroups.length; i++) {
                     systemREGroups.addItem(RestrictionEnzymeGroupManager.instance.systemGroups[i]);
                 }

@@ -23,7 +23,10 @@ package org.jbei.registry.mediators
 			super(NAME, viewComponent);
 			
 			mainMenu = viewComponent as MainMenu;
-			mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
+            mainMenu.addEventListener(MainMenu.SAVE_PROJECT, onSaveProject);
+            mainMenu.addEventListener(MainMenu.SAVE_PROJECT_AS, onSaveProjectAs);
+            mainMenu.addEventListener(MainMenu.SHOW_PROJECT_PROPERTIES_DIALOG, onShowProjectPropertiesDialog);
+            mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
 			mainMenu.addEventListener(MainMenu.SHOW_PIE, onShowPie);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
 			mainMenu.addEventListener(MainMenu.SHOW_CUTSITES_STATE_CHANGED, onShowCutSitesStateChanged);
@@ -56,10 +59,6 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.GO_REPORT_BUG_WEB_LINK, onGoReportBugWebLink);
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
-			mainMenu.addEventListener(MainMenu.SAVE, onSave);
-            mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE_FILE, onImportSequence);
-            mainMenu.addEventListener(MainMenu.EXPORT_SEQUENCE_FILE, onExportSequence);
-			mainMenu.addEventListener(MainMenu.SHOW_ENTRY_IN_REGISTRY, onShowEntryInRegistry);
             mainMenu.addEventListener(MainMenu.REVERSE_COMPLEMENT, onReverseComplement);
 		}
 		
@@ -74,7 +73,6 @@ package org.jbei.registry.mediators
 				, Notifications.SHOW_AA1
 				, Notifications.SHOW_AA3
 				, Notifications.ACTION_STACK_CHANGED
-				, Notifications.SEQUENCE_SAVED
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
@@ -111,17 +109,14 @@ package org.jbei.registry.mediators
 					mainMenu.menuItemByName("showAA1MenuItem").toggled = false;
 					break;
 				case Notifications.ACTION_STACK_CHANGED:
-					mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.undoStackIsEmpty;
-					mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.redoStackIsEmpty;
-					break;
-				case Notifications.SEQUENCE_SAVED:
-					mainMenu.menuItemByName("saveMenuItem").enabled = false;
+					//mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.undoStackIsEmpty;
+					//mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.redoStackIsEmpty;
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().hasWritablePermissions) {
-						mainMenu.menuItemByName("saveMenuItem").enabled = true;
+						//mainMenu.menuItemByName("saveMenuItem").enabled = true;
 					} else {
-						mainMenu.menuItemByName("saveMenuItem").enabled = false;
+						//mainMenu.menuItemByName("saveMenuItem").enabled = false;
 					}
 					
 					break;
@@ -308,29 +303,24 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.PRINT_PIE);
 		}
 		
-		private function onShowEntryInRegistry(event:MenuItemEvent):void
-		{
-			sendNotification(Notifications.SHOW_ENTRY_IN_REGISTRY);
-		}
-		
-		private function onSave(event:MenuItemEvent):void
-		{
-			sendNotification(Notifications.SAVE_SEQUENCE);
-		}
-        
         private function onReverseComplement(event:MenuItemEvent):void
         {
             sendNotification(Notifications.REVERSE_COMPLEMENT_SEQUENCE);
         }
         
-        private function onImportSequence(event:MenuItemEvent):void
+        private function onSaveProject(event:MenuItemEvent):void
         {
-            sendNotification(Notifications.IMPORT_SEQUENCE_FILE);
+            sendNotification(Notifications.SAVE_PROJECT);
         }
         
-        private function onExportSequence(event:MenuItemEvent):void
+        private function onSaveProjectAs(event:MenuItemEvent):void
         {
-            sendNotification(Notifications.EXPORT_SEQUENCE_FILE);
+            sendNotification(Notifications.SAVE_PROJECT_AS);
+        }
+        
+        private function onShowProjectPropertiesDialog(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SHOW_PROJECT_PROPERTIES_DIALOG);
         }
 	}
 }

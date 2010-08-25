@@ -11,7 +11,9 @@ package org.jbei.registry.proxies
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
+	import org.jbei.registry.models.VectorEditorProject;
 	import org.jbei.registry.utils.StandaloneUtils;
+	import org.puremvc.as3.patterns.observer.Notification;
 
     /**
      * @author Zinovii Dmytriv
@@ -28,53 +30,94 @@ package org.jbei.registry.proxies
 		}
 		
 		// Public Methods
+        public function createVectorEditorProject(sessionId:String, project:VectorEditorProject):void
+        {
+            sendNotification(Notifications.LOCK, "Creating project on the server ...");
+            
+            service.createVectorEditorProject(sessionId, project);
+        }
+        
+        public function getVectorEditorProject(sessionId:String, projectId:String):void
+        {
+            sendNotification(Notifications.LOCK, "Fetching project from the server ...");
+            
+            service.getVectorEditorProject(sessionId, projectId);
+        }
+        
+        public function saveVectorEditorProject(sessionId:String, project:VectorEditorProject):void
+        {
+            sendNotification(Notifications.LOCK, "Saving project to the server ...");
+            
+            service.saveVectorEditorProject(sessionId, project);
+        }
+        
 		public function fetchSequence(sessionId:String, entryId:String):void
 		{
+            sendNotification(Notifications.LOCK, "Fetching sequence ...");
+            
             service.getSequence(sessionId, entryId);
 		}
 		
 		public function saveSequence(sessionId:String, entryId:String, featuredDNASequence:FeaturedDNASequence):void
 		{
+            sendNotification(Notifications.LOCK, "Saving sequence ...");
+            
             service.saveSequence(sessionId, entryId, featuredDNASequence);
 		}
 		
 		public function fetchUserPreferences(sessionId:String):void
 		{
+            sendNotification(Notifications.LOCK, "Fetching user preferences ...");
+            
             service.getUserPreferences(sessionId);
 		}
 		
 		public function saveUserPreferences(sessionId:String, userPreferences:UserPreferences):void
 		{
+            sendNotification(Notifications.LOCK, "Saving user preferences ...");
+            
             service.saveUserPreferences(sessionId, userPreferences);
 		}
 		
 		public function fetchUserRestrictionEnzymes(sessionId:String):void
 		{
+            sendNotification(Notifications.LOCK, "Fetching user enzymes ...");
+            
             service.getUserRestrictionEnzymes(sessionId);
 		}
 		
 		public function saveUserRestrictionEnzymes(sessionId:String, userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
+            sendNotification(Notifications.LOCK, "Saving user enzymes ...");
+            
             service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
 		}
 		
         public function hasWritablePermissions(sessionId:String, entryId:String):void
         {
+            sendNotification(Notifications.LOCK);
+            
             service.hasWritablePermissions(sessionId, entryId);
         }
         
 		public function generateGenBank(sessionId:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
 		{
+            sendNotification(Notifications.LOCK);
+            
             service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
 		}
 		
         public function parseSequenceFile(data:String):void
         {
+            sendNotification(Notifications.LOCK);
+            
             service.parseSequenceFile(data);
         }
         
         public function generateSequenceFile(featuredDNASequence:FeaturedDNASequence):void
         {
+            sendNotification(Notifications.LOCK, "Generating sequence file ...");
+            
             service.generateSequenceFile(featuredDNASequence);
         }
         
@@ -86,6 +129,11 @@ package org.jbei.registry.proxies
 		
 		protected override function registerServiceOperations():void
 		{
+            // Project
+            service.createVectorEditorProject.addEventListener(ResultEvent.RESULT, onCreateVectorEditorProjectResult);
+            service.getVectorEditorProject.addEventListener(ResultEvent.RESULT, onGetVectorEditorProjectResult);
+            service.saveVectorEditorProject.addEventListener(ResultEvent.RESULT, onSaveVectorEditorProjectResult);
+            
 			// Entry
 			service.hasWritablePermissions.addEventListener(ResultEvent.RESULT, onHasWritablePermissionsResult);
 			
@@ -110,9 +158,54 @@ package org.jbei.registry.proxies
 		}
 		
 		// Private Methods: Response handlers
+        private function onCreateVectorEditorProjectResult(event:ResultEvent):void
+        {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to create project on the server!");
+                
+                return;
+            }
+            
+            sendNotification(Notifications.UNLOCK);
+            
+            sendNotification(Notifications.PROJECT_UPDATED, event.result as VectorEditorProject);
+            
+            sendNotification(Notifications.ACTION_MESSAGE, "Project created successfully");
+        }
+        
+        private function onGetVectorEditorProjectResult(event:ResultEvent):void
+        {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to fetch project from the server!");
+                
+                return;
+            }
+            
+            sendNotification(Notifications.UNLOCK);
+            
+            sendNotification(Notifications.PROJECT_UPDATED, event.result as VectorEditorProject);
+            
+            sendNotification(Notifications.ACTION_MESSAGE, "Project fetched successfully");
+        }
+        
+        private function onSaveVectorEditorProjectResult(event:ResultEvent):void
+        {
+            if(!event.result) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save project on the server!");
+                
+                return;
+            }
+            
+            sendNotification(Notifications.UNLOCK);
+            
+            sendNotification(Notifications.PROJECT_UPDATED, event.result as VectorEditorProject);
+            
+            sendNotification(Notifications.ACTION_MESSAGE, "Project saved successfully");
+        }
+        
 		private function onGetSequenceResult(event:ResultEvent):void
 		{
-			sendNotification(Notifications.DATA_FETCHED);
+			sendNotification(Notifications.UNLOCK);
 			
 			updateSequence(event.result as FeaturedDNASequence);
 		}
@@ -124,7 +217,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			updateEntryPermissions(event.result);
 		}
@@ -137,14 +230,14 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			updateUserPreferences(event.result as UserPreferences);
 		}
 		
 		private function onSaveUserPreferencesResult(event:ResultEvent):void
 		{
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			sendNotification(Notifications.ACTION_MESSAGE, "User preferences has been saved");
 			
@@ -159,14 +252,14 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			updateUserRestrictionEnzymes(event.result as UserRestrictionEnzymes);
 		}
 		
 		private function onSaveUserRestrictionEnzymesResult(event:ResultEvent):void
 		{
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
             
@@ -183,10 +276,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			sendNotification(Notifications.DATA_FETCHED);
-			
-			sendNotification(Notifications.SEQUENCE_SAVED);
-            sendNotification(Notifications.ACTION_MESSAGE, "Sequence has been saved");
+            sendNotification(Notifications.UNLOCK);
 			
 			Logger.getInstance().info("Sequence saved successfully");
 		}
@@ -199,7 +289,7 @@ package org.jbei.registry.proxies
 				return;
 			}
 			
-			sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
 			
 			sendNotification(Notifications.GENBANK_FETCHED, event.result as String);
 			
@@ -225,9 +315,9 @@ package org.jbei.registry.proxies
                 return;
             }
             
-            sendNotification(Notifications.DATA_FETCHED);
+            sendNotification(Notifications.UNLOCK);
             
-            sendNotification(Notifications.SEQUENCE_GENERATED, event.result as String);
+            //sendNotification(Notifications.SEQUENCE_GENERATED, event.result as String);
         }
         
 		// Private Methods

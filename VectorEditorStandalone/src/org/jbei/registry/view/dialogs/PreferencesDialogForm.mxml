@@ -43,9 +43,7 @@
 					userPreferences.labelsFontSize = labelsFontSizeNumericStepper.value;
 					userPreferences.maxResitrictionEnzymesCuts = setMaxCutOffCheckBox.selected ? -1 : maxResitrictionEnzymesCutsNumericStepper.value;
 					
-                    CONFIG::registryEdition {
-                        ApplicationFacade.getInstance().registryServiceProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
-                    }
+                    //ApplicationFacade.getInstance().registryServiceProxy.saveUserPreferences(ApplicationFacade.getInstance().sessionId, userPreferences);
                     
                     ApplicationFacade.getInstance().updateUserPreferences(userPreferences);
 				}

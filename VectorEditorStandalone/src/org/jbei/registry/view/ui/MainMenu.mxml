@@ -8,10 +8,9 @@
             import org.jbei.lib.ui.menu.MenuItemEvent;
 			
 			// File
-			public static const SHOW_ENTRY_IN_REGISTRY:String = "ShowEntryInRegistry";
-			public static const SAVE:String = "Save";
-            public static const IMPORT_SEQUENCE_FILE:String = "Import";
-            public static const EXPORT_SEQUENCE_FILE:String = "Export";
+			public static const SAVE_PROJECT:String = "SaveProject";
+            public static const SAVE_PROJECT_AS:String = "SaveProjectAs";
+            public static const SHOW_PROJECT_PROPERTIES_DIALOG:String = "ShowProjectPropertiesDialog";
 			public static const PRINT_SEQUENCE:String = "PrintSequence";
 			public static const PRINT_PIE:String = "PrintPie";
 			public static const PRINT_RAIL:String = "PrintRail";
@@ -76,46 +75,29 @@
             	
             	// File
             	var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
-				var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
-            	var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save to Registry", "", false, false, false);
-                var importMenuItem:MenuItem = new MenuItem("importMenuItem", "Open");
-                var exportMenuItem:MenuItem = new MenuItem("exportMenuItem", "Save as ...");
-				var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
+                var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
-				var showEntryInRegistryMenuItem:MenuItem = new MenuItem("showEntryInRegistryMenuItem", "Show in Registry");
+                var saveProjectMenuItem:MenuItem = new MenuItem("saveProjectMenuItem", "Save Project");
+                var saveProjectAsMenuItem:MenuItem = new MenuItem("saveProjectAsMenuItem", "Save Project As ...");
+                var projectPropertiesMenuItem:MenuItem = new MenuItem("projectPropertiesMenuItem", "Project Properties");
                 
                 CONFIG::registryEdition {
-                    fileMenuItem.addSubItem(exportMenuItem);
-                    fileMenuItem.addSubItem(saveMenuItem);
-                }
-                
-                CONFIG::toolEdition {
-                    fileMenuItem.addSubItem(importMenuItem);
-                    fileMenuItem.addSubItem(exportMenuItem);
-                    fileMenuItem.addSubItem(saveMenuItem);
+                    fileMenuItem.addSubItem(saveProjectMenuItem);
+                    fileMenuItem.addSubItem(saveProjectAsMenuItem);
+                    fileMenuItem.addSubItem(projectPropertiesMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
                 }
                 
                 CONFIG::standalone {
-                    fileMenuItem.addSubItem(importMenuItem);
-                    fileMenuItem.addSubItem(exportMenuItem);
-                    fileMenuItem.addSubItem(saveMenuItem);
+                    fileMenuItem.addSubItem(saveProjectMenuItem);
+                    fileMenuItem.addSubItem(saveProjectAsMenuItem);
+                    fileMenuItem.addSubItem(projectPropertiesMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
                 }
                 
-                fileMenuItem.addSubItem(separatorMenuItem);
-                
-                CONFIG::standalone {
-				    fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
-                }
-                
-                CONFIG::registryEdition {
-                    fileMenuItem.addSubItem(showEntryInRegistryMenuItem);
-                }
-                
-				fileMenuItem.addSubItem(propertiesMenuItem);
-            	fileMenuItem.addSubItem(separatorMenuItem);
-				fileMenuItem.addSubItem(printMenuItem);
+                fileMenuItem.addSubItem(printMenuItem);
             	
             	// Edit
             	var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
@@ -183,10 +165,12 @@
             	var restrictionEnzymesManagerMenuItem:MenuItem = new MenuItem("restrictionEnzymesManagerMenuItem", "Restriction Enzymes Manager");
             	var createNewFeatureMenuItem:MenuItem = new MenuItem("createNewFeatureMenuItem", "Create New Feature");
                 var simulateDigestionMenuItem:MenuItem = new MenuItem("simulateDigestionMenuItem", "Simulate Digestion");
+                var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
             	toolsMenuItem.addSubItem(createNewFeatureMenuItem);
             	toolsMenuItem.addSubItem(restrictionEnzymesManagerMenuItem);
                 toolsMenuItem.addSubItem(simulateDigestionMenuItem);
-            	toolsMenuItem.addSubItem(separatorMenuItem);
+                toolsMenuItem.addSubItem(propertiesMenuItem);
+                toolsMenuItem.addSubItem(separatorMenuItem);
             	toolsMenuItem.addSubItem(preferencesMenuItem);
             	
             	// Help
@@ -208,11 +192,9 @@
             	
             	// File
             	menuItemsMap["fileMenuItem"] = fileMenuItem;
-                menuItemsMap["saveMenuItem"] = saveMenuItem;
-                menuItemsMap["importMenuItem"] = importMenuItem;
-                menuItemsMap["exportMenuItem"] = exportMenuItem;
-				menuItemsMap["showEntryInRegistryMenuItem"] = showEntryInRegistryMenuItem;
-				menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
+                menuItemsMap["saveProjectMenuItem"] = saveProjectMenuItem;
+                menuItemsMap["saveProjectAsMenuItem"] = saveProjectAsMenuItem;
+                menuItemsMap["projectPropertiesMenuItem"] = projectPropertiesMenuItem;
                 menuItemsMap["printMenuItem"] = printMenuItem;
             	
             	// Edit
@@ -248,6 +230,7 @@
             	menuItemsMap["createNewFeatureMenuItem"] = createNewFeatureMenuItem;
             	menuItemsMap["restrictionEnzymesManagerMenuItem"] = restrictionEnzymesManagerMenuItem;
                 menuItemsMap["simulateDigestionMenuItem"] = simulateDigestionMenuItem;
+                menuItemsMap["propertiesMenuItem"] = propertiesMenuItem;
             	menuItemsMap["preferencesMenuItem"] = preferencesMenuItem;
             	
             	// Help
@@ -332,16 +315,14 @@
 					dispatchEvent(new MenuItemEvent(GO_REPORT_BUG_WEB_LINK, menuItem));
 				} else if(menuItem.id == "suggestFeatureMenuItem") {
 					dispatchEvent(new MenuItemEvent(GO_SUGGEST_FEATURE_WEB_LINK, menuItem));
-				} else if(menuItem.id == "saveMenuItem") {
-					dispatchEvent(new MenuItemEvent(SAVE, menuItem));
-				} else if(menuItem.id == "showEntryInRegistryMenuItem") {
-					dispatchEvent(new MenuItemEvent(SHOW_ENTRY_IN_REGISTRY, menuItem));
+				} else if(menuItem.id == "saveProjectMenuItem") {
+					dispatchEvent(new MenuItemEvent(SAVE_PROJECT, menuItem));
+                } else if(menuItem.id == "saveProjectAsMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SAVE_PROJECT_AS, menuItem));
+                } else if(menuItem.id == "projectPropertiesMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SHOW_PROJECT_PROPERTIES_DIALOG, menuItem));
             	} else if(menuItem.id == "reverseComplementMenuItem") {
                     dispatchEvent(new MenuItemEvent(REVERSE_COMPLEMENT, menuItem));
-                } else if(menuItem.id == "importMenuItem") {
-                    dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE_FILE, menuItem));
-                } else if(menuItem.id == "exportMenuItem") {
-                    dispatchEvent(new MenuItemEvent(EXPORT_SEQUENCE_FILE, menuItem));
                 }
             }
 		]]>

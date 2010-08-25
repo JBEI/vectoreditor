@@ -3,7 +3,7 @@
 	<mx:HRule width="100%" strokeWidth="1" strokeColor="0xAAB3B3" shadowColor="0xAAB3B3" />
 	
 	<mx:HBox width="100%" paddingBottom="0" paddingTop="0">
-		<mx:Label id="statusLabel" text=""/>
+        <mx:Label id="actionMessageLabel" text=""/>
 		<mx:Spacer width="100%" />
         <mx:Label id="temperatureLabel" text=""/>
 		<mx:VRule height="100%" />

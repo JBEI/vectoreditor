@@ -42,9 +42,6 @@ package org.jbei.registry.mediators
 			return [Notifications.SELECTION_CHANGED
 				, Notifications.CARET_POSITION_CHANGED
 				
-				, Notifications.FETCHING_DATA
-				, Notifications.DATA_FETCHED
-				
                 , Notifications.ENTRY_PERMISSIONS_CHANGED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
                 
@@ -98,14 +95,6 @@ package org.jbei.registry.mediators
 					statusBar.sequenceStatusLabel.text = ApplicationFacade.getInstance().hasWritablePermissions ? "Writable" : "Read Only";
 					
 					break;
-				case Notifications.FETCHING_DATA:
-                    updateActionMessage(notification.getBody() as String);
-                    
-					break;
-				case Notifications.DATA_FETCHED:
-                    updateActionMessage("Done");
-                    
-					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().sequenceProvider) {
 						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().sequenceProvider.sequence.length);
@@ -124,7 +113,7 @@ package org.jbei.registry.mediators
         // Event Handlers
         private function onActionMessageTimerComplete(event:TimerEvent):void
         {
-            statusBar.statusLabel.text = "";
+            statusBar.actionMessageLabel.text = "";
         }
         
         // Private Methods
@@ -133,7 +122,7 @@ package org.jbei.registry.mediators
             timer.reset();
             timer.start();
             
-            statusBar.statusLabel.text = message;
+            statusBar.actionMessageLabel.text = message;
         }
 	}
 }

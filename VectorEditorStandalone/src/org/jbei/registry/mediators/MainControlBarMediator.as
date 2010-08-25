@@ -1,6 +1,9 @@
 package org.jbei.registry.mediators
 {
 	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
+	import mx.events.ItemClickEvent;
 	
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
@@ -16,6 +19,7 @@ package org.jbei.registry.mediators
 		private const NAME:String = "MainControlBarMediator";
 		
 		private var controlBar:MainControlBar;
+        private var applicationFacade:ApplicationFacade;
 		
 		// Constructor
 		public function MainControlBarMediator(viewComponent:Object=null)
@@ -23,24 +27,24 @@ package org.jbei.registry.mediators
 			super(NAME, viewComponent);
 			
 			controlBar = viewComponent as MainControlBar;
+            
+            applicationFacade = ApplicationFacade.getInstance();
 			
-			controlBar.addEventListener(MainControlBar.SAVE, onSave);
-			controlBar.addEventListener(MainControlBar.SHOW_RAIL_VIEW, onShowRailView);
-			controlBar.addEventListener(MainControlBar.SHOW_PIE_VIEW, onShowPieView);
-			controlBar.addEventListener(MainControlBar.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
-			controlBar.addEventListener(MainControlBar.SHOW_CUTSITES_STATE_CHANGED, onShowCutSitesStateChanged);
-			controlBar.addEventListener(MainControlBar.SAFE_EDITING_CHANGED, onSafeEditingChanged);
-			controlBar.addEventListener(MainControlBar.SHOW_ORFS_STATE_CHANGED, onShowORFsStateChanged);
-			controlBar.addEventListener(MainControlBar.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, onShowRestrictionEnzymesManagerDialog);
-			controlBar.addEventListener(MainControlBar.SHOW_FIND_PANEL, onShowFindPanel);
-			controlBar.addEventListener(MainControlBar.UNDO, onUndo);
-			controlBar.addEventListener(MainControlBar.REDO, onRedo);
-			controlBar.addEventListener(MainControlBar.COPY, onCopy);
-			controlBar.addEventListener(MainControlBar.CUT, onCut);
-			controlBar.addEventListener(MainControlBar.PASTE, onPaste);
-			controlBar.addEventListener(MainControlBar.SHOW_PROPERTIES_DIALOG, onShowPropertiesDialog);
-            controlBar.addEventListener(MainControlBar.IMPORT_SEQUENCE_FILE, onImportSequenceFile);
-            controlBar.addEventListener(MainControlBar.EXPORT_SEQUENCE_FILE, onExportSequenceFile);
+            controlBar.saveProjectProjectButton.addEventListener(MouseEvent.CLICK, onSaveProjectClick);
+            controlBar.projectPropertiesButton.addEventListener(MouseEvent.CLICK, onProjectPropertiesButtonClick);
+			controlBar.viewToggleButtonBar.addEventListener(ItemClickEvent.ITEM_CLICK, onChangeViewButtonClick);
+			controlBar.copyButton.addEventListener(MouseEvent.CLICK, onCopy);
+            controlBar.cutButton.addEventListener(MouseEvent.CLICK, onCut);
+            controlBar.pasteButton.addEventListener(MouseEvent.CLICK, onPaste);
+            controlBar.undoButton.addEventListener(MouseEvent.CLICK, onUndo);
+            controlBar.redoButton.addEventListener(MouseEvent.CLICK, onRedo);
+            controlBar.safeEditingButton.addEventListener(Event.CHANGE, onSafeEditingChanged);
+            controlBar.showFindPanelButton.addEventListener(MouseEvent.CLICK, onShowFindPanel);
+            controlBar.showFeaturesButton.addEventListener(Event.CHANGE, onShowFeaturesStateChanged);
+            controlBar.showCutSitesButton.addEventListener(Event.CHANGE, onShowCutSitesStateChanged);
+            controlBar.showORFsButton.addEventListener(Event.CHANGE, onShowORFsStateChanged);
+            controlBar.showRestrictionEnzymesManagerDialogButton.addEventListener(MouseEvent.CLICK, onShowRestrictionEnzymesManagerDialog);
+            controlBar.propertiesButton.addEventListener(MouseEvent.CLICK, onShowPropertiesDialog);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -53,7 +57,6 @@ package org.jbei.registry.mediators
 				, Notifications.ACTION_STACK_CHANGED
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
-				, Notifications.SEQUENCE_SAVED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
 			];
 		}
@@ -77,17 +80,14 @@ package org.jbei.registry.mediators
 					controlBar.showORFsButton.selected = (notification.getBody() as Boolean);
 					break;
 				case Notifications.ACTION_STACK_CHANGED:
-					controlBar.updateUndoButtonState(!ApplicationFacade.getInstance().actionStack.undoStackIsEmpty);
-					controlBar.updateRedoButtonState(!ApplicationFacade.getInstance().actionStack.redoStackIsEmpty);
-					break;
-				case Notifications.SEQUENCE_SAVED:
-					controlBar.updateSaveButtonState(false);
+					//controlBar.updateUndoButtonState(!applicationFacade.actionStack.undoStackIsEmpty);
+					//controlBar.updateRedoButtonState(!applicationFacade.actionStack.redoStackIsEmpty);
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
-					if(ApplicationFacade.getInstance().hasWritablePermissions) {
-						controlBar.updateSaveButtonState(true);
+					if(applicationFacade.hasWritablePermissions) {
+						//controlBar.updateSaveButtonState(true);
 					} else {
-						controlBar.updateSaveButtonState(false);
+						//controlBar.updateSaveButtonState(false);
 					}
 					
 					break;
@@ -107,7 +107,26 @@ package org.jbei.registry.mediators
 			}
 		}
 		
-		// Private Methods
+		// Event Handlers
+        private function onSaveProjectClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.SAVE_PROJECT);
+        }
+        
+        private function onProjectPropertiesButtonClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.SHOW_PROJECT_PROPERTIES_DIALOG);
+        }
+        
+        private function onChangeViewButtonClick(event:ItemClickEvent):void
+        {
+            if(event.index == 0) { // Circular View
+                sendNotification(Notifications.SHOW_PIE);
+            } else if (event.index == 1) { // Linear View
+                sendNotification(Notifications.SHOW_RAIL);
+            }
+        }
+        
 		private function onShowFeaturesStateChanged(event:Event):void
 		{
 			sendNotification(Notifications.SHOW_FEATURES, controlBar.showFeaturesButton.selected);
@@ -123,37 +142,37 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.SHOW_ORFS, controlBar.showORFsButton.selected);
 		}
 		
-		private function onShowRestrictionEnzymesManagerDialog(event:Event):void
+		private function onShowRestrictionEnzymesManagerDialog(event:MouseEvent):void
 		{
 			sendNotification(Notifications.SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG);
 		}
 		
-		private function onUndo(event:Event):void
+		private function onUndo(event:MouseEvent):void
 		{
 			sendNotification(Notifications.UNDO);
 		}
 		
-		private function onRedo(event:Event):void
+		private function onRedo(event:MouseEvent):void
 		{
 			sendNotification(Notifications.REDO);
 		}
 		
-		private function onCopy(event:Event):void
+		private function onCopy(event:MouseEvent):void
 		{
 			sendNotification(Notifications.COPY);
 		}
 		
-		private function onCut(event:Event):void
+		private function onCut(event:MouseEvent):void
 		{
 			sendNotification(Notifications.CUT);
 		}
 		
-		private function onPaste(event:Event):void
+		private function onPaste(event:MouseEvent):void
 		{
 			sendNotification(Notifications.PASTE);
 		}
 		
-		private function onShowFindPanel(event:Event):void
+		private function onShowFindPanel(event:MouseEvent):void
 		{
 			sendNotification(Notifications.SHOW_FIND_PANEL);
 		}
@@ -167,30 +186,5 @@ package org.jbei.registry.mediators
 		{
 			sendNotification(Notifications.SAFE_EDITING_CHANGED, controlBar.safeEditingButton.selected);
 		}
-		
-		private function onShowRailView(event:Event):void
-		{
-			sendNotification(Notifications.SHOW_RAIL);
-		}
-		
-		private function onShowPieView(event:Event):void
-		{
-			sendNotification(Notifications.SHOW_PIE);
-		}
-		
-		private function onSave(event:Event):void
-		{
-			sendNotification(Notifications.SAVE_SEQUENCE);
-		}
-        
-        private function onImportSequenceFile(event:Event):void
-        {
-            sendNotification(Notifications.IMPORT_SEQUENCE_FILE);
-        }
-        
-        private function onExportSequenceFile(event:Event):void
-        {
-            sendNotification(Notifications.EXPORT_SEQUENCE_FILE);
-        }
 	}
 }
