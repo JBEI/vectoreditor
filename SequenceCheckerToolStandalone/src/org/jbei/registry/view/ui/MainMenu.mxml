@@ -62,18 +62,17 @@
                 
                 // File
                 var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
-                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save");
-                var saveAsMenuItem:MenuItem = new MenuItem("saveAsMenuItem", "Save As ...");
+                var saveMenuItem:MenuItem = new MenuItem("saveMenuItem", "Save Project");
+                var saveAsMenuItem:MenuItem = new MenuItem("saveAsMenuItem", "Save Project As ...");
                 var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Sequence");
                 var addTraceMenuItem:MenuItem = new MenuItem("addTraceMenuItem", "Import Traces");
-                var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Properties");
+                var propertiesMenuItem:MenuItem = new MenuItem("propertiesMenuItem", "Project Properties");
                 fileMenuItem.addSubItem(saveMenuItem);
                 fileMenuItem.addSubItem(saveAsMenuItem);
+                fileMenuItem.addSubItem(propertiesMenuItem);
                 fileMenuItem.addSubItem(separatorMenuItem);
                 fileMenuItem.addSubItem(importSequenceMenuItem);
                 fileMenuItem.addSubItem(addTraceMenuItem);
-                fileMenuItem.addSubItem(separatorMenuItem);
-                fileMenuItem.addSubItem(propertiesMenuItem);
                 
                 // Edit
                 var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");

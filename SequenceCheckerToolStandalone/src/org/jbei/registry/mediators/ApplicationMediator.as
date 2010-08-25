@@ -48,10 +48,12 @@ package org.jbei.registry.mediators
             
             applicationPanel = viewComponent as ApplicationPanel;
             
-            ApplicationFacade.getInstance().registerMediator(new MainMenuMediator(applicationPanel.mainPanel.mainMenu));
-            ApplicationFacade.getInstance().registerMediator(new MainControlBarMediator(applicationPanel.mainPanel.mainControlBar));
-            ApplicationFacade.getInstance().registerMediator(new MainContentPanelMediator(applicationPanel.mainPanel.mainContentPanel));
-            ApplicationFacade.getInstance().registerMediator(new MainStatusBarMediator(applicationPanel.mainPanel.mainStatusBar));
+            var applicationFacade:ApplicationFacade = ApplicationFacade.getInstance();
+            
+            applicationFacade.registerMediator(new MainMenuMediator(applicationPanel.mainPanel.mainMenu));
+            applicationFacade.registerMediator(new MainControlBarMediator(applicationPanel.mainPanel.mainControlBar));
+            applicationFacade.registerMediator(new MainContentPanelMediator(applicationPanel.mainPanel.mainContentPanel));
+            applicationFacade.registerMediator(new MainStatusBarMediator(applicationPanel.mainPanel.mainStatusBar));
         }
         
         // Public Methods
@@ -129,20 +131,20 @@ package org.jbei.registry.mediators
         {
             return [
                 Notifications.ACTION_MESSAGE
-                , Notifications.SHOW_ABOUT_DIALOG
-                , Notifications.GO_SUGGEST_FEATURE
-                , Notifications.GO_REPORT_BUG
-                , Notifications.SAVE_PROJECT
                 , Notifications.LOCK
                 , Notifications.UNLOCK
                 , Notifications.SHOW_ACTION_PROGRESSBAR
                 , Notifications.HIDE_ACTION_PROGRESSBAR
                 , Notifications.APPLICATION_FAILURE
+                , Notifications.SAVE_PROJECT
                 , Notifications.SAVE_AS_PROJECT
                 , Notifications.SHOW_PROPERTIES_DIALOG
+                , Notifications.SHOW_ABOUT_DIALOG
                 , Notifications.IMPORT_SEQUENCE
                 , Notifications.IMPORT_TRACE
                 , Notifications.REMOVE_TRACE
+                , Notifications.GO_SUGGEST_FEATURE
+                , Notifications.GO_REPORT_BUG
             ];
         }
         

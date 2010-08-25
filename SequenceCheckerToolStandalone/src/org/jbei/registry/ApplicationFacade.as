@@ -112,11 +112,6 @@ package org.jbei.registry
             serviceProxy.saveSequenceCheckerProject(sessionId, _project);
         }
         
-        public function saveAsProject():void
-        {
-            serviceProxy.saveSequenceCheckerProject(sessionId, _project);
-        }
-        
         public function createProject():void
         {
             serviceProxy.createSequenceCheckerProject(sessionId, _project);

@@ -3,6 +3,7 @@
     <mx:Script>
         <![CDATA[
             import mx.events.ItemClickEvent;
+            
             [Embed(source='../assets/icons/save.png')]
             [Bindable]
             private var saveIcon:Class;
@@ -11,7 +12,7 @@
             [Bindable]
             private var importIcon:Class;
             
-            [Embed(source='../assets/icons/properties.png')]
+            [Embed(source='../assets/icons/project_properties.png')]
             [Bindable]
             private var propertiesIcon:Class;
             
@@ -49,10 +50,9 @@
         ]]>
     </mx:Script>
     <mx:Button width="32" height="32" id="saveButton" icon="{ saveIcon }" toolTip="Save Project" />
+    <mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Project Properties" />
     <mx:Spacer width="5" />
     <mx:Button width="32" height="32" id="importSequenceButton" icon="{ importIcon }" toolTip="Import Sequence" />
-    <mx:Spacer width="5" />
-    <mx:Button width="32" height="32" id="propertiesButton" icon="{ propertiesIcon }" toolTip="Properties" />
     <mx:Spacer width="5" />
     <mx:ToggleButtonBar 
         id="viewToggleButtonBar"
