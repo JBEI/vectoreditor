@@ -5,7 +5,7 @@ package org.jbei.registry
      */
     public class Constants
     {
-        public static const APPLICATION_NAME:String = "Sequence Checker";
+        public static const APPLICATION_NAME:String = "Sequence Checker (Beta)";
         
         public static const VERSION:String = "1.1.3";
         
