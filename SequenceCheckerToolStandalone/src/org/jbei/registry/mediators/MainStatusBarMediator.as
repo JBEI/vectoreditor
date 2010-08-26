@@ -40,13 +40,13 @@ package org.jbei.registry.mediators
                 case Notifications.SELECTION_CHANGED:
                     var selectionPositions:Array = notification.getBody() as Array;
                     
-                    /*if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().sequenceProvider) { 
+                    if(selectionPositions.length != 2 || !ApplicationFacade.getInstance().sequenceProvider) { 
                         mainStatusBar.selectionPositionLabel.text = "- : -";
                         
                         return; 
                     }
                     
-                    updateSelection(selectionPositions[0], selectionPositions[1]);*/
+                    updateSelection(selectionPositions[0], selectionPositions[1]);
                     
                     break;
                 case Notifications.ACTION_MESSAGE:
@@ -58,9 +58,9 @@ package org.jbei.registry.mediators
                     
                     break;
                 case Notifications.PROJECT_UPDATED:
-                    /*var seqLength:int = (ApplicationFacade.getInstance().sequenceProvider && ApplicationFacade.getInstance().sequenceProvider.sequence) ? ApplicationFacade.getInstance().sequenceProvider.sequence.length : -1;
+                    var seqLength:int = (ApplicationFacade.getInstance().sequenceProvider && ApplicationFacade.getInstance().sequenceProvider.sequence) ? ApplicationFacade.getInstance().sequenceProvider.sequence.length : -1;
                     
-                    updateSequenceLength(seqLength);*/
+                    updateSequenceLength(seqLength);
                     
                     break;
                 case Notifications.SELECTED_TRACE_SEQUENCE_CHANGED:
@@ -105,7 +105,7 @@ package org.jbei.registry.mediators
                 if (fromIndex < toIndex) {
                     selectionLength = toIndex - fromIndex;
                 } else {
-                    //selectionLength = toIndex + ApplicationFacade.getInstance().sequenceProvider.sequence.length - fromIndex;
+                    selectionLength = toIndex + ApplicationFacade.getInstance().sequenceProvider.sequence.length - fromIndex;
                 }
                 
                 mainStatusBar.selectionPositionLabel.text = String(fromIndex + 1) + " : " + String(toIndex) + " (" + String(selectionLength) + ")";
