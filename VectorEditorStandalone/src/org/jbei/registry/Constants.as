@@ -5,7 +5,7 @@ package org.jbei.registry
      */
 	public final class Constants
 	{
-        public static const APPLICATION_NAME:String = "Vector Editor";
+        public static const APPLICATION_NAME:String = "Vector Editor (Beta)";
         
 		public static const VERSION:String = "1.3.1";
 		

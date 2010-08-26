@@ -26,6 +26,7 @@ package org.jbei.registry.mediators
             mainMenu.addEventListener(MainMenu.SAVE_PROJECT, onSaveProject);
             mainMenu.addEventListener(MainMenu.SAVE_PROJECT_AS, onSaveProjectAs);
             mainMenu.addEventListener(MainMenu.SHOW_PROJECT_PROPERTIES_DIALOG, onShowProjectPropertiesDialog);
+            mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE, onImportSequence);
             mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
 			mainMenu.addEventListener(MainMenu.SHOW_PIE, onShowPie);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
@@ -109,8 +110,8 @@ package org.jbei.registry.mediators
 					mainMenu.menuItemByName("showAA1MenuItem").toggled = false;
 					break;
 				case Notifications.ACTION_STACK_CHANGED:
-					//mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.undoStackIsEmpty;
-					//mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().actionStack.redoStackIsEmpty;
+					mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().isUndoStackEmpty;
+					mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().isRedoStackEmpty;
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().hasWritablePermissions) {
@@ -321,6 +322,11 @@ package org.jbei.registry.mediators
         private function onShowProjectPropertiesDialog(event:MenuItemEvent):void
         {
             sendNotification(Notifications.SHOW_PROJECT_PROPERTIES_DIALOG);
+        }
+        
+        private function onImportSequence(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.IMPORT_SEQUENCE);
         }
 	}
 }

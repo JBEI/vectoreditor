@@ -23,19 +23,21 @@ package org.jbei.registry.mediators
 		public override function listNotificationInterests():Array 
 		{
 			return [
-				Notifications.GENBANK_FETCHED
+				Notifications.SEQUENCE_GENERATED_AND_FETCHED
 			];
 		}
 		
 		public override function handleNotification(notification:INotification):void
 		{
 			switch(notification.getName()) {
-				case Notifications.GENBANK_FETCHED:
+				case Notifications.SEQUENCE_GENERATED_AND_FETCHED:
 					var genbankBox:GenBankBox = (viewComponent as GenBankBox);
 					
 					if(notification.getBody()) {
-						genbankBox.updateTextArea(notification.getBody() as String);
-					}
+						genbankBox.genbankTextArea.text = notification.getBody() as String;
+					} else {
+                        genbankBox.genbankTextArea.text = "";
+                    }
 					
 					break;
 			}

@@ -143,6 +143,16 @@ package org.jbei.registry
             return _hasWritablePermissions; 
         }
         
+        public function get isUndoStackEmpty():Boolean
+        {
+            return actionStack.undoStackIsEmpty;
+        }
+        
+        public function get isRedoStackEmpty():Boolean
+        {
+            return actionStack.redoStackIsEmpty;
+        }
+        
 		// System Public Methods
 		public static function getInstance():ApplicationFacade
 		{
@@ -222,11 +232,15 @@ package org.jbei.registry
         
         public function saveProject():void
         {
+            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
+            
             _serviceProxy.saveVectorEditorProject(sessionId, _project);
         }
         
         public function createProject():void
         {
+            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
+            
             _serviceProxy.createVectorEditorProject(sessionId, _project);
         }
         
@@ -234,7 +248,7 @@ package org.jbei.registry
         {
             _project = newProject;
             
-            sendNotification(Notifications.SEQUENCE_UPDATED);
+            sendNotification(Notifications.SEQUENCE_UPDATED, _project.featuredDNASequence);
         }
         
         public function updateSequence(featuredDNASequence:FeaturedDNASequence):void
@@ -247,9 +261,7 @@ package org.jbei.registry
                 _sequence = featuredDNASequence;
             }
             
-            sequenceFetched();
-            
-            //sendNotification(Notifications.UPDATE_SEQUENCE);
+            loadSequence();
             
             if(ApplicationFacade.getInstance().sequenceProvider.circular) {
                 sendNotification(Notifications.SHOW_PIE);
@@ -290,6 +302,16 @@ package org.jbei.registry
             sendNotification(Notifications.ENTRY_PERMISSIONS_CHANGED);
         }
         
+        public function importSequence(data:String):void
+        {
+            serviceProxy.parseSequenceFile(data);
+        }
+        
+        public function generateAndFetchSequence():void
+        {
+            serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+        }
+        
         // Event Handlers
 		private function onActionStackChanged(event:ActionStackEvent):void
 		{
@@ -321,7 +343,7 @@ package org.jbei.registry
             sendNotification(Notifications.PROJECT_UPDATED, _project);
         }
         
-        private function sequenceFetched():void
+        private function loadSequence():void
         {
             sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
             
@@ -336,14 +358,14 @@ package org.jbei.registry
             
             var reMapper:RestrictionEnzymeMapper = new RestrictionEnzymeMapper(sequenceProvider, restrictionEnzymeGroup);
             
-            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
-            
             var aaMapper:AAMapper = new AAMapper(sequenceProvider);
             
             _sequenceProvider = sequenceProvider;
             _orfMapper = orfMapper;
             _restrictionEnzymeMapper = reMapper;
             _aaMapper = aaMapper;
+            
+            sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
         }
 	}
 }

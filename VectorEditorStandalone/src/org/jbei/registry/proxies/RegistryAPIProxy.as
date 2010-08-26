@@ -100,16 +100,16 @@ package org.jbei.registry.proxies
             service.hasWritablePermissions(sessionId, entryId);
         }
         
-		public function generateGenBank(sessionId:String, featuredDNASequence:FeaturedDNASequence, name:String, isCircular:Boolean):void
+		public function generateSequence(sessionId:String, featuredDNASequence:FeaturedDNASequence):void
 		{
             sendNotification(Notifications.LOCK);
             
-            service.generateGenBank(sessionId, featuredDNASequence, name, isCircular);
+            service.generateGenBank(sessionId, featuredDNASequence, featuredDNASequence.name, featuredDNASequence.isCircular);
 		}
 		
         public function parseSequenceFile(data:String):void
         {
-            sendNotification(Notifications.LOCK);
+            sendNotification(Notifications.LOCK, "Parsing sequence file ...");
             
             service.parseSequenceFile(data);
         }
@@ -291,20 +291,24 @@ package org.jbei.registry.proxies
 			
             sendNotification(Notifications.UNLOCK);
 			
-			sendNotification(Notifications.GENBANK_FETCHED, event.result as String);
+			sendNotification(Notifications.SEQUENCE_GENERATED_AND_FETCHED, event.result as String);
 			
 			Logger.getInstance().info("Genbank file generated and fetched successfully");
 		}
 		
         private function onParseSequenceFileResult(event:ResultEvent):void
         {
-            if(event.result == null) {
+            sendNotification(Notifications.UNLOCK);
+            
+            if(!event.result) {
                 Alert.show("Failed to parse sequence file", "Failed to parse");
                 
                 return;
             }
             
-            updateSequence(event.result as FeaturedDNASequence);
+            sendNotification(Notifications.ACTION_MESSAGE, "Sequence parsed successfully");
+            
+            sendNotification(Notifications.SEQUENCE_UPDATED, event.result as FeaturedDNASequence);
         }
         
         private function onGenerateSequenceFileResult(event:ResultEvent):void

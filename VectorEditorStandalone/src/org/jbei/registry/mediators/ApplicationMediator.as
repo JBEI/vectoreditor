@@ -1,5 +1,9 @@
 package org.jbei.registry.mediators
 {
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.net.FileReference;
+	
 	import mx.controls.Alert;
 	import mx.core.Application;
 	
@@ -38,6 +42,7 @@ package org.jbei.registry.mediators
 		
         private var applicationPanel:ApplicationPanel;
         private var applicationFacade:ApplicationFacade;
+        private var importSequenceFileReference:FileReference;
         
 		// Constructor
         public function ApplicationMediator(viewComponent:Object=null)
@@ -70,6 +75,7 @@ package org.jbei.registry.mediators
                 , Notifications.SAVE_PROJECT
                 , Notifications.SAVE_PROJECT_AS
                 , Notifications.SHOW_PROJECT_PROPERTIES_DIALOG
+                , Notifications.IMPORT_SEQUENCE
                 , Notifications.PROJECT_UPDATED
                 , Notifications.SEQUENCE_UPDATED
                 
@@ -194,6 +200,10 @@ package org.jbei.registry.mediators
 					showAboutDialog();
 					
 					break;
+                case Notifications.IMPORT_SEQUENCE:
+                    importSequence();
+                    
+                    break;
 			}
 		}
 		
@@ -229,6 +239,27 @@ package org.jbei.registry.mediators
             } else {
                 applicationFacade.createProject();
             }
+        }
+        
+        private function onImportSequenceFileReferenceSelect(event:Event):void
+        {
+            importSequenceFileReference.load();
+        }
+        
+        private function onImportSequenceFileReferenceComplete(event:Event):void
+        {
+            if(importSequenceFileReference.data == null) {
+                showFileImportErrorAlert("Empty file!");
+                
+                return;
+            }
+            
+            ApplicationFacade.getInstance().importSequence(importSequenceFileReference.data.toString());
+        }
+        
+        private function onImportSequenceFileReferenceLoadError(event:IOErrorEvent):void
+        {
+            showFileImportErrorAlert(event.text);
         }
         
 		// Private Methods
@@ -388,6 +419,20 @@ package org.jbei.registry.mediators
         private function updateProject(project:VectorEditorProject):void
         {
             applicationFacade.updateProject(project);
+        }
+        
+        private function importSequence():void
+        {
+            importSequenceFileReference = new FileReference();
+            importSequenceFileReference.addEventListener(Event.SELECT, onImportSequenceFileReferenceSelect);
+            importSequenceFileReference.addEventListener(Event.COMPLETE, onImportSequenceFileReferenceComplete);
+            importSequenceFileReference.addEventListener(IOErrorEvent.IO_ERROR, onImportSequenceFileReferenceLoadError);
+            importSequenceFileReference.browse();
+        }
+        
+        private function showFileImportErrorAlert(message:String):void
+        {
+            Alert.show("Failed to open file!", message);
         }
 	}
 }

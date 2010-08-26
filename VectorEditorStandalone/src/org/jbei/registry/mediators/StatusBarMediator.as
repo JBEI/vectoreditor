@@ -91,10 +91,10 @@ package org.jbei.registry.mediators
 					}
 					
 					break;
-				case Notifications.ENTRY_PERMISSIONS_CHANGED:
+				/*case Notifications.ENTRY_PERMISSIONS_CHANGED:
 					statusBar.sequenceStatusLabel.text = ApplicationFacade.getInstance().hasWritablePermissions ? "Writable" : "Read Only";
 					
-					break;
+					break;*/
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().sequenceProvider) {
 						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().sequenceProvider.sequence.length);

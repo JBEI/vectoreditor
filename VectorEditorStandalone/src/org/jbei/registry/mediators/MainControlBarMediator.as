@@ -80,8 +80,9 @@ package org.jbei.registry.mediators
 					controlBar.showORFsButton.selected = (notification.getBody() as Boolean);
 					break;
 				case Notifications.ACTION_STACK_CHANGED:
-					//controlBar.updateUndoButtonState(!applicationFacade.actionStack.undoStackIsEmpty);
-					//controlBar.updateRedoButtonState(!applicationFacade.actionStack.redoStackIsEmpty);
+					controlBar.updateUndoButtonState(!applicationFacade.isUndoStackEmpty);
+					controlBar.updateRedoButtonState(!applicationFacade.isRedoStackEmpty);
+                    
 					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(applicationFacade.hasWritablePermissions) {

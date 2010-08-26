@@ -11,6 +11,7 @@
 			public static const SAVE_PROJECT:String = "SaveProject";
             public static const SAVE_PROJECT_AS:String = "SaveProjectAs";
             public static const SHOW_PROJECT_PROPERTIES_DIALOG:String = "ShowProjectPropertiesDialog";
+            public static const IMPORT_SEQUENCE:String = "ImportSequence";
 			public static const PRINT_SEQUENCE:String = "PrintSequence";
 			public static const PRINT_PIE:String = "PrintPie";
 			public static const PRINT_RAIL:String = "PrintRail";
@@ -75,18 +76,21 @@
             	
             	// File
             	var fileMenuItem:MenuItem = new MenuItem("fileMenuItem", "File");
+                var saveProjectMenuItem:MenuItem = new MenuItem("saveProjectMenuItem", "Save Project");
+                var saveProjectAsMenuItem:MenuItem = new MenuItem("saveProjectAsMenuItem", "Save Project As ...");
+                var projectPropertiesMenuItem:MenuItem = new MenuItem("projectPropertiesMenuItem", "Project Properties");
+                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Sequence");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
                 var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
 				var printRailMenuItem:MenuItem = new MenuItem("printRailMenuItem", "Linear View");
-                var saveProjectMenuItem:MenuItem = new MenuItem("saveProjectMenuItem", "Save Project");
-                var saveProjectAsMenuItem:MenuItem = new MenuItem("saveProjectAsMenuItem", "Save Project As ...");
-                var projectPropertiesMenuItem:MenuItem = new MenuItem("projectPropertiesMenuItem", "Project Properties");
                 
                 CONFIG::registryEdition {
                     fileMenuItem.addSubItem(saveProjectMenuItem);
                     fileMenuItem.addSubItem(saveProjectAsMenuItem);
                     fileMenuItem.addSubItem(projectPropertiesMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
+                    fileMenuItem.addSubItem(importSequenceMenuItem);
                     fileMenuItem.addSubItem(separatorMenuItem);
                 }
                 
@@ -95,10 +99,17 @@
                     fileMenuItem.addSubItem(saveProjectAsMenuItem);
                     fileMenuItem.addSubItem(projectPropertiesMenuItem);
                     fileMenuItem.addSubItem(separatorMenuItem);
+                    fileMenuItem.addSubItem(importSequenceMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
                 }
                 
                 fileMenuItem.addSubItem(printMenuItem);
             	
+                // File -> Print
+                printMenuItem.addSubItem(printSequenceMenuItem);
+                printMenuItem.addSubItem(printPieMenuItem);
+                printMenuItem.addSubItem(printRailMenuItem);
+                
             	// Edit
             	var editMenuItem:MenuItem = new MenuItem("editMenuItem", "Edit");
             	var undoMenuItem:MenuItem = new MenuItem("undoMenuItem", "Undo", "", false, false, false);
@@ -183,11 +194,6 @@
 				helpMenuItem.addSubItem(separatorMenuItem);
             	helpMenuItem.addSubItem(aboutMenuItem);
 				
-				// File -> Print
-				printMenuItem.addSubItem(printSequenceMenuItem);
-				printMenuItem.addSubItem(printPieMenuItem);
-				printMenuItem.addSubItem(printRailMenuItem);
-				
             	menuItems = [fileMenuItem, editMenuItem, viewMenuItem, toolsMenuItem, helpMenuItem];
             	
             	// File
@@ -196,7 +202,13 @@
                 menuItemsMap["saveProjectAsMenuItem"] = saveProjectAsMenuItem;
                 menuItemsMap["projectPropertiesMenuItem"] = projectPropertiesMenuItem;
                 menuItemsMap["printMenuItem"] = printMenuItem;
+                menuItemsMap["importSequenceMenuItem"] = importSequenceMenuItem;
             	
+                // File->Print
+                menuItemsMap["printSequenceMenuItem"] = printSequenceMenuItem;
+                menuItemsMap["printRailMenuItem"] = printRailMenuItem;
+                menuItemsMap["printPieMenuItem"] = printPieMenuItem;
+                
             	// Edit
             	menuItemsMap["editMenuItem"] = editMenuItem;
             	menuItemsMap["undoMenuItem"] = undoMenuItem;
@@ -238,11 +250,6 @@
 				menuItemsMap["suggestFeatureMenuItem"] = suggestFeatureMenuItem;
 				menuItemsMap["reportBugMenuItem"] = reportBugMenuItem;
             	menuItemsMap["aboutMenuItem"] = aboutMenuItem;
-				
-				// File->Print
-				menuItemsMap["printSequenceMenuItem"] = printSequenceMenuItem;
-				menuItemsMap["printRailMenuItem"] = printRailMenuItem;
-				menuItemsMap["printPieMenuItem"] = printPieMenuItem;
             }
             
             private function onMenuItemClick(event:MenuEvent):void
@@ -323,6 +330,8 @@
                     dispatchEvent(new MenuItemEvent(SHOW_PROJECT_PROPERTIES_DIALOG, menuItem));
             	} else if(menuItem.id == "reverseComplementMenuItem") {
                     dispatchEvent(new MenuItemEvent(REVERSE_COMPLEMENT, menuItem));
+                } else if(menuItem.id == "importSequenceMenuItem") {
+                    dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE, menuItem));
                 }
             }
 		]]>

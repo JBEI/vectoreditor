@@ -6,12 +6,11 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.jbei.registry.ApplicationFacade;
-			import org.jbei.registry.mediators.GenbankPropertyTabMediator;
-			import org.jbei.registry.proxies.RegistryAPIProxy;
-			import org.jbei.registry.utils.FeaturedDNASequenceUtils;
-			import org.jbei.lib.utils.SystemUtils;
-			
+            import org.jbei.lib.utils.SystemUtils;
+            import org.jbei.registry.ApplicationFacade;
+            import org.jbei.registry.mediators.GenbankPropertyTabMediator;
+            
+            // Event handlers
 			private function onInitialize(event:Event):void
 			{
 				if(!ApplicationFacade.getInstance().hasMediator(GenbankPropertyTabMediator.NAME)) {
@@ -24,12 +23,7 @@
 					return;
 				}
 				
-				//ApplicationFacade.getInstance().serviceProxy.generateGenBank(ApplicationFacade.getInstance().sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(ApplicationFacade.getInstance().sequenceProvider), ApplicationFacade.getInstance().sequenceProvider.name, ApplicationFacade.getInstance().sequenceProvider.circular);
-			}
-			
-			public function updateTextArea(genbankSequence:String):void
-			{
-				genbankTextArea.text = genbankSequence;
+				ApplicationFacade.getInstance().generateAndFetchSequence();
 			}
 		]]>
 	</mx:Script>
