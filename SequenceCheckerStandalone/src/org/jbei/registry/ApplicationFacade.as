@@ -25,6 +25,7 @@ package org.jbei.registry
         private var _sessionId:String;
         private var _sequenceProvider:SequenceProvider;
         private var _traces:ArrayCollection;
+        private var _visibleTraces:ArrayCollection;
         private var _traceMapper:TraceMapper;
         
         // Properties
@@ -157,7 +158,14 @@ package org.jbei.registry
         {
             _traces = traces;
             
-            traceMapper = new TraceMapper(_sequenceProvider, traces);
+            updateVisibleTraces(_traces);
+        }
+        
+        public function updateVisibleTraces(visibleTraces:ArrayCollection):void
+        {
+            _visibleTraces = visibleTraces;
+            
+            traceMapper = new TraceMapper(_sequenceProvider, _visibleTraces);
             
             sendNotification(Notifications.LOAD_SEQUENCE);
             

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="40%" height="100%">
-	<mx:DataGrid id="tracesDataGrid" width="100%" height="100%">
-		<mx:columns>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="40%" height="100%" xmlns:components="org.jbei.components.*">
+	<components:CheckboxGrid id="tracesDataGrid" width="100%" height="100%" sortableColumns="false" draggableColumns="false">
+		<components:columns>
 			<mx:DataGridColumn dataField="filename" headerText="Name" />
 			<mx:DataGridColumn dataField="traceSequenceAlignment.score" headerText="Score" width="50" />
-		</mx:columns>
-	</mx:DataGrid>
+		</components:columns>
+	</components:CheckboxGrid>
 </mx:Canvas>

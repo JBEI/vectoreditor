@@ -3,6 +3,7 @@ package org.jbei.registry.mediators
 	import mx.collections.ArrayCollection;
 	import mx.events.ListEvent;
 	
+	import org.jbei.components.checboxGridClasses.CheckboxGridEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.TraceSequence;
@@ -28,6 +29,7 @@ package org.jbei.registry.mediators
 			tracesListPanel = viewComponent as TracesListPanel;
 			
 			tracesListPanel.tracesDataGrid.addEventListener(ListEvent.CHANGE, onTracesDataGridChange);
+            tracesListPanel.tracesDataGrid.addEventListener(CheckboxGridEvent.CHECKBOX_SELECTION_CHANGED, onTracesDataGridCheckboxChange);
 		}
 		
 		// Public Methods
@@ -87,5 +89,23 @@ package org.jbei.registry.mediators
 		private function onTracesDataGridChange(event:ListEvent):void {
 			sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, ((event.itemRenderer.data == null) ? null : (event.itemRenderer.data as TraceSequence)));
 		}
+        
+        private function onTracesDataGridCheckboxChange(event:CheckboxGridEvent):void
+        {
+            if(!tracesListPanel.tracesDataGrid.checkSelectionMap) {
+                return;
+            }
+            
+            var newVisibleTraces:ArrayCollection = new ArrayCollection();
+            var allTraces:ArrayCollection = ApplicationFacade.getInstance().traces;
+            
+            for(var i:int = 0; i < allTraces.length; i++) {
+                if(tracesListPanel.tracesDataGrid.checkSelectionMap[allTraces.getItemAt(i)]) {
+                    newVisibleTraces.addItem(allTraces.getItemAt(i));
+                }
+            }
+            
+            ApplicationFacade.getInstance().updateVisibleTraces(newVisibleTraces);
+        }
 	}
 }
