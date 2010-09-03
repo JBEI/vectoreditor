@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" headerRelease="{stopEvent(event)}" allowMultipleSelection="false">
+    <mx:DataGridColumn id="selectColumn" editable="false" width="30" resizable="false">
+        <!--<mx:headerRenderer>
+            <mx:Component>
+                <mx:Canvas width="30" height="100%" click="{outerDocument.headerCheckboxClicked(event)}">
+                    <mx:CheckBox x="8" id="headerCheckbox" mouseEnabled="false" selected="{outerDocument.allItemsSelected(outerDocument.selectedItems)}" />
+                </mx:Canvas>
+            </mx:Component>
+        </mx:headerRenderer>-->
+        
+        <mx:itemRenderer>
+            <mx:Component>
+                <mx:Canvas width="30" height="100%">
+                    <mx:CheckBox id="selectedBox" x="8" selected="true" click="outerDocument.itemCheckboxClick(event)" toolTip="Show/Hide Trace" creationComplete="outerDocument.checkBoxCreationComplete(event)"/>
+                </mx:Canvas>
+            </mx:Component>
+        </mx:itemRenderer>
+    </mx:DataGridColumn>
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            import org.jbei.components.checboxGridClasses.CheckboxGridEvent;
+            [Event(name="checkboxSelectionChanged", type="org.jbei.components.checboxGridClasses.CheckboxGridEvent")]
+            
+            import mx.collections.ListCollectionView;
+            import mx.controls.CheckBox;
+            import mx.controls.listClasses.IListItemRenderer;
+            import mx.events.DataGridEvent;
+            
+            private var _checkSelectionMap:Dictionary = new Dictionary();
+            private var checkboxesMap:Dictionary = new Dictionary();
+            private var currentCheckboxIndex:int = 0;
+            
+            public function get checkSelectionMap():Dictionary
+            {
+                return _checkSelectionMap;
+            }
+            
+            public function itemCheckboxClick(event:MouseEvent):void
+            {
+                if(event.currentTarget is CheckBox) {
+                    var dataObject:Object = checkboxesMap[event.currentTarget as CheckBox];
+                    
+                    _checkSelectionMap[dataObject] = (event.currentTarget as CheckBox).selected;
+                    
+                    dispatchEvent(new CheckboxGridEvent(CheckboxGridEvent.CHECKBOX_SELECTION_CHANGED));
+                }
+            }
+            
+            public function checkBoxCreationComplete(event:Event):void
+            {
+                if(currentCheckboxIndex >= (dataProvider as ArrayCollection).length) {
+                    return;
+                }
+                
+                var dataObject:Object = (dataProvider as ArrayCollection).getItemAt(currentCheckboxIndex);
+                
+                _checkSelectionMap[dataObject] = true;
+                checkboxesMap[event.currentTarget] = dataObject;
+                
+                currentCheckboxIndex++;
+            }
+            
+            public override function set columns(value:Array):void
+            {
+                var newColumns:Array = value.slice();
+                
+                if(newColumns.indexOf(selectColumn) == -1) {
+                    newColumns.unshift(selectColumn);
+                }
+                
+                super.columns = newColumns;
+            }
+            
+            public function stopEvent(event:DataGridEvent):void
+            {
+                if(columns[event.columnIndex] == selectColumn) {
+                    event.stopImmediatePropagation();
+                    event.preventDefault();
+                }
+            }
+            
+            /*public function headerCheckboxClicked(event:Event):void
+            {
+                //Either select or deselect all the rows
+                if(allItemsSelected()) {
+                    //Clear all selected items
+                    selectedItems = new Array();
+                } else {
+                    //Select the entire grid			
+                    if(dataProvider is ListCollectionView) {
+                        selectedItems = (dataProvider as ListCollectionView).toArray();
+                    }							
+                }
+            }
+            
+            public function allItemsSelected(items:Array = null):Boolean
+            {
+                if(dataProvider is ListCollectionView) {
+                    if((dataProvider as ListCollectionView).length > 0) {
+                        return selectedItems.length == (dataProvider as ListCollectionView).length;
+                    }
+                }
+                
+                return false;   			   			
+            }*/
+        ]]>
+    </mx:Script>	
+</mx:DataGrid>
