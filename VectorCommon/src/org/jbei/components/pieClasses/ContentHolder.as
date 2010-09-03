@@ -1416,6 +1416,10 @@ package org.jbei.components.pieClasses
 				labelRadius += maxORFAlignmentRow * ORFRenderer.DISTANCE_BETWEEN_ORFS;
 			}
 			
+            if(_showTraces && maxTracesAlignmentRow > 0) {
+                labelRadius += maxTracesAlignmentRow * TraceRenderer.DISTANCE_BETWEEN_TRACES;
+            }
+            
 			// Scale Right Top Labels
 			var lastLabelYPosition:Number = _center.y - 15; // -15 to count label height
 			var numberOfRightTopLabels:uint = rightTopLabels.length;

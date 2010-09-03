@@ -1384,6 +1384,11 @@ package org.jbei.components.railClasses
 			
 			// Calculate Vertical Position
 			var previousYPosition1:Number = _railMetrics.y - LABELS_RAIL_GAP;
+            
+            if(_showTraces && maxTracesAlignmentRow > 0) {
+                previousYPosition1 -= maxTracesAlignmentRow * TraceRenderer.DEFAULT_GAP;
+            }
+            
 			for(var j1:uint = 0; j1 < numberOfLeftLabels; j1++) {
 				var leftLabelBox2:LabelBox = leftLabels[j1] as LabelBox;
 				
@@ -1422,6 +1427,11 @@ package org.jbei.components.railClasses
 			
 			// Calculate Vertical Position
 			var previousYPosition2:Number = _railMetrics.y - LABELS_RAIL_GAP;
+            
+            if(_showTraces && maxTracesAlignmentRow > 0) {
+                previousYPosition2 -= maxTracesAlignmentRow * TraceRenderer.DEFAULT_GAP;
+            }
+            
 			for(var j2:int = numberOfRightLabels - 1; j2 >= 0; j2--) {
 				var rightLabelBox2:LabelBox = rightLabels[j2] as LabelBox;
 				
