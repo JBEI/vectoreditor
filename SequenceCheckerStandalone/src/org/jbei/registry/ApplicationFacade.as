@@ -1,6 +1,7 @@
 package org.jbei.registry
 {
     import mx.collections.ArrayCollection;
+    import mx.events.CollectionEvent;
     
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.SequenceProviderEvent;
@@ -12,6 +13,8 @@ package org.jbei.registry
     import org.jbei.registry.mediators.StatusBarMediator;
     import org.jbei.registry.mediators.TracesListPanelMediator;
     import org.jbei.registry.models.FeaturedDNASequence;
+    import org.jbei.registry.models.TraceGridDataItem;
+    import org.jbei.registry.models.TraceSequence;
     import org.jbei.registry.proxies.RegistryAPIProxy;
     import org.jbei.registry.utils.FeaturedDNASequenceUtils;
     import org.jbei.registry.utils.StandaloneUtils;
@@ -25,7 +28,7 @@ package org.jbei.registry
         private var _sessionId:String;
         private var _sequenceProvider:SequenceProvider;
         private var _traces:ArrayCollection;
-        private var _visibleTraces:ArrayCollection;
+        private var _visibleTracesCollection:ArrayCollection;
         private var _traceMapper:TraceMapper;
         
         // Properties
@@ -87,6 +90,11 @@ package org.jbei.registry
         public function set traces(value:ArrayCollection):void
         {
             _traces = value;
+        }
+        
+        public function get visibleTracesCollection():ArrayCollection
+        {
+            return _visibleTracesCollection;
         }
         
         public function get traceMapper():TraceMapper
@@ -158,14 +166,31 @@ package org.jbei.registry
         {
             _traces = traces;
             
-            updateVisibleTraces(_traces);
+            _visibleTracesCollection = new ArrayCollection();
+            _visibleTracesCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, onVisibleTracesCollectionChange);
+            
+            if(_traces != null && _traces.length > 0) {
+                for(var i:int = 0; i < _traces.length; i++) {
+                    _visibleTracesCollection.addItem(new TraceGridDataItem(_traces.getItemAt(i) as TraceSequence, true));
+                }
+            }
+            
+            updateVisibleTraces();
         }
         
-        public function updateVisibleTraces(visibleTraces:ArrayCollection):void
+        public function updateVisibleTraces():void
         {
-            _visibleTraces = visibleTraces;
+            var newTraces:ArrayCollection = new ArrayCollection();
             
-            traceMapper = new TraceMapper(_sequenceProvider, _visibleTraces);
+            if(_visibleTracesCollection != null && _visibleTracesCollection.length > 0) {
+                for(var i:int = 0; i < _visibleTracesCollection.length; i++) {
+                    if(_visibleTracesCollection.getItemAt(i).selected) {
+                        newTraces.addItem(_visibleTracesCollection.getItemAt(i).traceData);
+                    }
+                }
+            }
+            
+            traceMapper = new TraceMapper(_sequenceProvider, newTraces);
             
             sendNotification(Notifications.LOAD_SEQUENCE);
             
@@ -173,6 +198,11 @@ package org.jbei.registry
         }
         
         // Private Methods
+        private function onVisibleTracesCollectionChange(event:CollectionEvent):void
+        {
+            updateVisibleTraces();
+        }
+        
         private function onSequenceProviderChanged(event:SequenceProviderEvent):void
         {
             sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);

@@ -1,9 +1,10 @@
 package org.jbei.registry.mediators
 {
 	import mx.collections.ArrayCollection;
+	import mx.events.CollectionEvent;
+	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	
-	import org.jbei.components.checboxGridClasses.CheckboxGridEvent;
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.TraceSequence;
@@ -29,9 +30,12 @@ package org.jbei.registry.mediators
 			tracesListPanel = viewComponent as TracesListPanel;
 			
 			tracesListPanel.tracesDataGrid.addEventListener(ListEvent.CHANGE, onTracesDataGridChange);
-            tracesListPanel.tracesDataGrid.addEventListener(CheckboxGridEvent.CHECKBOX_SELECTION_CHANGED, onTracesDataGridCheckboxChange);
-		}
-		
+            tracesListPanel.tracesDataGrid.addEventListener(FlexEvent.DATA_CHANGE, onDataChange);
+        }
+		private function onDataChange(event:FlexEvent):void
+        {
+            ApplicationFacade.getInstance().updateVisibleTraces();
+        }
 		// Public Methods
 		public override function listNotificationInterests():Array 
 		{
@@ -79,33 +83,11 @@ package org.jbei.registry.mediators
 		private function populateDataGrid():void {
 			traces = ApplicationFacade.getInstance().traces;
 			
-			tracesListPanel.tracesDataGrid.dataProvider = null;
-			
-			if(traces != null && traces.length > 0) {
-				tracesListPanel.tracesDataGrid.dataProvider = traces;
-			}
+            tracesListPanel.tracesDataGrid.dataProvider = ApplicationFacade.getInstance().visibleTracesCollection;
 		}
 		
-		private function onTracesDataGridChange(event:ListEvent):void {
-			sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, ((event.itemRenderer.data == null) ? null : (event.itemRenderer.data as TraceSequence)));
+        private function onTracesDataGridChange(event:ListEvent):void {
+			sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, ((event.itemRenderer.data == null) ? null : (event.itemRenderer.data.traceData as TraceSequence)));
 		}
-        
-        private function onTracesDataGridCheckboxChange(event:CheckboxGridEvent):void
-        {
-            if(!tracesListPanel.tracesDataGrid.checkSelectionMap) {
-                return;
-            }
-            
-            var newVisibleTraces:ArrayCollection = new ArrayCollection();
-            var allTraces:ArrayCollection = ApplicationFacade.getInstance().traces;
-            
-            for(var i:int = 0; i < allTraces.length; i++) {
-                if(tracesListPanel.tracesDataGrid.checkSelectionMap[allTraces.getItemAt(i)]) {
-                    newVisibleTraces.addItem(allTraces.getItemAt(i));
-                }
-            }
-            
-            ApplicationFacade.getInstance().updateVisibleTraces(newVisibleTraces);
-        }
 	}
 }
