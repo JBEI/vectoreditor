@@ -769,6 +769,52 @@ package org.jbei.lib
             manualUpdateEnd();
         }
         
+        public function rebaseSequence(rebasePosition:int):void
+        {
+            var seqLength:int = _sequence.length;
+            
+            if(rebasePosition == 0 || seqLength == 0 || rebasePosition == seqLength) {
+                return; // nothing to rebase;
+            }
+            
+            if(rebasePosition > seqLength) {
+                throw new Error("Invaid rebase position: " + rebasePosition);
+            }
+            
+            manualUpdateStart();
+            
+            needsRecalculateComplementSequence = true;
+            needsRecalculateReverseComplementSequence = true;
+            
+            // rebase sequence
+            var tmpSequence:SymbolList = _sequence.subList(0, rebasePosition);
+            _sequence.deleteSymbols(0, rebasePosition);
+            _sequence.addSymbols(tmpSequence);
+            
+            // rebase features
+            if(_features && _features.length > 0) {
+                for(var i:int = 0; i < _features.length; i++) {
+                    var feature:Feature = _features.getItemAt(i) as Feature;
+                    
+                    var start:int = feature.start - rebasePosition;
+                    var end:int = feature.end - rebasePosition;
+                    
+                    if(start < 0) {
+                        start = seqLength - (-start);
+                    }
+                    
+                    if(end < 0) {
+                        end = seqLength - (-end);
+                    }
+                    
+                    feature.start = start;
+                    feature.end = end;
+                }
+            }
+            
+            manualUpdateEnd();
+        }
+        
         // Private Methods
         private function updateComplementSequence():void
         {
