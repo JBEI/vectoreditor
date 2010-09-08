@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="40%" height="100%" xmlns:components="org.jbei.components.*">
-	<components:CheckboxGrid id="tracesDataGrid" width="100%" height="100%" sortableColumns="false" draggableColumns="false">
+	<components:CheckboxGrid id="tracesDataGrid" width="100%" height="100%" sortableColumns="false" draggableColumns="false" dragMoveEnabled="true" dragEnabled="true" dropEnabled="true">
 		<components:columns>
 			<mx:DataGridColumn dataField="traceData.filename" headerText="Name" />
 			<mx:DataGridColumn dataField="traceData.traceSequenceAlignment.score" headerText="Score" width="50" />
