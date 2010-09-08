@@ -61,6 +61,7 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.GO_SUGGEST_FEATURE_WEB_LINK, onGoSuggestFeatureWebLink);
 			mainMenu.addEventListener(MainMenu.SAFE_EDITING_CHANGED, onSafeEditingChanged);
             mainMenu.addEventListener(MainMenu.REVERSE_COMPLEMENT, onReverseComplement);
+            mainMenu.addEventListener(MainMenu.REBASE_SEQUENCE, onRebaseSequence);
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -327,6 +328,11 @@ package org.jbei.registry.mediators
         private function onImportSequence(event:MenuItemEvent):void
         {
             sendNotification(Notifications.IMPORT_SEQUENCE);
+        }
+        
+        private function onRebaseSequence(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.REBASE_SEQUENCE);
         }
 	}
 }

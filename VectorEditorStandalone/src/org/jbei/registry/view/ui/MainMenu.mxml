@@ -29,6 +29,7 @@
 			public static const SHOW_FIND_DIALOG:String = "ShowFindDialog";
 			public static const SAFE_EDITING_CHANGED:String = "SafeEditingChanged";
             public static const REVERSE_COMPLEMENT:String = "ReverseComplement";
+            public static const REBASE_SEQUENCE:String = "RebaseSequence";
 			
 			// View
 			public static const SHOW_RAIL:String = "ShowRail";
@@ -123,6 +124,7 @@
 				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
 				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To...");
                 var reverseComplementMenuItem:MenuItem = new MenuItem("reverseComplementMenuItem", "Reverse Complement");
+                var rebaseMenuItem:MenuItem = new MenuItem("rebaseMenuItem", "Rebase Sequence");
                 editMenuItem.addSubItem(undoMenuItem);
             	editMenuItem.addSubItem(redoMenuItem);
             	editMenuItem.addSubItem(separatorMenuItem);
@@ -139,6 +141,7 @@
 				editMenuItem.addSubItem(selectAllMenuItem);
                 editMenuItem.addSubItem(separatorMenuItem);
                 editMenuItem.addSubItem(reverseComplementMenuItem);
+                editMenuItem.addSubItem(rebaseMenuItem);
                 
 				// View
             	var viewMenuItem:MenuItem = new MenuItem("viewMenuItem", "View");
@@ -222,6 +225,7 @@
 				menuItemsMap["gotoMenuItem"] = gotoMenuItem;
 				menuItemsMap["findMenuItem"] = findMenuItem;
                 menuItemsMap["reverseComplementMenuItem"] = reverseComplementMenuItem;
+                menuItemsMap["rebaseMenuItem"] = rebaseMenuItem;
                 
             	// View
             	menuItemsMap["viewMenuItem"] = viewMenuItem;
@@ -332,6 +336,8 @@
                     dispatchEvent(new MenuItemEvent(REVERSE_COMPLEMENT, menuItem));
                 } else if(menuItem.id == "importSequenceMenuItem") {
                     dispatchEvent(new MenuItemEvent(IMPORT_SEQUENCE, menuItem));
+                } else if(menuItem.id == "rebaseMenuItem") {
+                    dispatchEvent(new MenuItemEvent(REBASE_SEQUENCE, menuItem));
                 }
             }
 		]]>

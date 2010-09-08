@@ -82,6 +82,7 @@ package org.jbei.registry.mediators
                 , Notifications.SEQUENCE_PROVIDER_CHANGED
                 , Notifications.UNDO
                 , Notifications.REDO
+                , Notifications.REBASE_SEQUENCE
                 
 				, Notifications.SHOW_PREFERENCES_DIALOG
 				, Notifications.SHOW_PROPERTIES_DIALOG
@@ -202,6 +203,10 @@ package org.jbei.registry.mediators
 					break;
                 case Notifications.IMPORT_SEQUENCE:
                     importSequence();
+                    
+                    break;
+                case Notifications.REBASE_SEQUENCE:
+                    rebaseSequence();
                     
                     break;
 			}
@@ -433,6 +438,15 @@ package org.jbei.registry.mediators
         private function showFileImportErrorAlert(message:String):void
         {
             Alert.show("Failed to open file!", message);
+        }
+        
+        private function rebaseSequence():void
+        {
+            if(!applicationFacade.sequenceProvider || !applicationFacade.sequenceProvider.circular || applicationFacade.sequenceProvider.sequence.length == 0 || applicationFacade.caretPosition <= 0) {
+                return;
+            }
+            
+            applicationFacade.sequenceProvider.rebaseSequence(applicationFacade.caretPosition);
         }
 	}
 }

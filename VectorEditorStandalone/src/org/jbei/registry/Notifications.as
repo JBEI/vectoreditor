@@ -76,5 +76,6 @@ package org.jbei.registry
         public static const PROJECT_UPDATED:String = "PROJECT_UPDATED";
         public static const SEQUENCE_UPDATED:String = "SEQUENCE_UPDATED";
         public static const IMPORT_SEQUENCE:String = "IMPORT_SEQUENCE";
+        public static const REBASE_SEQUENCE:String = "REBASE_SEQUENCE";
 	}
 }
