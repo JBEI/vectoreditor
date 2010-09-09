@@ -23,6 +23,7 @@ package org.jbei.registry
         public static const ENTRY_PERMISSIONS_CHANGED:String = "ENTRY_PERMISSIONS_CHANGED";
 		public static const GENERATE_AND_FETCH_SEQUENCE:String = "GENERATE_AND_FETCH_SEQUENCE";
 		public static const SEQUENCE_GENERATED_AND_FETCHED:String = "SEQUENCE_GENERATED_AND_FETCHED";
+        public static const SEQUENCE_FILE_GENERATED:String = "SEQUENCE_FILE_GENERATED";
 		
 		public static const UNDO:String = "UNDO";
 		public static const REDO:String = "REDO";
@@ -70,12 +71,14 @@ package org.jbei.registry
 		public static const PRINT_RAIL:String = "PRINT_RAIL";
 		public static const PRINT_PIE:String = "PRINT_PIE";
         
+        public static const SAVE_TO_REGISTRY:String = "SAVE_TO_REGISTRY";
         public static const SAVE_PROJECT:String = "SAVE_PROJECT";
         public static const SAVE_PROJECT_AS:String = "SAVE_PROJECT_AS";
         public static const SHOW_PROJECT_PROPERTIES_DIALOG:String = "SHOW_PROJECT_PROPERTIES_DIALOG";
         public static const PROJECT_UPDATED:String = "PROJECT_UPDATED";
         public static const SEQUENCE_UPDATED:String = "SEQUENCE_UPDATED";
         public static const IMPORT_SEQUENCE:String = "IMPORT_SEQUENCE";
+        public static const DOWNLOAD_SEQUENCE:String = "DOWNLOAD_SEQUENCE";
         public static const REBASE_SEQUENCE:String = "REBASE_SEQUENCE";
 	}
 }

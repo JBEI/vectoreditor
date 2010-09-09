@@ -13,17 +13,15 @@
             // Event handlers
 			private function onInitialize(event:Event):void
 			{
-				if(!ApplicationFacade.getInstance().hasMediator(GenbankPropertyTabMediator.NAME)) {
-					ApplicationFacade.getInstance().registerMediator(new GenbankPropertyTabMediator(this));
+                var applicationFacade:ApplicationFacade = ApplicationFacade.getInstance();
+                
+				if(!applicationFacade.hasMediator(GenbankPropertyTabMediator.NAME)) {
+                    applicationFacade.registerMediator(new GenbankPropertyTabMediator(this));
 				}
 				
 				genbankTextArea.text = "";
 				
-				if (ApplicationFacade.getInstance().sequenceProvider == null) {
-					return;
-				}
-				
-				ApplicationFacade.getInstance().generateAndFetchSequence();
+                applicationFacade.generateAndFetchSequence();
 			}
 		]]>
 	</mx:Script>

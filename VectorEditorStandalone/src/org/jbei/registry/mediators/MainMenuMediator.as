@@ -23,10 +23,12 @@ package org.jbei.registry.mediators
 			super(NAME, viewComponent);
 			
 			mainMenu = viewComponent as MainMenu;
+            mainMenu.addEventListener(MainMenu.SAVE_TO_REGISTRY, onSaveToRegistry);
             mainMenu.addEventListener(MainMenu.SAVE_PROJECT, onSaveProject);
             mainMenu.addEventListener(MainMenu.SAVE_PROJECT_AS, onSaveProjectAs);
             mainMenu.addEventListener(MainMenu.SHOW_PROJECT_PROPERTIES_DIALOG, onShowProjectPropertiesDialog);
             mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE, onImportSequence);
+            mainMenu.addEventListener(MainMenu.DOWNLOAD_SEQUENCE, onDownloadSequence);
             mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
 			mainMenu.addEventListener(MainMenu.SHOW_PIE, onShowPie);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
@@ -333,6 +335,16 @@ package org.jbei.registry.mediators
         private function onRebaseSequence(event:MenuItemEvent):void
         {
             sendNotification(Notifications.REBASE_SEQUENCE);
+        }
+        
+        private function onSaveToRegistry(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.SAVE_TO_REGISTRY);
+        }
+        
+        private function onDownloadSequence(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.DOWNLOAD_SEQUENCE);
         }
 	}
 }

@@ -7,6 +7,10 @@
 			
             [Embed(source='../assets/icons/save.png')]
             [Bindable]
+            private var saveProjectIcon:Class;
+            
+            [Embed(source='../assets/icons/export.png')]
+            [Bindable]
             private var saveIcon:Class;
             
 			[Embed(source='../assets/icons/pie.png')]
@@ -125,7 +129,8 @@
 		]]>
 	</mx:Script>
 	
-    <mx:Button width="32" height="32" id="saveProjectProjectButton" icon="{ saveIcon }" toolTip="Save Project" />
+    <mx:Button width="32" height="32" id="saveToRegistryButton" icon="{ saveIcon }" toolTip="Save to Registry" />
+    <mx:Button width="32" height="32" id="saveProjectButton" icon="{ saveProjectIcon }" toolTip="Save Project" />
     <mx:Button width="32" height="32" id="projectPropertiesButton" icon="{ projectPropertiesIcon }" toolTip="Project Properties" />
     <mx:Spacer width="5" />
 	<mx:ToggleButtonBar 

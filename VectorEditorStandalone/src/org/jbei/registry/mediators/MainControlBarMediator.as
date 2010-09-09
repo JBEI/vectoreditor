@@ -30,7 +30,8 @@ package org.jbei.registry.mediators
             
             applicationFacade = ApplicationFacade.getInstance();
 			
-            controlBar.saveProjectProjectButton.addEventListener(MouseEvent.CLICK, onSaveProjectClick);
+            controlBar.saveToRegistryButton.addEventListener(MouseEvent.CLICK, onSaveToRegistryClick);
+            controlBar.saveProjectButton.addEventListener(MouseEvent.CLICK, onSaveProjectClick);
             controlBar.projectPropertiesButton.addEventListener(MouseEvent.CLICK, onProjectPropertiesButtonClick);
 			controlBar.viewToggleButtonBar.addEventListener(ItemClickEvent.ITEM_CLICK, onChangeViewButtonClick);
 			controlBar.copyButton.addEventListener(MouseEvent.CLICK, onCopy);
@@ -45,6 +46,18 @@ package org.jbei.registry.mediators
             controlBar.showORFsButton.addEventListener(Event.CHANGE, onShowORFsStateChanged);
             controlBar.showRestrictionEnzymesManagerDialogButton.addEventListener(MouseEvent.CLICK, onShowRestrictionEnzymesManagerDialog);
             controlBar.propertiesButton.addEventListener(MouseEvent.CLICK, onShowPropertiesDialog);
+            
+            CONFIG::registryEdition {
+                controlBar.saveToRegistryButton.visible = false;
+                controlBar.saveToRegistryButton.includeInLayout = false;
+            }
+            
+            CONFIG::entryEdition {
+                controlBar.saveProjectButton.visible = false;
+                controlBar.saveProjectButton.includeInLayout = false;
+                controlBar.projectPropertiesButton.visible = false;
+                controlBar.projectPropertiesButton.includeInLayout = false;
+            }
 		}
 		
 		public override function listNotificationInterests():Array 
@@ -109,6 +122,11 @@ package org.jbei.registry.mediators
 		}
 		
 		// Event Handlers
+        private function onSaveToRegistryClick(event:MouseEvent):void
+        {
+            sendNotification(Notifications.SAVE_TO_REGISTRY);
+        }
+        
         private function onSaveProjectClick(event:MouseEvent):void
         {
             sendNotification(Notifications.SAVE_PROJECT);

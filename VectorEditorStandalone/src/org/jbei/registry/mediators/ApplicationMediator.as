@@ -72,10 +72,13 @@ package org.jbei.registry.mediators
                 , Notifications.HIDE_ACTION_PROGRESSBAR
                 , Notifications.APPLICATION_FAILURE
 				
+                , Notifications.SAVE_TO_REGISTRY
                 , Notifications.SAVE_PROJECT
                 , Notifications.SAVE_PROJECT_AS
                 , Notifications.SHOW_PROJECT_PROPERTIES_DIALOG
                 , Notifications.IMPORT_SEQUENCE
+                , Notifications.DOWNLOAD_SEQUENCE
+                , Notifications.SEQUENCE_FILE_GENERATED
                 , Notifications.PROJECT_UPDATED
                 , Notifications.SEQUENCE_UPDATED
                 
@@ -127,6 +130,18 @@ package org.jbei.registry.mediators
                     break;
                 case Notifications.HIDE_ACTION_PROGRESSBAR:
                     hideActionProgressBar();
+                    
+                    break;
+                case Notifications.SAVE_TO_REGISTRY:
+                    saveToRegistry();
+                    
+                    break;
+                case Notifications.DOWNLOAD_SEQUENCE:
+                    generateSequence();
+                    
+                    break;
+                case Notifications.SEQUENCE_FILE_GENERATED:
+                    downloadSequence(notification.getBody() as String);
                     
                     break;
                 case Notifications.SAVE_PROJECT:
@@ -447,6 +462,21 @@ package org.jbei.registry.mediators
             }
             
             applicationFacade.sequenceProvider.rebaseSequence(applicationFacade.caretPosition);
+        }
+        
+        private function saveToRegistry():void
+        {
+            applicationFacade.saveSequence();
+        }
+        
+        private function generateSequence():void
+        {
+            applicationFacade.generateSequence();
+        }
+        
+        private function downloadSequence(content:String):void
+        {
+            applicationFacade.downloadSequence(content);
         }
 	}
 }

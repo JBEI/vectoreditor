@@ -321,7 +321,7 @@ package org.jbei.registry.proxies
             
             sendNotification(Notifications.UNLOCK);
             
-            //sendNotification(Notifications.SEQUENCE_GENERATED, event.result as String);
+            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, event.result as String);
         }
         
 		// Private Methods

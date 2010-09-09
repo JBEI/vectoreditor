@@ -1,8 +1,13 @@
 package org.jbei.registry
 {
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.external.ExternalInterface;
+	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	import org.jbei.bio.sequence.DNATools;
 	import org.jbei.lib.SequenceProvider;
@@ -55,6 +60,8 @@ package org.jbei.registry
         private var entryId:String;
         private var sessionId:String;
         private var projectId:String;
+        private var saveSequenceContent:String;
+        private var fileReference:FileReference;
         
 		private var browserSavedState:Boolean = true;
         
@@ -202,9 +209,9 @@ package org.jbei.registry
                 if(projectId && projectId.length > 0) {
                     Logger.getInstance().info("Project ID: " + projectId);
                     
-                    projectId = projectId;
+                    this.projectId = projectId;
                     
-                    serviceProxy.getVectorEditorProject(sessionId, projectId);
+                    serviceProxy.getVectorEditorProject(sessionId, projectId); 
                 } else {
                     createNewEmptyProject();
                 }
@@ -213,12 +220,22 @@ package org.jbei.registry
             }
             
             CONFIG::entryEdition {
+                // if projectId exist then load project else create new empty project
+                if(entryId && entryId.length > 0) {
+                    Logger.getInstance().info("Entry ID: " + entryId);
+                    
+                    this.entryId = entryId;
+                    
+                    serviceProxy.fetchSequence(sessionId, entryId);
+                } else {
+                    createEmptySequence();
+                }
+                
+                return;
                 /*registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
                 registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
                 registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
                 registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/
-                
-                return;
             }
         }
         
@@ -312,6 +329,27 @@ package org.jbei.registry
             serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }
         
+        public function saveSequence():void
+        {
+            serviceProxy.saveSequence(sessionId, entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+        }
+        
+        public function generateSequence():void
+        {
+            serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+        }
+        
+        public function downloadSequence(content:String):void
+        {
+            saveSequenceContent = content;
+            
+            if(saveSequenceContent == null) {
+                return;
+            }
+            
+            Alert.show("Sequence was generated successfully. Press OK button to save it", "Save sequence", Alert.OK | Alert.CANCEL, null, onSequenceGeneratedAlertClose);
+        }
+        
         // Event Handlers
 		private function onActionStackChanged(event:ActionStackEvent):void
 		{
@@ -328,6 +366,26 @@ package org.jbei.registry
             sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
         }
         
+        private function onSequenceGeneratedAlertClose(event:CloseEvent):void
+        {
+            if(event.detail == Alert.OK) {
+                fileReference = new FileReference();
+                fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
+                fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
+                fileReference.save(saveSequenceContent);
+            }
+        }
+        
+        private function onExportSequenceComplete(event:Event):void
+        {
+            sendNotification(Notifications.ACTION_MESSAGE, "File saved successfully");
+        }
+        
+        private function onExportIOSequenceError(event:Event):void
+        {
+            Alert.show("Failed to write file!", "Write file error");
+        }
+
         // Private Methods
         private function initializeProxy():void
         {
@@ -341,6 +399,11 @@ package org.jbei.registry
             _project = new VectorEditorProject();
             
             sendNotification(Notifications.PROJECT_UPDATED, _project);
+        }
+        
+        private function createEmptySequence():void
+        {
+            sendNotification(Notifications.SEQUENCE_UPDATED);
         }
         
         private function loadSequence():void
