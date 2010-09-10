@@ -269,7 +269,11 @@ package org.jbei.registry.mediators
         {
             var feature:Feature = event.data as Feature;
             
-            Alert.show("Are you sure you want to remove this feature?", "Remove Feature", Alert.YES | Alert.NO, null, function onRemoveFeatureDialogClose(event:CloseEvent):void
+            if(!feature) {
+                return;
+            }
+            
+            Alert.show("Are you sure you want to remove feature: '" + feature.name + "'?", "Remove Feature", Alert.YES | Alert.NO, null, function onRemoveFeatureDialogClose(event:CloseEvent):void
             {
                 if (event.detail == Alert.YES) {
                     applicationFacade.sequenceProvider.removeFeature(feature);
