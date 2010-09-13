@@ -237,11 +237,17 @@ package org.jbei.registry.proxies
 		
 		private function onSaveUserPreferencesResult(event:ResultEvent):void
 		{
+            if(!event.result || event.result != true) {
+                sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save user preferences!");
+                
+                return;
+            }
+            
             sendNotification(Notifications.UNLOCK);
 			
 			sendNotification(Notifications.ACTION_MESSAGE, "User preferences has been saved");
-			
-			Logger.getInstance().info("User preferences saved successfully");
+            
+            ApplicationFacade.getInstance().updateUserPreferences(ApplicationFacade.getInstance().userPreferences);
 		}
 		
 		private function onGetUserRestrictionEnzymesResult(event:ResultEvent):void

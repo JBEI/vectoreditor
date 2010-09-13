@@ -13,6 +13,10 @@
             [Bindable]
             private var saveIcon:Class;
             
+            [Embed(source='../assets/icons/export_disabled.png')]
+            [Bindable]
+            private var saveDisabledIcon:Class;
+            
 			[Embed(source='../assets/icons/pie.png')]
 			[Bindable]
 			private var pieIcon:Class;
@@ -101,6 +105,17 @@
 				}
 			}
 			
+            public function updateSaveButtonState(active:Boolean):void
+            {
+                if(active) {
+                    saveToRegistryButton.enabled = true;
+                    saveToRegistryButton.setStyle("icon", saveIcon);
+                } else {
+                    saveToRegistryButton.enabled = false;
+                    saveToRegistryButton.setStyle("icon", saveDisabledIcon);
+                }
+            }
+            
 			public function updateRedoButtonState(active:Boolean):void
 			{
 				if(active) {

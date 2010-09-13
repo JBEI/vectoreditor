@@ -80,6 +80,7 @@ package org.jbei.registry.mediators
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
+                , Notifications.PERMISSIONS_FETCHED
 				];
 		}
 		
@@ -111,19 +112,13 @@ package org.jbei.registry.mediators
 					break;
 				case Notifications.SHOW_AA3:
 					mainMenu.menuItemByName("showAA1MenuItem").toggled = false;
-					break;
+					
+                    break;
 				case Notifications.ACTION_STACK_CHANGED:
 					mainMenu.menuItemByName("undoMenuItem").enabled = !ApplicationFacade.getInstance().isUndoStackEmpty;
 					mainMenu.menuItemByName("redoMenuItem").enabled = !ApplicationFacade.getInstance().isRedoStackEmpty;
-					break;
-				case Notifications.SEQUENCE_PROVIDER_CHANGED:
-					if(ApplicationFacade.getInstance().hasWritablePermissions) {
-						//mainMenu.menuItemByName("saveMenuItem").enabled = true;
-					} else {
-						//mainMenu.menuItemByName("saveMenuItem").enabled = false;
-					}
 					
-					break;
+                    break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					
@@ -134,10 +129,16 @@ package org.jbei.registry.mediators
 						mainMenu.menuItemByName("cutMenuItem").enabled = false;
 						mainMenu.menuItemByName("copyMenuItem").enabled = false;
 					}
-					break;
+					
+                    break;
 				case Notifications.SAFE_EDITING_CHANGED:
 					mainMenu.menuItemByName("safeEditingMenuItem").toggled = notification.getBody() as Boolean;
-					break;
+					
+                    break;
+                case Notifications.PERMISSIONS_FETCHED:
+                    mainMenu.menuItemByName("saveToRegistryMenuItem").enabled = ApplicationFacade.getInstance().hasWritablePermissions;
+                    
+                    break;
 			}
 		}
 		

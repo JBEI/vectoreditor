@@ -71,6 +71,7 @@ package org.jbei.registry.mediators
 				, Notifications.SELECTION_CHANGED
 				, Notifications.SAFE_EDITING_CHANGED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
+                , Notifications.PERMISSIONS_FETCHED
 			];
 		}
 		
@@ -97,14 +98,14 @@ package org.jbei.registry.mediators
 					controlBar.updateRedoButtonState(!applicationFacade.isRedoStackEmpty);
                     
 					break;
-				case Notifications.SEQUENCE_PROVIDER_CHANGED:
-					if(applicationFacade.hasWritablePermissions) {
-						//controlBar.updateSaveButtonState(true);
-					} else {
-						//controlBar.updateSaveButtonState(false);
-					}
-					
-					break;
+                case Notifications.PERMISSIONS_FETCHED:
+                    if(applicationFacade.hasWritablePermissions) {
+                        controlBar.updateSaveButtonState(true);
+                    } else {
+                        controlBar.updateSaveButtonState(false);
+                    }
+                    
+                    break;
 				case Notifications.SELECTION_CHANGED:
 					var selectionPositions:Array = notification.getBody() as Array;
 					

@@ -63,6 +63,8 @@ package org.jbei.registry
         private var saveSequenceContent:String;
         private var fileReference:FileReference;
         
+        private var _applicationInitialized:Boolean = false;
+        
 		private var browserSavedState:Boolean = true;
         
 		// Properties
@@ -104,8 +106,13 @@ package org.jbei.registry
 		{
 			return _orfMapper;
 		}
-		
-		public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
+        
+        public function get applicationInitialized():Boolean
+        {
+            return _applicationInitialized;
+        }
+        
+        public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
 		{
 			return _restrictionEnzymeMapper;
 		}
@@ -187,8 +194,7 @@ package org.jbei.registry
         public function initializeParameters(sessionId:String, entryId:String, projectId:String):void
         {
             CONFIG::standalone {
-                updateSequence(StandaloneUtils.standaloneSequence());
-                updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+                initializeStandaloneApplication();
                 
                 return;
             }
@@ -210,11 +216,9 @@ package org.jbei.registry
                     Logger.getInstance().info("Project ID: " + projectId);
                     
                     this.projectId = projectId;
-                    
-                    serviceProxy.getVectorEditorProject(sessionId, projectId); 
-                } else {
-                    createNewEmptyProject();
                 }
+                
+                initializeRegistryEditionApplication();
                 
                 return;
             }
@@ -225,17 +229,11 @@ package org.jbei.registry
                     Logger.getInstance().info("Entry ID: " + entryId);
                     
                     this.entryId = entryId;
-                    
-                    serviceProxy.fetchSequence(sessionId, entryId);
-                } else {
-                    createEmptySequence();
                 }
                 
+                initializeEntryEditionApplication();
+                
                 return;
-                /*registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
-                registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
-                registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
-                registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/
             }
         }
         
@@ -266,6 +264,14 @@ package org.jbei.registry
             _project = newProject;
             
             sendNotification(Notifications.SEQUENCE_UPDATED, _project.featuredDNASequence);
+            
+            CONFIG::standalone {
+                return;
+            }
+            
+            if(! _applicationInitialized) {
+                serviceProxy.fetchUserPreferences(sessionId);
+            }
         }
         
         public function updateSequence(featuredDNASequence:FeaturedDNASequence):void
@@ -285,6 +291,10 @@ package org.jbei.registry
             } else {
                 sendNotification(Notifications.SHOW_RAIL);
             }
+            
+            if(! _applicationInitialized) {
+                serviceProxy.fetchUserPreferences(sessionId);
+            }
         }
         
         public function updateBrowserSaveTitleState(isSaved:Boolean):void
@@ -298,11 +308,29 @@ package org.jbei.registry
             }
         }
         
+        public function saveUserPreferences(userPreferences:UserPreferences):void
+        {
+            serviceProxy.saveUserPreferences(sessionId, userPreferences);
+        }
+        
         public function updateUserPreferences(userPreferences:UserPreferences):void
         {
             _userPreferences = userPreferences;
             
             sendNotification(Notifications.USER_PREFERENCES_CHANGED);
+            
+            CONFIG::standalone {
+                return;
+            }
+            
+            if(! _applicationInitialized) {
+                serviceProxy.fetchUserRestrictionEnzymes(sessionId);
+            }
+        }
+        
+        public function saveUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
+        {
+            serviceProxy.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
         }
         
         public function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
@@ -310,13 +338,21 @@ package org.jbei.registry
             RestrictionEnzymeGroupManager.instance.loadUserRestrictionEnzymes(userRestrictionEnzymes);
             
             sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
+            
+            CONFIG::entryEdition {
+                if(! _applicationInitialized && entryId && entryId.length > 0) {
+                    serviceProxy.hasWritablePermissions(sessionId, entryId);
+                }
+            }
+            
+            _applicationInitialized = true;
         }
         
         public function updateEntryPermissions(hasWritablePermissions:Boolean):void
         {
             _hasWritablePermissions = hasWritablePermissions;
             
-            sendNotification(Notifications.ENTRY_PERMISSIONS_CHANGED);
+            sendNotification(Notifications.PERMISSIONS_FETCHED);
         }
         
         public function importSequence(data:String):void
@@ -392,6 +428,34 @@ package org.jbei.registry
             _serviceProxy = new RegistryAPIProxy();
             
             registerProxy(_serviceProxy);
+        }
+        
+        private function initializeStandaloneApplication():void
+        {
+            updateSequence(StandaloneUtils.standaloneSequence());
+            updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
+        }
+        
+        private function initializeRegistryEditionApplication():void
+        {
+            if(projectId && projectId.length > 0) {
+                serviceProxy.getVectorEditorProject(sessionId, projectId);
+            } else {
+                createNewEmptyProject();
+            }
+        }
+        
+        private function initializeEntryEditionApplication():void
+        {
+            if(entryId && entryId.length > 0) {
+                serviceProxy.fetchSequence(sessionId, entryId);
+            } else {
+                createEmptySequence();
+            }
+            
+            /*registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
+            registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
+            registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/
         }
         
         private function createNewEmptyProject():void

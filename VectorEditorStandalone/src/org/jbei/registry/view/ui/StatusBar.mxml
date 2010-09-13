@@ -6,8 +6,8 @@
         <mx:Label id="actionMessageLabel" text=""/>
 		<mx:Spacer width="100%" />
         <mx:Label id="temperatureLabel" text=""/>
-		<!--<mx:VRule height="100%" />
-		<mx:Label id="sequenceStatusLabel" text="Read only"/>-->
+		<mx:VRule height="100%" />
+		<mx:Label id="permissionsLabel" text="Read only"/>
 		<mx:VRule height="100%" />
 		<mx:Label id="caretPositionLabel" text="  "/>
 		<mx:VRule height="100%" />

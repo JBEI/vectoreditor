@@ -20,7 +20,7 @@ package org.jbei.registry
 		
 		public static const USER_PREFERENCES_CHANGED:String = "USER_PREFERENCES_CHANGED";
 		public static const USER_RESTRICTION_ENZYMES_CHANGED:String = "USER_RESTRICTION_ENZYMES_CHANGED";
-        public static const ENTRY_PERMISSIONS_CHANGED:String = "ENTRY_PERMISSIONS_CHANGED";
+        public static const PERMISSIONS_FETCHED:String = "PERMISSIONS_FETCHED";
 		public static const GENERATE_AND_FETCH_SEQUENCE:String = "GENERATE_AND_FETCH_SEQUENCE";
 		public static const SEQUENCE_GENERATED_AND_FETCHED:String = "SEQUENCE_GENERATED_AND_FETCHED";
         public static const SEQUENCE_FILE_GENERATED:String = "SEQUENCE_FILE_GENERATED";

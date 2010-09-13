@@ -42,7 +42,7 @@ package org.jbei.registry.mediators
 			return [Notifications.SELECTION_CHANGED
 				, Notifications.CARET_POSITION_CHANGED
 				
-                , Notifications.ENTRY_PERMISSIONS_CHANGED
+                , Notifications.PERMISSIONS_FETCHED
 				, Notifications.SEQUENCE_PROVIDER_CHANGED
                 
                 , Notifications.ACTION_MESSAGE
@@ -91,10 +91,10 @@ package org.jbei.registry.mediators
 					}
 					
 					break;
-				/*case Notifications.ENTRY_PERMISSIONS_CHANGED:
-					statusBar.sequenceStatusLabel.text = ApplicationFacade.getInstance().hasWritablePermissions ? "Writable" : "Read Only";
+				case Notifications.PERMISSIONS_FETCHED:
+					statusBar.permissionsLabel.text = ApplicationFacade.getInstance().hasWritablePermissions ? "Writable" : "Read Only";
 					
-					break;*/
+					break;
 				case Notifications.SEQUENCE_PROVIDER_CHANGED:
 					if(ApplicationFacade.getInstance().sequenceProvider) {
 						statusBar.sequenceLengthLabel.text = String(ApplicationFacade.getInstance().sequenceProvider.sequence.length);
