@@ -39,7 +39,7 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.SequenceUtils;
     import org.jbei.components.common.TextRenderer;
-    import org.jbei.components.dialogs.PasteDialogForm;
+    import org.jbei.components.common.PasteDialogForm;
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.data.DigestionSequence;
     import org.jbei.lib.mappers.AAMapper;

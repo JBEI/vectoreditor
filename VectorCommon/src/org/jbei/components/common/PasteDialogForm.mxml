@@ -8,8 +8,6 @@
     
     <mx:Script>
         <![CDATA[
-            import mx.effects.easing.Back;
-            
             public override function initialization(dataObject:Object):void
             {
                 super.initialization(dataObject);
