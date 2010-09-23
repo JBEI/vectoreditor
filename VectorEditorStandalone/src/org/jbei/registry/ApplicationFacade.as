@@ -292,6 +292,10 @@ package org.jbei.registry
                 sendNotification(Notifications.SHOW_RAIL);
             }
             
+            CONFIG::standalone {
+                return;
+            }
+            
             if(! _applicationInitialized) {
                 serviceProxy.fetchUserPreferences(sessionId);
             }

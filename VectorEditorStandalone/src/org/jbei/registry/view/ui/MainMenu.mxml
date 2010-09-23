@@ -113,7 +113,10 @@
                 
                 CONFIG::entryEdition {
                     fileMenuItem.addSubItem(saveToRegistryMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
+                    fileMenuItem.addSubItem(importSequenceMenuItem);
                     fileMenuItem.addSubItem(downloadSequenceMenuItem);
+                    fileMenuItem.addSubItem(separatorMenuItem);
                 }
                 
                 fileMenuItem.addSubItem(printMenuItem);
@@ -136,7 +139,7 @@
 				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
 				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To...");
                 var reverseComplementMenuItem:MenuItem = new MenuItem("reverseComplementMenuItem", "Reverse Complement");
-                var rebaseMenuItem:MenuItem = new MenuItem("rebaseMenuItem", "Rebase Sequence");
+                var rebaseMenuItem:MenuItem = new MenuItem("rebaseMenuItem", "Rotate to Here");
                 editMenuItem.addSubItem(undoMenuItem);
             	editMenuItem.addSubItem(redoMenuItem);
             	editMenuItem.addSubItem(separatorMenuItem);
