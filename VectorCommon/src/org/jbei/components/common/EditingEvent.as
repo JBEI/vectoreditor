@@ -3,6 +3,8 @@ package org.jbei.components.common
 	import flash.events.Event;
 	
     /**
+     * Editing Event for Pie, Rail and SequenceAnnotator components
+     * 
      * @author Zinovii Dmytriv
      */
 	public class EditingEvent extends Event
@@ -17,6 +19,9 @@ package org.jbei.components.common
 		public var data:Object;
 		
 		// Contructor
+        /**
+         * Contructor
+         */
 		public function EditingEvent(type:String, kind:String, data:Object)
 		{
 			super(type, true, true);

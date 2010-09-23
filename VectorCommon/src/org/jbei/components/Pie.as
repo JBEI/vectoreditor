@@ -21,14 +21,27 @@ package org.jbei.components
 	import org.jbei.lib.mappers.RestrictionEnzymeMapperEvent;
 	import org.jbei.lib.mappers.TraceMapper;
 	import org.jbei.lib.mappers.TraceMapperEvent;
-	
+    
+	/**
+    * Triggered when part of sequence has been selected or deselected.
+    */
 	[Event(name="selectionChanged", type="org.jbei.components.common.SelectionEvent")]
+    
+    /**
+     * Triggered when caret position has been changed.
+     */
 	[Event(name="caretPositionChanged", type="org.jbei.components.common.CaretEvent")]
+    
+    /**
+     * Triggered on sequence editing.
+     */
 	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
 	
     /**
-     * @author Zinovii Dmytriv
-     */
+    * Main class for DNA sequence Pie component.
+    * 
+    * @author Zinovii Dmytriv
+    */
 	public class Pie extends ScrollControlBase implements IFocusManagerComponent, ISequenceComponent
 	{
 		private const MIN_LABEL_FONT_SIZE:int = 9;
@@ -68,6 +81,9 @@ package org.jbei.components
 		private var labelFontSizeChanged:Boolean = false;
 		
 		// Constructor
+        /**
+        * Contructor
+        */
 		public function Pie()
 		{
 			super();
@@ -85,6 +101,9 @@ package org.jbei.components
 		}
 		
 		// Properties
+        /**
+        * Sequence provider
+        */
 	    public function get sequenceProvider():SequenceProvider
 	    {
 	        return _sequenceProvider;
@@ -113,6 +132,9 @@ package org.jbei.components
 	    	invalidateProperties();
 	    }
 		
+        /**
+         * Restriction enzyme mapper
+         */
 	    public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
 	    {
 	        return _restrictionEnzymeMapper;
@@ -131,6 +153,9 @@ package org.jbei.components
 	    	invalidateProperties();
 	    }
 		
+        /**
+         * Open read frame mapper
+         */
 	    public function get orfMapper():ORFMapper
 	    {
 	        return _orfMapper;
@@ -148,6 +173,9 @@ package org.jbei.components
 	    	invalidateProperties();
 	    }
 		
+        /**
+         * Trace mapper
+         */
 		public function get traceMapper():TraceMapper
 		{
 			return _traceMapper;
@@ -165,6 +193,9 @@ package org.jbei.components
 			invalidateProperties();
 		}
 		
+        /**
+         * Highlights. Pass list of Annotation objects to highlight particular pieces of the sequence 
+         */
 		public function get highlights():Array /* of Annotation */
 		{
 			return _highlights;
@@ -179,7 +210,10 @@ package org.jbei.components
 			invalidateProperties();
 		}
 		
-	    public function get showFeatures():Boolean
+	    /**
+        * Show or hide features
+        */
+        public function get showFeatures():Boolean
 	    {
 	        return _showFeatures;
 	    }
@@ -195,6 +229,9 @@ package org.jbei.components
 	    	}
 	    }
 	    
+        /**
+         * Show or hide cut sites. Only works if Restriction Enzymes mapper is assigned.
+         */
 	    public function get showCutSites():Boolean
 	    {
 	        return _showCutSites;
@@ -211,6 +248,9 @@ package org.jbei.components
 	    	}
 	    }
 	    
+        /**
+         * Show or hide features
+         */
 	    public function get showORFs():Boolean
 	    {
 	        return _showORFs;
@@ -227,6 +267,9 @@ package org.jbei.components
 	    	}
 	    }
 	    
+        /**
+         * Show or hide traces. Only works if TraceMapper assigned.
+         */
 		public function get showTraces():Boolean
 		{
 			return _showTraces;
@@ -243,6 +286,9 @@ package org.jbei.components
 			}
 		}
 		
+        /**
+         * Show or hide feature labels
+         */
 	    public function get showFeatureLabels():Boolean
 	    {
 	        return _showFeatureLabels;
@@ -259,6 +305,9 @@ package org.jbei.components
 	    	}
 	    }
 	    
+        /**
+         * Show or hide cut site labels
+         */
 	    public function get showCutSiteLabels():Boolean
 	    {
 	        return _showCutSiteLabels;
@@ -275,6 +324,9 @@ package org.jbei.components
 	    	}
 	    }
 	    
+        /**
+         * Current caret position
+         */
 	    public function get caretPosition():int
 	    {
 	    	return contentHolder.caretPosition;
@@ -285,6 +337,9 @@ package org.jbei.components
 	    	contentHolder.caretPosition = value;
 	    }
 	    
+        /**
+         * Allow or disallow editing
+         */
 		public function get safeEditing():Boolean
 		{
 			return _safeEditing;
@@ -299,16 +354,25 @@ package org.jbei.components
 			}
 		}
 		
+        /**
+         * Selection start position
+         */
 	    public function get selectionStart():int
 	    {
 	    	return contentHolder.selectionStart;
 	    }
 	    
+        /**
+         * Selection end position
+         */
 	    public function get selectionEnd():int
 	    {
 	    	return contentHolder.selectionEnd;
 	    }
 	    
+        /**
+         * Label font size
+         */
 		public function get labelFontSize():int
 		{
 			return _labelFontSize;
@@ -328,6 +392,9 @@ package org.jbei.components
 			}
 		}
 		
+        /**
+         * Read only. If true no editing allowed
+         */
 		public function get readOnly():Boolean
 		{
 			return _readOnly;
@@ -339,16 +406,31 @@ package org.jbei.components
 		}
 		
 	    // Public Methods
+        /**
+         * Select part of the sequence in range.
+         * 
+         * @param start Selection start
+         * @param end Selection end
+         */
 	    public function select(start:int, end:int):void
 	    {
 	    	contentHolder.select(start, end);
 	    }
 	    
+        /**
+         * Deselect everything
+         * 
+         * @param start Selection start
+         * @param end Selection end
+         */
 	    public function deselect():void
 	    {
 	    	contentHolder.deselect();
 	    }
 		
+        /**
+         * @private
+         */
 		public function printingContent(pageWidth:Number, pageHeight:Number, scaleToPage:Boolean = false):PrintableContent
 		{
 			var printableContent:PrintableContent = new PrintableContent();
@@ -369,12 +451,18 @@ package org.jbei.components
 			return printableContent;
 		}
 		
+        /**
+        * @private
+        */
 		public function removeMask():void
 		{
 			contentHolder.mask = null;
 		}
 		
 		// Protected Methods
+        /**
+         * @private
+         */
 		protected override function createChildren():void
 		{
 			super.createChildren();
@@ -382,6 +470,9 @@ package org.jbei.components
 			createContentHolder();
 		}
 		
+        /**
+         * @private
+         */
 		protected override function commitProperties():void
 		{
 	        super.commitProperties();
@@ -505,6 +596,9 @@ package org.jbei.components
 			}
 		}
 		
+        /**
+         * @private
+         */
 		protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
@@ -530,6 +624,9 @@ package org.jbei.components
 			}
 		}
 		
+        /**
+         * @private
+         */
 		protected override function mouseWheelHandler(event:MouseEvent):void
 		{
 			if(verticalScrollBar) {

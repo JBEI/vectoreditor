@@ -7,7 +7,7 @@ package org.jbei.lib
     import org.jbei.lib.common.IMemento;
     
     /**
-     * @author Zinovii Dmytriv
+     * @private
      */
     public class SequenceProviderMemento implements IMemento
     {

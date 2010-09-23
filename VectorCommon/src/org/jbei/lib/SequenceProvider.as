@@ -10,12 +10,20 @@ package org.jbei.lib
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.lib.common.IMemento;
     import org.jbei.lib.common.IOriginator;
-    import org.jbei.lib.utils.StringFormatter;
     
     [RemoteClass(alias="org.jbei.lib.SequenceProvider")]
     /**
-     * @author Zinovii Dmytriv
-     */
+    * Sequence provider. Main class that feeds Pie, Rail and SequenceAnnotator components.
+    * 
+    * <pre>
+    * Usage:
+    * 
+    * var dnaSequence:SymbolList = DNATools.createDNA("atctgctcgtcgtagtcagctagtcgatcgatgctagctacatctgctcgtcgtagtcagctagtcgatcgatgctagctacatctgctcgtcgtagtcagctagtcgatcgatgctagctac");
+    * var sequenceProvider:SequenceProvider = new SequenceProvider("test", true, dnaSequence);
+    * </pre>
+    * 
+    * @author Zinovii Dmytriv
+    */
     public class SequenceProvider implements IOriginator
     {
         private var _name:String;
@@ -32,6 +40,9 @@ package org.jbei.lib
         private var dispatcher:EventDispatcher = new EventDispatcher();
         
         // Constructor
+        /**
+        * Contructor
+        */
         public function SequenceProvider(name:String = null, circular:Boolean = false, sequence:SymbolList = null, features:ArrayCollection = null)
         {
             super();
@@ -43,6 +54,9 @@ package org.jbei.lib
         }
         
         // Properties
+        /**
+        * Sequence name
+        */
         public function get name():String
         {
             return _name;
@@ -53,6 +67,9 @@ package org.jbei.lib
             _name = value;
         }
         
+        /**
+         * Is circular
+         */
         public function get circular():Boolean
         {
             return _circular;
@@ -63,6 +80,9 @@ package org.jbei.lib
             _circular = value;
         }
         
+        /**
+         * DNA sequence
+         */
         public function get sequence():SymbolList
         {
             return _sequence;
@@ -76,6 +96,9 @@ package org.jbei.lib
             _sequence = value;
         }
         
+        /**
+         * List of features
+         */
         public function get features():ArrayCollection /* of Feature */
         {
             return _features;
@@ -87,12 +110,18 @@ package org.jbei.lib
         }
         
         [Transient]
+        /**
+         * @private
+         */
         public function get manualUpdateStarted():Boolean
         {
             return _manualUpdateStarted;
         }
         
         // Public Methods: IOriginator implementation
+        /**
+         * @private
+         */
         public function createMemento():IMemento
         {
             var clonedFeatures:ArrayCollection = new ArrayCollection();
@@ -106,6 +135,9 @@ package org.jbei.lib
             return new SequenceProviderMemento(_name, _circular, DNATools.createDNA(_sequence.seqString()), clonedFeatures);
         }
         
+        /**
+         * @private
+         */
         public function setMemento(memento:IMemento):void
         {
             var sequenceProviderMemento:SequenceProviderMemento = memento as SequenceProviderMemento;
@@ -122,22 +154,40 @@ package org.jbei.lib
         }
         
         // Public Methods: EventDispatcher wrapped
+        /**
+         * @private
+         * 
+         * Wrapper classes for EventDispatcher
+         */
         public function addEventListener(type:String, listener:Function):void
         {
             dispatcher.addEventListener(type, listener);
         }
         
+        /**
+         * @private
+         * 
+         * Wrapper classes for EventDispatcher
+         */
         public function removeEventListener(type:String, listener:Function):void
         {
             dispatcher.removeEventListener(type, listener);
         }
         
+        /**
+         * @private
+         * 
+         * Wrapper classes for EventDispatcher
+         */
         public function dispatchEvent(event:Event):void
         {
             dispatcher.dispatchEvent(event);
         }
         
         // Public Methods
+        /**
+         * Generates complement sequence
+         */
         public function getComplementSequence():SymbolList
         {
             updateComplementSequence();
@@ -145,6 +195,9 @@ package org.jbei.lib
             return _complementSequence;
         }
         
+        /**
+         * Generates reverce complement sequence
+         */
         public function getReverseComplementSequence():SymbolList
         {
             updateReverseComplementSequence();
@@ -152,6 +205,12 @@ package org.jbei.lib
             return _reverseComplementSequence;
         }
         
+        /**
+         * Sub sequence by range
+         * 
+         * @param start Range start
+         * @param end Range end
+         */
         public function subSequence(start:int, end:int):SymbolList
         {
             var result:SymbolList = null;
@@ -169,6 +228,12 @@ package org.jbei.lib
             return result;
         }
         
+        /**
+         * Sub sequence provider by range
+         * 
+         * @param start Range start
+         * @param end Range end
+         */
         public function subSequenceProvider(start:int, end:int):SequenceProvider
         {
             var featuredSubSequence:SequenceProvider;
@@ -226,6 +291,12 @@ package org.jbei.lib
             return featuredSubSequence;
         }
         
+        /**
+         * Adds feature to sequence provider
+         * 
+         * @param feature Feature to add
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function addFeature(feature:Feature, quiet:Boolean = false):void
         {
             if(!quiet && !_manualUpdateStarted) {
@@ -239,6 +310,12 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Adds list of features to sequence provider
+         * 
+         * @param featuresToAdd List of features to add
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function addFeatures(featuresToAdd:Array /* of Feature */, quiet:Boolean = false):void
         {
             if(!featuresToAdd || featuresToAdd.length == 0) { return; } 
@@ -258,6 +335,12 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Removes feature from sequence provider
+         * 
+         * @param feature Feature to remove
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function removeFeature(feature:Feature, quiet:Boolean = false):void
         {
             var index:int = _features.getItemIndex(feature);
@@ -275,6 +358,12 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Remove list of features to sequence provider
+         * 
+         * @param featuresToRemove List of features to remove
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function removeFeatures(featuresToRemove:Array /* of Feature */, quiet:Boolean = false):void
         {
             if(!featuresToRemove || featuresToRemove.length == 0) { return; } 
@@ -294,11 +383,23 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Check if sequenceProvider has feature
+         * 
+         * @param feature Feature existance to check
+         */
         public function hasFeature(feature:Feature):Boolean
         {
             return features.contains(feature);
         }
         
+        /**
+         * Insert another sequence provider at position. This method is used on sequence paste
+         * 
+         * @param sequenceProvider SequenceProvider to insert
+         * @param position Position where to insert
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function insertSequenceProvider(sequenceProvider:SequenceProvider, position:int, quiet:Boolean = false):void
         {
             needsRecalculateComplementSequence = true;
@@ -324,6 +425,13 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Insert another sequence at position. This method is used on sequence paste
+         * 
+         * @param insertSequence SymbolList to insert
+         * @param position Position where to insert
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function insertSequence(insertSequence:SymbolList, position:int, quiet:Boolean = false):void
         {
             if(position < 0 || position > sequence.length || insertSequence.length == 0) { return };
@@ -365,6 +473,13 @@ package org.jbei.lib
             }
         }
         
+        /**
+         * Remove sequence in range
+         * 
+         * @param startIndex Range start 
+         * @param endIndex Range end 
+         * @param quiet When true not SequenceProviderEvent will be dispatched
+         */
         public function removeSequence(startIndex:int, endIndex:int, quiet:Boolean = false):void
         {
             var sequenceLength:int = _sequence.length;
@@ -636,6 +751,11 @@ package org.jbei.lib
             }
         }
         
+        /**
+        * Get list of features in range
+        * 
+        * @return List of features
+        */
         public function featuresByRange(start:int, end:int):Array /* of Feature */
         {
             var result:Array = new Array();
@@ -668,6 +788,11 @@ package org.jbei.lib
             return result;
         }
         
+        /**
+         * Get list of features at position
+         * 
+         * @return List of features
+         */
         public function featuresAt(position:int):Array /* of Feature */
         {
             var result:Array = new Array();
@@ -689,6 +814,20 @@ package org.jbei.lib
             return result;
         }
         
+        /**
+         * Use this method for manually operate sequence changing state.
+         * 
+         * <pre>
+         * Usage:
+         * 
+         * sequenceProvider.manualUpdateStart();
+         * sequenceProvider.addFeature(feature1);
+         * sequenceProvider.addFeature(feature2);
+         * sequenceProvider.addFeature(feature3);
+         * sequenceProvider.removeFeature(feature4);
+         * sequenceProvider.manualUpdateEnd(); // only here SequenceProviderEvent.SEQUENCE_CHANGED will be trigered.
+         * </pre>
+         */
         public function manualUpdateStart():void
         {
             if(!_manualUpdateStarted) {
@@ -698,6 +837,9 @@ package org.jbei.lib
             }
         }
         
+        /**
+        * @see manualUpdateStart
+        */
         public function manualUpdateEnd():void
         {
             if(_manualUpdateStarted) {
@@ -707,6 +849,9 @@ package org.jbei.lib
             }
         }
         
+        /**
+        * Clone sequence provider
+        */
         public function clone():SequenceProvider
         {
             var clonedSequenceProvider:SequenceProvider = new SequenceProvider(_name, _circular, DNATools.createDNA(_sequence.seqString()));
@@ -720,6 +865,9 @@ package org.jbei.lib
             return clonedSequenceProvider;
         }
         
+        /**
+         * Reverse sequence
+         */
         public static function reverseSequence(inputSequenceProvider:SequenceProvider):SequenceProvider
         {
             var revComSequence:SymbolList = DNATools.reverseComplement(inputSequenceProvider.sequence);
@@ -744,6 +892,9 @@ package org.jbei.lib
             return reverseSequenceProvider;
         }
         
+        /**
+         * Reverse complement sequence
+         */
         public function reverseComplementSequence():void
         {
             manualUpdateStart();
@@ -769,6 +920,9 @@ package org.jbei.lib
             manualUpdateEnd();
         }
         
+        /**
+         * Rebase sequence. Rotate sequence to new position.
+         */
         public function rebaseSequence(rebasePosition:int):void
         {
             var seqLength:int = _sequence.length;

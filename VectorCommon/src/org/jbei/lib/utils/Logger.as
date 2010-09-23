@@ -3,6 +3,8 @@ package org.jbei.lib.utils
 	import flash.events.EventDispatcher;
 	
     /**
+     * Logger class. This is singleton class so to get an instance use getInstance() method : Logger.getInstance();
+     * 
      * @author Zinovii Dmytriv
      */
 	public class Logger extends EventDispatcher
@@ -12,8 +14,9 @@ package org.jbei.lib.utils
 		// Constructor
 		public function Logger()
 		{
-			if (instance != null) throw Error("Logger already instantiated!");
-			instance = this;
+			if (instance != null) {
+                throw Error("Logger already instantiated!");
+            }
 		}
 		
 		// Properties

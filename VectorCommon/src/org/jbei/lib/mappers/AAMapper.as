@@ -13,8 +13,10 @@ package org.jbei.lib.mappers
 	import org.jbei.lib.SequenceProviderEvent;
 	
     /**
-     * @author Zinovii Dmytriv
-     */
+    * Aminoacids mapper. Maps aminoacids to sequence and remaps only if sequence changed.
+    * 
+    * @author Zinovii Dmytriv
+    */
 	public class AAMapper extends EventDispatcher
 	{
 		private var dirty:Boolean = true;
@@ -35,6 +37,9 @@ package org.jbei.lib.mappers
 		private var sequenceProvider:SequenceProvider;
 		
 		// Constructor
+        /**
+        * Contructor
+        */
 		public function AAMapper(sequenceProvider:SequenceProvider)
 		{
 			super();

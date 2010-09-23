@@ -440,26 +440,41 @@ package org.jbei.components.sequenceClasses
 	    	return _totalWidth;
 	    }
 	    
+        /**
+        * @private
+        */
 	    public function get sequenceSymbolRenderer():TextRenderer
 	    {
 	    	return _sequenceSymbolRenderer;
 	    }
 	    
+        /**
+        * @private
+        */
 	    public function get complimentarySymbolRenderer():TextRenderer
 	    {
 	    	return _complimentarySymbolRenderer;
 	    }
 	    
+        /**
+        * @private
+        */
 	    public function get cutSiteTextRenderer():TextRenderer
 	    {
 	    	return _cutSiteTextRenderer;
 	    }
 	    
+        /**
+        * @private
+        */
 	    public function get singleCutterCutSiteTextRenderer():TextRenderer
 	    {
 	    	return _singleCutterCutSiteTextRenderer;
 	    }
 	    
+        /**
+        * @private
+        */
 	    public function get aminoAcidsTextRenderer():TextRenderer
 	    {
 	    	return _aminoAcidsTextRenderer;
@@ -498,6 +513,9 @@ package org.jbei.components.sequenceClasses
 		}
 		
 		// Public Methods
+        /**
+        * @private
+        */
 		public function updateMetrics(parentWidth:Number, parentHeight:Number):void
 		{
 			this.parentWidth = parentWidth;
@@ -527,7 +545,7 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
-		public function deselect():void
+        public function deselect():void
 		{
 			if(invalidSequence) { return; }
 			
@@ -538,6 +556,9 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
+        /**
+        * @private
+        */
 		public function showCaret():void
 		{
 			if(invalidSequence) { return; }
@@ -545,6 +566,9 @@ package org.jbei.components.sequenceClasses
 			caret.show();
 		}
 		
+        /**
+        * @private
+        */
 		public function hideCaret():void
 		{
 			if(invalidSequence) { return; }
@@ -552,11 +576,17 @@ package org.jbei.components.sequenceClasses
 			caret.hide();
 		}
 		
+        /**
+        * @private
+        */
 		public function isValidIndex(index:int):Boolean
 		{
 			return index >= 0 && index <= sequenceProvider.sequence.length;
 		}
 		
+        /**
+        * @private
+        */
 		public function bpMetricsByIndex(index:int):Rectangle
 		{
 			if(!isValidIndex(index)) {
@@ -585,6 +615,9 @@ package org.jbei.components.sequenceClasses
 			return resultMetrics;
 		}
 		
+        /**
+        * @private
+        */
 		public function rowByBpIndex(index:int):Row
 		{
 			if(!isValidIndex(index)) {
@@ -594,6 +627,9 @@ package org.jbei.components.sequenceClasses
 			return rowMapper.rows[int(Math.floor(index / _bpPerRow))];
 		}
 		
+        /**
+        * @private
+        */
 		public function adjustedSelectionVerticalPosition():int
 		{
 			var position:int = 0;
@@ -608,6 +644,9 @@ package org.jbei.components.sequenceClasses
 			return position;
 		}
 		
+        /**
+        * @private
+        */
 		public function contentBitmapData(page:int, pageWidth:Number, pageHeight:Number):BitmapData
 		{
 			var currentHeight:Number = Math.min(pageHeight, totalHeight - pageHeight * page);

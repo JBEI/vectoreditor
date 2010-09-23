@@ -3,7 +3,8 @@ package org.jbei.lib
     import flash.events.Event;
     
     /**
-     * @author Zinovii Dmytriv
+     * Sequence provider event class
+     * @author Zinovii Dmytrivs
      */
     public class SequenceProviderEvent extends Event
     {
@@ -26,6 +27,9 @@ package org.jbei.lib
         public var data:Object;
         
         // Contructor
+        /**
+        * Contructor
+        */
         public function SequenceProviderEvent(type:String, kind:String, data:Object = null)
         {
             super(type);
