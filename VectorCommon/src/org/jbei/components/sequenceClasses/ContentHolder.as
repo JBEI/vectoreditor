@@ -36,10 +36,10 @@ package org.jbei.components.sequenceClasses
     import org.jbei.components.common.Constants;
     import org.jbei.components.common.EditingEvent;
     import org.jbei.components.common.IContentHolder;
+    import org.jbei.components.common.PasteDialogForm;
     import org.jbei.components.common.SelectionEvent;
     import org.jbei.components.common.SequenceUtils;
     import org.jbei.components.common.TextRenderer;
-    import org.jbei.components.common.PasteDialogForm;
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.data.DigestionSequence;
     import org.jbei.lib.mappers.AAMapper;
@@ -1068,6 +1068,7 @@ package org.jbei.components.sequenceClasses
                 }
             }
             
+            var externalContext:Object = null;
             if(digestionStart >= 0 && digestionEnd >= 0) {
                 var subSequenceProvider:SequenceProvider = _sequenceProvider.subSequenceProvider(digestionStart, digestionEnd);
                 var digestionSequence:DigestionSequence = new DigestionSequence(subSequenceProvider, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, (selectionLayer.start > selectionLayer.end) ? (digestionEndCutSite.start + sequenceProvider.sequence.length - digestionStartCutSite.start - 1) : (digestionEndCutSite.start - digestionStartCutSite.start));
@@ -1077,11 +1078,27 @@ package org.jbei.components.sequenceClasses
                 Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, subSequenceProvider, true);
                 Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subSequenceProvider.sequence.seqString(), true);
                 
+                if (_sequenceProvider.sequence.length <= Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH) {
+                    externalContext = {sequence: _sequenceProvider.sequence.seqString(), start:digestionStart, end:digestionEnd, name:_sequenceProvider.name};
+                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                } else {
+                    externalContext = {sequence: _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString(), start:digestionStart, end:digestionEnd, name:_sequenceProvider.name};
+                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                }
+                
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
             } else {
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, _sequenceProvider.subSequenceProvider(selectionLayer.start, selectionLayer.end), true);
                 Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _sequenceProvider.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
+                
+                if (_sequenceProvider.sequence.length <= Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH) {
+                    externalContext = {sequence: _sequenceProvider.sequence.seqString(), start:selectionLayer.start, end:selectionLayer.end, name:_sequenceProvider.name};
+                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                } else {
+                    externalContext = {sequence: _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString(), start:selectionLayer.start, end:selectionLayer.end, name:_sequenceProvider.name};
+                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                }
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
             }
