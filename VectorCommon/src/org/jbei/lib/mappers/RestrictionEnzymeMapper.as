@@ -50,7 +50,7 @@ package org.jbei.lib.mappers
             
             recalculate();
             
-            dirty = false;
+            dirty = true;
         }
         
 		public function get allCutSites():ArrayCollection /* of CutSite */

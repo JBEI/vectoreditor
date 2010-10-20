@@ -247,6 +247,11 @@ package org.jbei.registry.mediators
             sendNotification(Notifications.CARET_POSITION_CHANGED, (event.data as int));
         }
         
+        private function onRestrictionEnzymeManagerDialogSubmit(event:ModalDialogEvent):void
+        {
+            sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
+        }
+        
         private function onCreateProjectPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
             applicationFacade.createProject();
@@ -343,6 +348,8 @@ package org.jbei.registry.mediators
 			var restrictionEnzymeManagerDialog:ModalDialog = new ModalDialog(RestrictionEnzymeManagerForm, new RestrictionEnzymeGroup("tmp"));
 			restrictionEnzymeManagerDialog.title = "Restriction Enzyme Manager";
 			restrictionEnzymeManagerDialog.open();
+            
+            restrictionEnzymeManagerDialog.addEventListener(ModalDialogEvent.SUBMIT, onRestrictionEnzymeManagerDialogSubmit);
 		}
 		
         private function showSimulateDigestionDialog():void
