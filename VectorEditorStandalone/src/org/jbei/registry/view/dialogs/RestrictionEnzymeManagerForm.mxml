@@ -129,6 +129,14 @@
 				updateCurrentUserGroup();
 				
 				sortEnzymes(currentUserGroup);
+                
+                //disable use of groups in standalone version. Groups reqire talking to the RegistryAPI
+                CONFIG::standalone {
+                    addSelectedToGroupButton.enabled = false;
+                    addAllToGroupButton.enabled = false;
+                    newGroupButton.enabled = false;
+                    saveAsGroupButton.enabled = false;
+                }
 			}
 			
 			private function onSystemREGroupsChange(event:Event):void

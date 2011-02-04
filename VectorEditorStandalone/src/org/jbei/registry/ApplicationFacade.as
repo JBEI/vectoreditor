@@ -314,6 +314,9 @@ package org.jbei.registry
         
         public function saveUserPreferences(userPreferences:UserPreferences):void
         {
+            CONFIG::standalone{
+                return;
+            }
             serviceProxy.saveUserPreferences(sessionId, userPreferences);
         }
         

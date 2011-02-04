@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ApplicationControlBar dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:ApplicationControlBar 
+    creationComplete="onCreationComplete(event)"
+    dock="true" fillColors="[0xFFFFFF, 0xCCCCCC]" fillAlphas="[0.6,0.4]" width="100%" paddingTop="0" 
+    paddingBottom="0" paddingLeft="0" verticalGap="0" horizontalGap="0" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
@@ -93,6 +96,15 @@
 			[Bindable]
 			private var orfIcon:Class;
 			
+            private function onCreationComplete(event:Event):void
+			{
+                // disable use of save to registry buttons for standalone
+                CONFIG::standalone {
+                    saveToRegistryButton.enabled = false;
+                    saveProjectButton.enabled = false;
+                }
+            }
+            
 			// Public Methods
 			public function updateUndoButtonState(active:Boolean):void
 			{

@@ -100,12 +100,12 @@
                 }
                 
                 CONFIG::standalone {
-                    fileMenuItem.addSubItem(saveToRegistryMenuItem);
-                    fileMenuItem.addSubItem(separatorMenuItem);
-                    fileMenuItem.addSubItem(saveProjectMenuItem);
-                    fileMenuItem.addSubItem(saveProjectAsMenuItem);
-                    fileMenuItem.addSubItem(projectPropertiesMenuItem);
-                    fileMenuItem.addSubItem(separatorMenuItem);
+                    //fileMenuItem.addSubItem(saveToRegistryMenuItem);
+                    //fileMenuItem.addSubItem(separatorMenuItem);
+                    //fileMenuItem.addSubItem(saveProjectMenuItem);
+                    //fileMenuItem.addSubItem(saveProjectAsMenuItem);
+                    //fileMenuItem.addSubItem(projectPropertiesMenuItem);
+                    //fileMenuItem.addSubItem(separatorMenuItem);
                     fileMenuItem.addSubItem(importSequenceMenuItem);
                     fileMenuItem.addSubItem(downloadSequenceMenuItem);
                     fileMenuItem.addSubItem(separatorMenuItem);
