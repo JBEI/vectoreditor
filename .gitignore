@@ -1,0 +1,9 @@
+VectorEditorWeb/
+VectorEditorStandalone/bin-debug/
+RegistryWSClient/.model/
+RegistryWSClient/bin-debug/
+RegistryWSClient/html-template/
+RegistryWSClient/src/services/
+RegistryWSClient/src/valueObjects/
+VectorCommon/bin/
+*~
