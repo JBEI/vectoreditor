@@ -122,6 +122,24 @@ package org.jbei.view.components
 			if( cell.index != this._startCell.index )
 				cell = this._grid.cellAt( cell.row, this._startCell.index );
 			
+			// TODO : uses the same logic as autoscrollvertical should be folded in
+			var visibleCount:int = ( ( this.height - 30 ) / GridCell.DEFAULT_HEIGHT ) ; 
+			var row:int = cell.row;
+			var start:Number = this.verticalScrollPosition / GridCell.DEFAULT_HEIGHT;
+			
+			// is current index visible (NOTE: this is the key determining factor in auto scrolling)	
+			var isIndexVisible:Boolean = ( row >= start ) && ( row < (start + visibleCount) );
+			
+			if( !isIndexVisible )
+			{
+				this._grid.height = this.grid.rowSize() * GridCell.DEFAULT_HEIGHT + 1;
+				this.verticalScrollPosition += GridCell.DEFAULT_HEIGHT;
+				this.invalidateDisplayList();	// causes updatedisplayList to be called
+				this._grid.y = ( -1 * this.verticalScrollPosition );
+				dispatchEvent( new GridScrollEvent( GridScrollEvent.VSCROLL, this._grid.y ) );
+			}
+			// / TODO
+			
 			// clear current "dashed"
 			for each ( var dashed:GridCell in this._affected )
 			{
