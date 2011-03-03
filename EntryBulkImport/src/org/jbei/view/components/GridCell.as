@@ -116,7 +116,7 @@ package org.jbei.view.components
 			if( !this._editMode )
 				return;
 			
-			trace( "Switching (" + this.row + ", " + this.index + ") to display mode" );
+//			trace( "Switching (" + this.row + ", " + this.index + ") to display mode" );
 			this._editMode = false;
 			this._doubleClick = false;
 			this._label.text = this._textInput.text;

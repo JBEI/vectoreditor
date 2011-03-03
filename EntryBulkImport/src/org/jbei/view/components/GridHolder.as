@@ -440,7 +440,8 @@ package org.jbei.view.components
 		
 		public function pasteIntoCells( gridPaste:GridPaste ) : void
 		{
-			this._grid.pasteIntoCells( gridPaste );
+			var createdRows:int = this._grid.pasteIntoCells( gridPaste );
+			this._grid.height = this.grid.rowSize() * GridCell.DEFAULT_HEIGHT + 1;
 		}
 		
 		public function get activeCell() : GridCell

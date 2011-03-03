@@ -89,15 +89,19 @@ package org.jbei.view.components
 			return this._fields;
 		}
 		
-		public function pasteIntoCells( gridPaste:GridPaste ) : void
+		public function pasteIntoCells( gridPaste:GridPaste ) : int
 		{
 			var currentRow:GridRow;
 			var currentRowIndex:int = gridPaste.row;
+			var createdRows:int = 0;
 			
 			for each( var array:Array in gridPaste.dist )
 			{
 				if( currentRowIndex == this._rows.length )
+				{
 					createRow();
+					createdRows += 1;
+				}
 				
 				currentRow = this._rows.getItemAt( currentRowIndex ) as GridRow;
 				var j:int = gridPaste.col;
@@ -114,6 +118,8 @@ package org.jbei.view.components
 				
 				currentRowIndex += 1;
 			}
+			
+			return createdRows;
 		}
 		
 		/**

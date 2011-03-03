@@ -19,6 +19,12 @@ package org.jbei.model
 		// Splits the text around tabs and endlines
 		public function distributeCopiedText( cell:GridCell, text:String, gridPaste:GridPaste ) : void
 		{
+			if( !text )
+			{
+				trace( "no text for paste" );
+				return;
+			}
+			
 			var dist:ArrayCollection = new ArrayCollection();
 			
 			// TODO : array of arrays
