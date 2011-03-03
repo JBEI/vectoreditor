@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+ADOBE SYSTEMS INCORPORATED
+Copyright 2008 Adobe Systems Incorporated
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file
+in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for a Spark DefaultItemRenderer class.  
+
+@langversion 3.0
+@playerversion Flash 10
+@playerversion AIR 1.5
+@productversion Flex 4
+-->
+<s:ItemRenderer	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				focusEnabled="false" mouseEnabled="false" mouseChildren="true"
+				autoDrawBackground="true">
+	
+	<s:states>
+		<s:State name="normal" />            
+		<s:State name="hovered" />
+		<s:State name="selected" />
+		<s:State name="normalAndShowsCaret"/>
+		<s:State name="hoveredAndShowsCaret"/>
+		<s:State name="selectedAndShowsCaret"/>
+	</s:states>
+	
+
+	<s:VGroup left="0" right="0"
+			  paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		
+		<s:Label text="{data.titleNoFormatting}" fontWeight="bold" fontSize="13" width="100%"  />
+		
+		<s:Label text="{data.url}" textDecoration="underline" color="blue" width="100%" buttonMode="true"
+				 click="openPage()"/>
+		
+	</s:VGroup>
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			
+			function openPage(){
+				navigateToURL(new URLRequest(data.url), "blank")
+			}
+		]]>
+	</fx:Script>
+</s:ItemRenderer>

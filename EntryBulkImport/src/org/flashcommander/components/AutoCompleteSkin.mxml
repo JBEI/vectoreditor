@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- AutoComplete Skin: contains a List wrapped in a PopUpAnchor and a TextInput
+
+-->
+
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:controls="controls.*"
+    alpha.disabled=".5" xmlns:components="org.flashcommander.components.*" > 
+
+    <!-- host component -->
+    <fx:Metadata>
+    <![CDATA[ 
+    /** 
+     * @copy spark.skins.spark.ApplicationSkin#hostComponent
+     */
+        [HostComponent("org.flashcommander.components.AutoComplete")]
+    ]]>
+    </fx:Metadata> 
+
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="open" />
+        <s:State name="disabled" />
+    </s:states>
+    
+    <!--- 
+        The PopUpAnchor control that opens the drop-down list. 
+    -->
+
+	<s:PopUpAnchor id="popUp" displayPopUp="false"
+        top="0" bottom="1" left="0" right="0" 
+		popUpWidthMatchesAnchorWidth="true"
+        popUpPosition="below" >
+        
+        <s:Group id="dropDown" minHeight="35" width="100%">
+			<components:ListAutoComplete id="list" minWidth="100" />
+        </s:Group>
+		
+    </s:PopUpAnchor>
+	
+	<s:TextInput id="inputTxt" left="0" right="0" top="0" bottom="0" />
+
+</s:Skin>
