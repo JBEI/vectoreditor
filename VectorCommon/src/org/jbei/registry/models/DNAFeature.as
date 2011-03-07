@@ -9,7 +9,7 @@ package org.jbei.registry.models
 	public class DNAFeature
 	{
 		private var _name:String;
-		private var _start:int;
+		private var _genbankStart:int;
 		private var _end:int;
 		private var _type:String;
 		private var _strand:int;
@@ -17,9 +17,9 @@ package org.jbei.registry.models
 		private var _annotationType:String;
 		
 		// Contructor
-		public function DNAFeature(start:int = 0, end:int = 0, strand:int = 0, name:String = "", notes:ArrayCollection = null /* of DNAFeatureNote */, type:String = "", annotationType:String = null)
+		public function DNAFeature(genbankStart:int = 0, end:int = 0, strand:int = 0, name:String = "", notes:ArrayCollection = null /* of DNAFeatureNote */, type:String = "", annotationType:String = null)
 		{
-			_start = start;
+			_genbankStart = genbankStart;
 			_end = end;
 			_strand = strand;
 			_name = name;
@@ -39,14 +39,14 @@ package org.jbei.registry.models
 			_name = value;
 		}
 		
-		public function get start():int
+		public function get genbankStart():int
 		{
-			return _start;
+			return _genbankStart;
 		}
 		
-		public function set start(value:int):void
+		public function set genbankStart(value:int):void
 		{
-			_start = value;
+			_genbankStart = value;
 		}
 		
 		public function get end():int

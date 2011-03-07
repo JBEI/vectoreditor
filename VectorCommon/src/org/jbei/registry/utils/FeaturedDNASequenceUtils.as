@@ -69,7 +69,7 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					features.addItem(new Feature(dnaFeature.name, dnaFeature.start - 1, dnaFeature.end - 1, dnaFeature.type, dnaFeature.strand, featureNotes));
+					features.addItem(new Feature(dnaFeature.name, dnaFeature.genbankStart - 1, dnaFeature.end - 1, dnaFeature.type, dnaFeature.strand, featureNotes));
 				}
 			}
 			
