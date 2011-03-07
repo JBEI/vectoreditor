@@ -993,6 +993,7 @@ package org.jbei.lib
                 feature = new GenbankFeatureElement();
                 feature.genbankStart = seqProviderFeature.start + 1;
                 feature.end = seqProviderFeature.end;
+                feature.strand = seqProviderFeature.strand;
                 feature.key = seqProviderFeature.type;
                 tempQualifier = new GenbankFeatureQualifier();
                 tempQualifier.quoted = true;
@@ -1029,6 +1030,7 @@ package org.jbei.lib
                 feature.start = genbankFeatures[i].genbankStart;
                 feature.end = genbankFeatures[i].end;
                 feature.type = genbankFeatures[i].key;
+                feature.strand = genbankFeatures[i].strand;
                 if (feature.start > feature.end) {
                     feature.strand = -1;
                 } else {
