@@ -5,9 +5,13 @@ package org.jbei.lib
     
     import mx.collections.ArrayCollection;
     
+    import org.jbei.bio.parsers.GenbankFeatureElement;
+    import org.jbei.bio.parsers.GenbankFeatureQualifier;
+    import org.jbei.bio.parsers.GenbankFileModel;
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.common.SymbolList;
     import org.jbei.bio.sequence.dna.Feature;
+    import org.jbei.bio.sequence.dna.FeatureNote;
     import org.jbei.lib.common.IMemento;
     import org.jbei.lib.common.IOriginator;
     
@@ -969,6 +973,83 @@ package org.jbei.lib
             manualUpdateEnd();
         }
         
+        /**
+        * suitable for generating genbank file
+        */
+        public function generateGenbankFileModel():GenbankFileModel{
+            var result:GenbankFileModel = new GenbankFileModel();
+            result.locus.locusName = this.name;
+            result.locus.linear = !this.circular;
+            result.locus.naType = "DNA";
+            result.locus.strandType = "ds";
+            result.locus.date = new Date();
+            result.origin.sequence = this.sequence.toString();
+            
+            var seqProviderFeature:Feature;
+            var feature:GenbankFeatureElement;
+            var tempQualifier:GenbankFeatureQualifier;
+            for (var i:int = 0; i < this.features.length; i++) {
+                seqProviderFeature = this.features[i] as Feature;
+                feature = new GenbankFeatureElement();
+                feature.genbankStart = seqProviderFeature.start + 1;
+                feature.end = seqProviderFeature.end;
+                feature.key = seqProviderFeature.type;
+                tempQualifier = new GenbankFeatureQualifier();
+                tempQualifier.quoted = true;
+                tempQualifier.name = "label";
+                tempQualifier.value = seqProviderFeature.name;
+                feature.featureQualifiers.push(tempQualifier);
+                for (var j:int = 0; j < seqProviderFeature.notes.length; j++) {
+                    tempQualifier = new GenbankFeatureQualifier();
+                    tempQualifier.quoted = true;
+                    tempQualifier.name = seqProviderFeature.notes[i].name;
+                    tempQualifier.value = seqProviderFeature.notes[i].value;
+                    feature.featureQualifiers.push(tempQualifier);
+                }
+                result.features.features.push(feature);
+            }
+            
+            return result;
+        }
+        
+        /**
+        * Use after calling empty constructor
+        */
+        
+        public function useGenbankFIleModel(genbankFileModel:GenbankFileModel):void
+        {
+            _name = genbankFileModel.locus.locusName;
+            _circular = !genbankFileModel.locus.linear;
+            _sequence = DNATools.createDNA(genbankFileModel.origin.sequence);
+            
+            var genbankFeatures:Vector.<GenbankFeatureElement> = genbankFileModel.features.features;
+            var feature:Feature;
+            for (var i:int = 0; i < genbankFeatures.length; i++) {
+                feature = new Feature();
+                feature.start = genbankFeatures[i].genbankStart;
+                feature.end = genbankFeatures[i].end;
+                feature.type = genbankFeatures[i].key;
+                if (feature.start > feature.end) {
+                    feature.strand = -1;
+                } else {
+                    feature.strand = 1;
+                }
+                
+                feature.notes = new Vector.<FeatureNote>();
+                for (var j:int = 0; j < genbankFeatures[i].featureQualifiers.length; j++) {
+                    if (genbankFeatures[i].featureQualifiers[j].name == "label") {
+                        feature.name = genbankFeatures[i].featureQualifiers[j].value;
+                    } else {
+                        feature.notes.push(new FeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value));
+                    }
+                }
+                if (feature.name == null) {
+                    feature.name = "unknown";
+                }
+            }
+            
+            
+        }
         // Private Methods
         private function updateComplementSequence():void
         {
