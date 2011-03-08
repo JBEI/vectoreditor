@@ -46,6 +46,10 @@ package org.jbei.registry.utils
                 sequence.features.addItem(new DNAFeature(49, 1131, -1, "lacI", null, "CDS"));
             }*/
             
+            sequence = new FeaturedDNASequence();
+            sequence.features = new ArrayCollection();
+            sequence.name = "unknown";
+            
 			return sequence;
 		}
 		
