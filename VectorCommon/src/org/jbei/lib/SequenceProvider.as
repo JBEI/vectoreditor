@@ -14,6 +14,9 @@ package org.jbei.lib
     import org.jbei.bio.sequence.dna.FeatureNote;
     import org.jbei.lib.common.IMemento;
     import org.jbei.lib.common.IOriginator;
+    import org.jbei.registry.models.DNAFeature;
+    import org.jbei.registry.models.DNAFeatureNote;
+    import org.jbei.registry.models.FeaturedDNASequence;
     
     [RemoteClass(alias="org.jbei.lib.SequenceProvider")]
     /**
@@ -976,7 +979,7 @@ package org.jbei.lib
         /**
         * suitable for generating genbank file
         */
-        public function generateGenbankFileModel():GenbankFileModel{
+        public function toGenbankFileModel():GenbankFileModel{
             var result:GenbankFileModel = new GenbankFileModel();
             result.locus.locusName = this.name;
             result.locus.linear = !this.circular;
@@ -992,7 +995,7 @@ package org.jbei.lib
                 seqProviderFeature = this.features[i] as Feature;
                 feature = new GenbankFeatureElement();
                 feature.genbankStart = seqProviderFeature.start + 1;
-                feature.end = seqProviderFeature.end;
+                feature.end = seqProviderFeature.end + 1; // SeqProvider uses inconsistent indexing scheme.
                 feature.strand = seqProviderFeature.strand;
                 feature.key = seqProviderFeature.type;
                 tempQualifier = new GenbankFeatureQualifier();
@@ -1003,8 +1006,8 @@ package org.jbei.lib
                 for (var j:int = 0; j < seqProviderFeature.notes.length; j++) {
                     tempQualifier = new GenbankFeatureQualifier();
                     tempQualifier.quoted = true;
-                    tempQualifier.name = seqProviderFeature.notes[i].name;
-                    tempQualifier.value = seqProviderFeature.notes[i].value;
+                    tempQualifier.name = seqProviderFeature.notes[j].name;
+                    tempQualifier.value = seqProviderFeature.notes[j].value;
                     feature.featureQualifiers.push(tempQualifier);
                 }
                 result.features.features.push(feature);
@@ -1013,45 +1016,42 @@ package org.jbei.lib
             return result;
         }
         
-        /**
-        * Use after calling empty constructor
-        */
-        
-        public function useGenbankFIleModel(genbankFileModel:GenbankFileModel):void
+        public function fromGenbankFileModel(genbankFileModel:GenbankFileModel):FeaturedDNASequence
         {
-            _name = genbankFileModel.locus.locusName;
-            _circular = !genbankFileModel.locus.linear;
-            _sequence = DNATools.createDNA(genbankFileModel.origin.sequence);
+
+            var result:FeaturedDNASequence = new FeaturedDNASequence();
+            result.features = new ArrayCollection(); /* of DNAFeatures */
+            result.name = genbankFileModel.locus.locusName;
+            result.isCircular = !genbankFileModel.locus.linear;
+            result.sequence = DNATools.createDNA(genbankFileModel.origin.sequence).toString();
+            
             
             var genbankFeatures:Vector.<GenbankFeatureElement> = genbankFileModel.features.features;
-            var feature:Feature;
+            var dnaFeature:DNAFeature;
             for (var i:int = 0; i < genbankFeatures.length; i++) {
-                feature = new Feature();
-                feature.start = genbankFeatures[i].genbankStart;
-                feature.end = genbankFeatures[i].end;
-                feature.type = genbankFeatures[i].key;
-                feature.strand = genbankFeatures[i].strand;
-                if (feature.start > feature.end) {
-                    feature.strand = -1;
-                } else {
-                    feature.strand = 1;
-                }
+                dnaFeature = new DNAFeature();
+                dnaFeature.genbankStart = genbankFeatures[i].genbankStart;
+                dnaFeature.end = genbankFeatures[i].end;
+                dnaFeature.type = genbankFeatures[i].key;
+                dnaFeature.strand = genbankFeatures[i].strand;
                 
-                feature.notes = new Vector.<FeatureNote>();
+                dnaFeature.notes = new ArrayCollection(); /* of DNAFeatureNote */
                 for (var j:int = 0; j < genbankFeatures[i].featureQualifiers.length; j++) {
                     if (genbankFeatures[i].featureQualifiers[j].name == "label") {
-                        feature.name = genbankFeatures[i].featureQualifiers[j].value;
+                        dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
                     } else {
-                        feature.notes.push(new FeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value));
+                        dnaFeature.notes.addItem(new DNAFeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value));
                     }
                 }
-                if (feature.name == null) {
-                    feature.name = "unknown";
+                if (dnaFeature.name == null) {
+                    dnaFeature.name = "unknown";
                 }
+                result.features.addItem(dnaFeature);            
             }
             
-            
+            return result;
         }
+
         // Private Methods
         private function updateComplementSequence():void
         {

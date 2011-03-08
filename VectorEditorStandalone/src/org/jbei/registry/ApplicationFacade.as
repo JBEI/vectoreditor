@@ -9,6 +9,7 @@ package org.jbei.registry
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	
+	import org.jbei.bio.parsers.GenbankFormat;
 	import org.jbei.bio.sequence.DNATools;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.SequenceProviderEvent;
@@ -364,12 +365,33 @@ package org.jbei.registry
         
         public function importSequence(data:String):void
         {
+            var featuredDNASequence:FeaturedDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(data));
+            
+            
+            if(featuredDNASequence.name == null) {
+                Alert.show("Failed to parse sequence file", "Failed to parse");
+                
+                return;
+            }
+            
+            sendNotification(Notifications.ACTION_MESSAGE, "Sequence parsed successfully");
+            
+            sendNotification(Notifications.SEQUENCE_UPDATED, featuredDNASequence);
+        }
+        public function importSequenceViaServer(data:String):void
+        {
             serviceProxy.parseSequenceFile(data);
         }
         
         public function generateAndFetchSequence():void
         {
-            serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+            CONFIG::entryEdition {
+                serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+            }
+            CONFIG::standalone {
+                var result:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
+                sendNotification(Notifications.SEQUENCE_GENERATED_AND_FETCHED, result);
+            }
         }
         
         public function saveSequence():void
@@ -378,6 +400,12 @@ package org.jbei.registry
         }
         
         public function generateSequence():void
+        {
+            var result:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
+            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, result);
+        }
+        
+        public function generateSequenceOnServer():void
         {
             serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }

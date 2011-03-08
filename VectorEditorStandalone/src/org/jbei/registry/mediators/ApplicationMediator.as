@@ -279,7 +279,13 @@ package org.jbei.registry.mediators
                 return;
             }
             
-            ApplicationFacade.getInstance().importSequence(importSequenceFileReference.data.toString());
+            CONFIG::standalone {
+                ApplicationFacade.getInstance().importSequence(importSequenceFileReference.data.toString());
+            }
+            CONFIG::entryEdition {
+                ApplicationFacade.getInstance().importSequenceViaServer(importSequenceFileReference.data.toString());
+            }
+
         }
         
         private function onImportSequenceFileReferenceLoadError(event:IOErrorEvent):void
@@ -478,7 +484,12 @@ package org.jbei.registry.mediators
         
         private function generateSequence():void
         {
-            applicationFacade.generateSequence();
+            CONFIG::standalone {
+                applicationFacade.generateSequence();
+            }
+            CONFIG::entryEdition {
+                applicationFacade.generateSequenceOnServer();
+            }
         }
         
         private function downloadSequence(content:String):void
