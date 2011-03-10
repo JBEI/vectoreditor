@@ -11,6 +11,7 @@ package org.jbei.view.mediators
 	import org.jbei.ApplicationFacade;
 	import org.jbei.Notifications;
 	import org.puremvc.as3.interfaces.IMediator;
+	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
 	import spark.components.Button;
@@ -41,6 +42,27 @@ package org.jbei.view.mediators
 		private function cancelEvent( event:MouseEvent ) : void
 		{
 			this.cancel();
+		}
+		
+		override public function listNotificationInterests() : Array
+		{
+			return [ Notifications.PART_TYPE_SELECTION, Notifications.RESET_APP, Notifications.SAVE, Notifications.ACTIVE_GRID_CELL_TEXT_CHANGE ];
+		}
+		
+		override public function handleNotification( notification:INotification ) : void
+		{
+			switch( notification.getName() )
+			{
+				case Notifications.PART_TYPE_SELECTION:
+				case Notifications.RESET_APP:
+				case Notifications.ACTIVE_GRID_CELL_TEXT_CHANGE:
+					this.cancelButton.enabled = true;
+					break;
+				
+				case Notifications.SAVE:
+					this.cancelButton.enabled = false;
+					break;
+			}
 		}
 		
 		private function confirmCancel( event:CloseEvent ) : void

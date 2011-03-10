@@ -43,7 +43,7 @@ package org.jbei.view.mediators
 		
 		override public function listNotificationInterests() : Array
 		{
-			return [ Notifications.PART_TYPE_SELECTION ];
+			return [ Notifications.PART_TYPE_SELECTION, Notifications.RESET_APP, Notifications.SAVE, Notifications.ACTIVE_GRID_CELL_TEXT_CHANGE ];
 		}
 		
 		override public function handleNotification( notification:INotification ) : void
@@ -51,7 +51,13 @@ package org.jbei.view.mediators
 			switch( notification.getName() )
 			{
 				case Notifications.PART_TYPE_SELECTION:
+				case Notifications.RESET_APP:
+				case Notifications.ACTIVE_GRID_CELL_TEXT_CHANGE:
 					this.saveButton.enabled = true;
+					break;
+				
+				case Notifications.SAVE:
+					this.saveButton.enabled = false;
 					break;
 			}
 		}
