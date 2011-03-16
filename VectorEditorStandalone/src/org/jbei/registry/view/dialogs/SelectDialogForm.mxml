@@ -13,7 +13,7 @@
 			// Public Methods
 			public override function validate():void
 			{
-				if(startNumberValidator.validate().type == ValidationResultEvent.INVALID || endNumberValidator.validate().type == ValidationResultEvent.INVALID) {
+				if(genbankStartNumberValidator.validate().type == ValidationResultEvent.INVALID || endNumberValidator.validate().type == ValidationResultEvent.INVALID) {
 					isValid = false;
 				} else {
 					var positions:Array = dataObject as Array;
@@ -44,7 +44,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:NumberValidator id="startNumberValidator" source="{ startTextInput }" required="true" minValue="1" property="text" domain="int"/>
+	<mx:NumberValidator id="genbankStartNumberValidator" source="{ startTextInput }" required="true" minValue="1" property="text" domain="int"/>
 	<mx:NumberValidator id="endNumberValidator" source="{ endTextInput }" required="true" minValue="1" property="text" domain="int" />
 	
 	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">

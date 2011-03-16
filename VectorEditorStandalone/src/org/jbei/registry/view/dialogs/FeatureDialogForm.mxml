@@ -80,7 +80,7 @@
 			// Public Methods
 			public override function validate():void
 			{
-				if(sequenceLength == 0 || startNumberValidator.validate().type == ValidationResultEvent.INVALID || endNumberValidator.validate().type == ValidationResultEvent.INVALID || nameStringValidator.validate().type == ValidationResultEvent.INVALID) {
+				if(sequenceLength == 0 || genbankStartNumberValidator.validate().type == ValidationResultEvent.INVALID || endNumberValidator.validate().type == ValidationResultEvent.INVALID || nameStringValidator.validate().type == ValidationResultEvent.INVALID) {
 					isValid = false;
 				} else {
 					if(!dataObject || !ApplicationFacade.getInstance().sequenceProvider.hasFeature(dataObject as Feature)) { // "New Feature" or "Selected as New Feature" cases
@@ -128,8 +128,8 @@
 					}
 				}
 				
-				startNumericStepper.value = feature.start + 1;
-				endNumericStepper.value = feature.end + 1;
+				genbankStartNumericStepper.value = feature.start + 1;
+				endNumericStepper.value = feature.end;
 				
 				/*for(var j:int = 0; j < feature.notes.length; j++) {
 					if((feature.notes[j] as FeatureNote).name.toLowerCase() == "description") {
@@ -145,8 +145,8 @@
 				
 				feature.strand = strandRadioGroup.selectedValue as int;
 				feature.type = typeComboBox.text;
-				feature.start = startNumericStepper.value - 1;
-				feature.end = endNumericStepper.value - 2;
+				feature.start = genbankStartNumericStepper.value - 1;
+				feature.end = endNumericStepper.value - 1;
 				feature.name = nameTextInput.text;
 				
 				feature.notes = new Vector.<FeatureNote>();
@@ -164,7 +164,7 @@
 					
 					feature.strand = strandRadioGroup.selectedValue as int;
 					feature.type = typeComboBox.text;
-					feature.start = startNumericStepper.value - 1;
+					feature.start = genbankStartNumericStepper.value - 1;
 					feature.end = endNumericStepper.value - 1;
 					feature.name = nameTextInput.text;
 					
@@ -202,7 +202,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:NumberValidator id="startNumberValidator" source="{ startNumericStepper }" required="true" minValue="1" property="value" domain="int"/>
+	<mx:NumberValidator id="genbankStartNumberValidator" source="{ genbankStartNumericStepper }" required="true" minValue="1" property="value" domain="int"/>
 	<mx:NumberValidator id="endNumberValidator" source="{ endNumericStepper }" required="true" minValue="1" property="value" domain="int" />
 	<mx:StringValidator id="nameStringValidator" source="{ nameTextInput }" required="true" property="text" />
 	
@@ -218,7 +218,7 @@
 			<mx:ComboBox id="typeComboBox" dataProvider="{ featureTypes }" labelField="label"/>
 		</mx:FormItem>
 		<mx:FormItem label="Start:" direction="horizontal">
-			<mx:NumericStepper id="startNumericStepper" minimum="1" maximum="{ sequenceLength }"/>
+			<mx:NumericStepper id="genbankStartNumericStepper" minimum="1" maximum="{ sequenceLength }"/>
 		</mx:FormItem>
 		<mx:FormItem label="End:" direction="horizontal">
 			<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength + 1 }"/>
