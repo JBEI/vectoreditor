@@ -102,6 +102,8 @@
                 CONFIG::standalone {
                     saveToRegistryButton.enabled = false;
                     saveProjectButton.enabled = false;
+                    projectPropertiesButton.enabled = false;
+                    
                 }
             }
             
