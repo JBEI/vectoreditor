@@ -88,6 +88,10 @@ package org.jbei.registry.proxies
 		
 		public function saveUserRestrictionEnzymes(sessionId:String, userRestrictionEnzymes:UserRestrictionEnzymes):void
 		{
+            CONFIG::standalone {
+                return;
+            }
+            
             sendNotification(Notifications.LOCK, "Saving user enzymes ...");
             
             service.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
