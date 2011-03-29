@@ -259,6 +259,11 @@ package org.jbei.registry.mediators
         
         private function onProjectPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
+            CONFIG::standalone {
+            
+                return;
+            }
+            
             if(applicationFacade.project.uuid != null && applicationFacade.project.uuid != "") {
                 applicationFacade.saveProject();
             } else {

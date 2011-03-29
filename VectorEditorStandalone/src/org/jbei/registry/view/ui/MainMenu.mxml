@@ -83,8 +83,8 @@
                 var saveProjectMenuItem:MenuItem = new MenuItem("saveProjectMenuItem", "Save Project");
                 var saveProjectAsMenuItem:MenuItem = new MenuItem("saveProjectAsMenuItem", "Save Project As ...");
                 var projectPropertiesMenuItem:MenuItem = new MenuItem("projectPropertiesMenuItem", "Project Properties");
-                var downloadSequenceMenuItem:MenuItem = new MenuItem("downloadSequenceMenuItem", "Download Sequence");
-                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Sequence");
+                var downloadSequenceMenuItem:MenuItem = new MenuItem("downloadSequenceMenuItem", "Download Genbank");
+                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Genbank");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
                 var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");
@@ -104,11 +104,11 @@
                     //fileMenuItem.addSubItem(separatorMenuItem);
                     //fileMenuItem.addSubItem(saveProjectMenuItem);
                     //fileMenuItem.addSubItem(saveProjectAsMenuItem);
-                    //fileMenuItem.addSubItem(projectPropertiesMenuItem);
                     //fileMenuItem.addSubItem(separatorMenuItem);
                     fileMenuItem.addSubItem(importSequenceMenuItem);
                     fileMenuItem.addSubItem(downloadSequenceMenuItem);
                     fileMenuItem.addSubItem(separatorMenuItem);
+                    fileMenuItem.addSubItem(projectPropertiesMenuItem);
                 }
                 
                 CONFIG::entryEdition {
