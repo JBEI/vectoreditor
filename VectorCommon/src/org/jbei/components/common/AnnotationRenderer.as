@@ -81,7 +81,7 @@ package org.jbei.components.common
 		
 		private function onMouseClick(event:MouseEvent):void
 		{
-			contentHolder.select(annotation.start, annotation.end + 1);
+			contentHolder.select(annotation.start, annotation.end);
 		}
 	}
 }

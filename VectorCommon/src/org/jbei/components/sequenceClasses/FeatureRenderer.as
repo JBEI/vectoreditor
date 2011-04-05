@@ -48,6 +48,7 @@ package org.jbei.components.sequenceClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
+            trace(feature.name + "," + feature.start + "," + feature.end);
 			var featureRows:Array = sequenceContentHolder.rowMapper.featureToRowMap[feature];
 			
 			if(! featureRows) { return; }
@@ -81,7 +82,7 @@ package org.jbei.components.sequenceClasses
 					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
 					if(feature.end >= row.rowData.start && feature.end <= row.rowData.end) {
-						endBP = feature.end;
+						endBP = feature.end - 1;
 					}
 						/* |--------------------------------------------------------------------------------------|
 						*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
@@ -104,7 +105,7 @@ package org.jbei.components.sequenceClasses
 					}
 				} else {
 					startBP = (feature.start < row.rowData.start) ? row.rowData.start : feature.start;
-					endBP = (feature.end < row.rowData.end) ? feature.end : row.rowData.end;
+					endBP = (feature.end - 1 < row.rowData.end) ? feature.end - 1 : row.rowData.end;
 				}
 				
 				/* Case when start and end are in the same row
@@ -177,7 +178,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end);
 		}
 		
 		// Private Methods

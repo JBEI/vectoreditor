@@ -57,7 +57,7 @@ package org.jbei.components.pieClasses
 			}
 			
 			angle1 = feature.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
-			angle2 = (feature.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+			angle2 = (feature.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			var centralAngle:Number;
 			
@@ -101,7 +101,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end);
 		}
 		
 		// Private Methods

@@ -82,12 +82,12 @@ package org.jbei.components.sequenceClasses
 				
 				if(cutSite.start <= cutSite.end) { // non-circular
 					startBP = (cutSite.start < row.rowData.start) ? row.rowData.start : cutSite.start;
-					endBP = (cutSite.end < row.rowData.end) ? cutSite.end : row.rowData.end;
+					endBP = (cutSite.end - 1 < row.rowData.end) ? cutSite.end - 1 : row.rowData.end;
 				} else { // circular
 					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
 					if(cutSite.end >= row.rowData.start && cutSite.end <= row.rowData.end) {
-						endBP = cutSite.end;
+						endBP = cutSite.end - 1;
 					}
 					else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
 						endBP = contentHolder.sequenceProvider.sequence.length - 1;
@@ -169,7 +169,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			tooltipLabel = cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 	}
 }

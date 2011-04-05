@@ -83,11 +83,12 @@
 					affectedFeatures = sequenceProvider.featuresByRange(start, end);
 					
 					for(var i1:int = 0; i1 < affectedFeatures.length; i1++) {
-						// Check if feature is completelly covered by segment
+						// Check if feature is completely covered by segment
 						var currentFeature:Feature = affectedFeatures[i1] as Feature;
 						
+                        // TODO XXX test this!
 						if(start < end) {
-							if(currentFeature.start <= currentFeature.end) {
+							if(currentFeature.start < currentFeature.end) {
 								if(start <= currentFeature.start && end > currentFeature.end) {
 									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
 								} else {
@@ -97,7 +98,7 @@
 								featuredItems.addItem(new FeatureEditingTableItem(currentFeature, false, true));
 							}
 						} else {
-							if(currentFeature.start <= currentFeature.end) {
+							if(currentFeature.start < currentFeature.end) {
 								if(currentFeature.end < end) {
 									featuredItems.addItem(new FeatureEditingTableItem(currentFeature, true, false));
 								} else if(currentFeature.start >= start) {

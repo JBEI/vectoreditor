@@ -94,7 +94,7 @@ package org.jbei.components.railClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.strand == 1 ? ", complimentary" : "");
+			tooltipLabel = (orf.start + 1) + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1) + " BP, " + int((Math.abs(orf.end - orf.start) + 1) / 3) + " AA" + (orf.strand == 1 ? ", complimentary" : "");
 			if(orf.startCodons.length > 1) {
 				tooltipLabel += "\n";
 				for(var i:int = 0; i < orf.startCodons.length; i++) {

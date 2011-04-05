@@ -41,7 +41,7 @@ package org.jbei.components.pieClasses
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return _feature.type + (_feature.name == "" ? "" : (" - " + _feature.name)) + ": " + (_feature.start + 1) + ".." + (_feature.end + 1);
+			return _feature.type + (_feature.name == "" ? "" : (" - " + _feature.name)) + ": " + (_feature.start + 1) + ".." + (_feature.end);
 		}
 		
 		protected override function render():void

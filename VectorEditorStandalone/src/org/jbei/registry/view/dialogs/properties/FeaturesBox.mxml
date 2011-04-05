@@ -114,10 +114,10 @@
 					}
 					
 					if(searchQuery == "") {
-						filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+						filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end)), type : feature.type, strand : strand});
 					} else {
 						if(feature.name.toLowerCase().search(searchQuery) >= 0 || feature.type.toLowerCase().search(searchQuery) >= 0) {
-							filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end + 1)), type : feature.type, strand : strand});
+							filteredFeatures.addItem({name : feature.name, "feature" : feature, position : ((feature.start + 1) + " - " + (feature.end)), type : feature.type, strand : strand});
 						}
 					}
 				}
@@ -159,7 +159,7 @@
 				if(event.target is DataGridItemRenderer) {
 					var feature:Feature = (event.target as DataGridItemRenderer).data.feature;
 					
-					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(feature.start, feature.end + 1));
+					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(feature.start, feature.end));
 				}
 			}
 			

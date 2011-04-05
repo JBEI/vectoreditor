@@ -8,7 +8,8 @@ package org.jbei.registry.models
 	{
 		private var _name:String;
 		private var _value:String;
-		
+		private var _quoted:Boolean;
+        
 		public function DNAFeatureNote(name:String = "", aValue:String = "")
 		{
 			_name = name;
@@ -34,5 +35,15 @@ package org.jbei.registry.models
 		{
 			_value = aValue;
 		}
+        
+        public function get quoted():Boolean
+        {
+            return _quoted;
+        }
+        
+        public function set quoted(quoted:Boolean):void
+        {
+            _quoted = quoted;
+        }
 	}
 }

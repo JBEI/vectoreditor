@@ -500,14 +500,14 @@ package org.jbei.lib
                 dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_SEQUENCE_INSERT, createMemento()));
             }
             
-            const DEBUG_MODE:Boolean = false;
+            const DEBUG_MODE:Boolean = true;
             
             var deletions:Array = new Array(); // features marked for deletion
             
             for(var i:int = 0; i < _features.length; i++) {
                 var feature:Feature = _features[i];
                 
-                if(feature.start <= feature.end) { // normal feature
+                if(feature.start < feature.end) { // normal feature
                     if(startIndex < endIndex) { // normal selection
                         /* Selection before feature => feature shift left
                         * |-----SSSSSSSSSSSSSSSSSSSSSSSSS--------------------------------------------------------------------|
@@ -526,21 +526,21 @@ package org.jbei.lib
                             /* Selection cover feature => remove feature
                             * |-----------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS-----------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-                        else if(startIndex <= feature.start && feature.end <= (endIndex - 1)) {
+                        else if(startIndex <= feature.start && feature.end <= (endIndex)) {
                             deletions.push(feature);
                             if (DEBUG_MODE) trace("case Fn,Sn 3");
                         }
                             /* Selection inside feature => resize feature
                             * |-------------------------------------SSSSSSSSSSSSSSSSSSSSSS---------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-                        else if((startIndex >= feature.start && (endIndex - 1) < feature.end) || (startIndex > feature.start && (endIndex - 1) <= feature.end)) {
+                        else if(((startIndex >= feature.start) && ((endIndex) <= feature.end))) {
                             feature.end -= endIndex - startIndex;
                             if (DEBUG_MODE) trace("case Fn,Sn 4");
                         }
                             /* Selection left overlap feature => shift & resize feature
                             * |-----------------------------SSSSSSSSSSSSSSSSSSSSS------------------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-                        else if(startIndex < feature.start && feature.start <= (endIndex - 1)) {
+                        else if(startIndex < feature.start && feature.start < (endIndex)) {
                             feature.start = startIndex;
                             feature.end -= endIndex - startIndex;
                             if (DEBUG_MODE) trace("case Fn,Sn 5");
@@ -548,8 +548,8 @@ package org.jbei.lib
                             /* Selection right overlap feature => shift & resize feature
                             * |-------------------------------------------------SSSSSSSSSSSSSSSSSSSSS----------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-                        else if(startIndex <= feature.end && (endIndex - 1) > feature.end) {
-                            feature.end = startIndex - 1;
+                        else if(startIndex < feature.end && (endIndex) > feature.end) {
+                            feature.end = startIndex;
                             if (DEBUG_MODE) trace("case Fn,Sn 6");
                         } else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
@@ -558,7 +558,7 @@ package org.jbei.lib
                         /* Selection and feature no overlap => shift left
                         * |SSSSSSSSSSS-------------------------------------------------------------------------SSSSSSSSSSSSSS|
                         *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
-                        if(startIndex > feature.end && (endIndex - 1) < feature.start) {
+                        if(startIndex > feature.end && (endIndex) <= feature.start) {
                             feature.start -= endIndex;
                             feature.end -= endIndex;
                             if (DEBUG_MODE) trace("case Fn,Sc 1");
@@ -566,7 +566,7 @@ package org.jbei.lib
                             /* Selection and feature left partial overlap => cut and shift
                             * |SSSSSSSSSSSSSSSSSSSS----------------------------------------------------------------SSSSSSSSSSSSSS|
                             *             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                                         */
-                        else if(startIndex > feature.end && (endIndex - 1) >= feature.start && endIndex < feature.end) {
+                        else if(startIndex > feature.end && (endIndex) > feature.start && endIndex <= feature.end) {
                             feature.start = 0;
                             feature.end -= endIndex;
                             if (DEBUG_MODE) trace("case Fn,Sc 2");
@@ -574,17 +574,17 @@ package org.jbei.lib
                             /* Selection and feature right partial overlap => cut and shift
                             * |SSSSSSSSSSSSSSS--------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *                                                       |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|               */
-                        else if(startIndex > feature.start && startIndex <= feature.end && (endIndex - 1) < feature.start) {
+                        else if(startIndex > feature.start && startIndex < feature.end && (endIndex) < feature.start) {
                             feature.start -= endIndex;
-                            feature.end -= (feature.end - startIndex + 1) + endIndex;
+                            feature.end -= (feature.end - startIndex) + endIndex;
                             if (DEBUG_MODE) trace("case Fn,Sc 3");
                         }
                             /* Double selection overlap => cut and shift
                             * |SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS-----------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *                           |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                          */
-                        else if(startIndex <= feature.end && (endIndex - 1) >= feature.start) {
+                        else if(startIndex < feature.end && (endIndex) > feature.start) {
                             feature.start = 0;
-                            feature.end -= (feature.end - startIndex + 1) + endIndex;
+                            feature.end -= (feature.end - startIndex) + endIndex;
                             if (DEBUG_MODE) trace("case Fn,Sc 3");
                         }
                             /* Complete left cover => remove feature
@@ -609,20 +609,20 @@ package org.jbei.lib
                         /* Selection between feature start and end
                         * |-------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------------------------------------|
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        if(startIndex > feature.end && (endIndex - 1) < feature.start) {
+                        if(startIndex >= feature.end && (endIndex) <= feature.start) {
                             feature.start -= endIndex - startIndex;
                             if (DEBUG_MODE) trace("case Fc,Sn 1");
                         }
                             /* Selection inside feature start
                             * |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        else if(startIndex > feature.start) {
+                        else if(startIndex >= feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sn 2");
                         }
                             /* Selection inside feature end
                             * |--SSSSSSSSSSSSSSSSSS------------------------------------------------------------------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        else if((endIndex - 1) < feature.end) {
+                        else if((endIndex) <= feature.end) {
                             feature.start -= endIndex - startIndex;
                             feature.end -= endIndex - startIndex;
                             if (DEBUG_MODE) trace("case Fc,Sn 3");
@@ -630,7 +630,7 @@ package org.jbei.lib
                             /* Selection in feature start
                             * |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
                             *  FFFFFFFFFFFFFFFFFFF|                                                        |FFFFFFFFFFFFFFFFFFFFF  */
-                        else if(startIndex > feature.end && startIndex <= feature.start && (endIndex - 1) >= feature.start) {
+                        else if(startIndex >= feature.end && startIndex <= feature.start && (endIndex) > feature.start) {
                             if(endIndex - 1 == sequence.length - 1) {
                                 feature.start = 0;
                                 if (DEBUG_MODE) trace("case Fc,Sn 4a");
@@ -642,14 +642,14 @@ package org.jbei.lib
                             /* Selection in feature end
                             * |--SSSSSSSSSSSSSSSSSSSSSSSSSSSSS-------------------------------------------------------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        else if(startIndex <= feature.end && (endIndex - 1) >= feature.end && (endIndex - 1) < feature.start) {
-                            if(startIndex == 0 && (endIndex - 1) >= feature.end) {
-                                feature.end = sequence.length - 1 - (endIndex - startIndex);
+                        else if(startIndex < feature.end && (endIndex) >= feature.end && (endIndex) <= feature.start) {
+                            if(startIndex == 0 && (endIndex) >= feature.end) {
+                                feature.end = sequence.length - (endIndex - startIndex);
                                 feature.start -= endIndex - startIndex;
                                 if (DEBUG_MODE) trace("case Fc,Sn 5a");
                             } else {
                                 feature.start -= endIndex - startIndex;
-                                feature.end = startIndex - 1;
+                                feature.end = startIndex;
                                 if (DEBUG_MODE) trace("case Fc,Sn 5b");
                             }
                         }

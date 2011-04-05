@@ -68,8 +68,8 @@ package org.jbei.components.railClasses
 			
 			_connectionPoint = new Point(xStartPosition, (yPosition + yPosition + RailBox.THICKNESS) / 2);
 			
-			if(feature.start <= feature.end) { // non-circular feature
-				var featureWidth:Number = bpWidth * (feature.end - feature.start + 1);
+			if(feature.start < feature.end) { // non-circular feature
+				var featureWidth:Number = bpWidth * (feature.end - feature.start);
 				
 				g.beginFill(color);
 				switch(feature.strand) {
@@ -130,7 +130,7 @@ package org.jbei.components.railClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end + 1);
+			tooltipLabel = feature.type + (feature.name == "" ? "" : (" - " + feature.name)) + ": " + (feature.start + 1) + ".." + (feature.end);
 		}
 		
 		// Private Methods

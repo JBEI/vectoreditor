@@ -146,7 +146,7 @@
 				feature.strand = strandRadioGroup.selectedValue as int;
 				feature.type = typeComboBox.text;
 				feature.start = genbankStartNumericStepper.value - 1;
-				feature.end = endNumericStepper.value - 1;
+				feature.end = endNumericStepper.value;
 				feature.name = nameTextInput.text;
 				
 				feature.notes = new Vector.<FeatureNote>();
@@ -165,7 +165,7 @@
 					feature.strand = strandRadioGroup.selectedValue as int;
 					feature.type = typeComboBox.text;
 					feature.start = genbankStartNumericStepper.value - 1;
-					feature.end = endNumericStepper.value - 1;
+					feature.end = endNumericStepper.value;
 					feature.name = nameTextInput.text;
 					
 					if(!feature.notes) {

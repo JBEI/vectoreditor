@@ -155,7 +155,7 @@ package org.jbei.components.pieClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = traceAnnotation.traceSequence.filename + ", " + (traceAnnotation.start + 1) + ".." + (traceAnnotation.end + 1);
+			tooltipLabel = traceAnnotation.traceSequence.filename + ", " + (traceAnnotation.start + 1) + ".." + (traceAnnotation.end);
     	}
 	}
 }

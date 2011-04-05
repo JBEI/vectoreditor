@@ -78,7 +78,7 @@ package org.jbei.components.sequenceClasses
 					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
 					if(orf.end >= row.rowData.start && orf.end <= row.rowData.end) {
-						endBP = orf.end;
+						endBP = orf.end - 1;
 					}
 					else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
 						endBP = contentHolder.sequenceProvider.sequence.length - 1;
@@ -101,7 +101,7 @@ package org.jbei.components.sequenceClasses
 					}
 				} else {
 					startBP = (orf.start < row.rowData.start) ? row.rowData.start : orf.start;
-					endBP = (orf.end < row.rowData.end) ? orf.end : row.rowData.end;
+					endBP = (orf.end - 1 < row.rowData.end) ? orf.end - 1 : row.rowData.end;
 				}
 				
 				var bpStartPoint:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
@@ -156,7 +156,7 @@ package org.jbei.components.sequenceClasses
 					}
 				}
 				
-				if(orf.strand == 1 && endBP == orf.end) {
+				if(orf.strand == 1 && endBP == orf.end - 1) {
 					var codonEndPoint1:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 					var codonEndPointX1:Number = codonEndPoint1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth + 3;
 					var codonEndPointY1:Number = codonEndPoint1.y - upShift;
@@ -184,7 +184,7 @@ package org.jbei.components.sequenceClasses
 		
 		protected override function createToolTipLabel():void
 		{
-			tooltipLabel = orf.start + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1 + 1) + " BP, " + (int((Math.abs(orf.end - orf.start) + 1) / 3) + 1) + " AA" + (orf.strand == -1 ? ", complimentary" : "");
+			tooltipLabel = (orf.start + 1) + ".." + orf.end + ", frame: " + orf.frame + ", length: " + (Math.abs(orf.end - orf.start) + 1 + 1) + " BP, " + (int((Math.abs(orf.end - orf.start) + 1) / 3) + 1) + " AA" + (orf.strand == -1 ? ", complimentary" : "");
 			if(orf.startCodons.length > 1) {
 				tooltipLabel += "\n";
 				for(var i:int = 0; i < orf.startCodons.length; i++) {
