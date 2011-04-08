@@ -21,9 +21,10 @@
                             return;
                         } else {
                             var applicationFacade:ApplicationFacade = ApplicationFacade.getInstance();
-                            applicationFacade.sequence.name = nameTextInput.text;
-                            applicationFacade.sequence.isCircular = circularCheckBox.selected;
-                            applicationFacade.updateSequence(applicationFacade.sequence);
+                            applicationFacade.sequenceProvider.name = nameTextInput.text;
+                            applicationFacade.sequenceProvider.circular = circularCheckBox.selected;
+                            dataObject = circularCheckBox.selected;
+                            
                             isValid = true;                        
                             return;
                         }

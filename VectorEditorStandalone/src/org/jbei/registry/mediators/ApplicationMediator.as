@@ -259,6 +259,13 @@ package org.jbei.registry.mediators
         
         private function onProjectPropertiesDialogSubmit(event:ModalDialogEvent):void
         {
+            var showCircular:Boolean = event.data as Boolean;
+            if (showCircular) {
+                sendNotification(Notifications.SHOW_PIE);
+            } else {
+                sendNotification(Notifications.SHOW_RAIL);
+            }
+            
             CONFIG::standalone {
             
                 return;
