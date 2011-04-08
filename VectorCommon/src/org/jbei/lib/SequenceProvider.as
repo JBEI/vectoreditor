@@ -71,7 +71,9 @@ package org.jbei.lib
         
         public function set name(value:String):void
         {
+            manualUpdateStart();
             _name = value;
+            manualUpdateEnd();
         }
         
         /**
@@ -84,7 +86,9 @@ package org.jbei.lib
         
         public function set circular(value:Boolean):void
         {
+            manualUpdateStart();
             _circular = value;
+            manualUpdateEnd();
         }
         
         /**
