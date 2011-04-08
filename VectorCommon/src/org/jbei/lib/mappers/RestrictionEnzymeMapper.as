@@ -159,7 +159,7 @@ package org.jbei.lib.mappers
 					var cutSite1:RestrictionCutSite = cutSitesList[k1] as RestrictionCutSite;
 					
 					if(cutSite1.start >= sequenceLength) {
-					} else if(cutSite1.end < sequenceLength) {
+					} else if(cutSite1.end <= sequenceLength) {
 						(newCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					} else {
 						cutSite1.end -= sequenceLength;
