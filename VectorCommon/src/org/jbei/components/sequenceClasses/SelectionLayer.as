@@ -220,7 +220,7 @@ package org.jbei.components.sequenceClasses
 			var endRow:Row = contentHolder.rowByBpIndex(toIndex - 1);
 			
 			if(startRow.index == endRow.index) {  // the same row
-				drawRowSelectionRect(fromIndex, toIndex);
+				drawRowSelectionRect(fromIndex, toIndex - 1);
 			} else if(startRow.index + 1 <= endRow.index) {  // more then one row
 				drawRowSelectionRect(fromIndex, startRow.rowData.end);
 				
