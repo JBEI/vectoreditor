@@ -100,7 +100,7 @@ package org.jbei.components.common
 		// Private Methods
 		private function onClick(event:MouseEvent):void
 		{
-			contentHolder.select(_relatedAnnotation.start, _relatedAnnotation.end + 1);
+			contentHolder.select(_relatedAnnotation.start, _relatedAnnotation.end);
 		}
 		
 		private function onRollOver(event:MouseEvent):void

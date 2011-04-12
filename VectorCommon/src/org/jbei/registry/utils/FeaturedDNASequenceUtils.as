@@ -38,7 +38,7 @@ package org.jbei.registry.utils
 					}
 				}
 				
-				dnaSequenceFeatures.addItem(new DNAFeature(feature.start + 1, feature.end + 1, feature.strand, feature.name, descriptionNotes, feature.type));
+				dnaSequenceFeatures.addItem(new DNAFeature(feature.start + 1, feature.end, feature.strand, feature.name, descriptionNotes, feature.type));
 			}
 			
 			return featuredDNASequence;

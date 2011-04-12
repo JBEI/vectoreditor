@@ -65,7 +65,7 @@ package org.jbei.components.pieClasses
 			}
 			
 			var angle1:Number = orf.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
-			var angle2:Number = (orf.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+			var angle2:Number = (orf.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 			
 			g.moveTo(center.x + orfRadius * Math.sin(angle1), center.y - orfRadius * Math.cos(angle1));
 			GraphicUtils.drawArc(g, center, orfRadius, angle1, angle2);

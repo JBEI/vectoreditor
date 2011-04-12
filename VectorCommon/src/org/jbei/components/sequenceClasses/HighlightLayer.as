@@ -75,12 +75,12 @@ package org.jbei.components.sequenceClasses
 			if(startRow.index == endRow.index) {  // the same row
 				drawRowSelectionRect(fromIndex, toIndex);
 			} else if(startRow.index + 1 <= endRow.index) {  // more then one row
-				drawRowSelectionRect(fromIndex, startRow.rowData.end + 1);
+				drawRowSelectionRect(fromIndex, startRow.rowData.end);
 				
 				for(var i:int = startRow.index + 1; i < endRow.index; i++) {
 					var rowData:RowData = (contentHolder.rowMapper.rows[i] as Row).rowData;
 					
-					drawRowSelectionRect(rowData.start, rowData.end + 1);
+					drawRowSelectionRect(rowData.start, rowData.end);
 				}
 				
 				drawRowSelectionRect(endRow.rowData.start, toIndex);

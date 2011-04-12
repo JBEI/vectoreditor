@@ -80,7 +80,7 @@ package org.jbei.components.sequenceClasses
 				
 				var startBP:int = 0;
 				var endBP:int = 0;
-				
+
 				if(cutSite.start < cutSite.end) { // non-circular
 					startBP = (cutSite.start < row.rowData.start) ? row.rowData.start : cutSite.start;
 					endBP = (cutSite.end - 1 < row.rowData.end) ? cutSite.end - 1 : row.rowData.end;
@@ -140,14 +140,16 @@ package org.jbei.components.sequenceClasses
 				var matrix:Matrix = new Matrix();
 				matrix.tx += cutSiteX;
 				matrix.ty += cutSiteY;
-				
-				g.beginBitmapFill(cutSiteBitMap, matrix);
-				g.drawRect(cutSiteX, cutSiteY, cutSiteBitMap.width, cutSiteBitMap.height);
-				g.endFill();
 		    
                 if (startBP <= endBP) {
+    				g.beginBitmapFill(cutSiteBitMap, matrix);
+    				g.drawRect(cutSiteX, cutSiteY, cutSiteBitMap.width, cutSiteBitMap.height);
+    				g.endFill();
                     drawBitmap(curvyLineBitmapData, matrix, cutSiteX + 2, cutSiteY + cutSiteBitMap.height, currentWidth - 2); // height -2 to remove extra space from textrenderer, total height +3 to add curvy line
-                } else {
+                } else if (endBP >= row.rowData.start){
+    				g.beginBitmapFill(cutSiteBitMap, matrix);
+    				g.drawRect(cutSiteX, cutSiteY, cutSiteBitMap.width, cutSiteBitMap.height);
+    				g.endFill();
                     /* Case when start and end are in the same row
 				    * |--------------------------------------------------------------------------------------|
 				    *  FFFFFFFFFFFFFFFFFFFFFFFFFFF|                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */

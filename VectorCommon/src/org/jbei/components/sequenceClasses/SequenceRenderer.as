@@ -421,28 +421,28 @@ package org.jbei.components.sequenceClasses
 				start3 = row.rowData.start;
 			}
 			
-			if((row.rowData.end + 1) % 3 == 0) {
-				end1 = (row.rowData.end + 1);
-			} else if((row.rowData.end + 1) % 3 == 1) {
-				end1 = 3 * (int((row.rowData.end + 1) / 3) + 1);
-			} else if((row.rowData.end + 1) % 3 == 2) {
-				end1 = 3 * (int((row.rowData.end + 1) / 3) + 1);
+			if((row.rowData.end) % 3 == 0) {
+				end1 = (row.rowData.end);
+			} else if((row.rowData.end) % 3 == 1) {
+				end1 = 3 * (int((row.rowData.end) / 3));
+			} else if((row.rowData.end) % 3 == 2) {
+				end1 = 3 * (int((row.rowData.end) / 3));
 			}
 			
-			if((row.rowData.end + 1) % 3 == 1) {
-				end2 = 3 * int((row.rowData.end + 1) / 3);
-			} else if((row.rowData.end + 1) % 3 == 0) {
-				end2 = (row.rowData.end + 1);
-			} else if((row.rowData.end + 1) % 3 == 2) {
-				end2 = 3 * (int((row.rowData.end + 1) / 3) + 1);
+			if((row.rowData.end) % 3 == 1) {
+				end2 = 3 * int((row.rowData.end) / 3);
+			} else if((row.rowData.end) % 3 == 0) {
+				end2 = (row.rowData.end);
+			} else if((row.rowData.end) % 3 == 2) {
+				end2 = 3 * (int((row.rowData.end) / 3) + 1);
 			}
 			
-			if((row.rowData.end + 1) % 3 == 2) {
-				end3 = 3 * int((row.rowData.end + 1) / 3);
-			} else if((row.rowData.end + 1) % 3 == 1) {
-				end3 = 3 * int((row.rowData.end + 1) / 3);
-			} else if((row.rowData.end + 1) % 3 == 0) {
-				end3 = (row.rowData.end + 1);
+			if((row.rowData.end) % 3 == 2) {
+				end3 = 3 * int((row.rowData.end) / 3);
+			} else if((row.rowData.end) % 3 == 1) {
+				end3 = 3 * int((row.rowData.end) / 3);
+			} else if((row.rowData.end) % 3 == 0) {
+				end3 = (row.rowData.end);
 			}
 			
 			var aminoAcidsString1:String = "";

@@ -999,7 +999,7 @@ package org.jbei.lib
                 seqProviderFeature = this.features[i] as Feature;
                 feature = new GenbankFeatureElement();
                 feature.genbankStart = seqProviderFeature.start + 1;
-                feature.end = seqProviderFeature.end + 1; // SeqProvider uses inconsistent indexing scheme.
+                feature.end = seqProviderFeature.end;
                 feature.strand = seqProviderFeature.strand;
                 feature.key = seqProviderFeature.type;
                 tempQualifier = new GenbankFeatureQualifier();

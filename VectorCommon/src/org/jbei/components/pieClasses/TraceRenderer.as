@@ -86,7 +86,7 @@ package org.jbei.components.pieClasses
 					var mismatchAnnotation:Annotation = mismatches[i2] as Annotation;
 					
 					var mismatchAngle1:Number = mismatchAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
-					var mismatchAngle2:Number = (mismatchAnnotation.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+					var mismatchAngle2:Number = (mismatchAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
 					if(mismatchAnnotation.start == mismatchAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
@@ -110,7 +110,7 @@ package org.jbei.components.pieClasses
 					var deletionAnnotation:Annotation = deletions[i3] as Annotation;
 					
 					var deletionAngle1:Number = deletionAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
-					var deletionAngle2:Number = (deletionAnnotation.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+					var deletionAngle2:Number = (deletionAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
 					if(deletionAnnotation.start == deletionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);
@@ -134,7 +134,7 @@ package org.jbei.components.pieClasses
 					var insertionAnnotation:Annotation = insertions[i4] as Annotation;
 					
 					var insertionAngle1:Number = insertionAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
-					var insertionAngle2:Number = (insertionAnnotation.end + 1) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+					var insertionAngle2:Number = (insertionAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
 					if(insertionAnnotation.start == insertionAnnotation.end) {
 						g.lineStyle(2, MISMATCH_COLOR);

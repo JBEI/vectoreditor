@@ -794,7 +794,7 @@ package org.jbei.components.railClasses
 					selectionLayer.startSelecting();
 					selectionLayer.select(start, end);
 					
-					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 				} else { // sticky selection
 					doStickySelect(start, end);
 				}
@@ -815,7 +815,7 @@ package org.jbei.components.railClasses
 				wireframeSelectionLayer.endSelecting();
 				selectionLayer.endSelecting();
 				
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 				
 				wireframeSelectionLayer.hide();
 			}

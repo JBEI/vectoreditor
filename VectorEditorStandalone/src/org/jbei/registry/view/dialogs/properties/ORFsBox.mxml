@@ -37,7 +37,7 @@
 				for (var i:int = 0; i < orfMapper.orfs.length; i++) {
 					var orf:ORF = orfMapper.orfs[i] as ORF;
 					
-					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end + 1)), strand : (orf.strand == -1 ? "-" : "+"), frame : (orf.frame + 1), length : (orf.end - orf.start)});
+					orfs.addItem({orf : orf, position : ((orf.start + 1) + " - " + (orf.end)), strand : (orf.strand == -1 ? "-" : "+"), frame : (orf.frame + 1), length : (orf.end - orf.start)});
 				}
 				
 				var sort:Sort = new Sort();
@@ -52,7 +52,7 @@
 				if(event.target is DataGridItemRenderer) {
 					var orf:ORF = (event.target as DataGridItemRenderer).data.orf;
 					
-					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(orf.start, orf.end + 1));
+					ApplicationFacade.getInstance().sendNotification(Notifications.SELECTION_CHANGED, new Array(orf.start, orf.end));
 				}
 			}
 			

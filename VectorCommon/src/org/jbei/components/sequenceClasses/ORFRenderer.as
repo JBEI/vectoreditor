@@ -101,9 +101,9 @@ package org.jbei.components.sequenceClasses
 					}
 				} else {
 					startBP = (orf.start < row.rowData.start) ? row.rowData.start : orf.start;
-					endBP = (orf.end - 1 < row.rowData.end) ? orf.end - 1 : row.rowData.end;
+					endBP = (orf.end < row.rowData.end) ? orf.end - 1: row.rowData.end;
 				}
-				
+
 				var bpStartPoint:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
 				var bpEndPoint:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 				
@@ -160,7 +160,7 @@ package org.jbei.components.sequenceClasses
 					var codonEndPoint1:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 					var codonEndPointX1:Number = codonEndPoint1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth + 3;
 					var codonEndPointY1:Number = codonEndPoint1.y - upShift;
-					
+                    //draw arrow ends					
 					g.beginFill(color);
 					g.moveTo(codonEndPointX1 - 5, codonEndPointY1 - 2);
 					g.lineTo(codonEndPointX1, codonEndPointY1);
@@ -171,13 +171,13 @@ package org.jbei.components.sequenceClasses
 					var codonEndPoint2:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
 					var codonEndPointX2:Number = codonEndPoint2.x + 3;
 					var codonEndPointY2:Number = codonEndPoint2.y - upShift;
-					
+                    //draw arrow ends
 					g.beginFill(color);
 					g.moveTo(codonEndPointX2, codonEndPointY2);
 					g.lineTo(codonEndPointX2 + 5, codonEndPointY2 - 2);
 					g.lineTo(codonEndPointX2 + 5, codonEndPointY2 + 2);
 					g.lineTo(codonEndPointX2, codonEndPointY2);
-					g.endFill();
+					g.endFill(); 
 				}
 			}
 		}

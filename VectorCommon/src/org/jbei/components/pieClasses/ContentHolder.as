@@ -796,7 +796,7 @@ package org.jbei.components.pieClasses
 					selectionLayer.startSelecting();
 					selectionLayer.select(start, end);
 					
-					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+					dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 				} else { // sticky selection
 					doStickySelect(start, end);
 				}
@@ -817,7 +817,7 @@ package org.jbei.components.pieClasses
 				wireframeSelectionLayer.endSelecting();
 				selectionLayer.endSelecting();
 		    	
-		    	dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end + 1));
+		    	dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 				
 				wireframeSelectionLayer.hide();
 	    	}
@@ -1791,11 +1791,11 @@ package org.jbei.components.pieClasses
 	 		var result:int;
 	 		
 			if(annotation.start > annotation.end) {
-				var virtualCenter:Number = annotation.end - ((sequenceProvider.sequence.length - annotation.start) + (annotation.end + 1)) / 2 + 1;
+				var virtualCenter:Number = annotation.end - ((sequenceProvider.sequence.length - annotation.start) + (annotation.end)) / 2 + 1;
 				
 				result = (virtualCenter >= 0) ? int(virtualCenter) : (sequenceProvider.sequence.length + int(virtualCenter) - 1);
 			} else {
-				result = (annotation.start + annotation.end) / 2 + 1;
+				result = (annotation.start + annotation.end - 1) / 2 + 1;
 			}
 			
 			return result;

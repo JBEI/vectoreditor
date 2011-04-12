@@ -48,7 +48,6 @@ package org.jbei.components.sequenceClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
-            trace(feature.name + "," + feature.start + "," + feature.end);
 			var featureRows:Array = sequenceContentHolder.rowMapper.featureToRowMap[feature];
 			
 			if(! featureRows) { return; }

@@ -222,24 +222,24 @@ package org.jbei.components.sequenceClasses
 			if(startRow.index == endRow.index) {  // the same row
 				drawRowSelectionRect(fromIndex, toIndex);
 			} else if(startRow.index + 1 <= endRow.index) {  // more then one row
-				drawRowSelectionRect(fromIndex, startRow.rowData.end + 1);
+				drawRowSelectionRect(fromIndex, startRow.rowData.end);
 				
 				for(var i:int = startRow.index + 1; i < endRow.index; i++) {
 					var rowData:RowData = (contentHolder.rowMapper.rows[i] as Row).rowData;
 					
-					drawRowSelectionRect(rowData.start, rowData.end + 1);
+					drawRowSelectionRect(rowData.start, rowData.end);
 				}
 				
-				drawRowSelectionRect(endRow.rowData.start, toIndex);
+				drawRowSelectionRect(endRow.rowData.start, toIndex - 1);
 			}
 		}
 	    
-		private function drawRowSelectionRect(start:int, end:int):void
+		private function drawRowSelectionRect(startIndex:int, endIndex:int):void
 		{
-			var row:Row = contentHolder.rowByBpIndex(start);
+			var row:Row = contentHolder.rowByBpIndex(startIndex);
 			
-			var startBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(start);
-			var endBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(end - 1);
+			var startBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(startIndex);
+			var endBpMetrics:Rectangle = contentHolder.bpMetricsByIndex(endIndex);
 			
 			var g:Graphics = graphics;
 			g.beginFill(SELECTION_COLOR, SELECTION_TRANSPARENCY);
