@@ -145,7 +145,7 @@ package org.jbei.components.sequenceClasses
 				g.drawRect(cutSiteX, cutSiteY, cutSiteBitMap.width, cutSiteBitMap.height);
 				g.endFill();
 		    
-                if (startBP < endBP) {
+                if (startBP <= endBP) {
                     drawBitmap(curvyLineBitmapData, matrix, cutSiteX + 2, cutSiteY + cutSiteBitMap.height, currentWidth - 2); // height -2 to remove extra space from textrenderer, total height +3 to add curvy line
                 } else {
                     /* Case when start and end are in the same row
