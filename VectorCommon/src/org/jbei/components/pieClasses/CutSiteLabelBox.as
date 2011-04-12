@@ -35,7 +35,7 @@ package org.jbei.components.pieClasses
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end + 1) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
+			return cutSite.restrictionEnzyme.name + ": " + (cutSite.start + 1) + ".." + (cutSite.end) + (cutSite.strand == 1 ? "" : ", complement") + ", cuts " + cutSite.numCuts + " times";
 		}
 		
 		protected override function render():void

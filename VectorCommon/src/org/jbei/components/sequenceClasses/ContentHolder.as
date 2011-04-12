@@ -1061,7 +1061,7 @@ package org.jbei.components.sequenceClasses
                         digestionStart = selectionLayer.start;
                     }
                     
-                    if(selectionLayer.end == cutSite.end + 1) {
+                    if(selectionLayer.end == cutSite.end) {
                         digestionEnd = selectionLayer.end;
                         digestionEndCutSite = cutSite;
                     }
@@ -1140,8 +1140,8 @@ package org.jbei.components.sequenceClasses
                     var digestionSequence:DigestionSequence = digestionClipboardObject as DigestionSequence;
                     pasteData = digestionSequence;
                     
-                    digestionCutter = new DigestionCutter(_sequenceProvider, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
-                    
+                    digestionCutter = new DigestionCutter(_sequenceProvider, selectionLayer.start, selectionLayer.end, digestionSequence, _restrictionEnzymeMapper);
+
                     if(digestionCutter.matchType == DigestionCutter.MATCH_NONE) {
                         pasteSequenceType = "digestion-none";
                     } else if(digestionCutter.matchType == DigestionCutter.MATCH_NORMAL_ONLY) {
@@ -1974,26 +1974,28 @@ package org.jbei.components.sequenceClasses
         private function isValidDigestionRegion():Boolean
         {
             if(!_showCutSites || !_restrictionEnzymeMapper || !_restrictionEnzymeMapper.cutSites || _restrictionEnzymeMapper.cutSites.length == 0) {
+            
                 return false;
             }
             
             var matchedStart:Boolean = false;
             var matchedEnd:Boolean = false;
-            
+
             for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
                 var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
-                
-                if(startSelectionIndex == cutSite.start) {
+
+                if(selectionLayer.start == cutSite.start) {
                     matchedStart = true;
                 }
                 
-                if(endSelectionIndex == cutSite.end + 1) {
+                if(selectionLayer.end == cutSite.end) {
                     matchedEnd = true;
                 }
-                
+                            
                 if(matchedStart && matchedEnd) {
                     break;
                 }
+                
             }
             
             return matchedStart && matchedEnd;

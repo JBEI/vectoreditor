@@ -895,7 +895,7 @@ package org.jbei.components.pieClasses
                         digestionStartCutSite = cutSite;
                     }
                     
-                    if(end == cutSite.end + 1) {
+                    if(end == cutSite.end) {
                         digestionEnd = end;
                         digestionEndCutSite = cutSite;
                     }
@@ -974,7 +974,7 @@ package org.jbei.components.pieClasses
                     var digestionSequence:DigestionSequence = digestionClipboardObject as DigestionSequence;
                     pasteData = digestionSequence;
                     
-                    digestionCutter = new DigestionCutter(_sequenceProvider, startSelectionIndex, endSelectionIndex, digestionSequence, _restrictionEnzymeMapper);
+                    digestionCutter = new DigestionCutter(_sequenceProvider, selectionLayer.start, selectionLayer.end, digestionSequence, _restrictionEnzymeMapper);
                     
                     if(digestionCutter.matchType == DigestionCutter.MATCH_NONE) {
                         pasteSequenceType = "digestion-none";
@@ -2225,11 +2225,11 @@ package org.jbei.components.pieClasses
             for(var i:int = 0; i < _restrictionEnzymeMapper.cutSites.length; i++) {
                 var cutSite:RestrictionCutSite = _restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
                 
-                if(startSelectionIndex == cutSite.start) {
+                if(selectionLayer.start == cutSite.start) {
                     matchedStart = true;
                 }
                 
-                if(endSelectionIndex == cutSite.end + 1) {
+                if(selectionLayer.end == cutSite.end) {
                     matchedEnd = true;
                 }
                 

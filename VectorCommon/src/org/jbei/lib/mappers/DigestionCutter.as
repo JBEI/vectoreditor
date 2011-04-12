@@ -168,15 +168,13 @@ package org.jbei.lib.mappers
         {
             destinationStartCutSite = null;
             destinationEndCutSite = null;
-            
             for(var i:int = 0; i < restrictionEnzymeMapper.cutSites.length; i++) {
                 var cutSite:RestrictionCutSite = restrictionEnzymeMapper.cutSites.getItemAt(i) as RestrictionCutSite;
-                
                 if(start == cutSite.start) {
                     destinationStartCutSite = cutSite;
                 }
                 
-                if(end == cutSite.end + 1) {
+                if(end == cutSite.end) {
                     destinationEndCutSite = cutSite;
                 }
                 

@@ -43,7 +43,7 @@
 									name : restrictionEnzyme.name, 
 									nCuts : cutSite.numCuts, 
 									cutSite : cutSite, 
-									position : ((cutSite.start + 1) + " - " + (cutSite.end + 1)), 
+									position : ((cutSite.start + 1) + " - " + (cutSite.end)), 
 									strand : (cutSite.strand == 1 ? "+" : "-")
 								}
 							);
