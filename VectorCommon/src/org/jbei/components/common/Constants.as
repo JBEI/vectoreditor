@@ -30,5 +30,10 @@ package org.jbei.components.common
         */
         public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY:String = "SequenceProviderExternalContext";
         public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH:int = 20000;
+        
+        /**
+        * Clipboard key for jbei-sequence-xml format
+        */
+        public static const JBEI_SEQUENCE_XML_CLIPBOARD_KEY:String = "jbei-sequence-xml";
     }
 }

@@ -51,6 +51,7 @@ package org.jbei.components.pieClasses
     import org.jbei.lib.mappers.TraceMapper;
     import org.jbei.lib.ui.dialogs.ModalDialog;
     import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+    import org.jbei.registry.utils.IceXmlUtils;
 	
     /**
      * @author Zinovii Dmytriv
@@ -920,6 +921,8 @@ package org.jbei.components.pieClasses
                     Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
                 }
                 
+                Clipboard.generalClipboard.setData(Constants.JBEI_SEQUENCE_XML_CLIPBOARD_KEY, IceXmlUtils.sequenceProviderToJbeiSeqXml(_sequenceProvider));
+                
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
             } else {
                 Clipboard.generalClipboard.clear();
@@ -934,6 +937,8 @@ package org.jbei.components.pieClasses
                     Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
                 }
 
+                Clipboard.generalClipboard.setData(Constants.JBEI_SEQUENCE_XML_CLIPBOARD_KEY, IceXmlUtils.sequenceProviderToJbeiSeqXml(_sequenceProvider));
+                
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
             }
         }
