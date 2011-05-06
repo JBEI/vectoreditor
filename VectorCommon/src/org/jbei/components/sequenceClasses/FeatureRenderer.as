@@ -103,8 +103,12 @@ package org.jbei.components.sequenceClasses
 						startBP = row.rowData.start;
 					}
 				} else {
-					startBP = (feature.start < row.rowData.start) ? row.rowData.start : feature.start;
-					endBP = (feature.end - 1 < row.rowData.end) ? feature.end - 1 : row.rowData.end;
+                    if (feature.start < row.rowData.start && feature.end <= row.rowData.start) {
+                        continue; // the feature is outside of the current row
+                    } else {
+    					startBP = (feature.start < row.rowData.start) ? row.rowData.start : feature.start;
+    					endBP = (feature.end - 1 < row.rowData.end) ? feature.end - 1 : row.rowData.end;
+                    }
 				}
 				
 				/* Case when start and end are in the same row
@@ -157,7 +161,7 @@ package org.jbei.components.sequenceClasses
 					if(feature.strand == StrandType.UNKNOWN) {
 						drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
 					} else if(feature.strand == StrandType.FORWARD) {
-						if(feature.end >= row.rowData.start && feature.end <= row.rowData.end) {
+						if(feature.end >= row.rowData.start && feature.end <= row.rowData.end + 1) {
 							drawFeatureForwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
 						} else {
 							drawFeatureForwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
