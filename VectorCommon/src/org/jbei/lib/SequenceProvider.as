@@ -1056,6 +1056,62 @@ package org.jbei.lib
             return result;
         }
 
+        public function fromJbeiSeqXml(jbeiSeq:String):FeaturedDNASequence {
+            if (jbeiSeq == null || jbeiSeq == "") {
+                return null;
+            }
+            
+            var result:FeaturedDNASequence = new FeaturedDNASequence();
+            result.features = new ArrayCollection();
+            var xmlData:XML = new XML(jbeiSeq);
+            var seq:XMLList = null;
+            
+            var seqNS:Namespace = xmlData.namespace("seq");
+            var name:XMLList = xmlData.seqNS::name;
+            var circular:XMLList = xmlData.seqNS::circular;
+            var sequence:XMLList = xmlData.seqNS::sequence;
+            var sequenceSymbols:SymbolList = DNATools.createDNA(sequence.toString());
+            var features:XMLList = xmlData.seqNS::features.seqNS::feature;
+            var feature:XML;
+            var newDnaFeature:DNAFeature;
+            
+            var newDnaFeatures:ArrayCollection = new ArrayCollection();
+            for each (feature in features) {
+                var featureNameXml:XMLList = feature.seqNS::label;
+                var startXml:XMLList = feature.seqNS::location.seqNS::genbank_start;
+                var endXml:XMLList =  feature.seqNS::location.seqNS::end;
+                var strandXml:XMLList = feature.seqNS::complement;
+                var typeXml:XMLList = feature.seqNS::type;
+                
+                newDnaFeature = new DNAFeature();
+                newDnaFeature.name = featureNameXml.toString()
+                newDnaFeature.genbankStart = parseInt(startXml.toString()) + 1;
+                newDnaFeature.end = parseInt(endXml.toString());
+                newDnaFeature.type = typeXml.toString();
+                newDnaFeature.strand = (strandXml.toString() == "complement") ? -1: 1;
+                
+                newDnaFeature.notes = new ArrayCollection();
+                
+                var attributes:XMLList = feature.seqNS::attribute;
+                var attribute:XML;
+                var featureNote:DNAFeatureNote;
+                for each (attribute in attributes) {
+                    var attNameXml:XMLList = attribute.attribute("name");
+                    featureNote = new DNAFeatureNote(attNameXml.toString(), attribute.toString());
+                    newDnaFeature.notes.addItem(featureNote);
+                }
+                newDnaFeatures.addItem(newDnaFeature);
+                
+            }
+            result.name = name.toString();
+            result.isCircular = (circular.toString() == "true") ? true : false;
+            result.sequence = sequenceSymbols.toString();
+            
+            result.features.addAll(newDnaFeatures);
+            
+            return result;
+        }
+        
         // Private Methods
         private function updateComplementSequence():void
         {

@@ -7,7 +7,7 @@ package org.jbei.registry
 	{
         public static const APPLICATION_NAME:String = "Vector Editor (Beta)";
         
-		public static const VERSION:String = "1.4.8";
+		public static const VERSION:String = "1.4.9";
 		
 		public static const ENTRY_REGISTRY_URL:String = "https://registry.jbei.org/entry/view/";
 		

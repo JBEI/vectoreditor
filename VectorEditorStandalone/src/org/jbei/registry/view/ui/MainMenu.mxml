@@ -84,7 +84,7 @@
                 var saveProjectAsMenuItem:MenuItem = new MenuItem("saveProjectAsMenuItem", "Save Project As ...");
                 var projectPropertiesMenuItem:MenuItem = new MenuItem("projectPropertiesMenuItem", "Project Properties");
                 var downloadSequenceMenuItem:MenuItem = new MenuItem("downloadSequenceMenuItem", "Download Genbank");
-                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import Genbank");
+                var importSequenceMenuItem:MenuItem = new MenuItem("importSequenceMenuItem", "Import From File");
             	var printMenuItem:MenuItem = new MenuItem("printMenuItem", "Print");
                 var printSequenceMenuItem:MenuItem = new MenuItem("printSequenceMenuItem", "Sequence");
 				var printPieMenuItem:MenuItem = new MenuItem("printPieMenuItem", "Circular View");

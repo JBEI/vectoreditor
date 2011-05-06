@@ -1,10 +1,14 @@
 package org.jbei.registry.utils
 {
+    import mx.collections.ArrayCollection;
+    
+    import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.common.StrandType;
+    import org.jbei.bio.sequence.common.SymbolList;
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.bio.sequence.dna.FeatureNote;
     import org.jbei.lib.SequenceProvider;
-    
+        
     /**
     * @author Joanna Chen
     */
@@ -55,13 +59,10 @@ package org.jbei.registry.utils
             return iceXmlString;
         }
         
-        public static function jbeiSeqXmlToSequenceProvider(string:String):SequenceProvider
-        {
-            if (string == null || string == "") {
-                return null;
-            }
-            
-            return null;  //TODO
+        public static function jbeiSeqXmlToSequenceProvider(jbeiXml:String):SequenceProvider
+        {            
+            // see SequenceProvider.fromJbeiSeqXml
+           return null;
         }
     }
 }

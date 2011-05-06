@@ -34,6 +34,7 @@ package org.jbei.registry
 	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
 	import org.jbei.registry.utils.StandaloneUtils;
+    import org.jbei.registry.utils.IceXmlUtils;
 	import org.jbei.registry.view.ui.ApplicationPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
 
@@ -196,7 +197,6 @@ package org.jbei.registry
         {
             CONFIG::standalone {
                 initializeStandaloneApplication();
-                
                 return;
             }
             
@@ -366,12 +366,13 @@ package org.jbei.registry
         public function importSequence(data:String):void
         {
             var featuredDNASequence:FeaturedDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(data));
-            
-            
-            if(featuredDNASequence.name == null) {
-                Alert.show("Failed to parse sequence file", "Failed to parse");
-                
-                return;
+                        
+            if (featuredDNASequence.name == null) {
+                featuredDNASequence = sequenceProvider.fromJbeiSeqXml(data);
+                if (featuredDNASequence.name == null) {
+                    Alert.show("Failed to parse sequence file", "Failed to parse");
+                    return;
+                }
             }
             
             sendNotification(Notifications.ACTION_MESSAGE, "Sequence parsed successfully");
