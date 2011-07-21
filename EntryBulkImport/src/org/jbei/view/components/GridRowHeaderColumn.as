@@ -63,7 +63,7 @@ package org.jbei.view.components
 		public function addHeader() : void
 		{
 			var index:int = this._cells.length;
-			var header:GridRowHeader = new GridRowHeader( index ); 
+			var header:GridRowHeader = new GridRowHeader( index + 1 ); 
 			header.x = 0;
 			header.y = index * GridRowHeader.DEFAULT_HEIGHT;
 			this._cells.addItem( header );
