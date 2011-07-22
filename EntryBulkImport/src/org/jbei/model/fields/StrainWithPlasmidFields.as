@@ -238,7 +238,7 @@ package org.jbei.model.fields
 				
 				case PLASMID_NAME:
 					var result:ArrayCollection = new ArrayCollection(); // <Name>
-					var names:Array = value.split( "\\s*, +\\s*" );
+					var names:Array = value.split( /\s*, +\s*/ );
 					for( var i:int = 0; i < names.length; i += 1 )
 					{
 						var nameStr:String = names[i];
@@ -272,7 +272,7 @@ package org.jbei.model.fields
 				
 				case PLASMID_LINKS:
 					var result2:ArrayCollection = new ArrayCollection(); // <Link>
-					var links:Array = value.split( "\\s*,+\\s*" );
+					var links:Array = value.split( /\s*,+\s*/ );
 					for( var linkIter:int = 0; linkIter < links.length; linkIter += 1 )
 					{
 						var linkStr:String = links[linkIter];
@@ -355,7 +355,7 @@ package org.jbei.model.fields
 					if( value.length == 0 )
 						break;
 					
-					var markerStrings:Array = value.split( "\\s*, +\\s*" );
+					var markerStrings:Array = value.split( /\s*, +\s*/ );
 					
 					for( var markerIter:int = 0; markerIter < markerStrings.length; markerIter += 1 )
 					{
@@ -370,7 +370,7 @@ package org.jbei.model.fields
 				// strain fields
 				case STRAIN_NUMBER:
 					var strainNames:ArrayCollection = new ArrayCollection(); // <Name>
-					var strainName:Array = value.split( "\\s*, +\\s*" );
+					var strainName:Array = value.split( /\s*,+\s*/ );
 					for( var j:int = 0; j < strainName.length; j += 1 )
 					{
 						var nameString:String = strainName[i];
@@ -388,7 +388,7 @@ package org.jbei.model.fields
 				
 				case STRAIN_LINKS:
 					var linksCollection:ArrayCollection = new ArrayCollection(); // <Link>
-					var linksValue:Array = value.split( "\\s*,+\\s*" );
+					var linksValue:Array = value.split( /\s*,+\s*/ );
 					for( linkIter = 0; linkIter < linksCollection.length; linkIter += 1 )
 					{
 						linkStr = links[linkIter];
@@ -413,7 +413,7 @@ package org.jbei.model.fields
 					if( value.length == 0 )
 						break;
 					
-					var strainMarkerStrings:Array = value.split( "\\s*, +\\s*" );
+					var strainMarkerStrings:Array = value.split( /\s*, +\s*/ );
 					
 					for( markerIter = 0; markerIter < strainMarkerStrings.length; markerIter += 1 )
 					{
