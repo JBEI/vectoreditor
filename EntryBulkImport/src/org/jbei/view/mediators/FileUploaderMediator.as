@@ -80,7 +80,7 @@ package org.jbei.view.mediators
 			var seqZipfileBytes:ByteArray = results.sequenceZipfile;
 			
 			// test
-			var file:FileReference = new FileReference();
+//			var file:FileReference = FileReference(seqZipfileBytes);	
 		}
 		
 		public function attachmentFile() : FileReference 

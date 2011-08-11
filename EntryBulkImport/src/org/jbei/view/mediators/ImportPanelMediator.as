@@ -16,8 +16,9 @@ package org.jbei.view.mediators
 	import org.jbei.model.ValueExtractorProxy;
 	import org.jbei.model.fields.EntryFields;
 	import org.jbei.model.fields.EntryFieldsFactory;
+	import org.jbei.model.registry.Attachment;
 	import org.jbei.model.registry.Entry;
-	import org.jbei.model.save.BulkImportEntryData;
+	import org.jbei.model.registry.Sequence;
 	import org.jbei.model.save.EntrySet;
 	import org.jbei.model.util.EntryFieldUtils;
 	import org.jbei.view.EntryType;
@@ -34,10 +35,6 @@ package org.jbei.view.mediators
 	{
 		private static const NAME : String = "org.jbei.view.ImportPanelMediator";
 		private var currentTypeSelection:EntryType = EntryType.STRAIN;
-		
-		// problem this tries to resolve is that having fields loaded (for each entry type: strain etc)
-		// and having the autocomplete
-		private var _dataCollection:ArrayCollection = null;	// list of values that are loaded from importId passed as parameter
 		
 		public function ImportPanelMediator( importPanel:ImportMainPanel )
 		{
@@ -225,6 +222,21 @@ package org.jbei.view.mediators
 				var entry:Entry = obj.entry as Entry;
 				var fields:EntryFields = EntryFieldsFactory.fieldsForType( entryType );
 				var fieldsEntrySet:EntrySet = fields.entrySet;
+                var attFilename:String = obj.attachmentFilename as String;
+                var seqFilename:String = obj.sequenceFilename as String;
+                if( attFilename != null ) 
+                {
+                    var att:Attachment = new Attachment();
+                    att.fileName = attFilename;
+                    entry.attachment = att;
+                }
+                
+                if( seqFilename != null )
+                {
+                    var seq:Sequence = new Sequence();
+                    seq.filename = seqFilename;
+                    entry.sequence = seq;
+                }                    
 				
 				// secondary data
 				if( secondaryData != null && secondaryData.length > 0 )
@@ -232,8 +244,26 @@ package org.jbei.view.mediators
 					var obj2:Object = secondaryData.getItemAt( x );
 					var entry2:Entry = obj2.entry as Entry;			// this should be a plasmid
 					var col:ArrayCollection = new ArrayCollection();
-					col.addItem( entry );
-					col.addItem( entry2 );
+					
+                    
+                    attFilename = obj2.attachmentFilename as String;
+                    seqFilename = obj2.sequenceFilename as String;
+                    if( attFilename != null ) 
+                    {
+                        att = new Attachment();
+                        att.fileName = attFilename;
+                        entry2.attachment = att;
+                    }
+                    
+                    if( seqFilename != null )
+                    {
+                        seq = new Sequence();
+                        seq.filename = seqFilename;
+                        entry2.sequence = seq;
+                    }                  
+                    
+                    col.addItem( entry );
+                    col.addItem( entry2 );
 					fieldsEntrySet.addToSet( col );
 				} 
 				else 
@@ -241,16 +271,10 @@ package org.jbei.view.mediators
 					fieldsEntrySet.addToSet( entry );
 				}
 				
-				// TODO : need to do something with this
-				// individual row filenames that are contained in zip file (if any)
-				var attFilename:String = obj.attachmentFilename as String;
-				var seqFilename:String = obj.sequenceFilename as String;
-				
 				primaryCollection.addItem( fields );
 			}
 			
 			if( primaryCollection.length > 0 ) {
-//				this._dataCollection = primaryCollection;
 				sendNotification( Notifications.ROW_DATA_READY, primaryCollection );
 			}
 		}

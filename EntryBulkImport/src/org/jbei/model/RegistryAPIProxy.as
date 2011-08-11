@@ -98,21 +98,18 @@ package org.jbei.model
 		
 		public function retrieveBulkImportEntryType( importId:String ) : void 
 		{
-			// TODO : set sessionId when creating the proxy
-			var sessionId:String = ApplicationFacade.getInstance().sessionId;
-			_remote.retrieveBulkImportEntryType( sessionId, importId );
+			_remote.retrieveBulkImportEntryType( _sessionId, importId );
 		}
 		
-		//  ADMIN METHODS
-		// TODO : the following needs to be folded into a single object		
+        /**
+        * Event listener method for bulk import type retrieved from server
+        */ 
 		public function onBulkTypeRetrieve( event:ResultEvent ) : void
 		{
 			var result:String = String(event.result);
 			var type:EntryType = EntryType.valueOf( result );
 			sendNotification( Notifications.PART_TYPE_SELECTION, type );
 		}		
-		// TODO
-		// ADMIN METHODS
 		
 		protected function verifySave( set:EntrySet ) : void
 		{
@@ -198,17 +195,11 @@ package org.jbei.model
 					var bulkImport:BulkImportEntryData  = new BulkImportEntryData();
 					bulkImport.entry = entry;
 					
-					// actual sequence file (TODO: use name?)
-//					var sequence:ByteArray = ( !entry.sequence || !seqZipUtil ) ? null : seqZipUtil.file( entry.sequence.filename );
-//					var attachment:ByteArray = ( !entry.attachment || !attachZipUtil ) ? null : attachZipUtil.file( entry.attachment.fileName );
-//					bulkImport.a = attachment;
-//					bulkImport.seqFile = sequence;
-					
 					// file names
 					var attFilename:String = entry.attachment == null ? null : entry.attachment.fileName;
 					var seqFilename:String = entry.sequence == null ? null : entry.sequence.filename;
 					bulkImport.attachmentFilename = attFilename;
-					bulkImport.sequenceFilename = seqFilename;
+					bulkImport.sequenceFilename = seqFilename;                    
 					primaryData.addItem( bulkImport );
 				}
 				else 
@@ -364,7 +355,6 @@ package org.jbei.model
 			if( this._uniquePromoters != null && this._uniqueOriginReplications != null
 				&& this._uniqueSelectionMarkers != null )
 			{
-//				sendNotification( Notifications.AUTO_COMPLETE_DATA );
 				sendNotification( Notifications.START_UP, _app );
 			}
 		}
@@ -379,25 +369,6 @@ package org.jbei.model
 			Alert.show( "Entries have been submitted successfully and are awaiting administrative approval.", "Save",  Alert.OK, null, redirectToFolders );
 		}
 		
-//		private function onEntrySave( event:ResultEvent ) : void
-//		{
-//			this._saveRemainder -= 1;
-//			trace( "now left with " + _saveRemainder + " to save." );
-//			
-//			var ret:Entry = event.result as Entry;	 // TODO : collect?
-//			if( ret == null )
-//				_failureCount += 1;
-//			
-//			// feedback
-//			if( this._saveRemainder == 0 )
-//			{
-//				if( _failureCount > 0 )
-//					Alert.show( "There appears to be a problem saving " + _failureCount + " of the entries. Please contact your administrator", "Save",  Alert.OK );
-//				else
-//					Alert.show( "Entries saved successfully", "Save",  Alert.OK, null, redirect );
-//			}
-//		}		
-//		
 		private function uniquePromoters( event:ResultEvent ) : void
 		{			
 			this._uniquePromoters = event.result as ArrayCollection;			

@@ -148,8 +148,6 @@ package org.jbei.view.components
 				entryField.setToRow( currentRowIndex, currentRow );
 				currentRowIndex += 1;
 			}
-			
-			Alert.show( currentRowIndex + "" );
 		}
 		
 		/**

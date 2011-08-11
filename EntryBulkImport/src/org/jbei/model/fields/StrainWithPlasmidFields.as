@@ -271,6 +271,7 @@ package org.jbei.model.fields
 						break;
 					
 					case PLASMID_SEQUENCE_FILENAME:
+						 
 						var seq:Sequence = plasmid.sequence;
 						if( seq == null )
 							break;
