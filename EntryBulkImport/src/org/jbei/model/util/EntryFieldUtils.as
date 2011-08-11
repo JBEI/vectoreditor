@@ -1,6 +1,7 @@
 package org.jbei.model.util
 {
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.ApplicationFacade;
 	import org.jbei.model.EntryTypeField;

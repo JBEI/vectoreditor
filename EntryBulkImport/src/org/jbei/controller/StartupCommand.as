@@ -1,15 +1,17 @@
 package org.jbei.controller
 {
+	import mx.controls.Alert;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
 	
+	import org.jbei.ApplicationFacade;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.command.MacroCommand;
 	
 	/**
 	 * A macro command that is executed when the application
-	 * starts
+	 * starts. It is setup to respond to the startup notification
 	 */ 
 	public class StartupCommand extends MacroCommand
 	{

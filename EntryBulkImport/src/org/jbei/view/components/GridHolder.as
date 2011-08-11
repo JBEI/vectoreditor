@@ -12,6 +12,7 @@ package org.jbei.view.components
 	import flashx.textLayout.container.ScrollPolicy;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.core.EdgeMetrics;
 	import mx.core.FlexGlobals;
 	import mx.core.ScrollControlBase;
@@ -21,13 +22,17 @@ package org.jbei.view.components
 	import mx.managers.IBrowserManager;
 	import mx.managers.IFocusManagerComponent;
 	
+	import org.jbei.ApplicationFacade;
 	import org.jbei.events.Direction;
 	import org.jbei.events.GridCellEvent;
 	import org.jbei.events.GridCellMouseEvent;
 	import org.jbei.events.GridEvent;
 	import org.jbei.events.GridScrollEvent;
 	import org.jbei.events.MoveCellEvent;
+	import org.jbei.model.EntryTypeField;
 	import org.jbei.model.GridPaste;
+	import org.jbei.model.fields.EntryFieldsFactory;
+	import org.jbei.view.EntryType;
 	
 	// wrapper for the grid, adding scrollbars
 	// does a few other things that does not belong in this class 
@@ -446,9 +451,25 @@ package org.jbei.view.components
 		{
 			this._fields = fields;
 			this._gridChanged = true;
-			this.invalidateProperties(); 	// causes commitProperties() to be called
+			resetGrid();
+//			this.invalidateProperties(); 	// causes commitProperties() to be called
 			this.invalidateSize();			// causes measure() to be called
 			this.invalidateDisplayList();	// causes updateDisplayList to be called
+		}
+		
+		protected function resetGrid() : void
+		{
+			if( !_gridChanged )
+				return;
+			
+			this._gridChanged = false;
+			
+			if( this._grid )
+			{
+				this.removeChild( this._grid );
+				this._grid = null;
+				this.createGrid();
+			}
 		}
 		
 		public function get gridFields() : ArrayCollection
@@ -459,6 +480,12 @@ package org.jbei.view.components
 		public function pasteIntoCells( gridPaste:GridPaste ) : void
 		{
 			var createdRows:int = this._grid.pasteIntoCells( gridPaste );
+			this._grid.height = this.grid.rowSize() * GridCell.DEFAULT_HEIGHT + 1;
+		}		
+		
+		public function setCellValues( fields:ArrayCollection /*<EntryField>*/ ) : void
+		{
+			this._grid.setCellValues( fields );
 			this._grid.height = this.grid.rowSize() * GridCell.DEFAULT_HEIGHT + 1;
 		}
 		
@@ -562,7 +589,7 @@ package org.jbei.view.components
 			if( !this._grid || !( event is ScrollEvent ) )
 				return;
 			
-			// And finally, if we're not liveScrolling, and we're in the middle of scrolling, return.
+			// if we're not liveScrolling, and we're in the middle of scrolling, return.
 			if ( !liveScrolling && ScrollEvent( event ).detail == ScrollEventDetail.THUMB_TRACK )
 				return;
 			
@@ -584,6 +611,20 @@ package org.jbei.view.components
 		{
 			if( this._grid )
 				return;
+		
+			// TODO: this needs to go away. or at least set in some manner externally
+			// 		 what it does is to set the default fields to those of strain if 
+			// 		 the application facade does not have one set
+			
+			if( this._fields == null )
+			{
+				var type:EntryType = EntryType.STRAIN;
+				if( ApplicationFacade.getInstance().selectedType != null )
+					type = ApplicationFacade.getInstance().selectedType;
+				
+				this._fields = EntryFieldsFactory.fieldsForType( type ).fields;
+			 } 
+			// TODO : 
 			
 			var size:int = this._fields.length;
 			this._grid = new Grid( this._fields, this );

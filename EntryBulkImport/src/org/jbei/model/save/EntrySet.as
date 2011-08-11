@@ -14,7 +14,8 @@ package org.jbei.model.save
 		
 		protected var _seqZip:FileReference;
 		protected var _attZip:FileReference;
-		protected var _records:ArrayCollection = new ArrayCollection;
+		
+		protected var _records:ArrayCollection = new ArrayCollection; // <? implements Entry>
 		
 		public function set sequenceZipfile( file:FileReference ) : void
 		{

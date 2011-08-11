@@ -11,6 +11,7 @@ package org.jbei.view.components
 	import flash.ui.ContextMenu;
 	import flash.ui.Keyboard;
 	
+	import mx.controls.Alert;
 	import mx.controls.Label;
 	import mx.core.UIComponent;
 	import mx.formatters.NumberFormatter;
@@ -99,7 +100,6 @@ package org.jbei.view.components
 			if( this._editMode )
 				return;
 			
-//			trace( "Switching (" + this.row + ", " + this.index + ") to edit mode" );
 			this._textInput.text = this._label.text;
 			this.removeChild( this._label );
 			this.removeChild( this._overlay );
@@ -116,7 +116,6 @@ package org.jbei.view.components
 			if( !this._editMode )
 				return;
 			
-//			trace( "Switching (" + this.row + ", " + this.index + ") to display mode" );
 			this._editMode = false;
 			this._doubleClick = false;
 			this._label.text = this._textInput.text;

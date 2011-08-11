@@ -31,9 +31,19 @@ package org.jbei.model
 			return this._plasmid;
 		}
 		
+		public function set plasmid( plasmid:Plasmid ) : void
+		{
+			this._plasmid = plasmid;
+		}
+		
 		public function get strain() : Strain
 		{
 			return this._strain;
+		}
+		
+		public function set strain( strain:Strain ) : void
+		{
+			this._strain = strain;
 		}
 	}
 }

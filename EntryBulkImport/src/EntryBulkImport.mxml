@@ -8,20 +8,15 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import flash.desktop.Clipboard;
-			import flash.desktop.ClipboardFormats;
-			
 			import org.jbei.ApplicationFacade;
 			
 			public function creationComplete() : void
 			{
 				ApplicationFacade.getInstance().startup(this);
 				ApplicationFacade.getInstance().sessionId =  this.parameters.sessionId ;
-			}
-			
-			public function bClick() : void 
-			{
-				trace( Clipboard.generalClipboard.getData( ClipboardFormats.TEXT_FORMAT ) );
+				
+				// there are routines that make use of above so this needs to be here
+				ApplicationFacade.getInstance().importId = this.parameters.importId;
 			}
 		]]>
 	</fx:Script>		

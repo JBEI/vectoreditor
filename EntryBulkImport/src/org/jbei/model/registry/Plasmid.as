@@ -1,5 +1,7 @@
 package org.jbei.model.registry
 {
+	import org.jbei.view.EntryType;
+
 	[RemoteClass(alias="org.jbei.ice.lib.models.Plasmid")]
 	public class Plasmid extends Entry
 	{
@@ -10,6 +12,8 @@ package org.jbei.model.registry
 		
 		public function Plasmid()
 		{
+			super();
+			this.recordType = EntryType.PLASMID.name.toLowerCase();
 		}
 		
 		public function get promoters() : String

@@ -1,9 +1,12 @@
 package org.jbei.view
 {
+	import mx.controls.Alert;
+	
+	import org.jbei.ApplicationFacade;
 	import org.jbei.view.mediators.CancelButtonMediator;
 	import org.jbei.view.mediators.FileUploaderMediator;
-	import org.jbei.view.mediators.GridRowHeaderColumnHolderMediator;
 	import org.jbei.view.mediators.GridColumnHeaderRowMediator;
+	import org.jbei.view.mediators.GridRowHeaderColumnHolderMediator;
 	import org.jbei.view.mediators.HeaderTextInputMediator;
 	import org.jbei.view.mediators.ImportPanelMediator;
 	import org.jbei.view.mediators.PartTypeOptionsMediator;
@@ -21,15 +24,17 @@ package org.jbei.view
 		public function ApplicationMediator( app:EntryBulkImport )
 		{
 			this.app = app;
-			
-			facade.registerMediator( new PartTypeOptionsMediator( app.partOptions ) );
-			facade.registerMediator( new ImportPanelMediator( app.importPanel ) );
+					
+			// order of registeration is important here
 			facade.registerMediator( new HeaderTextInputMediator( app.headerInput ) );
 			facade.registerMediator( new GridColumnHeaderRowMediator( app.columnHeaderRow ) );
 			facade.registerMediator( new SaveButtonMediator( app.saveButton ) );
 			facade.registerMediator( new CancelButtonMediator( app.cancelButton ) );
 			facade.registerMediator( new GridRowHeaderColumnHolderMediator( app.rowHeaderColumn ) );
 			facade.registerMediator( new FileUploaderMediator( app.fileUploader ) );
+			
+			facade.registerMediator( new PartTypeOptionsMediator( app.partOptions ) );
+			facade.registerMediator( new ImportPanelMediator( app.importPanel ) );
 		}
 	}
 }

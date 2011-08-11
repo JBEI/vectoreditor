@@ -1,11 +1,14 @@
 package org.jbei.view.mediators
 {
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.Notifications;
 	import org.jbei.events.GridScrollEvent;
 	import org.jbei.model.EntryTypeField;
 	import org.jbei.model.fields.EntryFields;
+	import org.jbei.model.fields.EntryFieldsFactory;
+	import org.jbei.view.EntryType;
 	import org.jbei.view.components.GridCell;
 	import org.jbei.view.components.GridColumnHeader;
 	import org.jbei.view.components.GridColumnHeaderRowHolder;
@@ -33,7 +36,7 @@ package org.jbei.view.mediators
 		
 		override public function listNotificationInterests() : Array
 		{
-			return [ Notifications.PART_TYPE_FIELDS_LOADED, Notifications.HSCROLL, 
+			return [ Notifications.PART_TYPE_SELECTION, Notifications.HSCROLL, 
 				Notifications.GRID_CELL_SELECTED, Notifications.RESET_APP ];
 		}
 		
@@ -41,9 +44,9 @@ package org.jbei.view.mediators
 		{
 			switch( notification.getName() )
 			{
-				case Notifications.PART_TYPE_FIELDS_LOADED:
-//					var fields:ArrayCollection = notification.getBody() as ArrayCollection;
-					var entryFields:EntryFields = notification.getBody() as EntryFields;
+				case Notifications.PART_TYPE_SELECTION:
+					var type:EntryType = notification.getBody() as EntryType;
+					var entryFields:EntryFields = EntryFieldsFactory.fieldsForType( type );
 					this.gridHeaderHolder.headerRowCollection = entryFields.fields;
 				break;
 				
@@ -55,12 +58,12 @@ package org.jbei.view.mediators
 				case Notifications.GRID_CELL_SELECTED:
 					var cells:ArrayCollection = notification.getBody() as ArrayCollection;
 					this.gridHeaderHolder.headerRow.activeSelection( cells );
-					break;
+				break;
 				
 				case Notifications.RESET_APP:
 					this.gridHeaderHolder.headerRow.x = 0;
 					this.gridHeaderHolder.headerRow.reset();
-					break;
+				break;
 			}
 		}
 		

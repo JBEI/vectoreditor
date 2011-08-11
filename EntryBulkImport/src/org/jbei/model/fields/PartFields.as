@@ -3,9 +3,11 @@ package org.jbei.model.fields
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.model.EntryTypeField;
 	import org.jbei.model.registry.Attachment;
+	import org.jbei.model.registry.Entry;
 	import org.jbei.model.registry.EntryFundingSource;
 	import org.jbei.model.registry.FundingSource;
 	import org.jbei.model.registry.Link;
@@ -112,6 +114,118 @@ package org.jbei.model.fields
 			return part;
 		}
 		
+		public function setToRow( currentRowIndex:int, row:GridRow ) : Boolean 
+		{
+			var entry:Part = this.entrySet.entries.getItemAt( currentRowIndex ) as Part;
+			
+			for( var j:int = 0; j < this._fields.length; j += 1 )
+			{
+				var field:EntryTypeField = fields.getItemAt( j ) as EntryTypeField;
+				var cell:GridCell = row.cellAt( j );
+				
+				switch( field )
+				{
+					case PRINCIPAL_INVESTIGATOR:
+						if( entry.entryFundingSources == null || entry.entryFundingSources.length == 0 )
+							break;
+						
+						var source:EntryFundingSource = entry.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = source.fundingSource.principalInvestigator;
+						break;
+					
+					case FUNDING_SOURCE:
+						if( entry.entryFundingSources == null || entry.entryFundingSources.length == 0 )
+							break;
+						
+						var entrySource:EntryFundingSource = entry.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = entrySource.fundingSource.fundingSource;
+						break;
+	
+					case INTELLECTUAL_PROP_INFO:
+						cell.text = entry.intellectualProperty;
+						break;
+					
+					case BIO_SAFETY_LEVEL:
+						cell.text = String(entry.bioSafetyLevel);
+						break;
+					
+					case NAME:
+						var names:ArrayCollection = entry.names;
+						if( names == null || names.length == 0 )
+							break;
+						
+						var namesStr:String = "";
+						for( var i:int; i < names.length; i ++ )
+						{
+							var name:Name = names.getItemAt( i ) as Name;
+							namesStr += name.name;
+							if( i < names.length - 1 )
+								namesStr += ",";
+						}
+						cell.text = namesStr;
+						break;
+					
+					case ALIAS:
+						cell.text = entry.alias;
+						break;
+					
+					case KEYWORDS:
+						cell.text = entry.keywords;
+						break; 
+					
+					case SUMMARY:
+						cell.text = entry.shortDescription;
+						break;
+					
+					case NOTES:
+						cell.text = entry.longDescription;
+						break;
+					
+					case REFERENCES:
+						cell.text = entry.references;
+						break;
+					
+					case LINKS:
+						var links:ArrayCollection = entry.links;
+						if( links == null || links.length == 0 )
+							break;
+						
+						var linkStr:String = "";
+						for( var index:int; index < links.length; index ++ )
+						{
+							var link:Link = links.getItemAt( index ) as Link;
+							linkStr += link.link;
+							if( index < links.length - 1 )
+								linkStr += ",";
+						}
+						cell.text = linkStr;
+						break;
+					
+					case STATUS:
+						cell.text = entry.status;
+						break;
+					
+					case SEQUENCE_FILENAME:
+						var seq:Sequence = entry.sequence;
+						if( seq == null )
+							break;
+						
+						cell.text = seq.filename;
+						break;
+					
+					case ATTACHMENT_FILENAME:
+						var att:Attachment = entry.attachment;
+						if( att == null )
+							break;
+						
+						cell.text = att.fileName;
+						break;
+				}
+			}
+			
+			return true;
+		}
+		
 		private function createFundingSources( part:Part ) : void
 		{
 			if( part.entryFundingSources && part.entryFundingSources.length > 0 )
@@ -169,7 +283,7 @@ package org.jbei.model.fields
 				
 				case NAME:
 					var result:ArrayCollection = new ArrayCollection(); // <Name>
-					var names:Array = value.split( /\s*, +\s*/ );
+					var names:Array = value.split( /\s*,+\s*/ );
 					for( var i:int = 0; i < names.length; i += 1 )
 					{
 						var nameStr:String = names[i];
@@ -216,7 +330,7 @@ package org.jbei.model.fields
 				
 				case STATUS:
 					var comp:String = value.toLowerCase();
-					// TODO : "magic" strings
+					// TODO : raw strings
 					if( comp == "complete" || comp == "in progress" || comp == "planned" )
 						part.status = comp;
 					else

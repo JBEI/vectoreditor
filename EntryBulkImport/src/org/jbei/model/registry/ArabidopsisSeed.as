@@ -1,5 +1,7 @@
 package org.jbei.model.registry
 {
+	import org.jbei.view.EntryType;
+
 	[RemoteClass(alias="org.jbei.ice.lib.models.ArabidopsisSeed")]
 	public class ArabidopsisSeed extends Entry
 	{
@@ -13,6 +15,7 @@ package org.jbei.model.registry
 		public function ArabidopsisSeed()
 		{
 			super();
+			this.recordType = EntryType.ARABIDOPSIS.name.toLowerCase();
 		}
 		
 		public function get harvestDate() : Date

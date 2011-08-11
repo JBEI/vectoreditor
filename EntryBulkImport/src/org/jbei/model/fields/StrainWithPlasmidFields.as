@@ -3,6 +3,7 @@ package org.jbei.model.fields
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.model.EntryTypeField;
 	import org.jbei.model.StrainWithPlasmid;
@@ -137,9 +138,7 @@ package org.jbei.model.fields
 			this._errors.removeAll();
 			
 			var strain:Strain = new Strain();
-			strain.recordType = "strain";
 			var plasmid:Plasmid = new Plasmid();
-			plasmid.recordType = "plasmid";
 			
 			for( var j:int = 0; j < this._fields.length; j += 1 )
 			{
@@ -160,6 +159,252 @@ package org.jbei.model.fields
 			}
 
 			return new StrainWithPlasmid( strain, plasmid);
+		}
+		
+		public function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean 
+		{			
+			var entry:StrainWithPlasmid = this._set.entries.getItemAt( currentRowIndex ) as StrainWithPlasmid;
+			var strain:Strain = entry.strain;
+			var plasmid:Plasmid = entry.plasmid;
+			
+			for( var j:int = 0; j < this._fields.length; j += 1 )
+			{			
+				var field:EntryTypeField = fields.getItemAt( j ) as EntryTypeField;
+				var cell:GridCell = currentRow.cellAt( j );
+				
+				switch( field )
+				{
+					case PRINCIPAL_INVESTIGATOR:
+						if( entry.plasmid.entryFundingSources == null || entry.plasmid.entryFundingSources.length == 0 )
+							break;
+						
+						var source:EntryFundingSource = entry.plasmid.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = source.fundingSource.principalInvestigator;
+						break;
+					
+					case FUNDING_SOURCE:
+						if( entry.plasmid.entryFundingSources == null || entry.plasmid.entryFundingSources.length == 0 )
+							break;
+						
+						var entrySource:EntryFundingSource = entry.plasmid.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = entrySource.fundingSource.fundingSource;
+						break;
+					
+					case INTELLECTUAL_PROP_INFO:
+						cell.text = plasmid.intellectualProperty;
+						break;
+					
+					case BIO_SAFETY_LEVEL:
+						cell.text = String(strain.bioSafetyLevel);
+						break;
+					
+					case PLASMID_NAME:
+						var names:ArrayCollection = plasmid.names;
+						if( names == null || names.length == 0 )
+							break;
+						
+						var namesStr:String = "";
+						for( var i:int; i < names.length; i ++ )
+						{
+							var name:Name = names.getItemAt( i ) as Name;
+							namesStr += name.name;
+							if( i < names.length - 1 )
+								namesStr += ",";
+						}
+						cell.text = namesStr;
+						break;
+					
+					case PLASMID_ALIAS:
+						cell.text = plasmid.alias;
+						break;
+					
+					case PLASMID_KEYWORDS:
+						cell.text = plasmid.keywords;
+						break; 
+					
+					case PLASMID_SUMMARY:
+						cell.text = plasmid.shortDescription;
+						break;
+					
+					case PLASMID_NOTES:
+						cell.text = plasmid.longDescription;
+						break;
+					
+					case PLASMID_REFERENCES:
+						cell.text = plasmid.references;
+						break;
+					
+					case PLASMID_LINKS:
+						var links:ArrayCollection = plasmid.links;
+						if( links == null || links.length == 0 )
+							break;
+						
+						var linkStr:String = "";
+						for( var l:int; l < links.length; l ++ )
+						{
+							var link:Link = links.getItemAt( l ) as Link;
+							linkStr += link.link;
+							if( l < links.length - 1 )
+								linkStr += ",";
+						}
+						cell.text = linkStr;
+						break;
+					
+					case PLASMID_STATUS:
+						cell.text = plasmid.status;
+						break;
+					
+					case CIRCULAR:
+						cell.text = String( plasmid.circular ).toLowerCase();
+						break;
+					
+					case PLASMID_BACKBONE:
+						cell.text = plasmid.backbone;
+						break;
+					
+					case PLASMID_PROMOTERS:
+						cell.text = plasmid.promoters;
+						break;
+					
+					case PLASMID_ORIGIN_OF_REPLICATION:
+						cell.text = plasmid.originOfReplication;
+						break;
+					
+					case PLASMID_SEQUENCE_FILENAME:
+						var seq:Sequence = plasmid.sequence;
+						if( seq == null )
+							break;
+						
+						cell.text = seq.filename;
+						break;
+					
+					case PLASMID_ATTACHMENT_FILENAME:
+						var attachment:Attachment = plasmid.attachment;
+						if( attachment == null )
+							break;
+						
+						cell.text = attachment.fileName;
+						break;
+					
+					case PLASMID_SELECTION_MARKERS:
+						var markers:ArrayCollection = plasmid.selectionMarkers;
+						if( markers == null || markers.length == 0 )
+							break;
+						
+						var markerStr:String = "";
+						for( var markerIter:int = 0; markerIter < markers.length; markerIter += 1 )
+						{
+							var marker:SelectionMarker = markers.getItemAt( markerIter ) as SelectionMarker;
+							markerStr += marker.name;
+							if( markerIter < markers.length - 1 )
+								markerStr += ",";
+						}
+						cell.text = markerStr;
+						break;
+					
+					//
+					// strain fields
+					//
+					case STRAIN_NUMBER:
+						if( strain.names == null || strain.names.length == 0 )
+							break;
+						
+						var str:String = "";
+						for( var iter:int; iter < strain.names.length; iter ++ )
+						{
+							var strainName:Name = strain.names.getItemAt( iter ) as Name;
+							str += strainName.name;
+							if( iter < strain.names.length - 1 )
+								str += ",";
+						}
+						cell.text = str;
+						break;
+					
+					case STRAIN_ALIAS:
+						cell.text = strain.alias;
+						break;
+					
+					case STRAIN_LINKS:
+						if( strain.links == null || strain.links.length == 0 )
+							break;
+						
+						var sLinkStr:String = "";
+						for( var sLinkIter:int; sLinkIter < strain.links.length; sLinkIter ++ )
+						{
+							var sLink:Link = strain.links.getItemAt( sLinkIter ) as Link;
+							sLinkStr += sLink.link;
+							if( l < links.length - 1 )
+								sLinkStr += ",";
+						}
+						cell.text = sLinkStr;
+						break;
+					
+					case STRAIN_STATUS:
+						cell.text = strain.status;
+						break;
+					
+					case STRAIN_SELECTION_MARKERS:
+						if( strain.selectionMarkers == null || strain.selectionMarkers.length == 0 )
+							break;
+						
+						var sMarkerStr:String = "";
+						for( var sMarkerStrIter:int = 0; sMarkerStrIter < strain.selectionMarkers.length; sMarkerStrIter += 1 )
+						{
+							var m:SelectionMarker = strain.selectionMarkers.getItemAt( sMarkerStrIter ) as SelectionMarker;
+							sMarkerStr += m.name;
+							if( markerIter < markers.length - 1 )
+								sMarkerStr += ",";
+						}
+						cell.text = sMarkerStr;
+						break;
+					
+					case STRAIN_PARENTAL_STRAIN:
+						cell.text = strain.host;
+						break;
+					
+					case STRAIN_GENOTYPE_OR_PHENOTYPE:
+						cell.text = strain.genotypePhenotype;
+						break;
+					
+					case STRAIN_PLASMIDS:
+						cell.text = strain.plasmids;
+						break;
+					
+					case STRAIN_KEYWORDS:
+						cell.text = strain.keywords;
+						break;
+					
+					case STRAIN_SUMMARY:
+						cell.text = strain.shortDescription;
+						break;
+					
+					case STRAIN_NOTES:
+						cell.text = strain.longDescription;
+						break;
+					
+					case STRAIN_REFERENCES:
+						cell.text = strain.references;
+						break;
+					
+					case STRAIN_SEQUENCE_FILENAME:
+						var strainSeq:Sequence = strain.sequence;
+						if( strainSeq == null )
+							break;
+						cell.text = strainSeq.filename;
+						break;
+					
+					case STRAIN_ATTACHMENT_FILENAME:
+						var strainAtt:Attachment = strain.attachment;
+						if( strainAtt == null )
+							break;
+						cell.text = strainAtt.fileName;
+						break;
+					
+					default:
+						Alert.show( "Unrecognized field: " + field );
+				}
+			}
+			return true;
 		}
 		
 		private function createFundingSources( strain:Strain, plasmid:Plasmid ) : void

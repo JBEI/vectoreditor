@@ -4,6 +4,7 @@ package org.jbei.model
 	
 	import mx.collections.ArrayCollection;
 	import mx.containers.Grid;
+	import mx.controls.Alert;
 	
 	import org.jbei.Notifications;
 	import org.jbei.model.fields.EntryFields;
@@ -39,7 +40,6 @@ package org.jbei.model
 		{
 			if( entryType == null )
 			{
-				trace( "ERROR: type is null" );
 				return null;
 			}
 			
@@ -56,7 +56,7 @@ package org.jbei.model
 			
 			if( mediator.uploadedFile().data )
 			{
-				// used to validation
+				// used for validation
 				entryFields.sequenceZipFile = mediator.uploadedFile();
 				
 				// used for submission
@@ -75,9 +75,10 @@ package org.jbei.model
 			// for each row in the grid 
 			for( var i:int = 0; i < rowCount; i += 1 )
 			{
+				
 				var gridRow:GridRow = gridRows.getItemAt( i ) as GridRow;
 				
-				// skip all rows that do no have any content across all cells
+				// skip all rows that do not have any content across all cells
 				if( !this.rowHasContent( rowCellCount, gridRow ) )
 					continue;
 				
@@ -92,8 +93,8 @@ package org.jbei.model
 						var error:FieldCellError = entryFields.errors.getItemAt( j ) as FieldCellError;
 						sendNotification( Notifications.INVALID_CELL_CONTENT, error.cell, error.errorMessage );
 					}
-					
-					errors = true ;
+
+					errors = true;
 					continue;
 				}
 				else

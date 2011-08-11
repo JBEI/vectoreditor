@@ -3,11 +3,17 @@ package org.jbei.view.components
 	import flash.events.Event;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
 	import org.jbei.events.GridCellEvent;
 	import org.jbei.events.GridEvent;
+	import org.jbei.model.EntryTypeField;
 	import org.jbei.model.GridPaste;
+	import org.jbei.model.fields.EntryFields;
+	import org.jbei.model.fields.PlasmidFields;
+	import org.jbei.model.fields.StrainWithPlasmidFields;
+	import org.jbei.model.registry.Strain;
 	
 	import spark.components.TextArea;
 
@@ -35,10 +41,11 @@ package org.jbei.view.components
 			for( var i:int = 0; i < START_CELL_COUNT; i += 1 )
 			{
 				var row:GridRow = new GridRow( i, this._rowCellCount, fields );
+				
 				row.x = 0;
 				row.y = GridCell.DEFAULT_HEIGHT * i; 
 				this._rows.addItem( row );
-				this.addChild( row );
+				this.addChild( row );			
 			}			 
 			
 			this._holder = holder;
@@ -120,6 +127,27 @@ package org.jbei.view.components
 			}
 			
 			return createdRows;
+		}
+		
+		// similar to paste except it starts from 0,0 and then sets specific fields as defined
+		// in field values
+		public function setCellValues( fieldValues:ArrayCollection /*<EntryFields> each represents a row*/ ) : void
+		{		
+			var currentRow:GridRow;
+			var currentRowIndex:int = 0;	// start row
+			
+			// for each line (row)
+			for each( var entryField:EntryFields in fieldValues )
+			{
+				if( currentRowIndex == this._rows.length )
+				{
+					createRow();
+				}
+				
+				currentRow = this._rows.getItemAt( currentRowIndex ) as GridRow;
+				entryField.setToRow( currentRowIndex, currentRow );
+				currentRowIndex += 1;
+			}	
 		}
 		
 		/**
@@ -278,6 +306,12 @@ package org.jbei.view.components
 		// adds another row
 		private function createRow() : void
 		{
+			if( this._fields == null )
+			{
+				trace( "Attempting to create a grid row with null fields. Aborting" );
+				return;
+			}
+			
 			var newRow:GridRow = new GridRow( _rows.length, this._rowCellCount, this._fields );
 			newRow.x = 0;
 			newRow.y = _rows.length * GridCell.DEFAULT_HEIGHT;

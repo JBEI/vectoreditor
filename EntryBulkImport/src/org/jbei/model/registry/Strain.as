@@ -1,5 +1,7 @@
 package org.jbei.model.registry
 {
+	import org.jbei.view.EntryType;
+
 	[RemoteClass(alias="org.jbei.ice.lib.models.Strain")]
 	public class Strain extends Entry
 	{
@@ -10,6 +12,7 @@ package org.jbei.model.registry
 		public function Strain()
 		{
 			super();
+			this.recordType = EntryType.STRAIN.name.toLowerCase();
 		}
 		
 		public function get plasmids() : String

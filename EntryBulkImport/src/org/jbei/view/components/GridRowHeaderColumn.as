@@ -25,7 +25,7 @@ package org.jbei.view.components
 				this.removeChild( header );
 			}
 			this._cells.removeAll();
-			for( var i:int = 0; i<Grid.START_CELL_COUNT; i += 1 )
+			for( var i:int = 0; i < Grid.START_CELL_COUNT; i += 1 )
 			{
 				addHeader();
 			}

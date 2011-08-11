@@ -6,6 +6,7 @@ package org.jbei.model
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.core.Application;
 	import mx.core.FlexGlobals;
 	import mx.events.CloseEvent;
 	import mx.rpc.events.FaultEvent;
@@ -24,6 +25,7 @@ package org.jbei.model
 	import org.jbei.model.registry.Sequence;
 	import org.jbei.model.registry.Strain;
 	import org.jbei.model.save.ArabidopsisSet;
+	import org.jbei.model.save.BulkImportEntryData;
 	import org.jbei.model.save.EntrySet;
 	import org.jbei.model.save.PartSet;
 	import org.jbei.model.save.PlasmidSet;
@@ -31,6 +33,7 @@ package org.jbei.model
 	import org.jbei.model.save.StrainWithPlasmidSet;
 	import org.jbei.model.util.EntryFieldUtils;
 	import org.jbei.model.util.ZipFileUtil;
+	import org.jbei.view.ApplicationMediator;
 	import org.jbei.view.EntryType;
 	import org.puremvc.as3.interfaces.IProxy;
 	import org.puremvc.as3.patterns.proxy.Proxy;
@@ -53,48 +56,186 @@ package org.jbei.model
 		private var _redirectURL:String;
 		private var _saveRemainder:Number;
 		private var _failureCount:Number;
+		private var _sessionId:String;
+		private var _app:EntryBulkImport;
 		
-		public function RegistryAPIProxy()
+		public function RegistryAPIProxy( sessionId:String, app:EntryBulkImport )
 		{
 			super( NAME );
 			init();
+			this._sessionId = sessionId;
+			this._app = app;
 		}
 		
-		public function submitForSave( set:EntrySet ) : void
+		/**
+		 * Initializes the remote object and add listeners to the remove methods 
+		 */
+		private function init() : void
 		{
-			var sessionId:String = ApplicationFacade.getInstance().sessionId;
-			_saveRemainder = set.entries.length;
-			_failureCount = 0;
+			// create url for redirecting
+			var url:String = FlexGlobals.topLevelApplication.url;
+			_redirectURL = ( url.substr(0, url.indexOf( "/", 8 ) ) );
 			
+			// for remote method invocations
+			_remote = new RemoteObject( ApplicationFacade.REMOTE_SERVICE_NAME );
+			
+			// listeners for method returns
+			_remote.getUniqueOriginOfReplications.addEventListener( ResultEvent.RESULT, uniqueOrigins );
+			_remote.getUniqueSelectionMarkers.addEventListener( ResultEvent.RESULT, uniqueMarkers );
+			_remote.getUniquePromoters.addEventListener( ResultEvent.RESULT, uniquePromoters );
+			_remote.saveEntries.addEventListener( "fault", faultHandler );
+			_remote.saveEntries.addEventListener( ResultEvent.RESULT, onSaveSuccess );			
+			
+			// admin mode method call listeners
+			_remote.retrieveBulkImportEntryType.addEventListener( "fault", faultHandler );			
+			_remote.retrieveBulkImportEntryType.addEventListener( ResultEvent.RESULT, onBulkTypeRetrieve );			
+			
+			// actual calls
+			_remote.getUniqueOriginOfReplications();
+			_remote.getUniquePromoters();
+			_remote.getUniqueSelectionMarkers();
+		}
+		
+		public function retrieveBulkImportEntryType( importId:String ) : void 
+		{
+			// TODO : set sessionId when creating the proxy
+			var sessionId:String = ApplicationFacade.getInstance().sessionId;
+			_remote.retrieveBulkImportEntryType( sessionId, importId );
+		}
+		
+		//  ADMIN METHODS
+		// TODO : the following needs to be folded into a single object		
+		public function onBulkTypeRetrieve( event:ResultEvent ) : void
+		{
+			var result:String = String(event.result);
+			var type:EntryType = EntryType.valueOf( result );
+			sendNotification( Notifications.PART_TYPE_SELECTION, type );
+		}		
+		// TODO
+		// ADMIN METHODS
+		
+		protected function verifySave( set:EntrySet ) : void
+		{
 			switch( set.type )
 			{
 				case EntryType.STRAIN_WITH_PLASMID:
 					var strainWithPlasmidSet:StrainWithPlasmidSet = set as StrainWithPlasmidSet;
-					this.saveStrainWithPlasmids( sessionId, strainWithPlasmidSet );
+					this.saveStrainWithPlasmids( _sessionId, strainWithPlasmidSet );
 					break;
 				
 				case EntryType.ARABIDOPSIS:
 					var seedSet:ArabidopsisSet = set as ArabidopsisSet;
-					this.saveArabidopsis( sessionId, seedSet );
+					this.saveArabidopsis( _sessionId, seedSet );
 					break;
 				
 				case EntryType.PART:
 					var partSet:PartSet = set as PartSet;
-					this.saveParts( sessionId, partSet );
+					this.saveParts( _sessionId, partSet );
 					break;
 				
 				case EntryType.PLASMID:
 					var plasmidSet:PlasmidSet = set as PlasmidSet;
-					this.savePlasmids( sessionId, plasmidSet );
+					this.savePlasmids( _sessionId, plasmidSet );
 					break;
 				
 				case EntryType.STRAIN:
 					var strainSet:StrainSet = set as StrainSet;
-					this.saveStrains( sessionId, strainSet );
+					this.saveStrains( _sessionId, strainSet );
 					break;
+				
+				default:
+					Alert.show( "System does not know how to handle entry type " + set.type );
 			}
 		}
 		
+		public function submitForSave( set:EntrySet ) : void
+		{
+			// verification save
+			if( ApplicationFacade.getInstance().importId != null )
+			{
+				this.verifySave( set );
+				return;
+			}
+			
+			// regular save
+			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
+			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+			var primaryData:ArrayCollection = new ArrayCollection(); 
+			var secondaryData:ArrayCollection = new ArrayCollection();
+			
+			for( var i:int = 0; i < set.entries.length; i += 1 )
+			{
+				var obj:Object = set.entries.getItemAt( i );
+				if( obj is StrainWithPlasmid )
+				{
+					var strainWithPlasmid:StrainWithPlasmid = obj as StrainWithPlasmid;
+					
+					// primary
+					var strain:Strain = strainWithPlasmid.strain;
+					var strainImport:BulkImportEntryData  = new BulkImportEntryData();
+					strainImport.entry = strain;
+					
+					var strainAtt:String = strain.attachment == null ? null : strain.attachment.fileName;
+					var strainSeq:String = strain.sequence == null ? null : strain.sequence.filename;
+					strainImport.attachmentFilename = strainAtt;
+					strainImport.sequenceFilename = strainSeq;
+					primaryData.addItem( strainImport );
+					
+					// secondary
+					var plasmid:Plasmid = strainWithPlasmid.plasmid;	
+					var plasmidImport:BulkImportEntryData  = new BulkImportEntryData();
+					plasmidImport.entry = plasmid;
+					
+					var plasmidAtt:String = plasmid.attachment == null ? null : plasmid.attachment.fileName;
+					var plasmidSeq:String = plasmid.sequence == null ? null : plasmid.sequence.filename;
+					plasmidImport.attachmentFilename = plasmidAtt;
+					plasmidImport.sequenceFilename = plasmidSeq;
+					secondaryData.addItem( plasmidImport );
+				} 
+				else if( obj is Entry ) 
+				{
+					var entry:Entry = obj as Entry;
+					var bulkImport:BulkImportEntryData  = new BulkImportEntryData();
+					bulkImport.entry = entry;
+					
+					// actual sequence file (TODO: use name?)
+//					var sequence:ByteArray = ( !entry.sequence || !seqZipUtil ) ? null : seqZipUtil.file( entry.sequence.filename );
+//					var attachment:ByteArray = ( !entry.attachment || !attachZipUtil ) ? null : attachZipUtil.file( entry.attachment.fileName );
+//					bulkImport.a = attachment;
+//					bulkImport.seqFile = sequence;
+					
+					// file names
+					var attFilename:String = entry.attachment == null ? null : entry.attachment.fileName;
+					var seqFilename:String = entry.sequence == null ? null : entry.sequence.filename;
+					bulkImport.attachmentFilename = attFilename;
+					bulkImport.sequenceFilename = seqFilename;
+					primaryData.addItem( bulkImport );
+				}
+				else 
+				{
+					trace( "Unknown object type" );
+					continue;
+				}
+			}			
+			
+			var seqZipName:String = ( set.sequenceZipfile == null ) ? null : set.sequenceZipfile.name;
+			var attachZipName:String = ( set.attachmentZipfile == null ) ? null : set.attachmentZipfile.name;
+			
+			_remote.saveEntries( _sessionId, primaryData, secondaryData, set.sequenceZipfile, set.attachmentZipfile, seqZipName, attachZipName );
+		}
+		
+		private function redirectAfterSave() : void
+		{
+			if( this._redirectURL )
+				navigateToURL( new URLRequest( this._redirectURL + "/admin/bulk_import" ), "_self" );
+			else
+			{
+				Alert.show( "Entries Submitted For Save" );
+				sendNotification( Notifications.RESET_APP );
+			}
+		}
+		
+		// Instead of one at a time, send a bulk like with the bulk save
 		private function saveArabidopsis( sessionId:String, set:ArabidopsisSet ) : void
 		{
 			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
@@ -109,6 +250,9 @@ package org.jbei.model
 				var attFilename:String = seed.attachment == null ? null : seed.attachment.fileName;
 				_remote.saveEntry( sessionId, seed, seedSequence, seedAttachment, attFilename );
 			}
+			
+			// redirect
+			redirectAfterSave();
 		}
 		
 		private function saveParts( sessionId:String, set:PartSet ) : void
@@ -141,6 +285,8 @@ package org.jbei.model
 				var attFilename:String = plasmid.attachment == null ? null : plasmid.attachment.fileName;
 				_remote.saveEntry( sessionId, plasmid, plasmidSequence, plasmidAttachment, attFilename );
 			}
+			
+			redirectAfterSave();
 		}
 		
 		private function saveStrains( sessionId:String, set:StrainSet ) : void
@@ -157,6 +303,8 @@ package org.jbei.model
 				var attFilename:String = strain.attachment == null ? null : strain.attachment.fileName;
 				_remote.saveEntry( sessionId, strain, strainSequence, strainAttachment, attFilename );
 			}
+			
+			redirectAfterSave();
 		}
 		
 		private function saveStrainWithPlasmids( sessionId:String, set:StrainWithPlasmidSet ) : void
@@ -180,26 +328,16 @@ package org.jbei.model
 				_remote.saveStrainWithPlasmid( sessionId, strain, plasmid, strainSequence, strainAttachment, 
 					strainAttFilename, plasmidSequence, plasmidAttachment, plasmidAttFilename );
 			}
+			redirectAfterSave();
 		}
 		
-		private function redirect( event:CloseEvent ) : void
+		private function redirectToFolders( event:CloseEvent ) : void
 		{
+			// TODO : send a call to send an email to the admin
 			if( this._redirectURL )
 				navigateToURL( new URLRequest( this._redirectURL + "/folders" ), "_self" );
 			else
 				sendNotification( Notifications.RESET_APP );
-		}
-		
-		public function loadParts() : void
-		{
-			var arrayCollection:ArrayCollection = new ArrayCollection();
-			arrayCollection.addItem( EntryType.STRAIN );
-			arrayCollection.addItem( EntryType.PLASMID );
-			arrayCollection.addItem( EntryType.STRAIN_WITH_PLASMID );
-			arrayCollection.addItem( EntryType.PART );
-			arrayCollection.addItem( EntryType.ARABIDOPSIS );
-			
-			sendNotification( Notifications.PART_TYPES_AVAILABLE, arrayCollection );
 		}
 		
 		public function getUniqueOriginOfReplications() : ArrayCollection
@@ -217,63 +355,6 @@ package org.jbei.model
 			return this._uniquePromoters;
 		}
 		
-		public function loadEntryFields( type:EntryType ) : void
-		{
-			var entryFields:EntryFields = EntryFieldsFactory.fieldsForType( type );
-			sendNotification( Notifications.PART_TYPE_FIELDS_LOADED, entryFields );
-		}
-		
-		private function onSaveFailure( event:FaultEvent ) : void
-		{
-			trace( "entries save failed: " + event.fault ); 
-			Alert.show( "Server error saving entries: " + event.fault.faultString, "Entry Save", Alert.OK );
-		}
-		
-		private function onEntrySave( event:ResultEvent ) : void
-		{
-			this._saveRemainder -= 1;
-			trace( "now left with " + _saveRemainder + " to save." );
-			
-			var ret:Entry = event.result as Entry;	 // TODO : collect?
-			if( ret == null )
-				_failureCount += 1;
-				
-			// feedback
-			if( this._saveRemainder == 0 )
-			{
-				if( _failureCount > 0 )
-				{
-					trace( "There appears to be a problem saving the entries. " );
-					Alert.show( "There appears to be a problem saving " + _failureCount + " of the entries. Please contact your administrator", "Save",  Alert.OK );
-				}
-				else
-				{
-					Alert.show( "Entries saved successfully", "Save",  Alert.OK, null, redirect );
-				}
-			}
-		}
-		
-		private function init() : void
-		{
-			_remote = new RemoteObject( ApplicationFacade.REMOTE_SERVICE_NAME );
-			
-			// retrieving the unique values
-			_remote.getUniqueOriginOfReplications.addEventListener( ResultEvent.RESULT, uniqueOrigins );
-			_remote.getUniqueSelectionMarkers.addEventListener( ResultEvent.RESULT, uniqueMarkers );
-			_remote.getUniquePromoters.addEventListener( ResultEvent.RESULT, uniquePromoters );
-			
-			_remote.getUniqueOriginOfReplications();
-			_remote.getUniquePromoters();
-			_remote.getUniqueSelectionMarkers();
-			
-			var url:String = FlexGlobals.topLevelApplication.url;
-			_redirectURL = ( url.substr(0, url.indexOf( "/", 8 ) ) );
-			
-			// events listeners for remote
-			_remote.saveEntry.addEventListener( "fault", onSaveFailure ); 
-			_remote.saveEntry.addEventListener( ResultEvent.RESULT, onEntrySave );
-		}
-		
 		// catch-all for all auto-complete data
 		// checks to ensure that the needed ones are loaded and then sends a notification
 		private function autoCompleteData() : void
@@ -281,13 +362,43 @@ package org.jbei.model
 			if( this._uniquePromoters != null && this._uniqueOriginReplications != null
 				&& this._uniqueSelectionMarkers != null )
 			{
-				sendNotification( Notifications.AUTO_COMPLETE_DATA );
+//				sendNotification( Notifications.AUTO_COMPLETE_DATA );
+				sendNotification( Notifications.START_UP, _app );
 			}
 		}
 		
-		private function uniquePromoters( event:ResultEvent ) : void
+		private function faultHandler( event:FaultEvent ) : void
+		{			
+			Alert.show( event.fault.faultString + "\n\nDetails\n" + event.fault.faultDetail + "\n\nStackTrace\n" + event.fault.getStackTrace(), event.fault.faultCode );
+		}
+		
+		private function onSaveSuccess( event:ResultEvent ) : void
 		{
-			this._uniquePromoters = event.result as ArrayCollection;
+			Alert.show( "Entries have been submitted successfully and are awaiting administrative approval.", "Save",  Alert.OK, null, redirectToFolders );
+		}
+		
+//		private function onEntrySave( event:ResultEvent ) : void
+//		{
+//			this._saveRemainder -= 1;
+//			trace( "now left with " + _saveRemainder + " to save." );
+//			
+//			var ret:Entry = event.result as Entry;	 // TODO : collect?
+//			if( ret == null )
+//				_failureCount += 1;
+//			
+//			// feedback
+//			if( this._saveRemainder == 0 )
+//			{
+//				if( _failureCount > 0 )
+//					Alert.show( "There appears to be a problem saving " + _failureCount + " of the entries. Please contact your administrator", "Save",  Alert.OK );
+//				else
+//					Alert.show( "Entries saved successfully", "Save",  Alert.OK, null, redirect );
+//			}
+//		}		
+//		
+		private function uniquePromoters( event:ResultEvent ) : void
+		{			
+			this._uniquePromoters = event.result as ArrayCollection;			
 			EntryFieldUtils.uniquePromoters = this._uniquePromoters;
 			autoCompleteData();
 		}
@@ -301,7 +412,7 @@ package org.jbei.model
 		
 		private function uniqueMarkers( event:ResultEvent ) : void
 		{
-			this._uniqueSelectionMarkers = event.result as ArrayCollection;
+			this._uniqueSelectionMarkers = event.result as ArrayCollection;			
 			EntryFieldUtils.uniqueSelectionMarkers = this._uniqueSelectionMarkers; 
 			autoCompleteData();
 		}

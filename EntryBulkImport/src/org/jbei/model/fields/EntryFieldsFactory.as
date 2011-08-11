@@ -1,5 +1,7 @@
 package org.jbei.model.fields
 {
+	import mx.controls.Alert;
+	
 	import org.jbei.view.EntryType;
 
 	/**
@@ -26,6 +28,7 @@ package org.jbei.model.fields
 				case EntryType.STRAIN_WITH_PLASMID:
 					return new StrainWithPlasmidFields();
 			}
+			Alert.show( "Attempting to retrieve fields to a null entry type" );
 			return null;
 		}
 	}

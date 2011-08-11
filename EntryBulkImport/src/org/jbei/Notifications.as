@@ -6,6 +6,7 @@ package org.jbei
 		public static const START_UP:String = "startUp";
 		public static const FAILURE:String = "failure";		
 		public static const RESET_APP:String = "resetApplication";
+		public static const MODEL_DATA_PREP:String = "prepareModelData";
 		
 		// change in the active grid cell text
 		public static const ACTIVE_GRID_CELL_TEXT_CHANGE:String = "activeGridCellTextChange";
@@ -55,7 +56,6 @@ package org.jbei
 		//
 		// part type selection
 		//
-		public static const PART_TYPES_AVAILABLE:String = "partTypesAvailable";
 		public static const PART_TYPE_SELECTION:String = "partTypeSelection";
 		public static const PART_TYPES_LOAD_FAILURE:String = "partTypesLoadFailure";
 		public static const PART_TYPE_FIELDS_LOADED:String = "partTypeFieldsLoaded";
@@ -63,14 +63,7 @@ package org.jbei
 		// notification for auto-complete data load
 		public static const AUTO_COMPLETE_DATA:String = "autoCompleteDataLoaded";
 		
-		//
-		// errors
-		//
-		
-		// typically to notify user 
-		public static const ERROR:String = "error";
-		
-		// fatal. app needs to restart/reset
-		public static const FATAL_ERROR:String = "fatalError";
+		// sent when an import parameter is passed
+		public static const VERIFY:String = "verifyData";
 	}
 }

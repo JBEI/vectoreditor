@@ -1,8 +1,10 @@
 package org.jbei.model.fields
 {
 	import flash.net.FileReference;
+	import flash.profiler.showRedrawRegions;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.controls.DateField;
 	
 	import org.jbei.model.EntryTypeField;
@@ -16,6 +18,9 @@ package org.jbei.model.fields
 	import org.jbei.view.components.GridCell;
 	import org.jbei.view.components.GridRow;
 	
+	/**
+	 * Fields required for the arabidopsis seed entry type
+	 */
 	public class ArabidopsisFields implements EntryFields
 	{
 		public static const PRINCIPAL_INVESTIGATOR:EntryTypeField = new EntryTypeField( PRINCIPAL_INVESTIGATOR, "Principal Investigator", true ); 		
@@ -119,6 +124,125 @@ package org.jbei.model.fields
 			}
 			
 			return seed;
+		}
+		
+		public function setToRow( currentRowIndex:int, row:GridRow ) : Boolean 
+		{
+			var seed:ArabidopsisSeed = this.entrySet.entries.getItemAt( currentRowIndex ) as ArabidopsisSeed;
+			
+			for( var j:int = 0; j < this._fields.length; j += 1 )
+			{
+				var field:EntryTypeField = fields.getItemAt( j ) as EntryTypeField;
+				var cell:GridCell = row.cellAt( j );
+				
+				switch( field )
+				{
+					case PRINCIPAL_INVESTIGATOR:	
+						if( seed.entryFundingSources == null || seed.entryFundingSources.length == 0 )
+							break;
+						
+						var source:EntryFundingSource = seed.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = source.fundingSource.principalInvestigator;
+						break;
+					
+					case FUNDING_SOURCE:
+						if( seed.entryFundingSources == null || seed.entryFundingSources.length == 0 )
+							break;
+						
+						var entrySource:EntryFundingSource = seed.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = entrySource.fundingSource.fundingSource;
+						break;
+					
+					case INTELLECTUAL_PROP_INFO:
+						cell.text = seed.intellectualProperty;
+						break;
+					
+					case BIO_SAFETY_LEVEL:
+						cell.text = String(seed.bioSafetyLevel);
+						break;
+					
+					case NAME:
+						var names:ArrayCollection = seed.links;
+						if( names == null || names.length == 0 )
+							break;
+						
+						var namesStr:String = "";
+						for( var i:int; i < names.length; i ++ )
+						{
+							var name:Name = names.getItemAt( i ) as Name;
+							namesStr += name.name;
+							if( i < names.length - 1 )
+								namesStr += ",";
+						}
+						cell.text = namesStr;
+						break;
+					
+					case ALIAS:
+						cell.text = seed.alias;
+						break;
+					
+					case KEYWORDS:
+						cell.text = seed.keywords;
+						break; 
+					
+					case SUMMARY:
+						cell.text = seed.shortDescription;
+						break;
+					
+					case NOTES:
+						cell.text = seed.longDescription;
+						break;
+					
+					case REFERENCES:
+						cell.text = seed.references;
+						break;
+					
+					case LINKS:
+						var links:ArrayCollection = seed.links;
+						if( links == null || links.length == 0 )
+							break;
+						
+						var linkStr:String = "";
+						for( var l:int; l < links.length; l ++ )
+						{
+							var link:Link = links.getItemAt( l ) as Link;
+							linkStr += link.link;
+							if( l < links.length - 1 )
+								linkStr += ",";
+						}
+						cell.text = linkStr;
+						break;
+					
+					case STATUS:
+						cell.text = seed.status;
+						break;
+					
+					case HOMOZYGOSITY:
+						cell.text = seed.homozygosity;
+						break;
+					
+					case ECOTYPE:
+						cell.text = seed.ecotype;
+						break;
+					
+					case PARENTS:
+						cell.text = seed.parents;
+						break;
+					
+					case HARVEST_DATE:
+						cell.text = String(seed.harvestDate);
+						break;
+					
+					case GENERATION:
+						cell.text = seed.generation;
+						break;
+					
+					case PLANT_TYPE:
+						cell.text = seed.plantType;
+						break;
+				}
+			}
+			return true;
 		}
 		
 		// no sequences for arabidopsis

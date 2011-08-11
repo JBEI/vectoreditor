@@ -1,5 +1,9 @@
 package org.jbei.controller
 {
+	import mx.controls.Alert;
+	
+	import org.jbei.ApplicationFacade;
+	import org.jbei.model.BulkImportVerifierProxy;
 	import org.jbei.model.PasteEventProxy;
 	import org.jbei.model.RegistryAPIProxy;
 	import org.jbei.model.ValueExtractorProxy;
@@ -15,9 +19,10 @@ package org.jbei.controller
 	{
 		override public function execute( notification : INotification ) : void
 		{
-			facade.registerProxy( new RegistryAPIProxy() );
+//			facade.registerProxy( new RegistryAPIProxy( ApplicationFacade.getInstance().sessionId ) );
 			facade.registerProxy( new PasteEventProxy() );
 			facade.registerProxy( new ValueExtractorProxy() );
+			facade.registerProxy( new BulkImportVerifierProxy( ApplicationFacade.getInstance().sessionId ) );
 		}
 	}
 }

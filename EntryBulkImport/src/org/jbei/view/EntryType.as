@@ -1,5 +1,7 @@
 package org.jbei.view
 {
+	import mx.collections.ArrayCollection;
+
 	/**
 	 * "Enum" for the part types 
 	 */
@@ -21,6 +23,40 @@ package org.jbei.view
 		public function get name() : String
 		{
 			return this._name;
+		}
+		
+		public static function valueOf( name:String ) : EntryType 
+		{
+			switch( name.toLowerCase() ) 
+			{
+				case "strain":
+					return  STRAIN;
+					
+				case "plasmid":
+					return PLASMID;
+					
+				case "part":
+					return PART;
+					
+				case "strain w/ plasmid":
+					return STRAIN_WITH_PLASMID;
+					
+				case "arabidopsis":
+					return ARABIDOPSIS;
+			}
+			
+			return null;
+		} 
+		
+		public static function values() : ArrayCollection	// <EntryType> 
+		{
+			var collection:ArrayCollection = new ArrayCollection();
+			collection.addItem( EntryType.STRAIN );
+			collection.addItem( EntryType.PLASMID );
+			collection.addItem( EntryType.STRAIN_WITH_PLASMID );
+			collection.addItem( EntryType.PART );
+			collection.addItem( EntryType.ARABIDOPSIS );
+			return collection;
 		}
 	}
 }

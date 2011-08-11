@@ -1,6 +1,7 @@
 package org.jbei.view.components
 { 
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
 	import org.jbei.events.GridCellEvent;
@@ -26,6 +27,11 @@ package org.jbei.view.components
 			grid.gridFields = fields;					// set the content
 		}
 		
+		public function get gridFields() : ArrayCollection
+		{
+			return grid.gridFields;
+		}
+		
 		public function get activeGridCell() : GridCell
 		{
 			return this.grid.activeCell;
@@ -34,6 +40,11 @@ package org.jbei.view.components
 		public function pasteIntoCells( gridPaste:GridPaste ) : void
 		{
 			this.grid.pasteIntoCells( gridPaste );
+		}
+		
+		public function setCellValues( fieldValues : ArrayCollection /* <EntryField> */ ) : void
+		{	
+			this.grid.setCellValues( fieldValues );
 		}
 		
 		public function get gridHolder() : GridHolder

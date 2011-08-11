@@ -6,7 +6,7 @@ package org.jbei.model
 	{
 		private var _row:int;
 		private var _col:int;
-		private var _dist:ArrayCollection;
+		private var _dist:ArrayCollection;				// of <Array>
 		
 		public function GridPaste( row:int, col:int )
 		{

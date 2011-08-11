@@ -1,10 +1,14 @@
 package org.jbei
 {
+	import mx.controls.Alert;
+	
 	import org.jbei.controller.CancelCommand;
-	import org.jbei.controller.EntryFieldsCommand;
+	import org.jbei.controller.ModelDataPrepCommand;
 	import org.jbei.controller.PasteCommand;
 	import org.jbei.controller.SaveCommand;
 	import org.jbei.controller.StartupCommand;
+	import org.jbei.model.RegistryAPIProxy;
+	import org.jbei.model.registry.Entry;
 	import org.jbei.view.EntryType;
 	import org.jbei.view.components.HeaderTextInput;
 	import org.puremvc.as3.interfaces.IFacade;
@@ -16,7 +20,30 @@ package org.jbei
 		
 		private var _input:HeaderTextInput;
 		private var _sessionId:String;
+		private var _importId:String;
 		private var _app:EntryBulkImport;
+		private var _selected:EntryType;
+		
+		
+		public function get selectedType() : EntryType
+		{
+			return this._selected;
+		}
+		
+		public function set selectedType( selected:EntryType ) : void
+		{
+			this._selected = selected;
+		}
+		
+		public function get importId() : String 
+		{
+			return this._importId;
+		}
+		
+		public function set importId( value:String ) : void
+		{
+			this._importId = value;
+		}
 		
 		public function get sessionId() : String
 		{
@@ -42,8 +69,8 @@ package org.jbei
 		{
 			super.initializeController();
 			
+			registerCommand( Notifications.MODEL_DATA_PREP, ModelDataPrepCommand );
 			registerCommand( Notifications.START_UP, StartupCommand );
-			registerCommand( Notifications.PART_TYPE_SELECTION, EntryFieldsCommand );
 			registerCommand( Notifications.SAVE, SaveCommand );
 			registerCommand( Notifications.PASTE, PasteCommand );
 			registerCommand( Notifications.CANCEL, CancelCommand );
@@ -53,11 +80,8 @@ package org.jbei
 		public function startup( app : EntryBulkImport ) : void 
 		{
 			this._app = app;
-			sendNotification( Notifications.START_UP, app );
-			
-			// selecting default
-			app.partOptions.selectedItem = EntryType.STRAIN;
-			sendNotification( Notifications.PART_TYPE_SELECTION, EntryType.STRAIN );
+//			sendNotification( Notifications.START_UP, app );
+			sendNotification( Notifications.MODEL_DATA_PREP, app );
 		}
 		
 		public function get application() : EntryBulkImport

@@ -35,7 +35,7 @@ package org.jbei.controller
 //				trace( "Received back " + ret.length ) ;
 			
 //		
-			Alert.show("Hello World", "Title", Alert.OK );
+//			Alert.show("Hello World", "Title", Alert.OK );
 		}
 		
 		private function titleWindow_close( event:CloseEvent ) : void

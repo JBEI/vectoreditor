@@ -1,6 +1,7 @@
 package org.jbei.model
 {
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.Notifications;
 	import org.jbei.view.components.GridCell;
@@ -21,7 +22,7 @@ package org.jbei.model
 		{
 			if( !text )
 			{
-				trace( "no text for paste" );
+				Alert.show( "Cannot paste empty text", "Paste" );
 				return;
 			}
 			
@@ -38,7 +39,6 @@ package org.jbei.model
 			
 			gridPaste.dist = dist;
 			sendNotification( Notifications.PASTE_CELL_DISTRIBUTION, gridPaste );		
-//			sendNotification( Notifications.GRID_CELL_SELECTED, new ArrayCollection ( [cell] ) );
 		}
 	}
 }

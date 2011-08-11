@@ -3,6 +3,7 @@ package org.jbei.model.fields
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	
 	import org.jbei.Notifications;
 	import org.jbei.model.EntryTypeField;
@@ -42,7 +43,7 @@ package org.jbei.model.fields
 		public static const GENOTYPE_OR_PHENOTYPE:EntryTypeField = new EntryTypeField( GENOTYPE_OR_PHENOTYPE, "Genotype/Phenotype", false );
 		public static const PLASMIDS:EntryTypeField = new EntryTypeField( PLASMIDS, "Plasmids", false );
 		
-		private var _fields:ArrayCollection;
+		private var _fields:ArrayCollection;	// <EntryTypeField>
 		private var _zipUtil:ZipFileUtil;
 		private var _errors:ArrayCollection;
 		private var _set:StrainSet;
@@ -97,7 +98,6 @@ package org.jbei.model.fields
 			this._errors.removeAll();
 			
 			var strain:Strain = new Strain();
-			strain.recordType = "strain";
 			
 			for( var j:int = 0; j < this._fields.length; j += 1 )
 			{
@@ -119,6 +119,144 @@ package org.jbei.model.fields
 			}
 			
 			return strain;
+		}
+		
+		public function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean 
+		{
+			var strain:Strain = this.entrySet.entries.getItemAt( 0 ) as Strain;
+			
+			for( var j:int = 0; j < this._fields.length; j += 1 )
+			{
+				var field:EntryTypeField = fields.getItemAt( j ) as EntryTypeField;
+				var cell:GridCell = currentRow.cellAt( j );
+				
+				switch( field )
+				{
+					case PRINCIPAL_INVESTIGATOR:
+						if( strain.entryFundingSources == null || strain.entryFundingSources.length == 0 )
+							break;
+						
+						var source:EntryFundingSource = strain.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = source.fundingSource.principalInvestigator;
+						break;
+					
+					case FUNDING_SOURCE:
+						if( strain.entryFundingSources == null || strain.entryFundingSources.length == 0 )
+							break;
+						
+						var entrySource:EntryFundingSource = strain.entryFundingSources.getItemAt( 0 ) as EntryFundingSource;
+						cell.text = entrySource.fundingSource.fundingSource;
+						break;
+					
+					case INTELLECTUAL_PROP_INFO:
+						cell.text = strain.intellectualProperty;
+						break;
+					
+					case BIO_SAFETY_LEVEL:
+						cell.text = String(strain.bioSafetyLevel);
+						break;
+					
+					case NAME:
+						var names:ArrayCollection = strain.names;
+						if( names == null || names.length == 0 )
+							break;
+						
+						var namesStr:String = "";
+						for( var i:int; i < names.length; i ++ )
+						{
+							var name:Name = names.getItemAt( i ) as Name;
+							namesStr += name.name;
+							if( i < names.length - 1 )
+								namesStr += ",";
+						}
+						cell.text = namesStr;
+						break;
+					
+					case ALIAS:
+						cell.text = strain.alias;
+						break;
+					
+					case KEYWORDS:
+						cell.text = strain.keywords;
+						break; 
+					
+					case SUMMARY:
+						cell.text = strain.shortDescription;
+						break;
+					
+					case NOTES:
+						cell.text = strain.longDescription;
+						break;
+					
+					case REFERENCES:
+						cell.text = strain.references;
+						break;
+					
+					case LINKS:
+						var links:ArrayCollection = strain.links;
+						if( links == null || links.length == 0 )
+							break;
+						
+						var linkStr:String = "";
+						for( var l:int; l < links.length; l ++ )
+						{
+							var link:Link = links.getItemAt( l ) as Link;
+							linkStr += link.link;
+							if( l < links.length - 1 )
+								linkStr += ",";
+						}
+						cell.text = linkStr;
+						break;
+					
+					case STATUS:
+						cell.text = strain.status;
+						break;
+					
+					case SEQUENCE_FILENAME:
+						var seq:Sequence = strain.sequence;
+						if( seq == null )
+							break;
+						cell.text = seq.filename;
+						break;
+					
+					case ATTACHMENT_FILENAME:
+						var attachment:Attachment = strain.attachment;
+						if( attachment == null )
+							break;
+						cell.text = attachment.fileName;
+						break;
+					
+					case SELECTION_MARKERS:
+						var markers:ArrayCollection = strain.selectionMarkers;
+						if( markers == null || markers.length == 0 )
+							break;
+						
+						var markerStr:String = "";
+						for( var markerIter:int = 0; markerIter < markers.length; markerIter += 1 )
+						{
+							var marker:SelectionMarker = markers.getItemAt( markerIter ) as SelectionMarker;
+							markerStr += marker.name;
+							if( markerIter < markers.length - 1 )
+								markerStr += ",";
+						}
+						cell.text = markerStr;
+						break;
+					
+					case PARENTAL_STRAIN:
+						cell.text = strain.host;
+						break;
+					
+					case GENOTYPE_OR_PHENOTYPE:
+						cell.text = strain.genotypePhenotype;
+						break;
+					
+					case PLASMIDS:
+						cell.text = strain.plasmids;
+						break;
+				}
+			}
+
+			return true;
 		}
 		
 		public function get errors() : ArrayCollection
