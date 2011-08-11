@@ -4,6 +4,7 @@ package org.jbei.view.components
 	import flash.net.FileReference;
 	import flash.net.URLRequest;
 	
+	import mx.controls.Alert;
 	import mx.controls.ProgressBar;
 	import mx.controls.ProgressBarDirection;
 	import mx.controls.ProgressBarMode;
@@ -18,7 +19,7 @@ package org.jbei.view.components
 		private var seqZipFile:FileReference;
 		private var attachZipFile:FileReference;
 		
-		private var _browseButton:Button;
+		private var _seqZipfileButton:Button;
 		private var _attachZipFileButton:Button;
 		private var _uploadButton:Button;
 		private var _attachProgressBar:ProgressBar;
@@ -34,7 +35,7 @@ package org.jbei.view.components
 			this.createProgressBars();
 			
 			// add event listeners
-			this._browseButton.addEventListener( MouseEvent.CLICK, browseClick );
+			this._seqZipfileButton.addEventListener( MouseEvent.CLICK, seqFileUploadButtonClick );
 			this._attachZipFileButton.addEventListener( MouseEvent.CLICK, attachFilenameClick );
 			
 			// seq event listeners
@@ -64,7 +65,7 @@ package org.jbei.view.components
 		}
 		
 		// events listeners
-		private function browseClick( event:MouseEvent ) : void
+		private function seqFileUploadButtonClick( event:MouseEvent ) : void
 		{
 			seqZipFile.browse();
 		}
@@ -77,16 +78,16 @@ package org.jbei.view.components
 		// create methods
 		private function createBrowseButtons() : void
 		{
-			if( !this._browseButton )
+			if( !this._seqZipfileButton )
 			{				
-				this._browseButton = new Button();
-				this._browseButton.label = "Select Sequence Zip File";
-				this._browseButton.width = 180;
-				this._browseButton.height = 25;
-				this._browseButton.x = 30;
-				this._browseButton.y = 330;
+				this._seqZipfileButton = new Button();
+				this._seqZipfileButton.label = "Select Sequence Zip File";
+				this._seqZipfileButton.width = 180;
+				this._seqZipfileButton.height = 25;
+				this._seqZipfileButton.x = 30;
+				this._seqZipfileButton.y = 330;
 			
-				this.addChild( this._browseButton );
+				this.addChild( this._seqZipfileButton );
 			}
 			
 			if( !this._attachZipFileButton )
@@ -102,6 +103,9 @@ package org.jbei.view.components
 			}
 		}
 		
+		/**
+		 * Progress bars for each file upload button
+		 */ 
 		private function createProgressBars() : void
 		{
 			if( !this._seqProgressBar )
@@ -157,13 +161,12 @@ package org.jbei.view.components
 		
 		private function ioErrorHandler( event:IOErrorEvent ) : void 
 		{
-			trace( "ERROR : " + event );
+			Alert.show( "There was an error uploading file.\n\nDetails\n\n" + event, "File upload" );
 		}
 		
 		private function seqSelectHandler( event:Event ) : void
 		{
 			var file:FileReference = FileReference( event.target );
-			trace( "Sequence Select Handler: name=" + file.name );
 			var fileName:String = ( file.name.length <= 19 ) ? file.name : (file.name.slice(0, 16 ) + "...");
 			
 			try
@@ -175,7 +178,6 @@ package org.jbei.view.components
 			}
 			catch( err:Error )
 			{
-				trace( err.message );
 				this._seqProgressBar.label = err.message;
 			}
 			this._seqProgressBar.visible = true;
@@ -184,7 +186,6 @@ package org.jbei.view.components
 		private function attachSelectHandler( event:Event ) : void
 		{
 			var file:FileReference = FileReference( event.target );
-			trace( "Attachment Select Handler: name=" + file.name );
 			var fileName:String = ( file.name.length <= 19 ) ? file.name : ( file.name.slice( 0, 16 ) + "..." );
 			
 			try
@@ -196,7 +197,6 @@ package org.jbei.view.components
 			}
 			catch( err:Error )
 			{
-				trace( err.message );
 				this._attachProgressBar.label = err.message;
 			}
 			this._attachProgressBar.visible = true;

@@ -128,7 +128,7 @@ package org.jbei.model.fields
 		
 		public function setToRow( currentRowIndex:int, row:GridRow ) : Boolean 
 		{
-			var seed:ArabidopsisSeed = this.entrySet.entries.getItemAt( currentRowIndex ) as ArabidopsisSeed;
+			var seed:ArabidopsisSeed = this.entrySet.entries.getItemAt( 0 ) as ArabidopsisSeed;
 			
 			for( var j:int = 0; j < this._fields.length; j += 1 )
 			{

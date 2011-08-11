@@ -54,13 +54,13 @@ package org.jbei.model
 			var mediator:FileUploaderMediator = facade.retrieveMediator( FileUploaderMediator.NAME ) as FileUploaderMediator;
 			var entrySet:EntrySet = entryFields.entrySet;
 			
-			if( mediator.uploadedFile().data )
+			if( mediator.sequenceFile().data )
 			{
 				// used for validation
-				entryFields.sequenceZipFile = mediator.uploadedFile();
+				entryFields.sequenceZipFile = mediator.sequenceFile();
 				
 				// used for submission
-				entrySet.sequenceZipfile = mediator.uploadedFile();
+				entrySet.sequenceZipfile = mediator.sequenceFile();
 			}
 			
 			if( mediator.attachmentFile().data )

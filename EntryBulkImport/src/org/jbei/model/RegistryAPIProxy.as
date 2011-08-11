@@ -220,8 +220,10 @@ package org.jbei.model
 			
 			var seqZipName:String = ( set.sequenceZipfile == null ) ? null : set.sequenceZipfile.name;
 			var attachZipName:String = ( set.attachmentZipfile == null ) ? null : set.attachmentZipfile.name;
+			var seqZipFile:ByteArray = ( set.sequenceZipfile == null ) ? null : set.sequenceZipfile.data; 
+			var attZipfile:ByteArray = ( set.attachmentZipfile == null ) ? null : set.attachmentZipfile.data;
 			
-			_remote.saveEntries( _sessionId, primaryData, secondaryData, set.sequenceZipfile, set.attachmentZipfile, seqZipName, attachZipName );
+			_remote.saveEntries( _sessionId, primaryData, secondaryData, seqZipFile, attZipfile, seqZipName, attachZipName );
 		}
 		
 		private function redirectAfterSave() : void
@@ -369,7 +371,7 @@ package org.jbei.model
 		
 		private function faultHandler( event:FaultEvent ) : void
 		{			
-			Alert.show( event.fault.faultString + "\n\nDetails\n" + event.fault.faultDetail + "\n\nStackTrace\n" + event.fault.getStackTrace(), event.fault.faultCode );
+			Alert.show( event.fault.faultString + "\n\nDetails\n" + event.fault.faultDetail, event.fault.faultCode );
 		}
 		
 		private function onSaveSuccess( event:ResultEvent ) : void

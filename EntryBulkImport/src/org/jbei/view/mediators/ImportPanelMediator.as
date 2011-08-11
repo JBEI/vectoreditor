@@ -101,7 +101,8 @@ package org.jbei.view.mediators
 		override public function listNotificationInterests() : Array
 		{
 			return [ Notifications.HEADER_INPUT_TEXT_CHANGE, Notifications.SAVE_CLICK, Notifications.PASTE_CELL_DISTRIBUTION, 
-				Notifications.PART_TYPE_SELECTION, Notifications.INVALID_CELL_CONTENT, Notifications.RESET_APP, Notifications.GRID_ROW_SELECTED, Notifications.VERIFY ];
+				Notifications.PART_TYPE_SELECTION, Notifications.INVALID_CELL_CONTENT, Notifications.RESET_APP, 
+				Notifications.GRID_ROW_SELECTED, Notifications.VERIFY, Notifications.ROW_DATA_READY ];
 		}
 		
 		// called on when any of the notifications above is sent 
@@ -163,6 +164,10 @@ package org.jbei.view.mediators
 					handleVerify( notification );
 					break;
 				
+				case Notifications.ROW_DATA_READY:
+					handleDataReady( notification );
+					break;
+				
 				default:
 					Alert.show( "No handler in ImportPanelMediator for nofication: " + notification.getName() );
 			}
@@ -172,25 +177,30 @@ package org.jbei.view.mediators
 		protected function handlePartTypeSelection( notification:INotification ) : void
 		{
 			var selected:EntryType = notification.getBody() as EntryType;
-			this.currentTypeSelection = selected;			
+			this.currentTypeSelection = selected;	
 			
-			if( _dataCollection != null && _dataCollection.length > 0 ) 
-			{
-				var entryFields1:EntryFields = EntryFieldsFactory.fieldsForType( this.currentTypeSelection );
-				this.importPanel.gridFields = entryFields1.fields;
-				this.importPanel.setCellValues( _dataCollection );
-			}
-			else
-			{				
-				var entryFields:EntryFields = EntryFieldsFactory.fieldsForType( this.currentTypeSelection );
-				this.importPanel.gridFields = entryFields.fields;
-				this.importPanel.gridHolder.reset();
-			}
+			if( ApplicationFacade.getInstance().importId != null )
+				return;
+			
+			var entryFields:EntryFields = EntryFieldsFactory.fieldsForType( this.currentTypeSelection );
+			this.importPanel.gridFields = entryFields.fields;
+			this.importPanel.gridHolder.reset();
+		}
+		
+		// TODO : also check for import ID
+		protected function handleDataReady( notification:INotification ) : void
+		{
+			var data:ArrayCollection = notification.getBody() as ArrayCollection;
+			if( data == null || data.length == 0 )
+				return;
+			
+			var entryFields1:EntryFields = EntryFieldsFactory.fieldsForType( this.currentTypeSelection );
+			this.importPanel.gridFields = entryFields1.fields;
+			this.importPanel.setCellValues( data );			
 		}
 		
 		protected function handleVerify( notification:INotification ) : void 
 		{
-			var gridPaste:GridPaste = new GridPaste( 0, 0 );
 			var results:Object = notification.getBody();	
 			
 			// type
@@ -216,7 +226,6 @@ package org.jbei.view.mediators
 				var fields:EntryFields = EntryFieldsFactory.fieldsForType( entryType );
 				var fieldsEntrySet:EntrySet = fields.entrySet;
 				
-				// TODO 
 				// secondary data
 				if( secondaryData != null && secondaryData.length > 0 )
 				{
@@ -241,7 +250,8 @@ package org.jbei.view.mediators
 			}
 			
 			if( primaryCollection.length > 0 ) {
-				this._dataCollection = primaryCollection;
+//				this._dataCollection = primaryCollection;
+				sendNotification( Notifications.ROW_DATA_READY, primaryCollection );
 			}
 		}
 	}

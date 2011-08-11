@@ -139,7 +139,7 @@ package org.jbei.view.components
 			// for each line (row)
 			for each( var entryField:EntryFields in fieldValues )
 			{
-				if( currentRowIndex == this._rows.length )
+				if( currentRowIndex == this._rows.length -1 )
 				{
 					createRow();
 				}
@@ -147,7 +147,9 @@ package org.jbei.view.components
 				currentRow = this._rows.getItemAt( currentRowIndex ) as GridRow;
 				entryField.setToRow( currentRowIndex, currentRow );
 				currentRowIndex += 1;
-			}	
+			}
+			
+			Alert.show( currentRowIndex + "" );
 		}
 		
 		/**

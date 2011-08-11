@@ -123,7 +123,7 @@ package org.jbei.model.fields
 		
 		public function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean 
 		{
-			var plasmid:Plasmid = this.entrySet.entries.getItemAt( currentRowIndex ) as Plasmid;
+			var plasmid:Plasmid = this.entrySet.entries.getItemAt( 0 ) as Plasmid;
 			
 			for( var j:int = 0; j < this._fields.length; j += 1 )
 			{

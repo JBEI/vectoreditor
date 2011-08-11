@@ -35,19 +35,16 @@ package org.jbei.model.util
 		{
 			switch( entryTypeField )
 			{
-//				case EntryTypeField.SELECTION_MARKERS:
 				case StrainFields.SELECTION_MARKERS:
 				case PlasmidFields.SELECTION_MARKERS:
 				case StrainWithPlasmidFields.PLASMID_SELECTION_MARKERS:
 				case StrainWithPlasmidFields.STRAIN_SELECTION_MARKERS:
 					return _selectionMarkers;
 					
-//				case EntryTypeField.ORIGIN_OF_REPLICATION:
 				case PlasmidFields.ORIGIN_OF_REPLICATION:
 				case StrainWithPlasmidFields.PLASMID_ORIGIN_OF_REPLICATION:
 					return _origins;
 					
-//				case EntryTypeField.PROMOTERS:
 				case PlasmidFields.PROMOTERS:
 				case StrainWithPlasmidFields.PLASMID_PROMOTERS:
 					return _promoters;

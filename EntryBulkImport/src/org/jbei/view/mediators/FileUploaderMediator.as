@@ -1,6 +1,9 @@
 package org.jbei.view.mediators
 {
 	import flash.net.FileReference;
+	import flash.utils.ByteArray;
+	
+	import mx.controls.Alert;
 	
 	import org.jbei.Notifications;
 	import org.jbei.view.EntryType;
@@ -26,7 +29,7 @@ package org.jbei.view.mediators
 		
 		override public function listNotificationInterests():Array
 		{
-			return [ Notifications.PART_TYPE_SELECTION, Notifications.RESET_APP ];
+			return [ Notifications.PART_TYPE_SELECTION, Notifications.RESET_APP, Notifications.VERIFY ];
 		}
 		
 		override public function handleNotification(notification:INotification):void
@@ -53,10 +56,6 @@ package org.jbei.view.mediators
 							this.fileUploader.visible = true;
 							break;
 						
-						case EntryType.PART:
-							this.fileUploader.visible = false;
-							break;
-						
 						case EntryType.ARABIDOPSIS:
 							this.fileUploader.visible = false;
 							break;
@@ -66,7 +65,22 @@ package org.jbei.view.mediators
 				case Notifications.RESET_APP:
 					this.fileUploader.reset();
 					break;
+				
+				case Notifications.VERIFY:
+					this.handleVerify(notification);
+					break;
 			}
+		}
+		
+		protected function handleVerify( notification:INotification ) : void
+		{
+			var results:Object = notification.getBody();
+			var attachmentZipfileBytes:ByteArray = results.attachmentZipfile;
+//			Alert.show( String(attachmentZipfileBytes == null ));
+			var seqZipfileBytes:ByteArray = results.sequenceZipfile;
+			
+			// test
+			var file:FileReference = new FileReference();
 		}
 		
 		public function attachmentFile() : FileReference 
@@ -74,7 +88,7 @@ package org.jbei.view.mediators
 			return this.fileUploader.attachmentFile;
 		}
 		
-		public function uploadedFile() : FileReference
+		public function sequenceFile() : FileReference
 		{
 			return this.fileUploader.sequenceFile;
 		}

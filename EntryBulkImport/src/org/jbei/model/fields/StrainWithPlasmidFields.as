@@ -163,9 +163,9 @@ package org.jbei.model.fields
 		
 		public function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean 
 		{			
-			var entry:StrainWithPlasmid = this._set.entries.getItemAt( currentRowIndex ) as StrainWithPlasmid;
+			var entry:StrainWithPlasmid = this._set.entries.getItemAt( 0 ) as StrainWithPlasmid;
 			var strain:Strain = entry.strain;
-			var plasmid:Plasmid = entry.plasmid;
+			var plasmid:Plasmid = entry.plasmid;			
 			
 			for( var j:int = 0; j < this._fields.length; j += 1 )
 			{			
