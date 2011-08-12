@@ -119,11 +119,9 @@ package org.jbei.view.mediators
 					importPanel.activeGridCell.text = text;
 					break;	
 				
-				case Notifications.SAVE_CLICK:
-					// TODO : Have a save error param and send out a separate notification type with details
-					// handle it in the SaveCommand
-					
-					var proxy:ValueExtractorProxy = facade.retrieveProxy( ValueExtractorProxy.NAME ) as ValueExtractorProxy;	
+				case Notifications.SAVE_CLICK:					
+                    // TODO : load attachment and sequence files and send out another notification. that is more robust
+					var proxy:ValueExtractorProxy = facade.retrieveProxy( ValueExtractorProxy.NAME ) as ValueExtractorProxy; 	
 					var entrySet:EntrySet = proxy.retrieveValues( this.importPanel.gridHolder, currentTypeSelection );
 					if( entrySet != null ) 
 					{

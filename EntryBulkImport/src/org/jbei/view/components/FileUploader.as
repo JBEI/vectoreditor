@@ -1,5 +1,7 @@
 package org.jbei.view.components
 {
+	import deng.fzip.FZip;
+	
 	import flash.events.*;
 	import flash.net.FileReference;
 	import flash.net.URLRequest;
@@ -18,6 +20,9 @@ package org.jbei.view.components
 		private var uploadURL:URLRequest;
 		private var seqZipFile:FileReference;
 		private var attachZipFile:FileReference;
+        
+        private var seqZipData:FZip;
+        private var attZipData:FZip;
 		
 		private var _seqZipfileButton:Button;
 		private var _attachZipFileButton:Button;
@@ -30,7 +35,10 @@ package org.jbei.view.components
 			uploadURL = new URLRequest();
 			seqZipFile = new FileReference();
 			attachZipFile = new FileReference();
-			
+            
+            seqZipData = new FZip();
+            attZipData = new FZip();
+            
 			this.createBrowseButtons();
 			this.createProgressBars();
 			
@@ -149,15 +157,15 @@ package org.jbei.view.components
 			}
 		}
 		
-		public function get sequenceFile() : FileReference
-		{
-			return this.seqZipFile;
-		}
-		
-		public function get attachmentFile() : FileReference
-		{
-			return this.attachZipFile;
-		}
+//		public function get sequenceFile() : FileReference
+//		{
+//			return this.seqZipFile;
+//		}
+//		
+//		public function get attachmentFile() : FileReference
+//		{
+//			return this.attachZipFile;
+//		}
 		
 		private function ioErrorHandler( event:IOErrorEvent ) : void 
 		{
@@ -174,7 +182,7 @@ package org.jbei.view.components
 				this._seqProgressBar.maximum = file.size;
 				this._seqProgressBar.label = fileName + ": %3%%";
 				this._seqProgressBar.toolTip = file.name;
-				file.load();
+				file.load();                
 			}
 			catch( err:Error )
 			{

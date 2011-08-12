@@ -1,5 +1,8 @@
 package org.jbei.view.mediators
 {
+	import deng.fzip.FZip;
+	
+	import flash.events.Event;
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
 	
@@ -78,19 +81,35 @@ package org.jbei.view.mediators
 			var attachmentZipfileBytes:ByteArray = results.attachmentZipfile;
 //			Alert.show( String(attachmentZipfileBytes == null ));
 			var seqZipfileBytes:ByteArray = results.sequenceZipfile;
-			
-			// test
-//			var file:FileReference = FileReference(seqZipfileBytes);	
+            
+            if( seqZipfileBytes != null )
+            {
+                // TODO 
+                var zip:FZip = new FZip();
+                zip.addEventListener(Event.COMPLETE, listener);
+                zip.loadBytes(seqZipfileBytes);
+                function listener(event:Event) : void 
+                {
+                    this.fileUploader.seqZipfileBytes = seqZipfileBytes; 
+//                    Alert.show(String(zip.getFileAt(0).filename));
+                }
+            }
+            
+            
+            if( attachmentZipfileBytes != null )
+            {
+                // TODO 
+            }
 		}
 		
-		public function attachmentFile() : FileReference 
-		{
-			return this.fileUploader.attachmentFile;
-		}
-		
-		public function sequenceFile() : FileReference
-		{
-			return this.fileUploader.sequenceFile;
-		}
+//		public function attachmentFile() : FileReference 
+//		{
+//			return this.fileUploader.attachmentFile;
+//		}
+//		
+//		public function sequenceFile() : FileReference
+//		{
+//			return this.fileUploader.sequenceFile;
+//		}
 	}
 }

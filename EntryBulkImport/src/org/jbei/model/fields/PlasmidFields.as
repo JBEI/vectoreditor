@@ -1,5 +1,7 @@
 package org.jbei.model.fields
 {
+	import deng.fzip.FZip;
+	
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
@@ -42,18 +44,18 @@ package org.jbei.model.fields
 		public static const ORIGIN_OF_REPLICATION:EntryTypeField = new EntryTypeField( ORIGIN_OF_REPLICATION, "Origin of Replication", false );
 		
 		private var _fields:ArrayCollection;
-		private var _seqZip:ZipFileUtil;
 		private var _errors:ArrayCollection;
 		private var _set:PlasmidSet;
+        private var _zip:ZipFileUtil;
 		
-		public function set sequenceZipFile( file:FileReference ) : void
-		{
-			_seqZip = new ZipFileUtil( file );
-		}
-		
-		public function set attachmentZipFile( file:FileReference ) : void
-		{
-		}
+        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        {
+            this.entrySet.attachmentZipfile = att;
+            this.entrySet.attachmentName = attName;
+            this.entrySet.sequenceZipfile = seq;   
+            this.entrySet.sequenceName = seqName;
+            this._zip = new ZipFileUtil( att, seq );
+        }
 		
 		public function get errors() : ArrayCollection
 		{
@@ -369,34 +371,40 @@ package org.jbei.model.fields
 					break;
 				
 				case STATUS:
-					var comp:String = value.toLowerCase();
-					// TODO : "magic" strings
-					if( comp == "complete" || comp == "in progress" || comp == "planned" )
-						plasmid.status = comp;
+                    if( StatusField.isValid( value ) ) 
+						plasmid.status = value;
 					else
 						this._errors.addItem( new FieldCellError( cell, field.name + "'s value must be one of [Complete, In Progress, Planned]" ) );
 					break;
 				
-				case SEQUENCE_FILENAME:
-					if( !this._seqZip && value.length > 0 )
-						this._errors.addItem( new FieldCellError( cell, "Please upload sequence zip archive!" ) );
-					else if( value.length > 0 && ( this._seqZip && !this._seqZip.containsFile( value ) ) )
-						this._errors.addItem( new FieldCellError( cell, "File \"" + value + "\" not found in \"" + this._seqZip.zipFile.name + "\"" ) );
-					else
-					{
-						var seq:Sequence = new Sequence();
-						seq.filename = value;
-						seq.sequenceUser = value;
-						plasmid.sequence = seq;
-					}
-					break;
-				
-				case ATTACHMENT_FILENAME:
-					var attachment:Attachment = new Attachment();
-					attachment.fileName = value;
-					attachment.entry = plasmid;
-					plasmid.attachment = attachment;
-					break;
+                case SEQUENCE_FILENAME:
+                    if( !this._zip.sequenceZip && value.length > 0 )
+                        this._errors.addItem( new FieldCellError( cell, "Please upload sequence zip archive!" ) );
+                    else if( value.length > 0 && ( this._zip.sequenceZip && !this._zip.containsSequenceFile( value ) ) )
+                        this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
+                    else
+                    {
+                        var seq:Sequence = new Sequence();
+                        seq.filename = value;
+                        seq.sequenceUser = value;
+                        plasmid.sequence = seq;
+                    }
+                    break;
+                
+                case ATTACHMENT_FILENAME:
+                    var hasValue:Boolean = value.length > 0;
+                    if( !this._zip.attachmentZip && hasValue )
+                        this._errors.addItem( new FieldCellError( cell, "Please upload an attachment zip archive!" ) );
+                    else if( hasValue && ( this._zip.attachmentZip && !this._zip.containsAttachmentFile( value ) ) )
+                        this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
+                    else
+                    {
+                        var attachment:Attachment = new Attachment();
+                        attachment.fileName = value;
+                        attachment.entry = plasmid;
+                        plasmid.attachment = attachment;
+                    }
+                    break;
 				
 				case CIRCULAR:
 					switch( value ) 

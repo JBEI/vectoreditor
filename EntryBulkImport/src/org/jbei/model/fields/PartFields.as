@@ -1,5 +1,7 @@
 package org.jbei.model.fields
 {
+	import deng.fzip.FZip;
+	
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
@@ -38,7 +40,7 @@ package org.jbei.model.fields
 		public static const ATTACHMENT_FILENAME:EntryTypeField = new EntryTypeField( ATTACHMENT_FILENAME, "Attachment FileName", false );
 		
 		private var _fields:ArrayCollection;
-		private var _seqZip:ZipFileUtil;
+		private var _zip:ZipFileUtil;
 		private var _errors:ArrayCollection;
 		private var _set:PartSet;
 		
@@ -46,16 +48,16 @@ package org.jbei.model.fields
 		{		
 			return this._set;
 		}
-		
-		public function set sequenceZipFile( file:FileReference ) : void
-		{
-			_seqZip = new ZipFileUtil( file );
-		}
-		
-		public function set attachmentZipFile( file:FileReference ) : void
-		{
-		}
-		
+        
+        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        {
+            this.entrySet.attachmentZipfile = att;
+            this.entrySet.attachmentName = attName;
+            this.entrySet.sequenceZipfile = seq;   
+            this.entrySet.sequenceName = seqName;
+            this._zip = new ZipFileUtil( att, seq );
+        }
+                
 		public function get errors() : ArrayCollection
 		{
 			return _errors;
@@ -329,18 +331,16 @@ package org.jbei.model.fields
 					break;
 				
 				case STATUS:
-					var comp:String = value.toLowerCase();
-					// TODO : raw strings
-					if( comp == "complete" || comp == "in progress" || comp == "planned" )
-						part.status = comp;
+					if( StatusField.isValid( value ) )
+						part.status = value;
 					else
 						this._errors.addItem( new FieldCellError( cell, field.name + "'s value must be one of [Complete, In Progress, Planned]" ) );
 					break;
 				
 				case SEQUENCE_FILENAME:
-					if( !this._seqZip && value.length > 0 )
+					if( !this._zip.sequenceZip && value.length > 0 )
 						this._errors.addItem( new FieldCellError( cell, "Please upload sequence zip archive!" ) );
-					else if( value.length > 0 && ( this._seqZip && !this._seqZip.containsFile( value ) ) )
+					else if( value.length > 0 && ( this._zip.sequenceZip && !this._zip.containsSequenceFile( value ) ) )
 						this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
 					else
 					{
@@ -352,10 +352,18 @@ package org.jbei.model.fields
 					break;
 				
 				case ATTACHMENT_FILENAME:
-					var attachment:Attachment = new Attachment();
-					attachment.fileName = value;
-					attachment.entry = part;
-					part.attachment = attachment;
+                    var hasValue:Boolean = value.length > 0;
+                    if( !this._zip.attachmentZip && hasValue )
+                        this._errors.addItem( new FieldCellError( cell, "Please upload an attachment zip archive!" ) );
+                    else if( hasValue && ( this._zip.attachmentZip && !this._zip.containsAttachmentFile( value ) ) )
+                        this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
+                    else
+                    {
+    					var attachment:Attachment = new Attachment();
+    					attachment.fileName = value;
+    					attachment.entry = part;
+    					part.attachment = attachment;
+                    }
 					break;
 			}
 		}

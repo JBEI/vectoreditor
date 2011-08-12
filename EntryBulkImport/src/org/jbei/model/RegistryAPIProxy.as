@@ -155,8 +155,10 @@ package org.jbei.model
 			}
 			
 			// regular save
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+//			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
+//			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zipUtil:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+            
 			var primaryData:ArrayCollection = new ArrayCollection(); 
 			var secondaryData:ArrayCollection = new ArrayCollection();
 			
@@ -209,12 +211,8 @@ package org.jbei.model
 				}
 			}			
 			
-			var seqZipName:String = ( set.sequenceZipfile == null ) ? null : set.sequenceZipfile.name;
-			var attachZipName:String = ( set.attachmentZipfile == null ) ? null : set.attachmentZipfile.name;
-			var seqZipFile:ByteArray = ( set.sequenceZipfile == null ) ? null : set.sequenceZipfile.data; 
-			var attZipfile:ByteArray = ( set.attachmentZipfile == null ) ? null : set.attachmentZipfile.data;
-			
-			_remote.saveEntries( _sessionId, primaryData, secondaryData, seqZipFile, attZipfile, seqZipName, attachZipName );
+			_remote.saveEntries( _sessionId, primaryData, secondaryData, set.sequenceZipfile, 
+                set.attachmentZipfile, set.sequenceName, set.attachmentName );
 		}
 		
 		private function redirectAfterSave() : void
@@ -231,17 +229,15 @@ package org.jbei.model
 		// Instead of one at a time, send a bulk like with the bulk save
 		private function saveArabidopsis( sessionId:String, set:ArabidopsisSet ) : void
 		{
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
 				var seed:ArabidopsisSeed = set.entries.getItemAt( i ) as ArabidopsisSeed;
-				var seedSequence:ByteArray = ( !seed.sequence || !seqZipUtil ) ? null : seqZipUtil.file( seed.sequence.filename );
-				var seedAttachment:ByteArray = ( !seed.attachment || !attachZipUtil ) ? null : attachZipUtil.file( seed.attachment.fileName );
+				var seedSequence:ByteArray = !seed.sequence ? null : zip.fileInSequenceZip( seed.sequence.filename );
+				var seedAttachment:ByteArray = !seed.attachment ? null : zip.fileInAttachmentZip( seed.attachment.fileName );
 				
-				var attFilename:String = seed.attachment == null ? null : seed.attachment.fileName;
-				_remote.saveEntry( sessionId, seed, seedSequence, seedAttachment, attFilename );
+				_remote.saveEntry( sessionId, seed, seedAttachment, set.attachmentName, seedSequence, set.sequenceName );
 			}
 			
 			// redirect
@@ -250,33 +246,29 @@ package org.jbei.model
 		
 		private function saveParts( sessionId:String, set:PartSet ) : void
 		{
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
 				var part:Part = set.entries.getItemAt( i ) as Part;
-				var partSequence:ByteArray = ( !part.sequence || !seqZipUtil ) ? null : seqZipUtil.file( part.sequence.filename );
-				var partAttachment:ByteArray = ( !part.attachment || !attachZipUtil ) ? null : attachZipUtil.file( part.attachment.fileName );
+                var partSequence:ByteArray = !part.sequence ? null : zip.fileInSequenceZip( part.sequence.filename );
+                var partAttachment:ByteArray = !part.attachment ? null : zip.fileInAttachmentZip( part.attachment.fileName );
 				
-				var attFilename:String = part.attachment == null ? null : part.attachment.fileName;
-				_remote.saveEntry( sessionId, part, partSequence, partAttachment, attFilename );
+				_remote.saveEntry( sessionId, part, partAttachment, set.attachmentName, partSequence, set.sequenceName );
 			}
 		}
 		
 		private function savePlasmids( sessionId:String, set:PlasmidSet ) : void
 		{
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
 				var plasmid:Plasmid = set.entries.getItemAt( i ) as Plasmid;
-				var plasmidSequence:ByteArray = ( !plasmid.sequence || !seqZipUtil ) ? null : seqZipUtil.file( plasmid.sequence.filename );
-				var plasmidAttachment:ByteArray = ( !plasmid.attachment || !attachZipUtil ) ? null : attachZipUtil.file( plasmid.attachment.fileName );
+                var sequence:ByteArray = !plasmid.sequence ? null : zip.fileInSequenceZip( plasmid.sequence.filename );
+                var attachment:ByteArray = !plasmid.attachment ? null : zip.fileInAttachmentZip( plasmid.attachment.fileName );
 				
-				var attFilename:String = plasmid.attachment == null ? null : plasmid.attachment.fileName;
-				_remote.saveEntry( sessionId, plasmid, plasmidSequence, plasmidAttachment, attFilename );
+				_remote.saveEntry( sessionId, plasmid, attachment, set.attachmentName, sequence, set.sequenceName );
 			}
 			
 			redirectAfterSave();
@@ -284,17 +276,15 @@ package org.jbei.model
 		
 		private function saveStrains( sessionId:String, set:StrainSet ) : void
 		{
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
 				var strain:Strain = set.entries.getItemAt( i ) as Strain;
-				var strainSequence:ByteArray = ( !strain.sequence || !seqZipUtil ) ? null : seqZipUtil.file( strain.sequence.filename );
-				var strainAttachment:ByteArray = ( !strain.attachment || !attachZipUtil ) ? null : attachZipUtil.file( strain.attachment.fileName );
+                var sequence:ByteArray = !strain.sequence ? null : zip.fileInSequenceZip( strain.sequence.filename );
+                var attachment:ByteArray = !strain.attachment ? null : zip.fileInAttachmentZip( strain.attachment.fileName );
 				
-				var attFilename:String = strain.attachment == null ? null : strain.attachment.fileName;
-				_remote.saveEntry( sessionId, strain, strainSequence, strainAttachment, attFilename );
+				_remote.saveEntry( sessionId, strain, attachment, set.attachmentName, sequence, set.sequenceName );
 			}
 			
 			redirectAfterSave();
@@ -302,20 +292,22 @@ package org.jbei.model
 		
 		private function saveStrainWithPlasmids( sessionId:String, set:StrainWithPlasmidSet ) : void
 		{
-			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
+            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
 				var entry:StrainWithPlasmid = set.entries.getItemAt( i ) as StrainWithPlasmid;
+                
+                // strain
 				var strain:Strain = entry.strain;				
-				var strainSequence:ByteArray = ( !strain.sequence || !seqZipUtil ) ? null : seqZipUtil.file( strain.sequence.filename );
-				var strainAttachment:ByteArray = ( !strain.attachment || !attachZipUtil ) ? null : attachZipUtil.file( strain.attachment.fileName );
-				var strainAttFilename:String = strain.attachment == null ? null : strain.attachment.fileName;
+				var strainSequence:ByteArray = !strain.sequence ? null : zip.fileInSequenceZip( strain.sequence.filename );
+                var strainAttachment:ByteArray = !strain.attachment ? null : zip.fileInAttachmentZip( strain.attachment.fileName );
+				var strainAttFilename:String = !strain.attachment ? null : strain.attachment.fileName;
 				
+                // plasmid
 				var plasmid:Plasmid = entry.plasmid;
-				var plasmidSequence:ByteArray = ( !plasmid.sequence || !seqZipUtil ) ? null : seqZipUtil.file( plasmid.sequence.filename );
-				var plasmidAttachment:ByteArray = ( !plasmid.sequence || !attachZipUtil ) ? null : attachZipUtil.file( plasmid.attachment.fileName );
+				var plasmidSequence:ByteArray = !plasmid.sequence ? null : zip.fileInSequenceZip( plasmid.sequence.filename );
+				var plasmidAttachment:ByteArray = !plasmid.attachment ? null : zip.fileInAttachmentZip( plasmid.attachment.fileName );
 				var plasmidAttFilename:String = plasmid.attachment == null ? null : plasmid.attachment.fileName;
 				
 				_remote.saveStrainWithPlasmid( sessionId, strain, plasmid, strainSequence, strainAttachment, 

@@ -1,5 +1,7 @@
 package org.jbei.model.fields
 {
+	import deng.fzip.FZip;
+	
 	import flash.net.FileReference;
 	import flash.profiler.showRedrawRegions;
 	
@@ -45,26 +47,8 @@ package org.jbei.model.fields
 		private var _fields:ArrayCollection;
 		private var _errors:ArrayCollection;
 		private var generationValues:Array = [ "M0", "M1", "M2", "T1", "T2", "T3", "T4", "T5" ];
-		private var plantTypes:Array = [  "EMS", "OVER_EXPRESSION", "RNAI", "REPORTER", "T_DNA", "OTHER" ];
-		private var _set:ArabidopsisSet;
-		
-		public function set sequenceZipFile( file:FileReference ) : void
-		{
-		}
-		
-		public function set attachmentZipFile( file:FileReference ) : void
-		{
-		}
-		
-		public function get entrySet() : EntrySet
-		{		
-			return this._set;
-		}
-		
-		public function get errors() : ArrayCollection
-		{
-			return this._errors;
-		}
+		private var plantTypes:Array = [ "EMS", "OVER_EXPRESSION", "RNAI", "REPORTER", "T_DNA", "OTHER" ];
+		private var _set:ArabidopsisSet;		
 		
 		public function ArabidopsisFields()
 		{
@@ -91,6 +75,21 @@ package org.jbei.model.fields
 			_fields.addItem( PLANT_TYPE );
 			_fields.addItem( PARENTS );
 		}
+        
+        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        {
+            // no sequence and attachment fiels for seeds
+        }
+        
+        public function get entrySet() : EntrySet
+        {		
+            return this._set;
+        }
+        
+        public function get errors() : ArrayCollection
+        {
+            return this._errors;
+        }
 		
 		public function extractFromRow( row:GridRow ) : Object
 		{
@@ -245,16 +244,16 @@ package org.jbei.model.fields
 			return true;
 		}
 		
-		// no sequences for arabidopsis
-		public function get sequences() : ArrayCollection
-		{
-			return null;
-		}
-		
-		public function get attachments() : ArrayCollection
-		{
-			return null;
-		}
+//		// no sequences for arabidopsis
+//		public function get sequences() : ArrayCollection
+//		{
+//			return null;
+//		}
+//		
+//		public function get attachments() : ArrayCollection
+//		{
+//			return null;
+//		}
 		
 		private function createFundingSources( seed:ArabidopsisSeed ) : void
 		{
@@ -404,6 +403,9 @@ package org.jbei.model.fields
 					else
 						seed.plantType = plantType;
 					break;
+                
+                default:
+                    Alert.show( "ArabidopsisFields: Unhandled field" );
 			}
 		}
 		

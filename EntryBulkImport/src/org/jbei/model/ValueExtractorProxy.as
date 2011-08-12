@@ -54,23 +54,24 @@ package org.jbei.model
 			var mediator:FileUploaderMediator = facade.retrieveMediator( FileUploaderMediator.NAME ) as FileUploaderMediator;
 			var entrySet:EntrySet = entryFields.entrySet;
 			
-			if( mediator.sequenceFile().data )
-			{
-				// used for validation
-				entryFields.sequenceZipFile = mediator.sequenceFile();
-				
-				// used for submission
-				entrySet.sequenceZipfile = mediator.sequenceFile();
-			}
-			
-			if( mediator.attachmentFile().data )
-			{
-				// used for submission
-				entrySet.attachmentZipfile = mediator.attachmentFile(); 
-				
-				// used for validation
-				entryFields.attachmentZipFile = mediator.attachmentFile();
-			}
+            // TODO : needed
+//			if( mediator.sequenceFile().data )
+//			{
+//				// used for validation
+//				entryFields.sequenceZipFile = mediator.sequenceFile();
+//				
+//				// used for submission
+//				entrySet.sequenceZipfile = mediator.sequenceFile();
+//			}
+//			
+//			if( mediator.attachmentFile().data )
+//			{
+//                // used for validation
+//                entryFields.attachmentZipFile = mediator.attachmentFile();
+//                
+//				// used for submission
+//				entrySet.attachmentZipfile = mediator.attachmentFile();
+//			}
 			
 			// for each row in the grid 
 			for( var i:int = 0; i < rowCount; i += 1 )

@@ -1,5 +1,7 @@
 package org.jbei.model.fields
 {
+	import deng.fzip.FZip;
+	
 	import flash.net.FileReference;
 	
 	import mx.collections.ArrayCollection;
@@ -44,18 +46,9 @@ package org.jbei.model.fields
 		public static const PLASMIDS:EntryTypeField = new EntryTypeField( PLASMIDS, "Plasmids", false );
 		
 		private var _fields:ArrayCollection;	// <EntryTypeField>
-		private var _zipUtil:ZipFileUtil;
+		private var _zip:ZipFileUtil;
 		private var _errors:ArrayCollection;
 		private var _set:StrainSet;
-		
-		public function set sequenceZipFile( file:FileReference ) : void
-		{
-			_zipUtil = new ZipFileUtil( file );
-		}
-		
-		public function set attachmentZipFile( file:FileReference ) : void
-		{
-		}
 		
 		public function get entrySet() : EntrySet
 		{		
@@ -88,6 +81,15 @@ package org.jbei.model.fields
 			_fields.addItem( PLASMIDS );
 		}
 		
+        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        {
+            this.entrySet.attachmentZipfile = att;
+            this.entrySet.attachmentName = attName;
+            this.entrySet.sequenceZipfile = seq;   
+            this.entrySet.sequenceName = seqName;
+            this._zip = new ZipFileUtil( att, seq );
+        }
+        
 		public function get fields() : ArrayCollection
 		{
 			return _fields;
@@ -369,33 +371,40 @@ package org.jbei.model.fields
 					break;
 				
 				case STATUS:
-					var comp:String = value.toLowerCase();
-					// TODO : "magic" strings
-					if( comp == "complete" || comp == "in progress" || comp == "planned" )
-						strain.status = comp;
+                    if( StatusField.isValid( value ) ) 
+                        strain.status = value;
 					else
 						this._errors.addItem( new FieldCellError( cell, field.name + "'s value must be one of [Complete, In Progress, Planned]" ) );
 					break;
 
-				case SEQUENCE_FILENAME:
-					if( !this._zipUtil && value.length > 0 )
-						this._errors.addItem( new FieldCellError( cell, "Please upload sequence zip archive!" ) );
-					else if( value.length > 0 && ( this._zipUtil && !this._zipUtil.containsFile( value ) ) )
-						this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
-					else
-					{
-						var seq:Sequence = new Sequence();
-						seq.filename = value;
-						seq.sequenceUser = value;
-						strain.sequence = seq;
-					}
-					break;
-				
-				case ATTACHMENT_FILENAME:
-					var attachment:Attachment = new Attachment();
-					attachment.fileName = value;
-					strain.attachment = attachment;
-					break;
+                case SEQUENCE_FILENAME:
+                    if( !this._zip.sequenceZip && value.length > 0 )
+                        this._errors.addItem( new FieldCellError( cell, "Please upload sequence zip archive!" ) );
+                    else if( value.length > 0 && ( this._zip.sequenceZip && !this._zip.containsSequenceFile( value ) ) )
+                        this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
+                    else
+                    {
+                        var seq:Sequence = new Sequence();
+                        seq.filename = value;
+                        seq.sequenceUser = value;
+                        strain.sequence = seq;
+                    }
+                    break;
+                
+                case ATTACHMENT_FILENAME:
+                    var hasValue:Boolean = value.length > 0;
+                    if( !this._zip.attachmentZip && hasValue )
+                        this._errors.addItem( new FieldCellError( cell, "Please upload an attachment zip archive!" ) );
+                    else if( hasValue && ( this._zip.attachmentZip && !this._zip.containsAttachmentFile( value ) ) )
+                        this._errors.addItem( new FieldCellError( cell, "File with name " + value + " not found in zip archive!" ) );
+                    else
+                    {
+                        var attachment:Attachment = new Attachment();
+                        attachment.fileName = value;
+                        attachment.entry = strain;
+                        strain.attachment = attachment;
+                    }
+                    break;
 				
 				case SELECTION_MARKERS:
 					var markers:ArrayCollection = new ArrayCollection();
