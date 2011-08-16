@@ -121,23 +121,24 @@ package org.jbei.model
 					break;
 				
 				case EntryType.ARABIDOPSIS:
-					var seedSet:ArabidopsisSet = set as ArabidopsisSet;
-					this.saveArabidopsis( _sessionId, seedSet );
-					break;
+//					var seedSet:ArabidopsisSet = set as ArabidopsisSet;
+//					this.saveArabidopsis( _sessionId, seedSet );
+//					break;
 				
 				case EntryType.PART:
-					var partSet:PartSet = set as PartSet;
-					this.saveParts( _sessionId, partSet );
-					break;
+//					var partSet:PartSet = set as PartSet;
+//					this.saveParts( _sessionId, partSet );
+//					break;
 				
 				case EntryType.PLASMID:
-					var plasmidSet:PlasmidSet = set as PlasmidSet;
-					this.savePlasmids( _sessionId, plasmidSet );
-					break;
+//					var plasmidSet:PlasmidSet = set as PlasmidSet;
+//					this.savePlasmids( _sessionId, plasmidSet );
+//					break;
 				
 				case EntryType.STRAIN:
-					var strainSet:StrainSet = set as StrainSet;
-					this.saveStrains( _sessionId, strainSet );
+//					var strainSet:StrainSet = set as StrainSet;
+//					this.saveStrains( _sessionId, strainSet );
+                    this.saveEntry( _sessionId, set );
 					break;
 				
 				default:
@@ -155,8 +156,6 @@ package org.jbei.model
 			}
 			
 			// regular save
-//			var attachZipUtil:ZipFileUtil = ( !set.attachmentZipfile ) ? null : new ZipFileUtil( set.attachmentZipfile );
-//			var seqZipUtil:ZipFileUtil = ( !set.sequenceZipfile ) ? null : new ZipFileUtil( set.sequenceZipfile );
             var zipUtil:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
             
 			var primaryData:ArrayCollection = new ArrayCollection(); 
@@ -227,68 +226,85 @@ package org.jbei.model
 		}
 		
 		// Instead of one at a time, send a bulk like with the bulk save
-		private function saveArabidopsis( sessionId:String, set:ArabidopsisSet ) : void
-		{
+        private function saveEntry( sessionId:String, set:EntrySet ) : void
+        {
             var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-			
-			for( var i:int = 0; i < set.entries.length; i += 1 )
-			{
-				var seed:ArabidopsisSeed = set.entries.getItemAt( i ) as ArabidopsisSeed;
-				var seedSequence:ByteArray = !seed.sequence ? null : zip.fileInSequenceZip( seed.sequence.filename );
-				var seedAttachment:ByteArray = !seed.attachment ? null : zip.fileInAttachmentZip( seed.attachment.fileName );
-				
-				_remote.saveEntry( sessionId, seed, seedAttachment, set.attachmentName, seedSequence, set.sequenceName );
-			}
-			
-			// redirect
-			redirectAfterSave();
-		}
-		
-		private function saveParts( sessionId:String, set:PartSet ) : void
-		{
-            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-			
-			for( var i:int = 0; i < set.entries.length; i += 1 )
-			{
-				var part:Part = set.entries.getItemAt( i ) as Part;
-                var partSequence:ByteArray = !part.sequence ? null : zip.fileInSequenceZip( part.sequence.filename );
-                var partAttachment:ByteArray = !part.attachment ? null : zip.fileInAttachmentZip( part.attachment.fileName );
-				
-				_remote.saveEntry( sessionId, part, partAttachment, set.attachmentName, partSequence, set.sequenceName );
-			}
-		}
-		
-		private function savePlasmids( sessionId:String, set:PlasmidSet ) : void
-		{
-            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-			
-			for( var i:int = 0; i < set.entries.length; i += 1 )
-			{
-				var plasmid:Plasmid = set.entries.getItemAt( i ) as Plasmid;
-                var sequence:ByteArray = !plasmid.sequence ? null : zip.fileInSequenceZip( plasmid.sequence.filename );
-                var attachment:ByteArray = !plasmid.attachment ? null : zip.fileInAttachmentZip( plasmid.attachment.fileName );
-				
-				_remote.saveEntry( sessionId, plasmid, attachment, set.attachmentName, sequence, set.sequenceName );
-			}
-			
-			redirectAfterSave();
-		}
-		
-		private function saveStrains( sessionId:String, set:StrainSet ) : void
-		{
-            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-			
-			for( var i:int = 0; i < set.entries.length; i += 1 )
-			{
-				var strain:Strain = set.entries.getItemAt( i ) as Strain;
-                var sequence:ByteArray = !strain.sequence ? null : zip.fileInSequenceZip( strain.sequence.filename );
-                var attachment:ByteArray = !strain.attachment ? null : zip.fileInAttachmentZip( strain.attachment.fileName );
-				
-				_remote.saveEntry( sessionId, strain, attachment, set.attachmentName, sequence, set.sequenceName );
-			}
-			
-			redirectAfterSave();
-		}
+            
+            for( var i:int = 0; i < set.entries.length; i += 1 )
+            {
+                var entry:Entry = set.entries.getItemAt( i ) as Entry;
+                var sequence:ByteArray = !entry.sequence ? null : zip.fileInSequenceZip( entry.sequence.filename );
+                var attachment:ByteArray = !entry.attachment ? null : zip.fileInAttachmentZip( entry.attachment.fileName );
+                
+                _remote.saveEntry( sessionId, entry, attachment, set.attachmentName, sequence, set.sequenceName );
+            }
+            
+            // redirect
+            redirectAfterSave();
+        }
+        
+//		private function saveArabidopsis( sessionId:String, set:ArabidopsisSet ) : void
+//		{
+//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+//			
+//			for( var i:int = 0; i < set.entries.length; i += 1 )
+//			{
+//				var seed:ArabidopsisSeed = set.entries.getItemAt( i ) as ArabidopsisSeed;
+//				var seedSequence:ByteArray = !seed.sequence ? null : zip.fileInSequenceZip( seed.sequence.filename );
+//				var seedAttachment:ByteArray = !seed.attachment ? null : zip.fileInAttachmentZip( seed.attachment.fileName );
+//				
+//				_remote.saveEntry( sessionId, seed, seedAttachment, set.attachmentName, seedSequence, set.sequenceName );
+//			}
+//			
+//			// redirect
+//			redirectAfterSave();
+//		}
+//		
+//		private function saveParts( sessionId:String, set:PartSet ) : void
+//		{
+//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+//			
+//			for( var i:int = 0; i < set.entries.length; i += 1 )
+//			{
+//				var part:Part = set.entries.getItemAt( i ) as Part;
+//                var partSequence:ByteArray = !part.sequence ? null : zip.fileInSequenceZip( part.sequence.filename );
+//                var partAttachment:ByteArray = !part.attachment ? null : zip.fileInAttachmentZip( part.attachment.fileName );
+//				
+//				_remote.saveEntry( sessionId, part, partAttachment, set.attachmentName, partSequence, set.sequenceName );
+//			}
+//		}
+//		
+//		private function savePlasmids( sessionId:String, set:PlasmidSet ) : void
+//		{
+//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+//			
+//			for( var i:int = 0; i < set.entries.length; i += 1 )
+//			{
+//				var plasmid:Plasmid = set.entries.getItemAt( i ) as Plasmid;
+//                var sequence:ByteArray = !plasmid.sequence ? null : zip.fileInSequenceZip( plasmid.sequence.filename );
+//                var attachment:ByteArray = !plasmid.attachment ? null : zip.fileInAttachmentZip( plasmid.attachment.fileName );
+//				
+//				_remote.saveEntry( sessionId, plasmid, attachment, set.attachmentName, sequence, set.sequenceName );
+//			}
+//			
+//			redirectAfterSave();
+//		}
+//		
+//		private function saveStrains( sessionId:String, set:StrainSet ) : void
+//		{
+//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+//			
+//			for( var i:int = 0; i < set.entries.length; i += 1 )
+//			{
+//				var strain:Strain = set.entries.getItemAt( i ) as Strain;
+//                var sequence:ByteArray = !strain.sequence ? null : zip.fileInSequenceZip( strain.sequence.filename );
+//                var attachment:ByteArray = !strain.attachment ? null : zip.fileInAttachmentZip( strain.attachment.fileName );
+//				
+//				_remote.saveEntry( sessionId, strain, attachment, set.attachmentName, sequence, set.sequenceName );
+//			}
+//			
+//			redirectAfterSave();
+//		}
 		
 		private function saveStrainWithPlasmids( sessionId:String, set:StrainWithPlasmidSet ) : void
 		{

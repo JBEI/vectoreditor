@@ -6,6 +6,7 @@ package org.jbei.controller
     import mx.rpc.remoting.RemoteObject;
     
     import org.jbei.ApplicationFacade;
+    import org.jbei.Notifications;
     import org.puremvc.as3.interfaces.INotification;
     import org.puremvc.as3.patterns.command.MacroCommand;
     
@@ -24,6 +25,9 @@ package org.jbei.controller
         {
             addSubCommand( ModelPrepCommand );
             addSubCommand( ViewPrepCommand );
+            
+            if( ApplicationFacade.getInstance().importId != null )
+                sendNotification( Notifications.RETRIEVE_IMPORT );
         }
     }
 }

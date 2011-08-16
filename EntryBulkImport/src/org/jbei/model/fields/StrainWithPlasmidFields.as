@@ -157,10 +157,12 @@ package org.jbei.model.fields
                     continue;
                 }
                 else
+                {
                     extractField( field, cell, strain, plasmid );
+                }
             }
             
-            return new StrainWithPlasmid( strain, plasmid);
+            return new StrainWithPlasmid( strain, plasmid );
         }
         
         public function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean 
@@ -649,8 +651,7 @@ package org.jbei.model.fields
                 
                 case STRAIN_STATUS:
                     var status:String = value.toLowerCase();
-                    // TODO : "magic" strings
-                    if( status == "complete" || status == "in progress" || status == "planned" )
+                    if( StatusField.isValid( status ) )
                         strain.status = status;
                     else
                         this._errors.addItem( new FieldCellError( cell, field.name + "'s value must be one of [Complete, In Progress, Planned]" ) );

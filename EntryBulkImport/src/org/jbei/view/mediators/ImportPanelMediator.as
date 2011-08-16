@@ -99,7 +99,7 @@ package org.jbei.view.mediators
 		{
 			return [ Notifications.HEADER_INPUT_TEXT_CHANGE, Notifications.SAVE_CLICK, Notifications.PASTE_CELL_DISTRIBUTION, 
 				Notifications.PART_TYPE_SELECTION, Notifications.INVALID_CELL_CONTENT, Notifications.RESET_APP, 
-				Notifications.GRID_ROW_SELECTED, Notifications.VERIFY, Notifications.ROW_DATA_READY ];
+				Notifications.GRID_ROW_SELECTED, Notifications.VERIFY];
 		}
 		
 		// called on when any of the notifications above is sent 
@@ -159,10 +159,6 @@ package org.jbei.view.mediators
 					handleVerify( notification );
 					break;
 				
-				case Notifications.ROW_DATA_READY:
-					handleDataReady( notification );
-					break;
-				
 				default:
 					Alert.show( "No handler in ImportPanelMediator for nofication: " + notification.getName() );
 			}
@@ -182,10 +178,8 @@ package org.jbei.view.mediators
 			this.importPanel.gridHolder.reset();
 		}
 		
-		// TODO : also check for import ID
-		protected function handleDataReady( notification:INotification ) : void
+		protected function handleDataReady( data:ArrayCollection ) : void
 		{
-			var data:ArrayCollection = notification.getBody() as ArrayCollection;
 			if( data == null || data.length == 0 )
 				return;
 			
@@ -242,7 +236,6 @@ package org.jbei.view.mediators
 					var obj2:Object = secondaryData.getItemAt( x );
 					var entry2:Entry = obj2.entry as Entry;			// this should be a plasmid
 					var col:ArrayCollection = new ArrayCollection();
-					
                     
                     attFilename = obj2.attachmentFilename as String;
                     seqFilename = obj2.sequenceFilename as String;
@@ -272,9 +265,7 @@ package org.jbei.view.mediators
 				primaryCollection.addItem( fields );
 			}
 			
-			if( primaryCollection.length > 0 ) {
-				sendNotification( Notifications.ROW_DATA_READY, primaryCollection );
-			}
+            handleDataReady( primaryCollection );
 		}
 	}
 }

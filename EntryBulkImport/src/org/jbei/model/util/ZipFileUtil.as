@@ -13,16 +13,11 @@ package org.jbei.model.util
     */ 
 	public class ZipFileUtil
 	{
-//		private var _file:FileReference;
-//		private var _zip:FZip;
         private var _attach:FZip;
         private var _seq:FZip;
 		
 		public function ZipFileUtil( attachZip:FZip, seqZip:FZip )
 		{
-//			this._file = zipFile;
-//			_zip = new FZip();
-//			_zip.loadBytes( this._file.data );
             this._attach = attachZip;
             this._seq = seqZip;
 		}     
@@ -36,25 +31,6 @@ package org.jbei.model.util
         {
             return this._attach;
         }
-		
-//		public function get zipFile() : FileReference
-//		{
-//			return this._file;
-//		}
-		
-//		public function containsFile( name:String ) : Boolean
-//		{
-//			// DEBUG
-//			for( var i:int=0; i<_zip.getFileCount(); i += 1 )
-//			{
-//				 var file:FZipFile = _zip.getFileAt( i ) as FZipFile;
-//				 if( filename( file.filename ) == name )
-//					 return true;
-//			}
-//			return false;
-//			
-////			return ( _zip.getFileByName( name ) != null );
-//		}
         
         /**
         * @returns true, if the attachment zip file contains a file 

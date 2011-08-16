@@ -8,6 +8,7 @@ package org.jbei.view.mediators
 	
 	import mx.controls.Alert;
 	
+	import org.jbei.ApplicationFacade;
 	import org.jbei.Notifications;
 	import org.jbei.view.EntryType;
 	import org.jbei.view.components.FileUploader;
@@ -18,6 +19,8 @@ package org.jbei.view.mediators
 	public class FileUploaderMediator extends Mediator implements IMediator
 	{
 		public static const NAME:String = "org.jbei.view.mediators.FileUploaderMediator";
+        private var seqZip:FZip;
+        private var attZip:FZip;
 		
 		public function FileUploaderMediator( uploader:FileUploader )
 		{
@@ -44,17 +47,8 @@ package org.jbei.view.mediators
 					switch( selected )
 					{
 						case EntryType.STRAIN_WITH_PLASMID:
-							this.fileUploader.visible = true;
-							break;
-						
 						case EntryType.PART:
-							this.fileUploader.visible = true;
-							break;
-						
 						case EntryType.PLASMID:
-							this.fileUploader.visible = true;
-							break;
-						
 						case EntryType.STRAIN:
 							this.fileUploader.visible = true;
 							break;
@@ -78,38 +72,29 @@ package org.jbei.view.mediators
 		protected function handleVerify( notification:INotification ) : void
 		{
 			var results:Object = notification.getBody();
+            var attName:String = results.attachmentFilename;
 			var attachmentZipfileBytes:ByteArray = results.attachmentZipfile;
 //			Alert.show( String(attachmentZipfileBytes == null ));
 			var seqZipfileBytes:ByteArray = results.sequenceZipfile;
+            var seqName:String = results.sequenceFilename;
             
             if( seqZipfileBytes != null )
             {
-                // TODO 
                 var zip:FZip = new FZip();
                 zip.addEventListener(Event.COMPLETE, listener);
                 zip.loadBytes(seqZipfileBytes);
                 function listener(event:Event) : void 
                 {
-                    this.fileUploader.seqZipfileBytes = seqZipfileBytes; 
-//                    Alert.show(String(zip.getFileAt(0).filename));
+                    fileUploader.sequenceZip = zip;
+                    if( seqName != null )
+                        fileUploader.setSequenceProgressBar( seqName );
                 }
-            }
-            
+            }            
             
             if( attachmentZipfileBytes != null )
             {
                 // TODO 
             }
 		}
-		
-//		public function attachmentFile() : FileReference 
-//		{
-//			return this.fileUploader.attachmentFile;
-//		}
-//		
-//		public function sequenceFile() : FileReference
-//		{
-//			return this.fileUploader.sequenceFile;
-//		}
 	}
 }

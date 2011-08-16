@@ -21,8 +21,10 @@ package org.jbei.view.components
 		private var seqZipFile:FileReference;
 		private var attachZipFile:FileReference;
         
-        private var seqZipData:FZip;
-        private var attZipData:FZip;
+        private var seqZip:FZip;
+        private var attZip:FZip;
+        private var seqName:String;
+        private var attName:String;
 		
 		private var _seqZipfileButton:Button;
 		private var _attachZipFileButton:Button;
@@ -35,9 +37,6 @@ package org.jbei.view.components
 			uploadURL = new URLRequest();
 			seqZipFile = new FileReference();
 			attachZipFile = new FileReference();
-            
-            seqZipData = new FZip();
-            attZipData = new FZip();
             
 			this.createBrowseButtons();
 			this.createProgressBars();
@@ -71,6 +70,36 @@ package org.jbei.view.components
 			
 			this.createProgressBars();
 		}
+        
+        public function set sequenceZip( seqZip:FZip ) : void
+        {
+            this.seqZip = seqZip;
+        }
+        
+        public function get sequenceZip() : FZip
+        {
+            return this.seqZip;
+        }
+        
+        public function get sequenceZipName() : String
+        {
+            return this.seqName;
+        }
+        
+        public function set attachmentZip( attZip:FZip ) : void
+        {
+            this.attZip = attZip;
+        }
+        
+        public function get attachmentZip() : FZip
+        {
+            return this.attZip;
+        }
+        
+        public function get attachmentZipName() : String
+        {
+            return this.attName; 
+        }
 		
 		// events listeners
 		private function seqFileUploadButtonClick( event:MouseEvent ) : void
@@ -157,25 +186,21 @@ package org.jbei.view.components
 			}
 		}
 		
-//		public function get sequenceFile() : FileReference
-//		{
-//			return this.seqZipFile;
-//		}
-//		
-//		public function get attachmentFile() : FileReference
-//		{
-//			return this.attachZipFile;
-//		}
-		
 		private function ioErrorHandler( event:IOErrorEvent ) : void 
 		{
 			Alert.show( "There was an error uploading file.\n\nDetails\n\n" + event, "File upload" );
 		}
+        
+        public function setSequenceProgressBar( fileName:String ) : void
+        {
+            this._seqProgressBar.label = fileName;
+            this._seqProgressBar.toolTip = fileName;
+        }
 		
 		private function seqSelectHandler( event:Event ) : void
 		{
 			var file:FileReference = FileReference( event.target );
-			var fileName:String = ( file.name.length <= 19 ) ? file.name : (file.name.slice(0, 16 ) + "...");
+			var fileName:String = ( file.name.length <= 19 ) ? file.name : ( file.name.slice(0, 16 ) + "..." );
 			
 			try
 			{
@@ -226,12 +251,20 @@ package org.jbei.view.components
 		
 		private function seqCompleteHandler( event:Event ) : void  
 		{
-			trace( "Sequence Complete Handler: " + event );
+            var file:FileReference = FileReference( event.target );
+            this.seqZip = new FZip();
+            this.seqZip.loadBytes( file.data );
+            this.seqZip = new FZip();
+            this.seqName = file.name;
 		}
 		
 		private function attachCompleteHandler( event:Event ) : void  
 		{
-			trace( "Attachment Complete Handler: " + event );
+            var file:FileReference = FileReference( event.target );
+            this.attZip = new FZip();
+            this.attZip.loadBytes( file.data );
+            this.attZip = new FZip();
+            this.attName = file.name;
 		}
 	}
 }

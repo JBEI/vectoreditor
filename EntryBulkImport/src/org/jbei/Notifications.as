@@ -7,7 +7,8 @@ package org.jbei
         public static const FAILURE:String = "failure";
         public static const RESET_APP:String = "resetApplication";
         public static const MODEL_DATA_PREP:String = "prepareModelData";
-        public static const ROW_DATA_READY:String = "rowDataReady";
+//        public static const ROW_DATA_READY:String = "rowDataReady";
+        public static const RETRIEVE_IMPORT:String = "retrieveImport";
         
         // change in the active grid cell text
         public static const ACTIVE_GRID_CELL_TEXT_CHANGE:String = "activeGridCellTextChange";

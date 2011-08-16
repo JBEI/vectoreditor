@@ -53,39 +53,22 @@ package org.jbei.model
 			var entryFields:EntryFields = EntryFieldsFactory.fieldsForType( entryType );
 			var mediator:FileUploaderMediator = facade.retrieveMediator( FileUploaderMediator.NAME ) as FileUploaderMediator;
 			var entrySet:EntrySet = entryFields.entrySet;
-			
-            // TODO : needed
-//			if( mediator.sequenceFile().data )
-//			{
-//				// used for validation
-//				entryFields.sequenceZipFile = mediator.sequenceFile();
-//				
-//				// used for submission
-//				entrySet.sequenceZipfile = mediator.sequenceFile();
-//			}
-//			
-//			if( mediator.attachmentFile().data )
-//			{
-//                // used for validation
-//                entryFields.attachmentZipFile = mediator.attachmentFile();
-//                
-//				// used for submission
-//				entrySet.attachmentZipfile = mediator.attachmentFile();
-//			}
-			
+            
+            entryFields.setZipFiles( mediator.fileUploader.attachmentZip, mediator.fileUploader.attachmentZipName, 
+                mediator.fileUploader.sequenceZip, mediator.fileUploader.sequenceZipName );
+            
 			// for each row in the grid 
 			for( var i:int = 0; i < rowCount; i += 1 )
 			{
-				
 				var gridRow:GridRow = gridRows.getItemAt( i ) as GridRow;
-				
+               
 				// skip all rows that do not have any content across all cells
 				if( !this.rowHasContent( rowCellCount, gridRow ) )
 					continue;
 				
 				// extract and validate the field (column) values
-				var result:Object = entryFields.extractFromRow( gridRow );	
-				
+				var result:Object = entryFields.extractFromRow( gridRow );
+                
 				// check for errors and send notification of any
 				if( entryFields.errors && entryFields.errors.length > 0 )
 				{
@@ -109,7 +92,7 @@ package org.jbei.model
 			
 			if( errors )
 				return null;
-			
+            
 			return entrySet;
 		}
 		

@@ -3,6 +3,7 @@ package org.jbei
 	import mx.controls.Alert;
 	
 	import org.jbei.controller.CancelCommand;
+	import org.jbei.controller.ImportDataCommand;
 	import org.jbei.controller.ModelDataPrepCommand;
 	import org.jbei.controller.PasteCommand;
 	import org.jbei.controller.SaveCommand;
@@ -71,6 +72,7 @@ package org.jbei
 			
 			registerCommand( Notifications.MODEL_DATA_PREP, ModelDataPrepCommand );
 			registerCommand( Notifications.START_UP, StartupCommand );
+            registerCommand( Notifications.RETRIEVE_IMPORT, ImportDataCommand );
 			registerCommand( Notifications.SAVE, SaveCommand );
 			registerCommand( Notifications.PASTE, PasteCommand );
 			registerCommand( Notifications.CANCEL, CancelCommand );
@@ -80,7 +82,6 @@ package org.jbei
 		public function startup( app : EntryBulkImport ) : void 
 		{
 			this._app = app;
-//			sendNotification( Notifications.START_UP, app );
 			sendNotification( Notifications.MODEL_DATA_PREP, app );
 		}
 		

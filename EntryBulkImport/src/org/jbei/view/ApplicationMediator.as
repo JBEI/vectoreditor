@@ -25,14 +25,12 @@ package org.jbei.view
 		{
 			this.app = app;
 					
-			// order of registeration is important here
 			facade.registerMediator( new HeaderTextInputMediator( app.headerInput ) );
 			facade.registerMediator( new GridColumnHeaderRowMediator( app.columnHeaderRow ) );
 			facade.registerMediator( new SaveButtonMediator( app.saveButton ) );
 			facade.registerMediator( new CancelButtonMediator( app.cancelButton ) );
 			facade.registerMediator( new GridRowHeaderColumnHolderMediator( app.rowHeaderColumn ) );
 			facade.registerMediator( new FileUploaderMediator( app.fileUploader ) );
-			
 			facade.registerMediator( new PartTypeOptionsMediator( app.partOptions ) );
 			facade.registerMediator( new ImportPanelMediator( app.importPanel ) );
 		}
