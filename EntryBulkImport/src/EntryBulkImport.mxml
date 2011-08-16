@@ -12,11 +12,11 @@
 			
 			public function creationComplete() : void
 			{
+                ApplicationFacade.getInstance().sessionId =  this.parameters.sessionId;
+                ApplicationFacade.getInstance().importId = this.parameters.importId;
+                
+                // there are routines that make use of above so this needs to be here
 				ApplicationFacade.getInstance().startup(this);
-				ApplicationFacade.getInstance().sessionId =  this.parameters.sessionId ;
-				
-				// there are routines that make use of above so this needs to be here
-				ApplicationFacade.getInstance().importId = this.parameters.importId;
 			}
 		]]>
 	</fx:Script>		
