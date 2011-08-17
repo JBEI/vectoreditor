@@ -168,7 +168,8 @@ package org.jbei.view.mediators
 		protected function handlePartTypeSelection( notification:INotification ) : void
 		{
 			var selected:EntryType = notification.getBody() as EntryType;
-			this.currentTypeSelection = selected;	
+            if( selected != null )
+                this.currentTypeSelection = selected;	
 			
 			if( ApplicationFacade.getInstance().importId != null )
 				return;

@@ -2,6 +2,8 @@ package org.jbei.model.fields
 {
 	import deng.fzip.FZip;
 	
+	import flash.utils.ByteArray;
+	
 	import mx.collections.ArrayCollection;
 	
 	import org.jbei.model.save.EntrySet;
@@ -20,7 +22,7 @@ package org.jbei.model.fields
 		 */
 		function setToRow( currentRowIndex:int, currentRow:GridRow ) : Boolean;
         
-        function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void;        
+        function setZipFiles( attBytes:ByteArray, att:FZip, attName:String, seqByte:ByteArray, seq:FZip, seqName:String ) : void;        
 		
 		function get errors() : ArrayCollection;		// <FieldCellError>
 		

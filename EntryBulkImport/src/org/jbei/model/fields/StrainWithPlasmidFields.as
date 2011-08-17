@@ -3,6 +3,7 @@ package org.jbei.model.fields
     import deng.fzip.FZip;
     
     import flash.net.FileReference;
+    import flash.utils.ByteArray;
     
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
@@ -80,13 +81,14 @@ package org.jbei.model.fields
             return this._set;
         }
         
-        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        public function setZipFiles( attByte:ByteArray, att:FZip, attName:String, seqByte:ByteArray, seq:FZip, seqName:String ) : void
         {
-            this.entrySet.attachmentZipfile = att;
+//            this.entrySet.attachmentZipfile = att;
             this.entrySet.attachmentName = attName;
-            this.entrySet.sequenceZipfile = seq;   
+//            this.entrySet.sequenceZipfile = seq;   
             this.entrySet.sequenceName = seqName;
-            this._zip = new ZipFileUtil( att, seq );
+            this._zip = new ZipFileUtil( attByte, att, seqByte, seq );
+            this.entrySet.zipFileUtil = this._zip;
         }
         
         public function StrainWithPlasmidFields()

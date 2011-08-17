@@ -1,6 +1,7 @@
 package org.jbei.model
 {
 	import flash.net.FileReference;
+	import flash.utils.ByteArray;
 	
 	import mx.collections.ArrayCollection;
 	import mx.containers.Grid;
@@ -36,12 +37,10 @@ package org.jbei.model
 			return false;
 		}
 		
-		public function retrieveValues( gridHolder:GridHolder, entryType:EntryType ) : EntrySet
+		public function retrieveValues( gridHolder:GridHolder, entryType:EntryType=EntryType.STRAIN ) : EntrySet
 		{
 			if( entryType == null )
-			{
-				return null;
-			}
+				entryType = EntryType.STRAIN;
 			
 			var errors:Boolean = false;									// if any errors were encountered when extracting
 			var fields:ArrayCollection = gridHolder.gridFields;
@@ -54,8 +53,11 @@ package org.jbei.model
 			var mediator:FileUploaderMediator = facade.retrieveMediator( FileUploaderMediator.NAME ) as FileUploaderMediator;
 			var entrySet:EntrySet = entryFields.entrySet;
             
-            entryFields.setZipFiles( mediator.fileUploader.attachmentZip, mediator.fileUploader.attachmentZipName, 
-                mediator.fileUploader.sequenceZip, mediator.fileUploader.sequenceZipName );
+            var attByte:ByteArray = mediator.fileUploader.attachmentZipFile.data;
+            var seqByte:ByteArray = mediator.fileUploader.sequenceZipFile.data;
+            
+            entryFields.setZipFiles( attByte, mediator.fileUploader.attachmentZip, mediator.fileUploader.attachmentZipName, 
+                seqByte, mediator.fileUploader.sequenceZip, mediator.fileUploader.sequenceZipName );
             
 			// for each row in the grid 
 			for( var i:int = 0; i < rowCount; i += 1 )

@@ -6,6 +6,7 @@ package org.jbei.model.save
 	
 	import mx.collections.ArrayCollection;
 	
+	import org.jbei.model.util.ZipFileUtil;
 	import org.jbei.view.EntryType;
 
 	public class EntrySet
@@ -13,10 +14,10 @@ package org.jbei.model.save
 		private var _type:EntryType;
 		private var _errMsg:String;
 		
-		protected var _seqZip:FZip;
-		protected var _attZip:FZip;
         protected var _seqName:String;
         protected var _attName:String;
+        
+        private var _zipUtil:ZipFileUtil;
 		
 		protected var _records:ArrayCollection = new ArrayCollection; // <? implements Entry>
         
@@ -24,27 +25,17 @@ package org.jbei.model.save
         {
             this._type = type;
         }        
-		
-		public function set sequenceZipfile( file:FZip ) : void
-		{
-			this._seqZip = file;
-		}
-		
-		public function get sequenceZipfile() : FZip
-		{
-			return this._seqZip;
-		}
-		
-		public function set attachmentZipfile( file:FZip ) : void
-		{
-			this._attZip = file;
-		}	
-		
-		public function get attachmentZipfile() : FZip
-		{
-			return this._attZip;
-		}
-		
+        
+        public function get zipFileUtil() : ZipFileUtil
+        {
+            return this._zipUtil;
+        }
+        
+        public function set zipFileUtil( zip:ZipFileUtil ) : void
+        {
+            this._zipUtil = zip;
+        }
+        
         public function get attachmentName() : String 
         {
             return this._attName;

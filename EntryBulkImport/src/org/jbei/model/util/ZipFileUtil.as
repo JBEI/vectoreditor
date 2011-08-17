@@ -7,6 +7,8 @@ package org.jbei.model.util
 	import flash.net.FileReference;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
+	
+	import mx.controls.Alert;
 
     /**
     * Utility wrapper around attachmentZipfile and sequenceZip file
@@ -15,11 +17,15 @@ package org.jbei.model.util
 	{
         private var _attach:FZip;
         private var _seq:FZip;
+        private var _attArray:ByteArray;
+        private var _seqArray:ByteArray;
 		
-		public function ZipFileUtil( attachZip:FZip, seqZip:FZip )
+		public function ZipFileUtil( attArray:ByteArray, attachZip:FZip, seqArray:ByteArray, seqZip:FZip )
 		{
             this._attach = attachZip;
+            this._attArray = attArray;
             this._seq = seqZip;
+            this._seqArray = seqArray;
 		}     
         
         public function get sequenceZip() : FZip 
@@ -30,6 +36,16 @@ package org.jbei.model.util
         public function get attachmentZip() : FZip
         {
             return this._attach;
+        }
+        
+        public function get sequenceZipArray() : ByteArray
+        {
+            return this._seqArray;
+        }
+        
+        public function get attachmentZipArray() : ByteArray
+        {
+            return this._attArray;
         }
         
         /**
@@ -58,6 +74,7 @@ package org.jbei.model.util
         {
             if( this._seq == null || name == null )
                 return false;
+            
             
             for( var i:uint = 0; i < this._seq.getFileCount(); i += 1 )
             {

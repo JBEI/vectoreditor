@@ -4,6 +4,7 @@ package org.jbei.model.fields
 	
 	import flash.net.FileReference;
 	import flash.profiler.showRedrawRegions;
+	import flash.utils.ByteArray;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -76,7 +77,7 @@ package org.jbei.model.fields
 			_fields.addItem( PARENTS );
 		}
         
-        public function setZipFiles( att:FZip, attName:String, seq:FZip, seqName:String ) : void
+        public function setZipFiles( attByte:ByteArray, att:FZip, attName:String, seqByte:ByteArray, seq:FZip, seqName:String ) : void
         {
             // no sequence and attachment fiels for seeds
         }

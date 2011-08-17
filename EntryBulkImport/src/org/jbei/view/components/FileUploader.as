@@ -76,6 +76,16 @@ package org.jbei.view.components
             this.seqZip = seqZip;
         }
         
+        public function get sequenceZipFile() : FileReference
+        {
+            return this.seqZipFile;
+        }
+        
+        public function get attachmentZipFile() : FileReference
+        {
+            return this.attachZipFile;
+        }
+        
         public function get sequenceZip() : FZip
         {
             return this.seqZip;

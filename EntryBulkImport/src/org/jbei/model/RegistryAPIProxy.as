@@ -121,23 +121,9 @@ package org.jbei.model
 					break;
 				
 				case EntryType.ARABIDOPSIS:
-//					var seedSet:ArabidopsisSet = set as ArabidopsisSet;
-//					this.saveArabidopsis( _sessionId, seedSet );
-//					break;
-				
 				case EntryType.PART:
-//					var partSet:PartSet = set as PartSet;
-//					this.saveParts( _sessionId, partSet );
-//					break;
-				
 				case EntryType.PLASMID:
-//					var plasmidSet:PlasmidSet = set as PlasmidSet;
-//					this.savePlasmids( _sessionId, plasmidSet );
-//					break;
-				
 				case EntryType.STRAIN:
-//					var strainSet:StrainSet = set as StrainSet;
-//					this.saveStrains( _sessionId, strainSet );
                     this.saveEntry( _sessionId, set );
 					break;
 				
@@ -156,7 +142,7 @@ package org.jbei.model
 			}
 			
 			// regular save
-            var zipUtil:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+            var zipUtil:ZipFileUtil = set.zipFileUtil;
             
 			var primaryData:ArrayCollection = new ArrayCollection(); 
 			var secondaryData:ArrayCollection = new ArrayCollection();
@@ -210,8 +196,8 @@ package org.jbei.model
 				}
 			}			
 			
-			_remote.saveEntries( _sessionId, primaryData, secondaryData, set.sequenceZipfile, 
-                set.attachmentZipfile, set.sequenceName, set.attachmentName );
+			_remote.saveEntries( _sessionId, primaryData, secondaryData, zipUtil.sequenceZipArray, 
+                zipUtil.attachmentZipArray, set.sequenceName, set.attachmentName );
 		}
 		
 		private function redirectAfterSave() : void
@@ -228,7 +214,7 @@ package org.jbei.model
 		// Instead of one at a time, send a bulk like with the bulk save
         private function saveEntry( sessionId:String, set:EntrySet ) : void
         {
-            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+            var zip:ZipFileUtil = set.zipFileUtil;//new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
             
             for( var i:int = 0; i < set.entries.length; i += 1 )
             {
@@ -243,72 +229,9 @@ package org.jbei.model
             redirectAfterSave();
         }
         
-//		private function saveArabidopsis( sessionId:String, set:ArabidopsisSet ) : void
-//		{
-//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-//			
-//			for( var i:int = 0; i < set.entries.length; i += 1 )
-//			{
-//				var seed:ArabidopsisSeed = set.entries.getItemAt( i ) as ArabidopsisSeed;
-//				var seedSequence:ByteArray = !seed.sequence ? null : zip.fileInSequenceZip( seed.sequence.filename );
-//				var seedAttachment:ByteArray = !seed.attachment ? null : zip.fileInAttachmentZip( seed.attachment.fileName );
-//				
-//				_remote.saveEntry( sessionId, seed, seedAttachment, set.attachmentName, seedSequence, set.sequenceName );
-//			}
-//			
-//			// redirect
-//			redirectAfterSave();
-//		}
-//		
-//		private function saveParts( sessionId:String, set:PartSet ) : void
-//		{
-//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-//			
-//			for( var i:int = 0; i < set.entries.length; i += 1 )
-//			{
-//				var part:Part = set.entries.getItemAt( i ) as Part;
-//                var partSequence:ByteArray = !part.sequence ? null : zip.fileInSequenceZip( part.sequence.filename );
-//                var partAttachment:ByteArray = !part.attachment ? null : zip.fileInAttachmentZip( part.attachment.fileName );
-//				
-//				_remote.saveEntry( sessionId, part, partAttachment, set.attachmentName, partSequence, set.sequenceName );
-//			}
-//		}
-//		
-//		private function savePlasmids( sessionId:String, set:PlasmidSet ) : void
-//		{
-//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-//			
-//			for( var i:int = 0; i < set.entries.length; i += 1 )
-//			{
-//				var plasmid:Plasmid = set.entries.getItemAt( i ) as Plasmid;
-//                var sequence:ByteArray = !plasmid.sequence ? null : zip.fileInSequenceZip( plasmid.sequence.filename );
-//                var attachment:ByteArray = !plasmid.attachment ? null : zip.fileInAttachmentZip( plasmid.attachment.fileName );
-//				
-//				_remote.saveEntry( sessionId, plasmid, attachment, set.attachmentName, sequence, set.sequenceName );
-//			}
-//			
-//			redirectAfterSave();
-//		}
-//		
-//		private function saveStrains( sessionId:String, set:StrainSet ) : void
-//		{
-//            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
-//			
-//			for( var i:int = 0; i < set.entries.length; i += 1 )
-//			{
-//				var strain:Strain = set.entries.getItemAt( i ) as Strain;
-//                var sequence:ByteArray = !strain.sequence ? null : zip.fileInSequenceZip( strain.sequence.filename );
-//                var attachment:ByteArray = !strain.attachment ? null : zip.fileInAttachmentZip( strain.attachment.fileName );
-//				
-//				_remote.saveEntry( sessionId, strain, attachment, set.attachmentName, sequence, set.sequenceName );
-//			}
-//			
-//			redirectAfterSave();
-//		}
-		
 		private function saveStrainWithPlasmids( sessionId:String, set:StrainWithPlasmidSet ) : void
 		{
-            var zip:ZipFileUtil = new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
+            var zip:ZipFileUtil = set.zipFileUtil; // new ZipFileUtil( set.attachmentZipfile, set.sequenceZipfile );
 			
 			for( var i:int = 0; i < set.entries.length; i += 1 )
 			{
@@ -369,12 +292,16 @@ package org.jbei.model
 		
 		private function faultHandler( event:FaultEvent ) : void
 		{			
-			Alert.show( event.fault.faultString + "\n\nDetails\n" + event.fault.faultDetail, event.fault.faultCode );
+			Alert.show( "Error\n\t" + event.fault.faultString + "\nPlease contact your administrator with the following details.\n\nDetails\n\n" + event.fault.faultDetail, event.fault.faultCode );
 		}
 		
 		private function onSaveSuccess( event:ResultEvent ) : void
 		{
-			Alert.show( "Entries have been submitted successfully and are awaiting administrative approval.", "Save",  Alert.OK, null, redirectToFolders );
+            var saved:int = event.result as int;
+            if( saved == 0 )
+                Alert.show( "There was a problem submitting your entries. Please try again or consult your administrater", "Save", Alert.OK );
+            else
+			    Alert.show( saved + " entries have been submitted successfully.\nOn administrative approval they will show up in your list of entries", "Save",  Alert.OK, null, redirectToFolders );
 		}
 		
 		private function uniquePromoters( event:ResultEvent ) : void
