@@ -93,7 +93,15 @@ package org.jbei.view.mediators
             
             if( attachmentZipfileBytes != null )
             {
-                // TODO 
+                zip = new FZip();
+                zip.addEventListener(Event.COMPLETE, attListener);
+                zip.loadBytes(attachmentZipfileBytes);
+                function attListener(event:Event) : void
+                {
+                    fileUploader.attachmentZip = zip;
+//                    if( attName != null )
+//                        fileUploader.setA
+                }
             }
 		}
 	}

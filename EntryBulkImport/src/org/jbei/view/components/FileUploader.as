@@ -217,7 +217,7 @@ package org.jbei.view.components
 				this._seqProgressBar.maximum = file.size;
 				this._seqProgressBar.label = fileName + ": %3%%";
 				this._seqProgressBar.toolTip = file.name;
-				file.load();                
+				file.load();  
 			}
 			catch( err:Error )
 			{
@@ -264,7 +264,6 @@ package org.jbei.view.components
             var file:FileReference = FileReference( event.target );
             this.seqZip = new FZip();
             this.seqZip.loadBytes( file.data );
-            this.seqZip = new FZip();
             this.seqName = file.name;
 		}
 		
@@ -273,7 +272,6 @@ package org.jbei.view.components
             var file:FileReference = FileReference( event.target );
             this.attZip = new FZip();
             this.attZip.loadBytes( file.data );
-            this.attZip = new FZip();
             this.attName = file.name;
 		}
 	}

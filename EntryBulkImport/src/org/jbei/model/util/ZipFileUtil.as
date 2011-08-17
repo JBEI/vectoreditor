@@ -73,8 +73,7 @@ package org.jbei.model.util
         public function containsSequenceFile( name:String) : Boolean
         {
             if( this._seq == null || name == null )
-                return false;
-            
+                return false;            
             
             for( var i:uint = 0; i < this._seq.getFileCount(); i += 1 )
             {
