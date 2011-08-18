@@ -10,10 +10,11 @@ package org.jbei.registry.models
 		private var _value:String;
 		private var _quoted:Boolean;
         
-		public function DNAFeatureNote(name:String = "", aValue:String = "")
+		public function DNAFeatureNote(name:String = "", aValue:String = "", quoted:Boolean = false)
 		{
 			_name = name;
 			_value = aValue;
+            _quoted=quoted;
 		}
 		
 		public function get name():String
