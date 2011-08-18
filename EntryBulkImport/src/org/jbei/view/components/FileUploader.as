@@ -203,8 +203,20 @@ package org.jbei.view.components
         
         public function setSequenceProgressBar( fileName:String ) : void
         {
+            if( !this._seqProgressBar )
+                return;
+            
             this._seqProgressBar.label = fileName;
             this._seqProgressBar.toolTip = fileName;
+        }
+        
+        public function setAttachmentProgressBar( fileName:String ) : void
+        {
+            if( !this._attachProgressBar )
+                return;
+            
+            this._attachProgressBar.label = fileName;
+            this._attachProgressBar.toolTip = fileName;
         }
 		
 		private function seqSelectHandler( event:Event ) : void

@@ -74,7 +74,6 @@ package org.jbei.view.mediators
 			var results:Object = notification.getBody();
             var attName:String = results.attachmentFilename;
 			var attachmentZipfileBytes:ByteArray = results.attachmentZipfile;
-//			Alert.show( String(attachmentZipfileBytes == null ));
 			var seqZipfileBytes:ByteArray = results.sequenceZipfile;
             var seqName:String = results.sequenceFilename;
             
@@ -99,8 +98,8 @@ package org.jbei.view.mediators
                 function attListener(event:Event) : void
                 {
                     fileUploader.attachmentZip = zip;
-//                    if( attName != null )
-//                        fileUploader.setA
+                    if( attName != null )
+                        fileUploader.setAttachmentProgressBar( attName );
                 }
             }
 		}

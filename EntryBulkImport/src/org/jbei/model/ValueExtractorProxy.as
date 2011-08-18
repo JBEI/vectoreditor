@@ -37,7 +37,7 @@ package org.jbei.model
 			return false;
 		}
 		
-		public function retrieveValues( gridHolder:GridHolder, entryType:EntryType=EntryType.STRAIN ) : EntrySet
+		public function retrieveValues( gridHolder:GridHolder, entryType:EntryType ) : EntrySet
 		{
 			if( entryType == null )
 				entryType = EntryType.STRAIN;
