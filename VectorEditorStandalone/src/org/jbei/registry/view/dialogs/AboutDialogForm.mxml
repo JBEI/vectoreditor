@@ -19,6 +19,11 @@
 	<mx:VBox id="mainBox" width="100%" height="100%" horizontalAlign="center">
 		<mx:Image source="{ logoImage }" horizontalAlign="center" />
 		<mx:Spacer />
-		<mx:Text width="400" selectable="false" htmlText="Version: { Constants.VERSION }" />
+		<mx:Text width="400" htmlText="Version: { Constants.VERSION }" />
+        <mx:Text width="400">
+            <mx:htmlText>
+                <![CDATA[This is an Open Source Software. <br/>Check us out at http://code.google.com/p/vectoreditor]]>
+            </mx:htmlText>
+        </mx:Text> 
 	</mx:VBox>
 </SimpleDialogForm>
