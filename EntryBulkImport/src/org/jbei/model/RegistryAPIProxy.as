@@ -202,12 +202,16 @@ package org.jbei.model
 		
 		private function redirectAfterSave() : void
 		{
-            Alert.show( "Entries successfully saved. You must manually delete the record." );
-			if( this._redirectURL )
-				navigateToURL( new URLRequest( this._redirectURL + "/admin/bulk_import" ), "_self" );
-			else
-				sendNotification( Notifications.RESET_APP );
+            Alert.show( "Entries successfully saved. You must manually delete the record.", "Save", Alert.OK, null, redirect );
 		}
+        
+        private function redirect( event:CloseEvent ) : void
+        {
+            if( _redirectURL )
+                navigateToURL( new URLRequest( _redirectURL + "/admin/bulk_import" ), "_self" );
+            else
+                sendNotification( Notifications.RESET_APP );
+        }
 		
 		// Instead of one at a time, send a bulk like with the bulk save
         private function saveEntry( sessionId:String, set:EntrySet ) : void
@@ -223,14 +227,14 @@ package org.jbei.model
                 var entry:Entry = set.entries.getItemAt( i ) as Entry;
                 
                 // sequence file
-                if( !entry.sequence ) 
+                if( entry.sequence ) 
                 {
                     sequenceName = entry.sequence.filename;
                     sequenceBytes = zip.fileInSequenceZip( sequenceName );
                 }
                 
                 // attachment file
-                if( !entry.attachment )
+                if( entry.attachment )
                 {
                     attachmentName = entry.attachment.fileName;
                     attachmentBytes = zip.fileInAttachmentZip( attachmentName );
@@ -263,28 +267,28 @@ package org.jbei.model
                 var plasmid:Plasmid = entry.plasmid;
                 
                 // strain sequence
-                if( !strain.sequence )
+                if( strain.sequence )
                 {
                     strainSequenceFilename = strain.sequence.filename;
                     strainSequenceBytes = zip.fileInSequenceZip( strainSequenceFilename );
                 }
                 
                 // strain attachment
-                if( !strain.attachment )
+                if( strain.attachment )
                 {
                     strainAttachmentFilename = strain.attachment.fileName;
                     strainAttachmentBytes = zip.fileInAttachmentZip( strainAttachmentFilename );
                 }
                    
                 // plasmid sequence 
-                if( !plasmid.sequence )
+                if( plasmid.sequence )
                 {
                     plasmidSequenceFilename = plasmid.sequence.filename;
                     plasmidSequenceBytes = zip.fileInSequenceZip( plasmidSequenceFilename );                    
                 }
                 
                 // plasmid attachment
-                if( !plasmid.attachment )
+                if( plasmid.attachment )
                 {                    
                     plasmidAttachmentFilename = plasmid.attachment.fileName;
                     plasmidAttachmentBytes = zip.fileInAttachmentZip( plasmidAttachmentFilename );

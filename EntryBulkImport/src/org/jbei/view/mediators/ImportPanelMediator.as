@@ -218,7 +218,6 @@ package org.jbei.view.mediators
                 var attFilename:String = obj.attachmentFilename as String;
                 var seqFilename:String = obj.sequenceFilename as String;
 //                entry.ownerEmail = obj.ownerEmail as String;
-//                Alert.show( "Owner email: " + entry.ownerEmail );
                 
                 if( attFilename != null ) 
                 {
