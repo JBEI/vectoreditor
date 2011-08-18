@@ -217,6 +217,9 @@ package org.jbei.view.mediators
 				var fieldsEntrySet:EntrySet = fields.entrySet;
                 var attFilename:String = obj.attachmentFilename as String;
                 var seqFilename:String = obj.sequenceFilename as String;
+//                entry.ownerEmail = obj.ownerEmail as String;
+//                Alert.show( "Owner email: " + entry.ownerEmail );
+                
                 if( attFilename != null ) 
                 {
                     var att:Attachment = new Attachment();
@@ -240,6 +243,8 @@ package org.jbei.view.mediators
                     
                     attFilename = obj2.attachmentFilename as String;
                     seqFilename = obj2.sequenceFilename as String;
+                    entry2.ownerEmail = obj2.ownerEmail as String;
+                    
                     if( attFilename != null ) 
                     {
                         att = new Attachment();
