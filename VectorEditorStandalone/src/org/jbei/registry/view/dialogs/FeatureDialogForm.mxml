@@ -3,7 +3,9 @@
 	<mx:Script>
 		<![CDATA[
             import mx.collections.ArrayCollection;
+            import mx.controls.dataGridClasses.DataGridColumn;
             import mx.events.ValidationResultEvent;
+            import mx.utils.StringUtil;
             
             import org.jbei.bio.sequence.common.StrandType;
             import org.jbei.bio.sequence.dna.Feature;
@@ -16,6 +18,7 @@
 				{"label" : "-35_signal", "data" : "-35_signal"}, 
 				{"label" : "3'UTR", "data" : "3'UTR"}, 
 				{"label" : "5'UTR", "data" : "5'UTR"}, 
+                {"label" : "allele", "data" : "allele"}, 
 				{"label" : "attenuator", "data" : "attenuator"}, 
 				{"label" : "C_region", "data" : "C_region"}, 
 				{"label" : "CAAT_signal", "data" : "CAAT_signal"}, 
@@ -25,12 +28,11 @@
 				{"label" : "D-loop", "data" : "D-loop"}, 
 				{"label" : "enhancer", "data" : "enhancer"}, 
 				{"label" : "exon", "data" : "exon"}, 
-				{"label" : "gap", "data" : "gap"}, 
 				{"label" : "GC_signal", "data" : "GC_signal"}, 
 				{"label" : "gene", "data" : "gene"}, 
 				{"label" : "iDNA", "data" : "iDNA"}, 
 				{"label" : "intron", "data" : "intron"}, 
-				{"label" : "J_segment ", "data" : "J_segment "}, 
+                {"label" : "J_region", "data" : "J_region"}, 
 				{"label" : "LTR", "data" : "LTR"}, 
 				{"label" : "mat_peptide", "data" : "mat_peptide"}, 
 				{"label" : "misc_binding", "data" : "misc_binding"}, 
@@ -41,36 +43,38 @@
 				{"label" : "misc_signal", "data" : "misc_signal"}, 
 				{"label" : "misc_structure", "data" : "misc_structure"}, 
 				{"label" : "modified_base", "data" : "modified_base"}, 
-				{"label" : "mRNA", "data" : "mRNA"}, 
+				{"label" : "mRNA", "data" : "mRNA"},
+				{"label" : "mutation", "data" : "mutation"}, 
 				{"label" : "N_region", "data" : "N_region"}, 
-				{"label" : "ncRNA", "data" : "ncRNA"}, 
 				{"label" : "old_sequence", "data" : "old_sequence"}, 
-				{"label" : "operon", "data" : "operon"}, 
-				{"label" : "oriT", "data" : "oriT"}, 
 				{"label" : "polyA_signal", "data" : "polyA_signal"}, 
 				{"label" : "polyA_site", "data" : "polyA_site"}, 
 				{"label" : "precursor_RNA", "data" : "precursor_RNA"}, 
 				{"label" : "prim_transcript", "data" : "prim_transcript"}, 
-				{"label" : "primer_bind", "data" : "primer_bind"}, 
+				{"label" : "primer", "data" : "primer"}, 
+                {"label" : "primer_bind", "data" : "primer_bind"}, 
 				{"label" : "promoter", "data" : "promoter"}, 
 				{"label" : "protein_bind", "data" : "protein_bind"}, 
 				{"label" : "RBS", "data" : "RBS"}, 
 				{"label" : "rep_origin", "data" : "rep_origin"}, 
 				{"label" : "repeat_region", "data" : "repeat_region"}, 
+                {"label" : "repeat_unit", "data" : "repeat_unit"}, 
 				{"label" : "rRNA", "data" : "rRNA"}, 
 				{"label" : "S_region", "data" : "S_region"}, 
+                {"label" : "satellite", "data" : "satellite"}, 
+                {"label" : "scRNA", "data" : "scRNA"}, 
 				{"label" : "sig_peptide", "data" : "sig_peptide"}, 
+                {"label" : "snRNA", "data" : "snRNA"}, 
 				{"label" : "source", "data" : "source"}, 
 				{"label" : "stem_loop", "data" : "stem_loop"}, 
 				{"label" : "STS", "data" : "STS"}, 
 				{"label" : "TATA_signal", "data" : "TATA_signal"}, 
 				{"label" : "terminator", "data" : "terminator"}, 
-				{"label" : "tmRNA", "data" : "tmRNA"}, 
 				{"label" : "transit_peptide", "data" : "transit_peptide"}, 
+				{"label" : "transposon", "data" : "transposon"}, 
 				{"label" : "tRNA", "data" : "tRNA"}, 
 				{"label" : "unsure", "data" : "unsure"}, 
 				{"label" : "V_region ", "data" : "V_region "}, 
-				{"label" : "V_segment", "data" : "V_segment"}, 
 				{"label" : "variation", "data" : "variation"}]
 			);
 			
@@ -102,15 +106,50 @@
 						break; 
 					}
 				}
-				
-				nameTextInput.setFocus();
-				
+  
+                var key:DataGridColumn = new DataGridColumn();
+                key.headerText = "Key";
+                key.dataField = "key";
+                key.editable = true;
+
+                var value:DataGridColumn = new DataGridColumn();
+                value.headerText = "Value";
+                value.dataField = "value";
+                value.editable = true;
+                
+                var columns:Array = attributesDataGrid.columns;
+                columns.push(key);
+                columns.push(value);
+                attributesDataGrid.columns = columns;
+                
+                nameTextInput.setFocus();
+                
 				if(dataObject && dataObject is Feature) {
 					populateControls(dataObject as Feature);
 				}
 			}
-			
+            
+            private function onItemEditEnd():void
+            {
+                makeEmptyLastRow();
+            }
+            
 			// Private Methods
+            private function makeEmptyLastRow():void
+            {
+                // make sure there are empty items at the end of the list, so the user can add more
+                var attributes:ArrayCollection = attributesDataGrid.dataProvider as ArrayCollection;
+                
+                var lastItemIndex:int = attributes.length - 1;
+                if (lastItemIndex == -1) {
+                    attributes.addItem({key : "", value : "", quoted : false});
+                    attributesDataGrid.dataProvider = attributes;
+                    return;
+                } else if ("" != attributes[lastItemIndex].key || "" != attributes[lastItemIndex].value) {
+                    attributes.addItem({key : "", value : "", quoted : false});
+                    attributesDataGrid.dataProvider = attributes;
+                } 
+            }
 			private function populateControls(feature:Feature):void
 			{
 				nameTextInput.text = feature.name;
@@ -130,14 +169,19 @@
 				
 				genbankStartNumericStepper.value = feature.start + 1;
 				endNumericStepper.value = feature.end;
-				
-				/*for(var j:int = 0; j < feature.notes.length; j++) {
-					if((feature.notes[j] as FeatureNote).name.toLowerCase() == "description") {
-						descriptionTextArea.text = (feature.notes[j] as FeatureNote).value;
-						break;
-					}
-				}*/
-			}
+                
+                if(!feature.notes) {
+                    feature.notes = new Vector.<FeatureNote>();
+                }
+                
+                var attributes:ArrayCollection = new ArrayCollection();
+				for(var j:int = 0; j < feature.notes.length; j++) {
+					attributes.addItem({key: feature.notes[j].name, value:feature.notes[j].value, quoted:feature.notes[j].quoted});
+				}
+                attributesDataGrid.dataProvider = attributes;
+                
+                makeEmptyLastRow();
+            }
 			
 			private function createFeature():void
 			{
@@ -150,10 +194,27 @@
 				feature.name = nameTextInput.text;
 				
 				feature.notes = new Vector.<FeatureNote>();
-				/*if(descriptionTextArea.text != "") {
-					feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
-				}*/
-				
+                var attributes:ArrayCollection = attributesDataGrid.dataProvider as ArrayCollection;
+                var key:String = null;
+                var value:String = null;
+                var quoted:Boolean = false;
+                feature.notes = new Vector.<FeatureNote>();
+                for (var i:int = 0; i < attributes.length; i++) {
+                    if ("" == attributes[i].key || "" == attributes[i].value) {
+                        continue;
+                    } else {
+                        key = StringUtil.trim(attributes[i].key as String);
+                        value = StringUtil.trim(attributes[i].value as String);
+                        quoted = attributes[i].quoted as Boolean;
+                        var featureNote:FeatureNote = new FeatureNote();
+                        featureNote.name = key;
+                        featureNote.value = value;
+                        featureNote.quoted = quoted;
+                        feature.notes.push(featureNote);
+                    }
+                    
+                }
+                
 				ApplicationFacade.getInstance().sequenceProvider.addFeature(feature);
 			}
 			
@@ -168,33 +229,27 @@
 					feature.end = endNumericStepper.value;
 					feature.name = nameTextInput.text;
 					
-					if(!feature.notes) {
-						feature.notes = new Vector.<FeatureNote>();
-					}
-					
-					var labelNoteIndex:int = -1;
-					var descriptionNoteIndex:int = -1;
-					for(var j:int = 0; j < feature.notes.length; j++) {
-						if((feature.notes[j] as FeatureNote).name.toLowerCase() == "label") {
-							labelNoteIndex = j;
-						}
-						
-						if((feature.notes[j] as FeatureNote).name.toLowerCase() == "description") {
-							descriptionNoteIndex = j;
-						}
-					}
-					
-					if(labelNoteIndex >= 0) {
-						(feature.notes[labelNoteIndex] as FeatureNote).value = nameTextInput.text;
-					} else {
-						feature.notes.push(new FeatureNote("name", nameTextInput.text));
-					}
-					
-					if(descriptionNoteIndex >= 0) {
-						(feature.notes[descriptionNoteIndex] as FeatureNote).value = descriptionTextArea.text;
-					} else {
-						feature.notes.push(new FeatureNote("description", descriptionTextArea.text));
-					}
+                    var attributes:ArrayCollection = attributesDataGrid.dataProvider as ArrayCollection;
+                    var key:String = null;
+                    var value:String = null;
+                    var quoted:Boolean = false;
+                    feature.notes = new Vector.<FeatureNote>();
+                    for (var i:int = 0; i < attributes.length; i++) {
+                        if ("" == attributes[i].key || "" == attributes[i].value) {
+                            continue;
+                        } else {
+                            key = StringUtil.trim(attributes[i].key as String);
+                            value = StringUtil.trim(attributes[i].value as String);
+                            quoted = attributes[i].quoted as Boolean;
+                            var featureNote:FeatureNote = new FeatureNote();
+                            featureNote.name = key;
+                            featureNote.value = value;
+                            featureNote.quoted = quoted;
+                            feature.notes.push(featureNote);
+                        }
+                        
+                    }
+                    
 				} finally {
 					ApplicationFacade.getInstance().sequenceProvider.manualUpdateEnd();
 				}
@@ -206,7 +261,7 @@
 	<mx:NumberValidator id="endNumberValidator" source="{ endNumericStepper }" required="true" minValue="1" property="value" domain="int" />
 	<mx:StringValidator id="nameStringValidator" source="{ nameTextInput }" required="true" property="text" />
 	
-	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5">
+	<mx:Form id="mainForm" paddingBottom="5" paddingTop="5" paddingLeft="5" paddingRight="5" >
 		<mx:FormItem label="Name:" direction="horizontal"><mx:TextInput id="nameTextInput" /></mx:FormItem>
 		<mx:FormItem label="Strand:" direction="horizontal">
 			<mx:RadioButtonGroup id="strandRadioGroup" />
@@ -223,8 +278,9 @@
 		<mx:FormItem label="End:" direction="horizontal">
 			<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength + 1 }"/>
 		</mx:FormItem>
-		<mx:FormItem label="Description:" direction="horizontal">
-			<mx:TextArea id="descriptionTextArea" />
+		<mx:FormItem label="Attributes:" direction="horizontal" >
+            <mx:DataGrid id="attributesDataGrid" editable="true" itemEditEnd="onItemEditEnd()">
+            </mx:DataGrid>
 		</mx:FormItem>
 	</mx:Form>
 </AbstractDialogForm>
