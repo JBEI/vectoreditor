@@ -203,6 +203,7 @@ package org.jbei.view.mediators
 			}
 			
 			var primaryCollection:ArrayCollection = new ArrayCollection();		// <EntryFields>
+            var ownerEmail:String = results.ownerEmail as String;
 			
 			// need to get both at the same time
 			var primaryData:ArrayCollection = results.primaryData as ArrayCollection;	
@@ -217,7 +218,9 @@ package org.jbei.view.mediators
 				var fieldsEntrySet:EntrySet = fields.entrySet;
                 var attFilename:String = obj.attachmentFilename as String;
                 var seqFilename:String = obj.sequenceFilename as String;
-//                entry.ownerEmail = obj.ownerEmail as String;
+                
+                if( ownerEmail )
+                    entry.ownerEmail = ownerEmail;
                 
                 if( attFilename != null ) 
                 {
@@ -242,7 +245,9 @@ package org.jbei.view.mediators
                     
                     attFilename = obj2.attachmentFilename as String;
                     seqFilename = obj2.sequenceFilename as String;
-                    entry2.ownerEmail = obj2.ownerEmail as String;
+                    
+                    if( ownerEmail )
+                        entry2.ownerEmail = ownerEmail;
                     
                     if( attFilename != null ) 
                     {

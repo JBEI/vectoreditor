@@ -240,7 +240,8 @@ package org.jbei.model
                     attachmentBytes = zip.fileInAttachmentZip( attachmentName );
                 }
                 
-                _remote.saveEntry( sessionId, entry, attachmentBytes, attachmentName, sequenceBytes, sequenceName );
+                _remote.saveEntry( sessionId, ApplicationFacade.getInstance().importId, entry, attachmentBytes, 
+                    attachmentName, sequenceBytes, sequenceName );
             }
             
             // redirect
@@ -294,8 +295,10 @@ package org.jbei.model
                     plasmidAttachmentBytes = zip.fileInAttachmentZip( plasmidAttachmentFilename );
                 }
                  
-				_remote.saveStrainWithPlasmid( sessionId, strain, plasmid, strainSequenceBytes, strainSequenceFilename, strainAttachmentBytes, 
-                    strainAttachmentFilename, plasmidSequenceBytes, plasmidSequenceFilename, plasmidAttachmentBytes, plasmidAttachmentFilename );
+				_remote.saveStrainWithPlasmid( sessionId, ApplicationFacade.getInstance().importId, strain, plasmid, 
+                    strainSequenceBytes, strainSequenceFilename, 
+                    strainAttachmentBytes, strainAttachmentFilename, plasmidSequenceBytes, plasmidSequenceFilename, 
+                    plasmidAttachmentBytes, plasmidAttachmentFilename );
 			}
 			redirectAfterSave();
 		}

@@ -84,9 +84,7 @@ package org.jbei.model.fields
 		
         public function setZipFiles( attByte:ByteArray, att:FZip, attName:String, seqByte:ByteArray, seq:FZip, seqName:String ) : void
         {
-//            this.entrySet.attachmentZipfile = att;
             this.entrySet.attachmentName = attName;
-//            this.entrySet.sequenceZipfile = seq;   
             this.entrySet.sequenceName = seqName;
             this._zip = new ZipFileUtil( attByte, att, seqByte, seq );
             this.entrySet.zipFileUtil = this._zip;
