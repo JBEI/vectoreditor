@@ -34,7 +34,7 @@ package org.jbei.registry.utils
 					for(var j:int = 0; j < feature.notes.length; j++) {
 						var featureNote:FeatureNote = feature.notes[j];
 						
-						descriptionNotes.addItem(new DNAFeatureNote(featureNote.name, featureNote.value));
+						descriptionNotes.addItem(new DNAFeatureNote(featureNote.name, featureNote.value, featureNote.quoted));
 					}
 				}
 				
@@ -65,7 +65,7 @@ package org.jbei.registry.utils
 						for(var j:int = 0; j < dnaFeature.notes.length; j++) {
 							var dnaFeatureNote:DNAFeatureNote = dnaFeature.notes[j];
 							
-							featureNotes.push(new FeatureNote(dnaFeatureNote.name, dnaFeatureNote.value));
+							featureNotes.push(new FeatureNote(dnaFeatureNote.name, dnaFeatureNote.value, dnaFeatureNote.quoted));
 						}
 					}
 					

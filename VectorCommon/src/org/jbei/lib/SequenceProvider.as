@@ -1009,7 +1009,7 @@ package org.jbei.lib
                 feature.featureQualifiers.push(tempQualifier);
                 for (var j:int = 0; j < seqProviderFeature.notes.length; j++) {
                     tempQualifier = new GenbankFeatureQualifier();
-                    tempQualifier.quoted = true;
+                    tempQualifier.quoted = seqProviderFeature.notes[j].quoted;
                     tempQualifier.name = seqProviderFeature.notes[j].name;
                     tempQualifier.value = seqProviderFeature.notes[j].value;
                     feature.featureQualifiers.push(tempQualifier);
@@ -1044,7 +1044,7 @@ package org.jbei.lib
                     if (genbankFeatures[i].featureQualifiers[j].name == "label") {
                         dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
                     } else {
-                        dnaFeature.notes.addItem(new DNAFeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value));
+                        dnaFeature.notes.addItem(new DNAFeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value, genbankFeatures[i].featureQualifiers[j].quoted));
                     }
                 }
                 if (dnaFeature.name == null) {
@@ -1097,7 +1097,8 @@ package org.jbei.lib
                 var featureNote:DNAFeatureNote;
                 for each (attribute in attributes) {
                     var attNameXml:XMLList = attribute.attribute("name");
-                    featureNote = new DNAFeatureNote(attNameXml.toString(), attribute.toString());
+                    var attQuotedXml:XMLList = attribute.attribute("quoted");
+                    featureNote = new DNAFeatureNote(attNameXml.toString(), attribute.toString(), new Boolean(attQuotedXml.toString()));
                     newDnaFeature.notes.addItem(featureNote);
                 }
                 newDnaFeatures.addItem(newDnaFeature);
