@@ -24,6 +24,7 @@
 			public static const CUT:String = "Cut";
 			public static const PASTE:String = "Paste";
 			public static const SELECT_ALL:String = "SelectAll";
+            public static const SELECT_INVERSE:String = "SelectInverse";
 			public static const UNDO:String = "Undo";
 			public static const REDO:String = "Redo";
 			public static const SHOW_SELECT_BY_RANGE_DIALOG:String = "ShowSelectByRangeDialog";
@@ -136,6 +137,7 @@
 				var safeEditingMenuItem:MenuItem = new MenuItem("safeEditingMenuItem", "Safe Editing", "check", true);
             	var selectMenuItem:MenuItem = new MenuItem("selectMenuItem", "Select...");
             	var selectAllMenuItem:MenuItem = new MenuItem("selectAllMenuItem", "Select All");
+                var selectInverseMenuItem:MenuItem = new MenuItem("selectInverseMenuItem", "Select Inverse");
 				var findMenuItem:MenuItem = new MenuItem("findMenuItem", "Find...");
 				var gotoMenuItem:MenuItem = new MenuItem("gotoMenuItem", "Go To...");
                 var reverseComplementMenuItem:MenuItem = new MenuItem("reverseComplementMenuItem", "Reverse Complement");
@@ -154,6 +156,7 @@
 				editMenuItem.addSubItem(separatorMenuItem);
 				editMenuItem.addSubItem(selectMenuItem);
 				editMenuItem.addSubItem(selectAllMenuItem);
+                editMenuItem.addSubItem(selectInverseMenuItem);
                 editMenuItem.addSubItem(separatorMenuItem);
                 editMenuItem.addSubItem(reverseComplementMenuItem);
                 editMenuItem.addSubItem(rebaseMenuItem);
@@ -238,6 +241,7 @@
             	menuItemsMap["pasteMenuItem"] = pasteMenuItem;
 				menuItemsMap["safeEditingMenuItem"] = safeEditingMenuItem;
             	menuItemsMap["selectMenuItem"] = selectMenuItem;
+                menuItemsMap["selectInverseMenuItem"] = selectInverseMenuItem;
             	menuItemsMap["selectAllMenuItem"] = selectAllMenuItem;
 				menuItemsMap["gotoMenuItem"] = gotoMenuItem;
 				menuItemsMap["findMenuItem"] = findMenuItem;
@@ -329,7 +333,9 @@
 					dispatchEvent(new MenuItemEvent(SAFE_EDITING_CHANGED, menuItem));
             	} else if(menuItem.id == "selectAllMenuItem") {
             		dispatchEvent(new MenuItemEvent(SELECT_ALL, menuItem));
-            	} else if(menuItem.id == "createNewFeatureMenuItem") {
+            	} else if(menuItem.id == "selectInverseMenuItem") {
+                    dispatchEvent(new MenuItemEvent(SELECT_INVERSE, menuItem));
+              	} else if(menuItem.id == "createNewFeatureMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_CREATE_NEW_FEATURE_DIALOG, menuItem));
             	} else if(menuItem.id == "restrictionEnzymesManagerMenuItem") {
             		dispatchEvent(new MenuItemEvent(SHOW_RESTRICTION_ENZYMES_MANAGER_DIALOG, menuItem));

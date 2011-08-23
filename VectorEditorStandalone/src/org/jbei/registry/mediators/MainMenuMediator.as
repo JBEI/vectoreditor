@@ -54,6 +54,7 @@ package org.jbei.registry.mediators
 			mainMenu.addEventListener(MainMenu.CUT, onCut);
 			mainMenu.addEventListener(MainMenu.PASTE, onPaste);
 			mainMenu.addEventListener(MainMenu.SELECT_ALL, onSelectAll);
+            mainMenu.addEventListener(MainMenu.SELECT_INVERSE, onSelectInverse);
 			mainMenu.addEventListener(MainMenu.UNDO, onUndo);
 			mainMenu.addEventListener(MainMenu.REDO, onRedo);
 			mainMenu.addEventListener(MainMenu.SHOW_CREATE_NEW_FEATURE_DIALOG, onShowCreateNewFeatureDialog);
@@ -238,6 +239,13 @@ package org.jbei.registry.mediators
 			sendNotification(Notifications.SELECT_ALL);
 		}
 		
+        private function onSelectInverse(event:MenuItemEvent):void
+        {
+            var start:int = ApplicationFacade.getInstance().selectionStart;
+            var end:int = ApplicationFacade.getInstance().selectionEnd;
+            sendNotification(Notifications.SELECTION_CHANGED, [end, start]);
+        }
+        
 		private function onShowCreateNewFeatureDialog(event:MenuItemEvent):void
 		{
 			sendNotification(Notifications.SHOW_CREATE_NEW_FEATURE_DIALOG);
