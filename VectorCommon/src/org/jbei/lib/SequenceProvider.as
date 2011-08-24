@@ -1078,7 +1078,7 @@ package org.jbei.lib
             var newDnaFeatures:ArrayCollection = new ArrayCollection();
             for each (feature in features) {
                 var featureNameXml:XMLList = feature.seqNS::label;
-                var genbankStartXml:XMLList = feature.seqNS::location.seqNS::genbank_start;
+                var genbankStartXml:XMLList = feature.seqNS::location.seqNS::genbankStart;
                 var endXml:XMLList =  feature.seqNS::location.seqNS::end;
                 var strandXml:XMLList = feature.seqNS::complement;
                 var typeXml:XMLList = feature.seqNS::type;
