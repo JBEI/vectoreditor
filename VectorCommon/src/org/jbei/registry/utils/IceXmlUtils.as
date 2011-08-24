@@ -38,11 +38,9 @@ package org.jbei.registry.utils
             for (var i:int = 0; i < sequenceProvider.features.length; i++) {
                 var feature:Feature = sequenceProvider.features[i];
                 // calculate seq hash for liniar and circular case
-                var wholeSequence:String = sequenceProvider.sequence.seqString();
-                wholeSequence = sequence + sequence;
-                var sequence:String;
+                var sequence:String = sequenceProvider.sequence.seqString();
                 if (feature.end < feature.start) {
-                    sequence = sequence.substring(feature.start, feature.end + wholeSequence.length);
+                    sequence = sequence.substring(feature.start, sequence.length) + sequence.substring(0, feature.end);
                 } else {
                     sequence = sequence.substring(feature.start, feature.end);
                 }
