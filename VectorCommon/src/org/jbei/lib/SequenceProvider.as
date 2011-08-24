@@ -1078,14 +1078,14 @@ package org.jbei.lib
             var newDnaFeatures:ArrayCollection = new ArrayCollection();
             for each (feature in features) {
                 var featureNameXml:XMLList = feature.seqNS::label;
-                var startXml:XMLList = feature.seqNS::location.seqNS::genbank_start;
+                var genbankStartXml:XMLList = feature.seqNS::location.seqNS::genbank_start;
                 var endXml:XMLList =  feature.seqNS::location.seqNS::end;
                 var strandXml:XMLList = feature.seqNS::complement;
                 var typeXml:XMLList = feature.seqNS::type;
                 
                 newDnaFeature = new DNAFeature();
                 newDnaFeature.name = featureNameXml.toString()
-                newDnaFeature.genbankStart = parseInt(startXml.toString()) + 1;
+                newDnaFeature.genbankStart = parseInt(genbankStartXml.toString());
                 newDnaFeature.end = parseInt(endXml.toString());
                 newDnaFeature.type = typeXml.toString();
                 newDnaFeature.strand = (strandXml.toString() == "complement") ? -1: 1;
