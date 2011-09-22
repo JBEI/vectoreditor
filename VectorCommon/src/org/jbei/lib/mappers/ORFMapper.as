@@ -106,7 +106,7 @@ package org.jbei.lib.mappers
 				} else if(orf.end < maxLength) {
 					normalORFs.push(orf);
 				} else if(orf.end >= maxLength && orf.start < maxLength) {
-					orf.end -= maxLength;
+					orf.setOneEnd(orf.end - maxLength);
 					
 					for(var j:int = 0; j < orf.startCodons.length; j++) {
 						if(orf.startCodons[j] >= maxLength) {

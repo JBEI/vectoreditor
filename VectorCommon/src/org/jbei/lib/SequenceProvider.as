@@ -264,8 +264,7 @@ package org.jbei.lib
                     if(start <= feature.start && end > feature.end) {
                         var clonedFeature1:Feature = feature.clone();
                         
-                        clonedFeature1.start -= start;
-                        clonedFeature1.end -= start;
+						clonedFeature1.shift(-start, sequence.length, circular);
                         
                         subFeatures.addItem(clonedFeature1);
                     }
@@ -273,25 +272,22 @@ package org.jbei.lib
                     if(start <= feature.start && end > feature.end) {
                         var clonedFeature2:Feature = feature.clone();
                         
-                        clonedFeature2.start -= start;
-                        clonedFeature2.end = _sequence.length + feature.end - start;
-                        
+						clonedFeature2.shift(-start, sequence.length, circular);
+						
                         subFeatures.addItem(clonedFeature2);
                     }
                 } else if(start > end && feature.start <= feature.end) {
                     if(start <= feature.start) {
                         var clonedFeature3:Feature = feature.clone();
                         
-                        clonedFeature3.start -= start;
-                        clonedFeature3.end -= start;
+						clonedFeature3.shift(-start, sequence.length, circular);
                         
                         subFeatures.addItem(clonedFeature3);
                     } else if(end > feature.end) {
                         var clonedFeature4:Feature = feature.clone();
                         
-                        clonedFeature4.start += sequence.length - start;
-                        clonedFeature4.end += sequence.length - start;
-                        
+						clonedFeature4.shift(sequence.length - start, sequence.length, circular);
+						
                         subFeatures.addItem(clonedFeature4);
                     }
                 }
@@ -425,8 +421,7 @@ package org.jbei.lib
             for(var z:int = 0; z < sequenceProvider.features.length; z++) {
                 var insertFeature:Feature = (sequenceProvider.features[z] as Feature).clone();
                 
-                insertFeature.start += position;
-                insertFeature.end += position;
+				insertFeature.shift(position, sequence.length, circular);
                 
                 addFeature(insertFeature, true);
             }
@@ -454,30 +449,15 @@ package org.jbei.lib
                 dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGING, SequenceProviderEvent.KIND_SEQUENCE_INSERT, createMemento()));
             }
             
+			var lengthBefore:int = sequence.length;
             _sequence.insertSymbols(position, insertSequence);
             
             var insertionSequenceLength:int = insertSequence.length;
             
             for(var i:int; i < _features.length; i++) {
                 var feature:Feature = _features[i];
-                
-                if(feature.start > feature.end) { // circular feature case
-                    if(feature.end < position && feature.start > position) { // beetwen start and end
-                        feature.start += insertionSequenceLength;
-                    } else if (feature.end >= position) {
-                        feature.end += insertionSequenceLength;
-                        feature.start += insertionSequenceLength;
-                    }
-                } else {
-                    if(feature.start < position && feature.end < position) { // completely before insertion point
-                    } else if(feature.start > position && feature.end > position) { // completely after insertion point
-                        feature.start += insertionSequenceLength;
-                        feature.end += insertionSequenceLength;
-                    } else {
-                        feature.end += insertionSequenceLength;
-                    }
-                }
-            }
+				feature.insertAt(position, insertionSequenceLength, lengthBefore, circular);
+			}
             
             if(!quiet && !_manualUpdateStarted) {
                 dispatcher.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_SEQUENCE_INSERT, {sequence : insertSequence, position : position}));
@@ -493,9 +473,9 @@ package org.jbei.lib
          */
         public function removeSequence(startIndex:int, endIndex:int, quiet:Boolean = false):void
         {
-            var sequenceLength:int = _sequence.length;
+            var lengthBefore:int = _sequence.length;
             
-            if(endIndex < 0 || startIndex < 0 || startIndex > sequenceLength || endIndex > sequenceLength || startIndex == endIndex) { return; }
+            if(endIndex < 0 || startIndex < 0 || startIndex > lengthBefore || endIndex > lengthBefore || startIndex == endIndex) { return; }
             
             needsRecalculateComplementSequence = true;
             needsRecalculateReverseComplementSequence = true;
@@ -507,7 +487,6 @@ package org.jbei.lib
             const DEBUG_MODE:Boolean = true;
             
             var deletions:Array = new Array(); // features marked for deletion
-            
             for(var i:int = 0; i < _features.length; i++) {
                 var feature:Feature = _features[i];
                 
@@ -517,8 +496,7 @@ package org.jbei.lib
                         * |-----SSSSSSSSSSSSSSSSSSSSSSSSS--------------------------------------------------------------------|
                         *                                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                 */
                         if(startIndex < feature.start && (endIndex - 1) < feature.start) {
-                            feature.start -= endIndex - startIndex;
-                            feature.end -= endIndex - startIndex;
+							feature.deleteAt(startIndex, endIndex - startIndex + 1, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 1");
                         }
                             /* Selection after feature => no action
@@ -538,57 +516,62 @@ package org.jbei.lib
                             * |-------------------------------------SSSSSSSSSSSSSSSSSSSSSS---------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         else if(((startIndex >= feature.start) && ((endIndex) <= feature.end))) {
-                            feature.end -= endIndex - startIndex;
+                            feature.deleteAt(startIndex, endIndex - startIndex + 1, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 4");
                         }
                             /* Selection left overlap feature => shift & resize feature
                             * |-----------------------------SSSSSSSSSSSSSSSSSSSSS------------------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         else if(startIndex < feature.start && feature.start < (endIndex)) {
-                            feature.start = startIndex;
-                            feature.end -= endIndex - startIndex;
-                            if (DEBUG_MODE) trace("case Fn,Sn 5");
+							var delLengthOutside:int = feature.start - startIndex;
+							var delLengthInside:int = endIndex - feature.start;
+							var lengthBefore2:int = lengthBefore - (feature.start - startIndex);
+							feature.deleteAt(startIndex, delLengthOutside, lengthBefore, circular);
+							feature.deleteAt(feature.start, delLengthInside, lengthBefore2, circular);
+							if (DEBUG_MODE) trace("case Fn,Sn 5");
                         }
                             /* Selection right overlap feature => shift & resize feature
                             * |-------------------------------------------------SSSSSSSSSSSSSSSSSSSSS----------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         else if(startIndex < feature.end && (endIndex) > feature.end) {
-                            feature.end = startIndex;
+							feature.deleteAt(startIndex, feature.end - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 6");
                         } else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
                         }
-                    } else { // circular selection
+                    } else { // circular selection, non circular feature. LengthBefore is irrelevent in all these cases.
                         /* Selection and feature no overlap => shift left
                         * |SSSSSSSSSSS-------------------------------------------------------------------------SSSSSSSSSSSSSS|
                         *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         if(startIndex > feature.end && (endIndex) <= feature.start) {
-                            feature.start -= endIndex;
-                            feature.end -= endIndex;
+							feature.shift(-endIndex, lengthBefore, circular); 
                             if (DEBUG_MODE) trace("case Fn,Sc 1");
                         }
                             /* Selection and feature left partial overlap => cut and shift
                             * |SSSSSSSSSSSSSSSSSSSS----------------------------------------------------------------SSSSSSSSSSSSSS|
                             *             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                                         */
                         else if(startIndex > feature.end && (endIndex) > feature.start && endIndex <= feature.end) {
-                            feature.start = 0;
-                            feature.end -= endIndex;
+							var delLengthOutside:int = feature.start;
+							var delLengthInside:int = endIndex - feature.start;
+							feature.deleteAt(0, delLengthOutside, lengthBefore, circular); 
+							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular); 
                             if (DEBUG_MODE) trace("case Fn,Sc 2");
                         }
                             /* Selection and feature right partial overlap => cut and shift
                             * |SSSSSSSSSSSSSSS--------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *                                                       |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|               */
                         else if(startIndex > feature.start && startIndex < feature.end && (endIndex) < feature.start) {
-                            feature.start -= endIndex;
-                            feature.end -= (feature.end - startIndex) + endIndex;
+							feature.deleteAt(startIndex, feature.end - startIndex, lengthBefore, circular);
+							feature.shift(-endIndex, lengthBefore, circular); 
                             if (DEBUG_MODE) trace("case Fn,Sc 3");
                         }
                             /* Double selection overlap => cut and shift
                             * |SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS-----------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *                           |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                          */
                         else if(startIndex < feature.end && (endIndex) > feature.start) {
-                            feature.start = 0;
-                            feature.end -= (feature.end - startIndex) + endIndex;
+							feature.deleteAt(startIndex, feature.end - startIndex, lengthBefore, circular);
+							feature.deleteAt(feature.start, endIndex - feature.start, lengthBefore, circular);
+							feature.shift(feature.start, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sc 3");
                         }
                             /* Complete left cover => remove feature
@@ -613,72 +596,71 @@ package org.jbei.lib
                         /* Selection between feature start and end
                         * |-------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------------------------------------|
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        if(startIndex >= feature.end && (endIndex) <= feature.start) {
-                            feature.start -= endIndex - startIndex;
+                        if(startIndex >= feature.end && (endIndex) < feature.start) {
+                            feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fc,Sn 1");
                         }
                             /* Selection inside feature start
                             * |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex >= feature.start) {
+							feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fc,Sn 2");
                         }
                             /* Selection inside feature end
                             * |--SSSSSSSSSSSSSSSSSS------------------------------------------------------------------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if((endIndex) <= feature.end) {
-                            feature.start -= endIndex - startIndex;
-                            feature.end -= endIndex - startIndex;
+							feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fc,Sn 3");
                         }
                             /* Selection in feature start
                             * |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
                             *  FFFFFFFFFFFFFFFFFFF|                                                        |FFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex >= feature.end && startIndex <= feature.start && (endIndex) > feature.start) {
-                            if(endIndex - 1 == sequence.length - 1) {
-                                feature.start = 0;
-                                if (DEBUG_MODE) trace("case Fc,Sn 4a");
-                            } else {
-                                feature.start = startIndex;
-                                if (DEBUG_MODE) trace("case Fc,Sn 4b");
-                            }
+							var delLengthBefore:int = feature.start - startIndex;
+							var delLengthInside:int = endIndex - feature.start;
+							var lengthBefore2:int = lengthBefore - delLengthInside;
+							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular);
+							feature.deleteAt(startIndex, delLengthBefore, lengthBefore2, circular);
+
+                            if (DEBUG_MODE) trace("case Fc,Sn 4a");
+                            if (DEBUG_MODE) trace("case Fc,Sn 4b");
                         }
                             /* Selection in feature end
                             * |--SSSSSSSSSSSSSSSSSSSSSSSSSSSSS-------------------------------------------------------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex < feature.end && (endIndex) >= feature.end && (endIndex) <= feature.start) {
-                            if(startIndex == 0 && (endIndex) >= feature.end) {
-                                feature.end = sequence.length - (endIndex - startIndex);
-                                feature.start -= endIndex - startIndex;
-                                if (DEBUG_MODE) trace("case Fc,Sn 5a");
-                            } else {
-                                feature.start -= endIndex - startIndex;
-                                feature.end = startIndex;
-                                if (DEBUG_MODE) trace("case Fc,Sn 5b");
-                            }
+							var delLengthOutside:int = endIndex - feature.end;
+							var lengthBefore2:int = lengthBefore - (feature.end - startIndex);
+							feature.deleteAt(startIndex, feature.end - startIndex, lengthBefore, circular);
+							feature.deleteAt(feature.end, delLengthOutside, lengthBefore2, circular);
+							
+                            if (DEBUG_MODE) trace("case Fc,Sn 5a");
+                            if (DEBUG_MODE) trace("case Fc,Sn 5b");
                         }
                             /* Double ends selection
                             * |------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS---------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.end && feature.start <= endIndex - 1) {
-                            if(startIndex == 0 && endIndex == sequenceLength) {
-                                deletions.push(feature);
+							var delLengthBetween:int = feature.start - feature.end;
+							var delLength1:int = feature.end - startIndex;
+							var delLength2:int = endIndex - feature.start;
+							var lengthBefore2:int = lengthBefore - delLengthBetween;
+							var lengthBefore3:int = lengthBefore2 - delLength1;
+							feature.deleteAt(feature.end, delLengthBetween, lengthBefore, circular);
+							feature.deleteAt(startIndex, delLength1, lengthBefore2, circular);
+							feature.deleteAt(feature.start, delLength2, lengthBefore3, circular);
+
+                            if(startIndex == 0 && endIndex == lengthBefore) {
                             } else if(endIndex == sequence.length) {
-                                feature.start = 0;
-                                feature.end = startIndex - 1;
-                                
                                 if (DEBUG_MODE) trace("case Fc,Sn 6a");
                             } else if(startIndex == 0) {
-                                feature.start = 0;
-                                feature.end = sequence.length - endIndex - 1;
-                                
                                 if (DEBUG_MODE) trace("case Fc,Sn 6b");
                             } else {
-                                feature.start = startIndex;
-                                feature.end = startIndex - 1;
-                                
                                 if (DEBUG_MODE) trace("case Fc,Sn 6c");
                             }
+
                         } else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
                         }
@@ -688,34 +670,37 @@ package org.jbei.lib
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         if(startIndex > feature.start && (endIndex - 1) < feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 1");
-                            
-                            feature.start -= endIndex;
-                            feature.end -= endIndex;
+							var deletionLength:int = endIndex + (lengthBefore - startIndex);
+                            feature.deleteAt(startIndex, deletionLength, lengthBefore, circular);
                         }
                             /* Selection end overlap
                             * |SSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.end && startIndex > feature.start && (endIndex - 1) < feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 2");
-                            
-                            feature.start -= endIndex;
-                            feature.end = startIndex - 1 - endIndex;
+							var delLengthInside:int = feature.end + lengthBefore - startIndex;
+							var delLengthOutside:int = endIndex - feature.end;
+							var lengthBefore2:int = lengthBefore - delLengthInside;
+                            feature.deleteAt(startIndex, delLengthInside, lengthBefore, circular);
+							feature.deleteAt(0, delLengthOutside, lengthBefore2, circular);
                         }
                             /* Selection start overlap
                             * |SSSSSSSSSSSSSSSSS-----------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.start && feature.end > (endIndex - 1) && startIndex > feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 3");
-                            
-                            feature.start = 0;
-                            feature.end -= endIndex;
+							var delLengthInside:int = endIndex + lengthBefore - feature.start;
+							var delLengthOutside:int = feature.start - startIndex;
+							var lengthBefore2:int = lengthBefore - delLengthInside;
+							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular);
+							feature.deleteAt(feature.start - delLengthOutside, delLengthOutside, lengthBefore2, circular);
+
                         }
                             /* Selection inside feature
                             * |SSSSSSSSSSSSSSSSSSSSSSS-----------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.end && startIndex <= feature.start && endIndex - 1 < feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 4");
-                            
                             deletions.push(feature);
                         }
                             /* Selection double end right overlap
@@ -723,18 +708,29 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFF|             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 5");
-                            
-                            feature.start = 0;
-                            feature.end = startIndex - endIndex - 1;
+							var delLength2 = feature.end + lengthBefore - startIndex;
+							var delLengthBetween = feature.start - feature.end;
+							var delLength1 = endIndex - feature.start;
+							var lengthBefore2 = lengthBefore - delLength2;
+							var lengthBefore3 = lengthBefore2 - delLength1;
+                            feature.deleteAt(startIndex, delLength2, lengthBefore, circular);
+							feature.deleteAt(feature.start, delLength1, lengthBefore2, circular);
+							feature.deleteAt(feature.start - delLengthBetween, delLengthBetween, lengthBefore3, circular);
                         }
                             /* Selection double end left overlap
                             * |SSSSSSSSSSS---------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                        |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 6");
-                            
-                            feature.start = 0;
-                            feature.end = startIndex - endIndex - 1;
+							var delLength2:int = endIndex + lengthBefore - feature.start;
+							var delLength1:int = feature.end - startIndex;
+							var delLengthBetween:int = feature.start - feature.end;
+							var lengthBefore2 = lengthBefore - delLength2;
+							var lengthBefore3 = lengthBefore2 - delLength1;
+							
+							feature.deleteAt(feature.start, delLength2, lengthBefore, circular);
+							feature.deleteAt(feature.end - delLength1, delLength1, lengthBefore2, circular);
+							feature.deleteAt(feature.end, delLengthBetween, lengthBefore3, circular);
                         }
                         else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
@@ -750,7 +746,7 @@ package org.jbei.lib
             if(startIndex > endIndex) {
                 _sequence.deleteSymbols(0, endIndex);
                 
-                _sequence.deleteSymbols(startIndex - endIndex, sequenceLength - startIndex);
+                _sequence.deleteSymbols(startIndex - endIndex, lengthBefore - startIndex);
             } else {
                 var removeSequenceLength:int = endIndex - startIndex;
                 
@@ -891,12 +887,7 @@ package org.jbei.lib
                 var reverseFeature:Feature = (inputSequenceProvider.features.getItemAt(i) as Feature).clone();
                 reverseFeature.strand = -reverseFeature.strand;
                 
-                var oldStart:int = reverseFeature.start;
-                var oldEnd:int = reverseFeature.end;
-                
-                reverseFeature.start = seqLength - oldEnd - 1;
-                reverseFeature.end = seqLength - oldStart - 1;
-                
+				reverseFeature.reverseLocations(reverseFeature.start, seqLength, inputSequenceProvider.circular);
                 reverseSequenceProvider.addFeature(reverseFeature, true);
             }
             
@@ -916,13 +907,9 @@ package org.jbei.lib
             var seqLength:int = _sequence.length;
             for(var i:int = 0; i < _features.length; i++) {
                 var reverseFeature:Feature = (_features.getItemAt(i) as Feature);
+				var newStart:int = seqLength - reverseFeature.end - 1;
                 reverseFeature.strand = -reverseFeature.strand;
-                
-                var oldStart:int = reverseFeature.start;
-                var oldEnd:int = reverseFeature.end;
-                
-                reverseFeature.start = seqLength - oldEnd - 1;
-                reverseFeature.end = seqLength - oldStart - 1;
+                reverseFeature.reverseLocations(newStart, seqLength, circular);
             }
             
             needsRecalculateComplementSequence = true;
@@ -961,19 +948,8 @@ package org.jbei.lib
                 for(var i:int = 0; i < _features.length; i++) {
                     var feature:Feature = _features.getItemAt(i) as Feature;
                     
-                    var start:int = feature.start - rebasePosition;
-                    var end:int = feature.end - rebasePosition;
-                    
-                    if(start < 0) {
-                        start = seqLength - (-start);
-                    }
-                    
-                    if(end < 0) {
-                        end = seqLength - (-end);
-                    }
-                    
-                    feature.start = start;
-                    feature.end = end;
+					var shiftBy:int = rebasePosition - feature.start;
+					feature.shift(shiftBy, seqLength, circular);
                 }
             }
             

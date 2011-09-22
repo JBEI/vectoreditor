@@ -229,22 +229,22 @@ package org.jbei.registry.utils
 					result = new Array();
 					
 					for(var i1:int = 0; i1 < annotations1.length; i1++) {
-						(annotations1[i1] as Annotation).start = 3 * (annotations1[i1] as Annotation).start;
-						(annotations1[i1] as Annotation).end = 3 * (annotations1[i1] as Annotation).end;
+						(annotations1[i1] as Annotation).setOneStart(3 * (annotations1[i1] as Annotation).start);
+						(annotations1[i1] as Annotation).setOneEnd(3 * (annotations1[i1] as Annotation).end);
 						
 						result.push((annotations1[i1] as Annotation));
 					}
 					
 					for(var i2:int = 0; i2 < annotations2.length; i2++) {
-						(annotations2[i2] as Annotation).start = 3 * (annotations2[i2] as Annotation).start + 1;
-						(annotations2[i2] as Annotation).end = 3 * (annotations2[i2] as Annotation).end + 1;
+						(annotations2[i2] as Annotation).setOneStart(3 * (annotations2[i2] as Annotation).start + 1);
+						(annotations2[i2] as Annotation).setOneEnd(3 * (annotations2[i2] as Annotation).end + 1);
 						
 						result.push((annotations2[i2] as Annotation));
 					}
 					
 					for(var i3:int = 0; i3 < annotations3.length; i3++) {
-						(annotations3[i3] as Annotation).start = 3 * (annotations3[i3] as Annotation).start + 2;
-						(annotations3[i3] as Annotation).end = 3 * (annotations3[i3] as Annotation).end + 2;
+						(annotations3[i3] as Annotation).setOneStart(3 * (annotations3[i3] as Annotation).start + 2);
+						(annotations3[i3] as Annotation).setOneEnd(3 * (annotations3[i3] as Annotation).end + 2);
 						
 						result.push((annotations3[i3] as Annotation));
 					}

@@ -162,7 +162,7 @@ package org.jbei.lib.mappers
 					} else if(cutSite1.end <= sequenceLength) {
 						(newCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					} else {
-						cutSite1.end -= sequenceLength;
+						cutSite1.setOneEnd(cutSite1.end - sequenceLength);
 						(newCutSites[restrictionEnzyme] as Vector.<RestrictionCutSite>).push(cutSite1);
 					}
 				}
