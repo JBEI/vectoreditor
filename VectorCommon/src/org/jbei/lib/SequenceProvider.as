@@ -8,13 +8,16 @@ package org.jbei.lib
     import org.jbei.bio.parsers.GenbankFeatureElement;
     import org.jbei.bio.parsers.GenbankFeatureQualifier;
     import org.jbei.bio.parsers.GenbankFileModel;
+    import org.jbei.bio.parsers.GenbankLocation;
     import org.jbei.bio.sequence.DNATools;
+    import org.jbei.bio.sequence.common.Location;
     import org.jbei.bio.sequence.common.SymbolList;
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.bio.sequence.dna.FeatureNote;
     import org.jbei.lib.common.IMemento;
     import org.jbei.lib.common.IOriginator;
     import org.jbei.registry.models.DNAFeature;
+    import org.jbei.registry.models.DNAFeatureLocation;
     import org.jbei.registry.models.DNAFeatureNote;
     import org.jbei.registry.models.FeaturedDNASequence;
     
@@ -487,6 +490,16 @@ package org.jbei.lib
             const DEBUG_MODE:Boolean = true;
             
             var deletions:Array = new Array(); // features marked for deletion
+			
+			var delLength2:int;
+			var delLength1:int;
+			var delLengthBetween:int;
+			var delLengthBefore:int;
+			var lengthBefore2:int;
+			var lengthBefore3:int;
+			var delLengthOutside:int;
+			var delLengthInside:int; 
+							
             for(var i:int = 0; i < _features.length; i++) {
                 var feature:Feature = _features[i];
                 
@@ -523,9 +536,9 @@ package org.jbei.lib
                             * |-----------------------------SSSSSSSSSSSSSSSSSSSSS------------------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         else if(startIndex < feature.start && feature.start < (endIndex)) {
-							var delLengthOutside:int = feature.start - startIndex;
-							var delLengthInside:int = endIndex - feature.start;
-							var lengthBefore2:int = lengthBefore - (feature.start - startIndex);
+							delLengthOutside = feature.start - startIndex;
+							delLengthInside = endIndex - feature.start;
+							lengthBefore2 = lengthBefore - (feature.start - startIndex);
 							feature.deleteAt(startIndex, delLengthOutside, lengthBefore, circular);
 							feature.deleteAt(feature.start, delLengthInside, lengthBefore2, circular);
 							if (DEBUG_MODE) trace("case Fn,Sn 5");
@@ -551,8 +564,8 @@ package org.jbei.lib
                             * |SSSSSSSSSSSSSSSSSSSS----------------------------------------------------------------SSSSSSSSSSSSSS|
                             *             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                                         */
                         else if(startIndex > feature.end && (endIndex) > feature.start && endIndex <= feature.end) {
-							var delLengthOutside:int = feature.start;
-							var delLengthInside:int = endIndex - feature.start;
+							delLengthOutside = feature.start;
+							delLengthInside = endIndex - feature.start;
 							feature.deleteAt(0, delLengthOutside, lengthBefore, circular); 
 							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular); 
                             if (DEBUG_MODE) trace("case Fn,Sc 2");
@@ -618,9 +631,9 @@ package org.jbei.lib
                             * |----------------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS---|
                             *  FFFFFFFFFFFFFFFFFFF|                                                        |FFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex >= feature.end && startIndex <= feature.start && (endIndex) > feature.start) {
-							var delLengthBefore:int = feature.start - startIndex;
-							var delLengthInside:int = endIndex - feature.start;
-							var lengthBefore2:int = lengthBefore - delLengthInside;
+							delLengthBefore = feature.start - startIndex;
+							delLengthInside = endIndex - feature.start;
+							lengthBefore2 = lengthBefore - delLengthInside;
 							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular);
 							feature.deleteAt(startIndex, delLengthBefore, lengthBefore2, circular);
 
@@ -631,8 +644,8 @@ package org.jbei.lib
                             * |--SSSSSSSSSSSSSSSSSSSSSSSSSSSSS-------------------------------------------------------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex < feature.end && (endIndex) >= feature.end && (endIndex) <= feature.start) {
-							var delLengthOutside:int = endIndex - feature.end;
-							var lengthBefore2:int = lengthBefore - (feature.end - startIndex);
+							delLengthOutside = endIndex - feature.end;
+							lengthBefore2 = lengthBefore - (feature.end - startIndex);
 							feature.deleteAt(startIndex, feature.end - startIndex, lengthBefore, circular);
 							feature.deleteAt(feature.end, delLengthOutside, lengthBefore2, circular);
 							
@@ -643,11 +656,11 @@ package org.jbei.lib
                             * |------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS---------------------|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFF|                                         |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.end && feature.start <= endIndex - 1) {
-							var delLengthBetween:int = feature.start - feature.end;
-							var delLength1:int = feature.end - startIndex;
-							var delLength2:int = endIndex - feature.start;
-							var lengthBefore2:int = lengthBefore - delLengthBetween;
-							var lengthBefore3:int = lengthBefore2 - delLength1;
+							delLengthBetween = feature.start - feature.end;
+							delLength1 = feature.end - startIndex;
+							delLength2 = endIndex - feature.start;
+							lengthBefore2 = lengthBefore - delLengthBetween;
+							lengthBefore3 = lengthBefore2 - delLength1;
 							feature.deleteAt(feature.end, delLengthBetween, lengthBefore, circular);
 							feature.deleteAt(startIndex, delLength1, lengthBefore2, circular);
 							feature.deleteAt(feature.start, delLength2, lengthBefore3, circular);
@@ -678,9 +691,9 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.end && startIndex > feature.start && (endIndex - 1) < feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 2");
-							var delLengthInside:int = feature.end + lengthBefore - startIndex;
-							var delLengthOutside:int = endIndex - feature.end;
-							var lengthBefore2:int = lengthBefore - delLengthInside;
+							delLengthInside = feature.end + lengthBefore - startIndex;
+							delLengthOutside = endIndex - feature.end;
+							lengthBefore2 = lengthBefore - delLengthInside;
                             feature.deleteAt(startIndex, delLengthInside, lengthBefore, circular);
 							feature.deleteAt(0, delLengthOutside, lengthBefore2, circular);
                         }
@@ -689,9 +702,9 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.start && feature.end > (endIndex - 1) && startIndex > feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 3");
-							var delLengthInside:int = endIndex + lengthBefore - feature.start;
-							var delLengthOutside:int = feature.start - startIndex;
-							var lengthBefore2:int = lengthBefore - delLengthInside;
+							delLengthInside = endIndex + lengthBefore - feature.start;
+							delLengthOutside = feature.start - startIndex;
+							lengthBefore2 = lengthBefore - delLengthInside;
 							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular);
 							feature.deleteAt(feature.start - delLengthOutside, delLengthOutside, lengthBefore2, circular);
 
@@ -708,11 +721,11 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFF|             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 5");
-							var delLength2 = feature.end + lengthBefore - startIndex;
-							var delLengthBetween = feature.start - feature.end;
-							var delLength1 = endIndex - feature.start;
-							var lengthBefore2 = lengthBefore - delLength2;
-							var lengthBefore3 = lengthBefore2 - delLength1;
+							delLength2 = feature.end + lengthBefore - startIndex;
+							delLengthBetween = feature.start - feature.end;
+							delLength1 = endIndex - feature.start;
+							lengthBefore2 = lengthBefore - delLength2;
+							lengthBefore3 = lengthBefore2 - delLength1;
                             feature.deleteAt(startIndex, delLength2, lengthBefore, circular);
 							feature.deleteAt(feature.start, delLength1, lengthBefore2, circular);
 							feature.deleteAt(feature.start - delLengthBetween, delLengthBetween, lengthBefore3, circular);
@@ -722,11 +735,11 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                        |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 6");
-							var delLength2:int = endIndex + lengthBefore - feature.start;
-							var delLength1:int = feature.end - startIndex;
-							var delLengthBetween:int = feature.start - feature.end;
-							var lengthBefore2 = lengthBefore - delLength2;
-							var lengthBefore3 = lengthBefore2 - delLength1;
+							delLength2 = endIndex + lengthBefore - feature.start;
+							delLength1 = feature.end - startIndex;
+							delLengthBetween = feature.start - feature.end;
+							lengthBefore2 = lengthBefore - delLength2;
+							lengthBefore3 = lengthBefore2 - delLength1;
 							
 							feature.deleteAt(feature.start, delLength2, lengthBefore, circular);
 							feature.deleteAt(feature.end - delLength1, delLength1, lengthBefore2, circular);
@@ -974,8 +987,11 @@ package org.jbei.lib
             for (var i:int = 0; i < this.features.length; i++) {
                 seqProviderFeature = this.features[i] as Feature;
                 feature = new GenbankFeatureElement();
-                feature.genbankStart = seqProviderFeature.start + 1;
-                feature.end = seqProviderFeature.end;
+				feature.featureLocations = new Vector.<GenbankLocation>();
+				for (var j:int = 0; j < seqProviderFeature.locations.length; j++) {
+					var location:Location = seqProviderFeature.locations[j];
+					feature.featureLocations.push(new GenbankLocation(location.start + 1, location.end));
+				}
                 feature.strand = seqProviderFeature.strand;
                 feature.key = seqProviderFeature.type;
                 tempQualifier = new GenbankFeatureQualifier();
@@ -983,11 +999,11 @@ package org.jbei.lib
                 tempQualifier.name = "label";
                 tempQualifier.value = seqProviderFeature.name;
                 feature.featureQualifiers.push(tempQualifier);
-                for (var j:int = 0; j < seqProviderFeature.notes.length; j++) {
+                for (var k:int = 0; k < seqProviderFeature.notes.length; k++) {
                     tempQualifier = new GenbankFeatureQualifier();
-                    tempQualifier.quoted = seqProviderFeature.notes[j].quoted;
-                    tempQualifier.name = seqProviderFeature.notes[j].name;
-                    tempQualifier.value = seqProviderFeature.notes[j].value;
+                    tempQualifier.quoted = seqProviderFeature.notes[k].quoted;
+                    tempQualifier.name = seqProviderFeature.notes[k].name;
+                    tempQualifier.value = seqProviderFeature.notes[k].value;
                     feature.featureQualifiers.push(tempQualifier);
                 }
                 result.features.features.push(feature);
@@ -1010,8 +1026,11 @@ package org.jbei.lib
             var dnaFeature:DNAFeature;
             for (var i:int = 0; i < genbankFeatures.length; i++) {
                 dnaFeature = new DNAFeature();
-                dnaFeature.genbankStart = genbankFeatures[i].genbankStart;
-                dnaFeature.end = genbankFeatures[i].end;
+				dnaFeature.locations = new ArrayCollection();
+				for (var k:int = 0; k < genbankFeatures[i].featureLocations.length; k++) {
+					dnaFeature.locations.addItem(new DNAFeatureLocation(genbankFeatures[i].featureLocations[k].genbankStart,
+					genbankFeatures[i].featureLocations[k].end));
+				}
                 dnaFeature.type = genbankFeatures[i].key;
                 dnaFeature.strand = genbankFeatures[i].strand;
                 
@@ -1052,18 +1071,24 @@ package org.jbei.lib
             var newDnaFeature:DNAFeature;
             
             var newDnaFeatures:ArrayCollection = new ArrayCollection();
+			
             for each (feature in features) {
                 var featureNameXml:XMLList = feature.seqNS::label;
-                var genbankStartXml:XMLList = feature.seqNS::location.seqNS::genbankStart;
-                var endXml:XMLList =  feature.seqNS::location.seqNS::end;
+				var locations:XMLList = feature.seqNS::location;
+				var newLocations:ArrayCollection = new ArrayCollection();
+				var location:XML;
+				for each (location in locations) {
+					var genbankStartXml:XMLList = location.seqNS::genbankStart;
+                	var endXml:XMLList =  location.seqNS::end;
+					newLocations.addItem(new DNAFeatureLocation(parseInt(genbankStartXml.toString()), parseInt(endXml.toString())));
+				}
                 var strandXml:XMLList = feature.seqNS::complement;
                 var typeXml:XMLList = feature.seqNS::type;
                 
                 newDnaFeature = new DNAFeature();
                 newDnaFeature.name = featureNameXml.toString()
-                newDnaFeature.genbankStart = parseInt(genbankStartXml.toString());
-                newDnaFeature.end = parseInt(endXml.toString());
-                newDnaFeature.type = typeXml.toString();
+                newDnaFeature.locations = newLocations;
+				newDnaFeature.type = typeXml.toString();
                 newDnaFeature.strand = (strandXml.toString() == "complement") ? -1: 1;
                 
                 newDnaFeature.notes = new ArrayCollection();

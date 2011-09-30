@@ -3,11 +3,13 @@ package org.jbei.registry.utils
 	import mx.collections.ArrayCollection;
 	
 	import org.jbei.bio.sequence.DNATools;
+	import org.jbei.bio.sequence.common.Location;
 	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.bio.sequence.dna.FeatureNote;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.registry.models.DNAFeature;
+	import org.jbei.registry.models.DNAFeatureLocation;
 	import org.jbei.registry.models.DNAFeatureNote;
 	import org.jbei.registry.models.FeaturedDNASequence;
 
@@ -69,7 +71,13 @@ package org.jbei.registry.utils
 						}
 					}
 					
-					features.addItem(new Feature(dnaFeature.name, dnaFeature.genbankStart - 1, dnaFeature.end, dnaFeature.type, dnaFeature.strand, featureNotes));
+					var newFeature:Feature = new Feature(dnaFeature.name, 0, 0, dnaFeature.type, dnaFeature.strand, featureNotes);
+					newFeature.locations = new Vector.<Location>();
+					for (var k:int = 0; k < dnaFeature.locations.length; k++) {
+						var featureLocation:DNAFeatureLocation = dnaFeature.locations.getItemAt(k) as DNAFeatureLocation;
+						newFeature.locations.push(new Location(featureLocation.genbankStart - 1, featureLocation.end));
+					}
+					features.addItem(newFeature);
 				}
 			}
 			

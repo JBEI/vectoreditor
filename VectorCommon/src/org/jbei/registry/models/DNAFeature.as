@@ -9,23 +9,22 @@ package org.jbei.registry.models
 	public class DNAFeature
 	{
 		private var _name:String;
-		private var _genbankStart:int;
-		private var _end:int;
 		private var _type:String;
 		private var _strand:int;
 		private var _notes:ArrayCollection /* of DNAFeatureNote */;
+		private var _locations:ArrayCollection; /* of DNAFeatureLocation*/
 		private var _annotationType:String;
 		
 		// Contructor
 		public function DNAFeature(genbankStart:int = 0, end:int = 0, strand:int = 0, name:String = "", notes:ArrayCollection = null /* of DNAFeatureNote */, type:String = "", annotationType:String = null)
 		{
-			_genbankStart = genbankStart;
-			_end = end;
 			_strand = strand;
 			_name = name;
 			_notes = notes;
 			_type = type;
 			_annotationType = annotationType;
+			_locations = new ArrayCollection();
+			_locations.addItem(new DNAFeatureLocation(genbankStart, end));
 		}
 		
 		// Properties
@@ -37,26 +36,6 @@ package org.jbei.registry.models
 		public function set name(value:String):void
 		{
 			_name = value;
-		}
-		
-		public function get genbankStart():int
-		{
-			return _genbankStart;
-		}
-		
-		public function set genbankStart(value:int):void
-		{
-			_genbankStart = value;
-		}
-		
-		public function get end():int
-		{
-			return _end;
-		}
-		
-		public function set end(value:int):void
-		{
-			_end = value;
 		}
 		
 		public function get type():String
@@ -87,6 +66,16 @@ package org.jbei.registry.models
 		public function set notes(value:ArrayCollection /* of DNAFeatureNote */):void
 		{
 			_notes = value;
+		}
+		
+		public function get locations():ArrayCollection /* of DNAFeatureLocation*/
+		{
+			return _locations;
+		}
+		
+		public function set locations(locations:ArrayCollection /* of DNAFeatureLocation*/):void
+		{
+			_locations = locations;
 		}
 		
 		public function get annotationType():String
