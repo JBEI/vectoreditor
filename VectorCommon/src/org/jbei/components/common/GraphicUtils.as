@@ -134,7 +134,7 @@ package org.jbei.components.common
 			graphics.moveTo(point11.x, point11.y);
 			GraphicUtils.drawArc(graphics, center, radius1, angle1, angle2);
 			graphics.lineTo(point22.x, point22.y);
-			GraphicUtils.drawArc(graphics, center, radius2, angle2, angle1);
+			GraphicUtils.drawArc(graphics, center, radius2, angle1, angle2, true);
 			graphics.lineTo(point11.x, point11.y);
 		}
 

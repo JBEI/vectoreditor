@@ -3,6 +3,7 @@ package org.jbei.components.pieClasses
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	
+	import org.jbei.bio.sequence.common.Location;
 	import org.jbei.bio.sequence.common.StrandType;
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
@@ -78,7 +79,7 @@ package org.jbei.components.pieClasses
 		// Protected Methods
 		protected override function render():void
 		{
-			var color:int = colorByType(feature.type.toLowerCase());
+			var color:int = 0xffffff;
 			
 			var g:Graphics = graphics;
 			g.clear();
@@ -93,10 +94,28 @@ package org.jbei.components.pieClasses
 			} else {
 				direction = 0;
 			}
-			
+
 			GraphicUtils.drawDirectedPiePiece(g, center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2, direction);
 			
 			g.endFill();
+			
+			for (var i:int = 0; i < feature.locations.length; i++) {
+				var location:Location = feature.locations[i];
+				g.beginFill(colorByType(feature.type.toLocaleLowerCase()));
+				
+				angle1 = location.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
+				angle2 = location.end * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;				
+
+				if (feature.start == location.start && feature.strand == StrandType.BACKWARD) {
+					GraphicUtils.drawDirectedPiePiece(g, center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2, direction);
+				} else if (feature.end == location.end && feature.strand == StrandType.FORWARD) {
+					GraphicUtils.drawDirectedPiePiece(g, center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2, direction);
+				} else {
+					GraphicUtils.drawPiePiece(g, center, featureRadius, DEFAULT_FEATURE_HEIGHT, angle1, angle2);
+				}
+				
+				g.endFill();
+			}
 		}
 		
 		protected override function createToolTipLabel():void
