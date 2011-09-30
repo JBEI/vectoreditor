@@ -3,6 +3,7 @@ package org.jbei.components.sequenceClasses
 	import flash.display.Graphics;
 	import flash.geom.Rectangle;
 	
+	import org.jbei.bio.sequence.common.Location;
 	import org.jbei.bio.sequence.common.StrandType;
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.AnnotationRenderer;
@@ -72,7 +73,7 @@ package org.jbei.components.sequenceClasses
 				}
 				
 				g.lineStyle(1, 0x606060);
-				g.beginFill(colorByType(feature.type.toLowerCase()));
+				g.beginFill(0xffffff);
 				
 				var startBP:int;
 				var endBP:int;
@@ -176,7 +177,123 @@ package org.jbei.components.sequenceClasses
 				}
 				
 				g.endFill();
-			}
+				
+				// render the locations
+				for (var j:int = 0; j < feature.locations.length; j++) {
+					var location:Location = feature.locations[j];
+					
+					g.lineStyle(1, 0x606060);
+					g.beginFill(colorByType(feature.type.toLowerCase()));
+					
+					if(location.start > location.end) { // circular case
+						/* |--------------------------------------------------------------------------------------|
+						*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
+						if(location.end >= row.rowData.start && location.end <= row.rowData.end) {
+							endBP = location.end - 1;
+						}
+							/* |--------------------------------------------------------------------------------------|
+							*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+						else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
+							endBP = contentHolder.sequenceProvider.sequence.length - 1;
+						}
+						else {
+							endBP = row.rowData.end;
+						}
+						
+						/* |--------------------------------------------------------------------------------------|
+						*                                    |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+						if(location.start >= row.rowData.start && location.start <= row.rowData.end) {
+							startBP = location.start;
+						}
+							/* |--------------------------------------------------------------------------------------|
+							*   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+						else {
+							startBP = row.rowData.start;
+						}
+					} else {
+	                    if (location.start < row.rowData.start && location.end <= row.rowData.start) {
+	                        continue; // the feature is outside of the current row
+	                    } else {
+	    					startBP = (location.start < row.rowData.start) ? row.rowData.start : location.start;
+	    					endBP = (location.end - 1 < row.rowData.end) ? location.end - 1 : row.rowData.end;
+	                    }
+					}
+					
+					/* Case when start and end are in the same row
+					* |--------------------------------------------------------------------------------------|
+					*  FFFFFFFFFFFFFFFFFFFFFFFFFFF|                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+					if(startBP > endBP) {
+						bpStartMetrics1 = sequenceContentHolder.bpMetricsByIndex(row.rowData.start);
+						bpEndMetrics1 = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.sequenceProvider.sequence.length - 1));
+						
+						bpStartMetrics2 = sequenceContentHolder.bpMetricsByIndex(startBP);
+						bpEndMetrics2 = sequenceContentHolder.bpMetricsByIndex(Math.min(row.rowData.end, contentHolder.sequenceProvider.sequence.length - 1));
+						
+						featureX1 = bpStartMetrics1.x + 2; // +2 to look pretty
+						featureX2 = bpStartMetrics2.x + 2; // +2 to look pretty
+						featureYCommon = bpStartMetrics1.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
+						
+						if(sequenceContentHolder.showAminoAcids1RevCom) {
+							featureYCommon += 3 * sequenceContentHolder.aminoAcidsTextRenderer.textHeight;
+						}
+						
+						featureRowWidth1 = bpEndMetrics1.x - bpStartMetrics1.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
+						featureRowWidth2 = bpEndMetrics2.x - bpStartMetrics2.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
+						
+						featureRowHeightCommon = DEFAULT_FEATURE_HEIGHT;
+						
+						if(feature.strand == StrandType.UNKNOWN) {
+							drawFeatureRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
+							drawFeatureRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
+						} else if(feature.strand == StrandType.FORWARD) {
+							drawFeatureForwardArrow(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
+							drawFeatureForwardRect(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
+						} else if(feature.strand == StrandType.BACKWARD) {
+							drawFeatureBackwardRect(g, featureX1, featureYCommon, featureRowWidth1, featureRowHeightCommon);
+							drawFeatureBackwardArrow(g, featureX2, featureYCommon, featureRowWidth2, featureRowHeightCommon);
+						}
+					} else {
+						bpStartMetrics = sequenceContentHolder.bpMetricsByIndex(startBP);
+						bpEndMetrics = sequenceContentHolder.bpMetricsByIndex(Math.min(endBP, contentHolder.sequenceProvider.sequence.length - 1));
+						
+						featureX = bpStartMetrics.x + 2; // +2 to look pretty
+						featureY = bpStartMetrics.y + row.sequenceMetrics.height + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_FEATURES_GAP) + DEFAULT_FEATURES_SEQUENCE_GAP;
+						
+						if(sequenceContentHolder.showAminoAcids1RevCom) {
+							featureY += 3 * sequenceContentHolder.aminoAcidsTextRenderer.textHeight;
+						}
+						
+						featureRowWidth = bpEndMetrics.x - bpStartMetrics.x + sequenceContentHolder.sequenceSymbolRenderer.textWidth;
+						featureRowHeight = DEFAULT_FEATURE_HEIGHT;
+						
+						if(feature.strand == StrandType.UNKNOWN) {
+							drawFeatureRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
+						} else if(feature.strand == StrandType.FORWARD) {
+							if(location.end >= row.rowData.start && location.end <= row.rowData.end + 1) {
+								if (feature.end == location.end) {
+									drawFeatureForwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
+								} else {
+									drawFeatureForwardCurved(g, featureX, featureY, featureRowWidth, featureRowHeight);
+								}
+							} else {
+								drawFeatureForwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							}
+						} else if(feature.strand == StrandType.BACKWARD) {
+							if(location.start >= row.rowData.start && location.start <= row.rowData.end) {
+								if (feature.start == location.start) {
+									drawFeatureBackwardArrow(g, featureX, featureY, featureRowWidth, featureRowHeight);
+								} else {
+									drawFeatureBackwardCurved(g, featureX, featureY, featureRowWidth, featureRowHeight);
+								}
+							} else {
+								drawFeatureBackwardRect(g, featureX, featureY, featureRowWidth, featureRowHeight);
+							}
+						}
+					}
+					
+					g.endFill();
+				} // end for (var j:int = 0; j < feature.locations.length; j++) {
+			} //end for(var i:int = 0; i < featureRows.length; i++) {
 		}
 		
 		protected override function createToolTipLabel():void
@@ -210,12 +327,17 @@ package org.jbei.components.sequenceClasses
 			return color;
 		}
 		
+		/**
+		 * |===|
+		 */		
 		private function drawFeatureRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			g.drawRect(x, y, width, height);
 		}
 		
-		private function drawFeatureForwardRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		/**
+		 * )===|
+		 */private function drawFeatureForwardRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			g.moveTo(x, y);
 			g.curveTo(x + 3, y + height / 2, x, y + height);
@@ -224,6 +346,9 @@ package org.jbei.components.sequenceClasses
 			g.lineTo(x, y);
 		}
 		
+		/**
+		 *  |===(
+		 */
 		private function drawFeatureBackwardRect(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			g.moveTo(x, y);
@@ -233,6 +358,9 @@ package org.jbei.components.sequenceClasses
 			g.lineTo(x, y);
 		}
 		
+		/**
+		 * )===>
+		 */
 		private function drawFeatureForwardArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
@@ -250,6 +378,9 @@ package org.jbei.components.sequenceClasses
 			}
 		}
 		
+		/**
+		 * <===( 
+		 */
 		private function drawFeatureBackwardArrow(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
 		{
 			if(width > sequenceContentHolder.sequenceSymbolRenderer.width) {
@@ -265,6 +396,30 @@ package org.jbei.components.sequenceClasses
 				g.lineTo(x + width, y + height);
 				g.lineTo(x, y + height / 2);
 			}
+		}
+		
+		/**
+		 *  )==)
+		 */
+		private function drawFeatureForwardCurved(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		{
+			g.moveTo(x, y);
+			g.curveTo(x + 3, y + height / 2, x, y + height);
+			g.lineTo(x + width, y + height);
+			g.curveTo(x + width + 3, y + height / 2, x + width, y);
+			g.lineTo(x, y);
+		}
+		
+		/**
+		 *  (==(
+		 */
+		private function drawFeatureBackwardCurved(g:Graphics, x:Number, y:Number, width:Number, height:Number):void
+		{
+			g.moveTo(x, y);
+			g.curveTo(x - 3, y + height / 2, x, y + height);
+			g.lineTo(x + width, y + height);
+			g.curveTo(x + width - 3, y + height / 2, x + width, y);
+			g.lineTo(x, y);
 		}
 	}
 }
