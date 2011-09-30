@@ -58,53 +58,107 @@ package org.jbei.components.railClasses
 		// Protected Methods
 		protected override function render():void
 		{
-			var color:int = colorByType(feature.type.toLowerCase());
+			var color:int = 0xffffff;
 			
 			var g:Graphics = graphics;
 			g.clear();
 			g.lineStyle(1, FRAME_COLOR);
 			
-			var renderedLocations:Vector.<Point> = new Vector.<Point>(); // using Point as a convenient class to hold start/ends as Number
-			var renderedGaps:Vector.<Point> = new Vector.<Point>();
+			var renderedLocations:Vector.<Location> = new Vector.<Location>(); 
 			
-			var gapStart:Number = -1;
-			var gapEnd:Number = -1;
 			for (var i:int = 0; i < feature.locations.length; i++) {
 				var location:Location = feature.locations[i];
-				renderedLocations.push(new Point(location.start, location.end));
+				renderedLocations.push(new Location(location.start, location.end));
+			}
+			
+			var xStartPosition:Number = railMetrics.x + bpWidth * feature.start;
+			var xEndPosition:Number = railMetrics.x + bpWidth * feature.end;
+			var yPosition:Number = railMetrics.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP);
+			
+			_connectionPoint = new Point(xStartPosition, (yPosition + yPosition + RailBox.THICKNESS) / 2);
+			
+			if(feature.start < feature.end) { // non-circular feature
+				var featureWidth:Number = bpWidth * (feature.end - feature.start);
 				
-				if (gapStart != -1) {
-					gapEnd= location.start;
-					renderedGaps.push(new Point(gapStart, gapEnd));
-					gapStart = location.end;
-				} else {
-					gapStart = location.end;
+				g.beginFill(color);
+				switch(feature.strand) {
+					case StrandType.FORWARD:
+						drawFeaturePositiveArrow(g, xStartPosition, yPosition, featureWidth, DEFAULT_FEATURE_HEIGHT);
+						
+						break;
+					case StrandType.BACKWARD:
+						drawFeatureNegativeArrow(g, xStartPosition, yPosition, featureWidth, DEFAULT_FEATURE_HEIGHT);
+						
+						break;
+					default:
+						drawFeatureRect(g, xStartPosition, yPosition, featureWidth, DEFAULT_FEATURE_HEIGHT);
+						
+						break;
+				}
+				g.endFill();
+			} else { // circular feature
+				var startPosition:Number = railMetrics.x;
+				var endPosition:Number = railMetrics.x + contentHolder.sequenceProvider.sequence.length * bpWidth;
+				
+				switch(feature.strand) {
+					case StrandType.FORWARD:
+						g.beginFill(color);
+						drawFeatureRect(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						g.beginFill(color);
+						drawFeaturePositiveArrow(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						break;
+					case StrandType.BACKWARD:
+						g.beginFill(color);
+						drawFeatureNegativeArrow(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						g.beginFill(color);
+						drawFeatureRect(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						break;
+					default:
+						g.beginFill(color);
+						drawFeatureRect(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						g.beginFill(color);
+						drawFeatureRect(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
+						g.endFill();
+						
+						break;
 				}
 			}
 			
+			color = colorByType(feature.type.toLowerCase());
+			// render locations
 			for (i = 0; i < renderedLocations.length; i++) {
-				var thisLocation:Point = renderedLocations[i] as Point;
-				var xStartPosition:Number = railMetrics.x + bpWidth * thisLocation.x;
-				var xEndPosition:Number = railMetrics.x + bpWidth * thisLocation.y;
-				var yPosition:Number = railMetrics.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP);
+				var thisLocation:Location = renderedLocations[i] as Location;
+				xStartPosition = railMetrics.x + bpWidth * thisLocation.start;
+				xEndPosition = railMetrics.x + bpWidth * thisLocation.end;
+				yPosition = railMetrics.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP);
 				
 				_connectionPoint = new Point(xStartPosition, (yPosition + yPosition + RailBox.THICKNESS) / 2);
 				
-				if (thisLocation.x < thisLocation.y) { // non-circular location
-					var locationWidth:Number = bpWidth * (thisLocation.y - thisLocation.x);
+				if (thisLocation.start < thisLocation.end) { // non-circular location
+					var locationWidth:Number = bpWidth * (thisLocation.end - thisLocation.start);
 					
 					g.beginFill(color);
 					
 					switch(feature.strand) {
 						case StrandType.FORWARD:
-							if (thisLocation.y == feature.end) { // draw arrow at end
+							if (thisLocation.end == feature.end) { // draw arrow at end
 								drawFeaturePositiveArrow(g, xStartPosition, yPosition, locationWidth, DEFAULT_FEATURE_HEIGHT);
 							} else {
 								drawFeatureRect(g, xStartPosition, yPosition, locationWidth, DEFAULT_FEATURE_HEIGHT);
 							}
 							break;
 						case StrandType.BACKWARD:
-							if (thisLocation.x == feature.start) { // draw arrow at start
+							if (thisLocation.start == feature.start) { // draw arrow at start
 								drawFeatureNegativeArrow(g, xStartPosition, yPosition, locationWidth, DEFAULT_FEATURE_HEIGHT);
 							} else {
 								drawFeatureRect(g, xStartPosition, yPosition, locationWidth, DEFAULT_FEATURE_HEIGHT);
@@ -116,8 +170,8 @@ package org.jbei.components.railClasses
 									
 					g.endFill();
 				} else { // circular location
-					var startPosition:Number = railMetrics.x;
-					var endPosition:Number = railMetrics.x + contentHolder.sequenceProvider.sequence.length * bpWidth;
+					startPosition = railMetrics.x;
+					endPosition = railMetrics.x + contentHolder.sequenceProvider.sequence.length * bpWidth;
 				
 					switch(feature.strand) {
 						case StrandType.FORWARD:
@@ -125,7 +179,7 @@ package org.jbei.components.railClasses
 							drawFeatureRect(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
 							g.endFill();
 							
-							if (thisLocation.y == feature.end) { // draw arrow at end
+							if (thisLocation.end == feature.end) { // draw arrow at end
 								g.beginFill(color);
 								drawFeaturePositiveArrow(g, startPosition, yPosition, xEndPosition - railMetrics.x, DEFAULT_FEATURE_HEIGHT);
 								g.endFill();
@@ -141,7 +195,7 @@ package org.jbei.components.railClasses
 							drawFeatureRect(g, startPosition, yPosition, xEndPosition - startPosition, DEFAULT_FEATURE_HEIGHT);
 							g.endFill();
 							
-							if (thisLocation.x == feature.start) { // draw arrow at start
+							if (thisLocation.start == feature.start) { // draw arrow at start
 								g.beginFill(color);
 								drawFeatureNegativeArrow(g, xStartPosition, yPosition, endPosition - xStartPosition, DEFAULT_FEATURE_HEIGHT);
 								g.endFill();
@@ -165,19 +219,6 @@ package org.jbei.components.railClasses
 					}
 				
 				}
-			}
-			
-			for (i = 0; i < renderedGaps.length; i++) {
-				thisLocation = renderedGaps[i] as Point;
-				xStartPosition = railMetrics.x + bpWidth * thisLocation.x;
-				xEndPosition = railMetrics.x + bpWidth * thisLocation.y;
-				yPosition = railMetrics.y + RailBox.THICKNESS + RAIL_GAP + alignmentRowIndex * (DEFAULT_FEATURE_HEIGHT + DEFAULT_GAP) + DEFAULT_FEATURE_HEIGHT / 2;
-				
-				locationWidth = bpWidth * (thisLocation.y - thisLocation.x);
-
-				g.beginFill(color);
-				drawFeatureRect(g, xStartPosition, yPosition, xEndPosition- xStartPosition, DEFAULT_FEATURE_GAP_HEIGHT); 
-				g.endFill();
 			}
 		}
 		
