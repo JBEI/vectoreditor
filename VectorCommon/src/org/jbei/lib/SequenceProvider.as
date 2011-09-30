@@ -1066,6 +1066,12 @@ package org.jbei.lib
             var xmlData:XML = new XML(jbeiSeq);
             var seq:XMLList = null;
             
+            //check if the file is actually a jbei-seq xml
+            if (xmlData.name() == null || xmlData.name().toString() != "http://jbei.org/sequence::seq") {
+                result.name = null;
+                return result;
+            }
+            
             var seqNS:Namespace = xmlData.namespace("seq");
             var name:XMLList = xmlData.seqNS::name;
             var circular:XMLList = xmlData.seqNS::circular;
