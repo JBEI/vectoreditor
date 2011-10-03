@@ -2,15 +2,17 @@
 <AbstractDialogForm creationComplete="onCreationComplete()" xmlns="org.jbei.lib.ui.dialogs.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
-            import mx.collections.ArrayCollection;
-            import mx.controls.dataGridClasses.DataGridColumn;
-            import mx.events.ValidationResultEvent;
-            import mx.utils.StringUtil;
-            
-            import org.jbei.bio.sequence.common.StrandType;
-            import org.jbei.bio.sequence.dna.Feature;
-            import org.jbei.bio.sequence.dna.FeatureNote;
-            import org.jbei.registry.ApplicationFacade;
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.ValidationResultEvent;
+			import mx.utils.StringUtil;
+			
+			import org.jbei.bio.parsers.GenbankFormat;
+			import org.jbei.bio.sequence.common.Location;
+			import org.jbei.bio.sequence.common.StrandType;
+			import org.jbei.bio.sequence.dna.Feature;
+			import org.jbei.bio.sequence.dna.FeatureNote;
+			import org.jbei.registry.ApplicationFacade;
 			
 			[Bindable]
 			private var featureTypes:ArrayCollection = new ArrayCollection(
@@ -167,9 +169,29 @@
 					}
 				}
 				
-				genbankStartNumericStepper.value = feature.start + 1;
-				endNumericStepper.value = feature.end;
-                
+				var locations:Vector.<Location> = feature.locations;
+				var multiLocationString:String = "";
+				for (i = 0; i < locations.length; i++) {
+					var location:Location = locations[i];
+					if (location.start == location.end) {
+						multiLocationString += (location.start + 1);
+					} else {
+						multiLocationString += (location.start + 1) + ".." + location.end;
+					}
+					if (i != locations.length - 1) {
+						multiLocationString += ",";
+					}
+				}
+				
+				multiLocationText.text = multiLocationString;
+				generateSingleLocationValues();
+				
+				if (locations.length > 1) {
+					goMultiLocation();
+				} else {
+					goSingleLocation();
+				}
+				
                 if(!feature.notes) {
                     feature.notes = new Vector.<FeatureNote>();
                 }
@@ -189,8 +211,15 @@
 				
 				feature.strand = strandRadioGroup.selectedValue as int;
 				feature.type = typeComboBox.text;
-				//feature.start = genbankStartNumericStepper.value - 1;
-				//feature.end = endNumericStepper.value;
+				
+				if (singleLocationRadio.selected) {
+					feature.locations.push(new Location(genbankStartNumericStepper.value + 1, endNumericStepper.value));
+				} else {
+					var locationsVector:Vector.<Array> = GenbankFormat.parseGenbankLocation(multiLocationText.text);
+					for (var j:int = 0; j < locationsVector.length; j++) {
+						feature.locations.push(new Location(locationsVector[j][0] - 1, locationsVector[j][1]));
+					}
+				}
 				feature.name = nameTextInput.text;
 				
 				feature.notes = new Vector.<FeatureNote>();
@@ -212,7 +241,6 @@
                         featureNote.quoted = quoted;
                         feature.notes.push(featureNote);
                     }
-                    
                 }
                 
 				ApplicationFacade.getInstance().sequenceProvider.addFeature(feature);
@@ -225,8 +253,15 @@
 					
 					feature.strand = strandRadioGroup.selectedValue as int;
 					feature.type = typeComboBox.text;
-					//feature.start = genbankStartNumericStepper.value - 1;
-					//feature.end = endNumericStepper.value;
+					feature.locations = new Vector.<Location>();
+					if (singleLocationRadio.selected) {
+						feature.locations.push(new Location(genbankStartNumericStepper.value + 1, endNumericStepper.value));
+					} else {
+						var locationsVector:Vector.<Array> = GenbankFormat.parseGenbankLocation(multiLocationText.text);
+						for (var j:int = 0; j < locationsVector.length; j++) {
+							feature.locations.push(new Location(locationsVector[j][0] - 1, locationsVector[j][1]));
+						}
+					}
 					feature.name = nameTextInput.text;
 					
                     var attributes:ArrayCollection = attributesDataGrid.dataProvider as ArrayCollection;
@@ -247,13 +282,51 @@
                             featureNote.quoted = quoted;
                             feature.notes.push(featureNote);
                         }
-                        
                     }
                     
 				} finally {
 					ApplicationFacade.getInstance().sequenceProvider.manualUpdateEnd();
 				}
 			}
+			
+			private function goSingleLocation():void
+			{
+				singleLocationRadio.selected = true;
+				multiLocationRadio.selected = false;
+				multiLocationText.enabled = false;
+				genbankStartNumericStepper.enabled = true;
+				endNumericStepper.enabled = true;
+			}
+			
+			private function goMultiLocation():void
+			{
+				singleLocationRadio.selected = false;
+				multiLocationRadio.selected = true;
+				multiLocationText.enabled = true;
+				genbankStartNumericStepper.enabled = false;
+				endNumericStepper.enabled = false;
+			}
+			
+			private function generateMultiLocationText():void
+			{
+				if (genbankStartNumericStepper.value == endNumericStepper.value) {
+					multiLocationText.text = genbankStartNumericStepper.value.toString();
+				} else {
+					multiLocationText.text = genbankStartNumericStepper.value + ".." + endNumericStepper.value;
+				}
+			}
+			
+			private function generateSingleLocationValues():void
+			{
+				var text:String = multiLocationText.text;
+				// use BioFlex's GenbankFormat location parser
+				var locations:Vector.<Array> = GenbankFormat.parseGenbankLocation(text);
+				if (locations.length > 0) {
+					genbankStartNumericStepper.value = locations[0][0];
+					endNumericStepper.value = locations[locations.length - 1][1];
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -272,11 +345,36 @@
 		<mx:FormItem label="Type:" direction="horizontal">
 			<mx:ComboBox id="typeComboBox" dataProvider="{ featureTypes }" labelField="label"/>
 		</mx:FormItem>
-		<mx:FormItem label="Start:" direction="horizontal">
-			<mx:NumericStepper id="genbankStartNumericStepper" minimum="1" maximum="{ sequenceLength }"/>
-		</mx:FormItem>
-		<mx:FormItem label="End:" direction="horizontal">
-			<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength + 1 }"/>
+		<mx:FormItem label="Location:" direction="horizontal">
+			<mx:Grid>
+				<mx:GridRow>
+					<mx:GridItem rowSpan="2" colSpan="1">
+						<mx:RadioButton id="singleLocationRadio" click="goSingleLocation()" />
+					</mx:GridItem>
+					<mx:GridItem>
+						<mx:HBox>
+							<mx:NumericStepper id="genbankStartNumericStepper" minimum="1" maximum="{ sequenceLength }" change="generateMultiLocationText()" />
+							<mx:Label text="Start" />
+						</mx:HBox>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow>
+					<mx:GridItem>
+						<mx:HBox>
+							<mx:NumericStepper id="endNumericStepper" minimum="1" maximum="{ sequenceLength + 1 }" change="generateMultiLocationText()" />
+							<mx:Label text="end" />
+						</mx:HBox>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow>
+					<mx:GridItem>
+						<mx:RadioButton id="multiLocationRadio" click="goMultiLocation()" />
+					</mx:GridItem>
+					<mx:GridItem>
+						<mx:TextArea id="multiLocationText" change="generateSingleLocationValues()" />
+					</mx:GridItem>					
+				</mx:GridRow>
+			</mx:Grid>
 		</mx:FormItem>
 		<mx:FormItem label="Attributes:" direction="horizontal" >
             <mx:DataGrid id="attributesDataGrid" editable="true" itemEditEnd="onItemEditEnd()">
