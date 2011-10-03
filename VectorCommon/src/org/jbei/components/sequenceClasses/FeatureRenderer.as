@@ -106,6 +106,8 @@ package org.jbei.components.sequenceClasses
 				} else {
                     if (feature.start < row.rowData.start && feature.end <= row.rowData.start) {
                         continue; // the feature is outside of the current row
+					} else if (feature.start > row.rowData.end && feature.end > row.rowData.end) {
+						continue; // the feature is outside of the current row
                     } else {
     					startBP = (feature.start < row.rowData.start) ? row.rowData.start : feature.start;
     					endBP = (feature.end - 1 < row.rowData.end) ? feature.end - 1 : row.rowData.end;
@@ -212,8 +214,10 @@ package org.jbei.components.sequenceClasses
 						}
 					} else {
 	                    if (location.start < row.rowData.start && location.end <= row.rowData.start) {
-	                        continue; // the feature is outside of the current row
-	                    } else {
+	                        continue; // the location is outside of the current row
+	                    } else if (location.start > row.rowData.end && location.end > row.rowData.end) {
+							continue; // the location is outside of the current row
+						}else {
 	    					startBP = (location.start < row.rowData.start) ? row.rowData.start : location.start;
 	    					endBP = (location.end - 1 < row.rowData.end) ? location.end - 1 : row.rowData.end;
 	                    }
