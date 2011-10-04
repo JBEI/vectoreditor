@@ -370,8 +370,11 @@ package org.jbei.registry
             if (featuredDNASequence.name == null) {
                 featuredDNASequence = sequenceProvider.fromJbeiSeqXml(data);
                 if (featuredDNASequence.name == null) {
-                    Alert.show("Failed to parse sequence file", "Failed to parse");
-                    return;
+                    featuredDNASequence = sequenceProvider.fromFasta(data);
+                    if (featuredDNASequence.name == null) {
+                        Alert.show("Failed to parse sequence file", "Failed to parse");
+                        return;
+                    }
                 }
             }
             

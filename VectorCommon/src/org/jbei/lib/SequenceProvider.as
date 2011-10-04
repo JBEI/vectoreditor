@@ -1119,6 +1119,48 @@ package org.jbei.lib
             return result;
         }
         
+        /* if the data passed in cannot be handled, will return a FeaturedDNASequence with null name */
+        public function fromFasta(fasta:String):FeaturedDNASequence {
+            var result:FeaturedDNASequence = new FeaturedDNASequence();
+            result.features = new ArrayCollection(); //there are none
+            result.isCircular = false; //assume fasta sequences are linear
+            
+            var fastaLines:Array = fasta.split(/\n/);
+            var seq:String = "";
+            
+            if ((fastaLines[0] as String).charAt(0) == ">") {
+                var fastaName:RegExp = /^>\s*(\S*)/;
+                var fastaNameResult:Array = fastaName.exec(fastaLines[0]);
+                if (fastaNameResult != null && fastaNameResult.length > 1) {
+                    result.name = fastaNameResult[1];
+                } else {
+                    result.name = ""; //shouldn't get here though, safety catch
+                }
+            } else {
+                //assume "improper" fasta with no header line
+                result.name = "";
+                seq += fastaLines[0];
+            }
+
+            for (var i:int = 1; i < fastaLines.length; i++) {
+                if ((fastaLines[i] as String).charAt(0) == ">") {
+                    //this is a multi-sequence fasta, ignore everything after the first sequence
+                    break;
+                }
+                seq += fastaLines[i]; //concat the sequence lines into one string
+            }
+            
+            seq = seq.replace(/\d|\s/g, ""); //allow (but ignore) digits and whitespace
+            if (seq.match(/[^ACGTRYMKSWHBVDNacgtrymkswhbvdn]/)) {
+                //illegal characters, cannot parse as fasta
+                result.name = null;
+                return result;
+            }
+            
+            result.sequence = seq.toLowerCase();
+            return result;
+        }
+        
         // Private Methods
         private function updateComplementSequence():void
         {
