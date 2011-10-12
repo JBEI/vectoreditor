@@ -173,7 +173,7 @@
 				var multiLocationString:String = "";
 				for (i = 0; i < locations.length; i++) {
 					var location:Location = locations[i];
-					if (location.start == location.end) {
+					if (location.start == location.end - 1) {
 						multiLocationString += (location.start + 1);
 					} else {
 						multiLocationString += (location.start + 1) + ".." + location.end;
