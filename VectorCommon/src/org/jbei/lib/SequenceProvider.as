@@ -509,7 +509,7 @@ package org.jbei.lib
                         * |-----SSSSSSSSSSSSSSSSSSSSSSSSS--------------------------------------------------------------------|
                         *                                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                 */
                         if(startIndex < feature.start && (endIndex - 1) < feature.start) {
-							feature.deleteAt(startIndex, endIndex - startIndex + 1, lengthBefore, circular);
+							feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 1");
                         }
                             /* Selection after feature => no action
@@ -529,7 +529,7 @@ package org.jbei.lib
                             * |-------------------------------------SSSSSSSSSSSSSSSSSSSSSS---------------------------------------|
                             *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */
                         else if(((startIndex >= feature.start) && ((endIndex) <= feature.end))) {
-                            feature.deleteAt(startIndex, endIndex - startIndex + 1, lengthBefore, circular);
+                            feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 4");
                         }
                             /* Selection left overlap feature => shift & resize feature
@@ -659,10 +659,11 @@ package org.jbei.lib
 							delLengthBetween = feature.start - feature.end;
 							delLength1 = feature.end - startIndex;
 							delLength2 = endIndex - feature.start;
-							lengthBefore2 = lengthBefore - delLengthBetween;
-							lengthBefore3 = lengthBefore2 - delLength1;
-							feature.deleteAt(feature.end, delLengthBetween, lengthBefore, circular);
-							feature.deleteAt(startIndex, delLength1, lengthBefore2, circular);
+							
+							feature.deleteAt(startIndex, delLength1, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength1;
+							feature.deleteAt(feature.end, delLengthBetween, lengthBefore2, circular);
+							lengthBefore3 = lengthBefore2 - delLengthBetween;
 							feature.deleteAt(feature.start, delLength2, lengthBefore3, circular);
 
                             if(startIndex == 0 && endIndex == lengthBefore) {
@@ -683,31 +684,39 @@ package org.jbei.lib
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         if(startIndex > feature.start && (endIndex - 1) < feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 1");
-							var deletionLength:int = endIndex + (lengthBefore - startIndex);
-                            feature.deleteAt(startIndex, deletionLength, lengthBefore, circular);
+							delLength1 = endIndex;
+							delLength2 = lengthBefore - startIndex;
+							feature.deleteAt(startIndex, delLength2, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength2;
+                            feature.deleteAt(0, delLength1, lengthBefore2, circular);
                         }
                             /* Selection end overlap
                             * |SSSSSSSSSSSSSSSSSSSSSS---------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.end && startIndex > feature.start && (endIndex - 1) < feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 2");
-							delLengthInside = feature.end + lengthBefore - startIndex;
-							delLengthOutside = endIndex - feature.end;
-							lengthBefore2 = lengthBefore - delLengthInside;
-                            feature.deleteAt(startIndex, delLengthInside, lengthBefore, circular);
-							feature.deleteAt(0, delLengthOutside, lengthBefore2, circular);
+							delLength1 = feature.end;
+							delLength2 = lengthBefore - startIndex;
+							delLengthBetween = endIndex - feature.end;
+							
+							feature.deleteAt(startIndex, delLength2, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength2;
+							feature.deleteAt(feature.end, delLengthBetween, lengthBefore2, circular);
+							lengthBefore3 = lengthBefore2 - delLengthBetween;
+							feature.deleteAt(0, delLength1, lengthBefore3, circular);
                         }
                             /* Selection start overlap
                             * |SSSSSSSSSSSSSSSSS-----------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.start && feature.end > (endIndex - 1) && startIndex > feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 3");
-							delLengthInside = endIndex + lengthBefore - feature.start;
 							delLengthOutside = feature.start - startIndex;
-							lengthBefore2 = lengthBefore - delLengthInside;
-							feature.deleteAt(feature.start, delLengthInside, lengthBefore, circular);
-							feature.deleteAt(feature.start - delLengthOutside, delLengthOutside, lengthBefore2, circular);
-
+							delLength2 = lengthBefore - feature.start;
+							feature.deleteAt(feature.start, delLength2, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength2;
+							feature.deleteAt(startIndex, delLengthOutside, lengthBefore2, circular);
+							lengthBefore3 = lengthBefore2 - delLengthOutside;
+							feature.deleteAt(0, endIndex, lengthBefore3, circular);
                         }
                             /* Selection inside feature
                             * |SSSSSSSSSSSSSSSSSSSSSSS-----------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
@@ -721,29 +730,36 @@ package org.jbei.lib
                             *  FFFFFFFFFFFFFFFFFFF|             |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(endIndex - 1 >= feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 5");
-							delLength2 = feature.end + lengthBefore - startIndex;
+							var delLength2a:int = endIndex - feature.start;
+							var delLength2b:int = lengthBefore - startIndex;
 							delLengthBetween = feature.start - feature.end;
-							delLength1 = endIndex - feature.start;
-							lengthBefore2 = lengthBefore - delLength2;
-							lengthBefore3 = lengthBefore2 - delLength1;
-                            feature.deleteAt(startIndex, delLength2, lengthBefore, circular);
-							feature.deleteAt(feature.start, delLength1, lengthBefore2, circular);
-							feature.deleteAt(feature.start - delLengthBetween, delLengthBetween, lengthBefore3, circular);
-                        }
+							delLength1 = feature.end;
+							
+							feature.deleteAt(0, delLength1, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength1;
+							feature.deleteAt(0, delLengthBetween, lengthBefore2, circular);
+							lengthBefore3 = lengthBefore2 - delLengthBetween;
+							feature.deleteAt(0, delLength2a, lengthBefore3, circular);
+							var lengthBefore4:int = lengthBefore3 - delLength2a;
+							feature.deleteAt(lengthBefore4 - delLength2b, delLength2b, lengthBefore4, circular);
+						}
                             /* Selection double end left overlap
                             * |SSSSSSSSSSS---------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                        |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
                         else if(startIndex <= feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 6");
-							delLength2 = endIndex + lengthBefore - feature.start;
-							delLength1 = feature.end - startIndex;
+							var delLength1a:int = endIndex;
+							var delLength1b:int = feature.end - startIndex;
 							delLengthBetween = feature.start - feature.end;
-							lengthBefore2 = lengthBefore - delLength2;
-							lengthBefore3 = lengthBefore2 - delLength1;
 							
-							feature.deleteAt(feature.start, delLength2, lengthBefore, circular);
-							feature.deleteAt(feature.end - delLength1, delLength1, lengthBefore2, circular);
-							feature.deleteAt(feature.end, delLengthBetween, lengthBefore3, circular);
+							delLength2 = lengthBefore - feature.start;
+							var newCutStart:int = startIndex - endIndex;
+							feature.deleteAt(0, delLength1a, lengthBefore, circular);
+							lengthBefore2 = lengthBefore - delLength1a;
+							feature.deleteAt(newCutStart, delLength1b, lengthBefore2, circular);
+							lengthBefore3 = lengthBefore2 - delLength1b;
+							feature.deleteAt(feature.end, lengthBefore3 - feature.end, lengthBefore3, circular);
+							
                         }
                         else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
