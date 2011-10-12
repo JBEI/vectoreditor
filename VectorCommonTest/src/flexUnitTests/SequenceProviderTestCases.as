@@ -161,6 +161,23 @@ package flexUnitTests
 		}
 		
 		[Test]
+		public function testRemoveSequenceFcSn1b():void
+		{
+			_sequenceProvider.removeSequence(39, 40);
+			var features:ArrayCollection = _sequenceProvider.features;
+			Assert.assertEquals(2, features.length);
+			Assert.assertEquals(10, (features[0] as Feature).locations[0].start);
+			Assert.assertEquals(20, (features[0] as Feature).locations[0].end);
+			Assert.assertEquals(25, (features[0] as Feature).locations[1].start);
+			Assert.assertEquals(30, (features[0] as Feature).locations[1].end);
+			
+			Assert.assertEquals(39, (features[1] as Feature).locations[0].start);
+			Assert.assertEquals(49, (features[1] as Feature).locations[0].end);
+			Assert.assertEquals(54, (features[1] as Feature).locations[1].start);
+			Assert.assertEquals(5, (features[1] as Feature).locations[1].end);
+		}
+		
+		[Test]
 		public function testRemoveSequenceFcSn2():void
 		{
 			_sequenceProvider.removeSequence(45, 55);
