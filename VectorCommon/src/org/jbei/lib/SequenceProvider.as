@@ -455,11 +455,11 @@ package org.jbei.lib
 			var lengthBefore:int = sequence.length;
             _sequence.insertSymbols(position, insertSequence);
             
-            var insertionSequenceLength:int = insertSequence.length;
+            var insertSequenceLength:int = insertSequence.length;
             
             for(var i:int; i < _features.length; i++) {
                 var feature:Feature = _features[i];
-				feature.insertAt(position, insertionSequenceLength, lengthBefore, circular);
+				feature.insertAt(position, insertSequenceLength, lengthBefore, circular);
 			}
             
             if(!quiet && !_manualUpdateStarted) {
@@ -508,7 +508,7 @@ package org.jbei.lib
                         /* Selection before feature => feature shift left
                         * |-----SSSSSSSSSSSSSSSSSSSSSSSSS--------------------------------------------------------------------|
                         *                                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                 */
-                        if(startIndex < feature.start && (endIndex - 1) < feature.start) {
+                        if(startIndex < feature.start && endIndex <= feature.start) {
 							feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fn,Sn 1");
                         }
@@ -606,10 +606,11 @@ package org.jbei.lib
                     }
                 } else { // circular feature
                     if(startIndex < endIndex) { // normal selection
+						trace(startIndex + "," + endIndex + "," + feature.start + "," + feature.end);
                         /* Selection between feature start and end
                         * |-------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------------------------------------|
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        if(startIndex >= feature.end && (endIndex) < feature.start) {
+                        if(startIndex >= feature.end && (endIndex) <= feature.start) {
                             feature.deleteAt(startIndex, endIndex - startIndex, lengthBefore, circular);
                             if (DEBUG_MODE) trace("case Fc,Sn 1");
                         }
