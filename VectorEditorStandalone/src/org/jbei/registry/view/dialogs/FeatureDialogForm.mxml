@@ -208,6 +208,7 @@
 			private function createFeature():void
 			{
 				var feature:Feature = new Feature();
+				feature.locations = new Vector.<Location>();
 				
 				feature.strand = strandRadioGroup.selectedValue as int;
 				feature.type = typeComboBox.text;
