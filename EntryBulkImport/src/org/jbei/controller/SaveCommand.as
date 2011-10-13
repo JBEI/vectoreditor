@@ -19,7 +19,7 @@ package org.jbei.controller
 			var entrySet:EntrySet = notification.getBody() as EntrySet;
 			if( entrySet.recordCount == 0 )
 			{
-				Alert.show( "No records found. Please enter information for at least one row!", "Save Error", Alert.OK );
+				Alert.show( "No records found. Please enter information for at least one row!", "Submit Error", Alert.OK );
 				return;
 			}
 			

@@ -35,7 +35,7 @@
 			</s:VGroup>	
 			
 			<components:FileUploader id="fileUploader" />
-			<s:Button label="Submit" id="saveButton" includeInLayout="false" x="895" y="410" width="60" height="25" />
+			<s:Button label="Submit" id="saveButton" includeInLayout="false" x="885" y="410" width="70" height="25" />
 			<s:Button label="Cancel" id="cancelButton" includeInLayout="false" x="965" y="410" width="70" height="25" />
 		</s:VGroup>
 	
