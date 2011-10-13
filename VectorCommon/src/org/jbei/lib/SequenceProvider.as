@@ -606,7 +606,6 @@ package org.jbei.lib
                     }
                 } else { // circular feature
                     if(startIndex < endIndex) { // normal selection
-						trace(startIndex + "," + endIndex + "," + feature.start + "," + feature.end);
                         /* Selection between feature start and end
                         * |-------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------------------------------------|
                         *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
@@ -709,7 +708,7 @@ package org.jbei.lib
                             /* Selection start overlap
                             * |SSSSSSSSSSSSSSSSS-----------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        else if(startIndex <= feature.start && feature.end > (endIndex - 1) && startIndex > feature.end) {
+                        else if(startIndex <= feature.start && endIndex < feature.end && startIndex >= feature.end) {
                             if (DEBUG_MODE) trace("case Fc,Sc 3");
 							delLengthOutside = feature.start - startIndex;
 							delLength2 = lengthBefore - feature.start;
@@ -722,7 +721,7 @@ package org.jbei.lib
                             /* Selection inside feature
                             * |SSSSSSSSSSSSSSSSSSSSSSS-----------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
                             *  FFFFFFFFFFFFFFFFFFF|                                               |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-                        else if(endIndex - 1 >= feature.end && startIndex <= feature.start && endIndex - 1 < feature.start) {
+                        else if(endIndex >= feature.end && startIndex <= feature.start && endIndex <= feature.start) {
                             if (DEBUG_MODE) trace("case Fc,Sc 4");
                             deletions.push(feature);
                         }

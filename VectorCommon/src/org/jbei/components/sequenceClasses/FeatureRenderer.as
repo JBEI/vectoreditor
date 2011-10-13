@@ -186,8 +186,11 @@ package org.jbei.components.sequenceClasses
 					
 					g.lineStyle(1, 0x606060);
 					g.beginFill(colorByType(feature.type.toLowerCase()));
-					
 					if(location.start > location.end) { // circular case
+						
+						if (location.start > row.rowData.end && location.end <= row.rowData.start) {
+							continue;
+						}
 						/* |--------------------------------------------------------------------------------------|
 						*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
 						if(location.end >= row.rowData.start && location.end <= row.rowData.end) {
@@ -197,8 +200,7 @@ package org.jbei.components.sequenceClasses
 							*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
 						else if(row.rowData.end >= contentHolder.sequenceProvider.sequence.length) {
 							endBP = contentHolder.sequenceProvider.sequence.length - 1;
-						}
-						else {
+						} else {
 							endBP = row.rowData.end;
 						}
 						
@@ -206,10 +208,9 @@ package org.jbei.components.sequenceClasses
 						*                                    |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
 						if(location.start >= row.rowData.start && location.start <= row.rowData.end) {
 							startBP = location.start;
-						}
-							/* |--------------------------------------------------------------------------------------|
-							*   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
-						else {
+						/* |--------------------------------------------------------------------------------------|
+						*   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
+						}else {
 							startBP = row.rowData.start;
 						}
 					} else {
@@ -222,7 +223,7 @@ package org.jbei.components.sequenceClasses
 	    					endBP = (location.end - 1 < row.rowData.end) ? location.end - 1 : row.rowData.end;
 	                    }
 					}
-					
+
 					/* Case when start and end are in the same row
 					* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFF|                     |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  */
