@@ -977,7 +977,7 @@ package org.jbei.lib
                 for(var i:int = 0; i < _features.length; i++) {
                     var feature:Feature = _features.getItemAt(i) as Feature;
                     
-					var shiftBy:int = rebasePosition - feature.start;
+					var shiftBy:int = -rebasePosition;
 					feature.shift(shiftBy, seqLength, circular);
                 }
             }
