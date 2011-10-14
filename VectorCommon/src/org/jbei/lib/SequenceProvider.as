@@ -251,7 +251,7 @@ package org.jbei.lib
         public function subSequenceProvider(start:int, end:int):SequenceProvider
         {
             var featuredSubSequence:SequenceProvider;
-            
+
             if(start < 0 || end < 0 || start > _sequence.length || end > _sequence.length) {
                 return featuredSubSequence;
             }
@@ -262,9 +262,9 @@ package org.jbei.lib
             
             for(var i:int = 0; i < features.length; i++) {
                 var feature:Feature = features[i] as Feature;
-                
-                if(start < end && feature.start <= feature.end) {
-                    if(start <= feature.start && end > feature.end) {
+
+                if(start < end && feature.start < feature.end) {
+                    if(start <= feature.start && end >= feature.end) {
                         var clonedFeature1:Feature = feature.clone();
                         
 						clonedFeature1.shift(-start, sequence.length, circular);
@@ -272,7 +272,7 @@ package org.jbei.lib
                         subFeatures.addItem(clonedFeature1);
                     }
                 } else if(start > end && feature.start >= feature.end) {
-                    if(start <= feature.start && end > feature.end) {
+                    if(start <= feature.start && end >= feature.end) {
                         var clonedFeature2:Feature = feature.clone();
                         
 						clonedFeature2.shift(-start, sequence.length, circular);
@@ -295,7 +295,7 @@ package org.jbei.lib
                     }
                 }
             }
-            
+
             featuredSubSequence = new SequenceProvider("Dummy", false, featuredSubSymbolList, subFeatures);
             
             return featuredSubSequence;
@@ -1015,13 +1015,15 @@ package org.jbei.lib
                 tempQualifier.name = "label";
                 tempQualifier.value = seqProviderFeature.name;
                 feature.featureQualifiers.push(tempQualifier);
-                for (var k:int = 0; k < seqProviderFeature.notes.length; k++) {
-                    tempQualifier = new GenbankFeatureQualifier();
-                    tempQualifier.quoted = seqProviderFeature.notes[k].quoted;
-                    tempQualifier.name = seqProviderFeature.notes[k].name;
-                    tempQualifier.value = seqProviderFeature.notes[k].value;
-                    feature.featureQualifiers.push(tempQualifier);
-                }
+				if (seqProviderFeature.notes != null) {
+	                for (var k:int = 0; k < seqProviderFeature.notes.length; k++) {
+	                    tempQualifier = new GenbankFeatureQualifier();
+	                    tempQualifier.quoted = seqProviderFeature.notes[k].quoted;
+	                    tempQualifier.name = seqProviderFeature.notes[k].name;
+	                    tempQualifier.value = seqProviderFeature.notes[k].value;
+	                    feature.featureQualifiers.push(tempQualifier);
+	                }
+				}
                 result.features.features.push(feature);
             }
             
