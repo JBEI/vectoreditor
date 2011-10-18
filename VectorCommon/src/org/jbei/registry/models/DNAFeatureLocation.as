@@ -1,6 +1,6 @@
 package org.jbei.registry.models
 {
-	[RemoteClass(alias="org.jbei.lib.vo.DNAFeatureLocation")]
+	[RemoteClass(alias="org.jbei.ice.lib.vo.DNAFeatureLocation")]
 	/**
 	 * 
 	 * @author Timothy Ham

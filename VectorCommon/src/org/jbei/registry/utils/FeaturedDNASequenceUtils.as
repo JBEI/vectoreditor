@@ -40,7 +40,18 @@ package org.jbei.registry.utils
 					}
 				}
 				
-				dnaSequenceFeatures.addItem(new DNAFeature(feature.start + 1, feature.end, feature.strand, feature.name, descriptionNotes, feature.type));
+				var locations:ArrayCollection = new ArrayCollection(); /* of DNAFeatureLocation */
+				if (feature.locations != null && feature.locations.length > 0) {
+					for (var k:int = 0; k < feature.locations.length; k++) {
+						var location:Location = feature.locations[k];
+						
+						locations.addItem(new DNAFeatureLocation(location.start + 1, location.end));
+					}
+				}
+				var newDNAFeature:DNAFeature = new DNAFeature(feature.start + 1, feature.end, feature.strand, feature.name, descriptionNotes, feature.type);
+				newDNAFeature.locations = locations;
+				
+				dnaSequenceFeatures.addItem(newDNAFeature);
 			}
 			
 			return featuredDNASequence;
@@ -74,7 +85,7 @@ package org.jbei.registry.utils
 					var newFeature:Feature = new Feature(dnaFeature.name, 0, 0, dnaFeature.type, dnaFeature.strand, featureNotes);
 					newFeature.locations = new Vector.<Location>();
 					for (var k:int = 0; k < dnaFeature.locations.length; k++) {
-						var featureLocation:DNAFeatureLocation = dnaFeature.locations.getItemAt(k) as DNAFeatureLocation;
+						var featureLocation:DNAFeatureLocation = dnaFeature.locations[k];
 						newFeature.locations.push(new Location(featureLocation.genbankStart - 1, featureLocation.end));
 					}
 					features.addItem(newFeature);
