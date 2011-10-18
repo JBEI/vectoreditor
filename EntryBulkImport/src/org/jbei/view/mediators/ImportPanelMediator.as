@@ -131,7 +131,7 @@ package org.jbei.view.mediators
 							sendNotification( Notifications.SAVE, entrySet );
 					}
 					else
-						Alert.show( "Please fix any validation errors before proceeding", "Error Saving" );
+						Alert.show( "Please fix any validation errors before proceeding", "Error Submitting" );
 					break;
 				
 				case Notifications.PASTE_CELL_DISTRIBUTION:

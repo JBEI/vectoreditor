@@ -12,8 +12,9 @@
 	
     <mx:Script>
         <![CDATA[
-            import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
+            import mx.controls.Alert;
             
+            import org.hasseg.externalMouseWheel.ExternalMouseWheelSupport;
             import org.jbei.lib.utils.SystemUtils;
             import org.jbei.registry.ApplicationFacade;
             
@@ -32,6 +33,42 @@
                 if(SystemUtils.isMacOS()) { // We need this only for Mac in order to make mouse wheel to work in browser
                     mouseWheelSupport = ExternalMouseWheelSupport.getInstance(stage);
                     mouseWheelSupport.dispatchingObjectDeterminationMethod = ExternalMouseWheelSupport.COPY_MOUSEMOVE_EVENTS;
+                }
+                
+                CONFIG::standalone { // load genbank passed to VE (from DE)
+                    if (this.root != null && this.root.loaderInfo != null && this.root.loaderInfo.parameters != null) {
+                        var paramObj:Object = this.root.loaderInfo.parameters;
+                        
+                        // check if any parameters were passed to VE
+                        var isParametersEmpty:Boolean = true;
+                        for (var name:String in paramObj) {
+                            isParametersEmpty = false;
+                        }
+                        if (isParametersEmpty) {
+                            return;
+                        }
+                        
+                        var lengthKey:String = "fileLength";
+                        var dataKey:String = "fileData";
+                        
+                        if (paramObj[lengthKey] != null && paramObj[lengthKey].length > 0 &&
+                                paramObj[dataKey] != null && paramObj[dataKey].length > 0) {
+                            var fileLength:int = paramObj[lengthKey];
+                            var fileData:String = paramObj[dataKey];
+                            if (fileData.length == fileLength ) {
+                                ApplicationFacade.getInstance().importSequence(fileData);
+                            } else if (fileData.length < fileLength) {
+                                // it is possible that some browsers may not be able to handle strings large enough
+                                Alert.show("Oops, it looks like your sequence file may be too large to transfer through your browser. " +
+                                    "Please download the sequence file from the source and manually import it into VectorEditor, or try a different browser. ", "Error");
+                            } else {
+                                Alert.show("Oops, your sequence file may have been corrupted during the transfer. " +
+                                    "Please download the sequence file from the source and manually import it into VectorEditor, or try again. ", "Error");
+                            }
+                        } else {
+                            Alert.show("Were you expecting a sequence to load? If so, the data unfortunately didn't make it here properly. ", "Warning");
+                        }
+                    }
                 }
             }
         ]]>

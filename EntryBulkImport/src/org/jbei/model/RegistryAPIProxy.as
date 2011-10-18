@@ -347,9 +347,9 @@ package org.jbei.model
 		{
             var saved:int = event.result as int;
             if( saved == 0 )
-                Alert.show( "There was a problem submitting your entries. Please try again or consult your administrater", "Save", Alert.OK );
+                Alert.show( "There was a problem submitting your entries. Please try again or consult your administrater", "Submit", Alert.OK );
             else
-			    Alert.show( saved + " entries have been submitted successfully.\nOn administrative approval they will show up in your list of entries", "Save",  Alert.OK, null, redirectToFolders );
+			    Alert.show( saved + " entries have been submitted successfully.\nOn administrative approval they will show up in your list of entries", "Submit",  Alert.OK, null, redirectToFolders );
 		}
 		
 		private function uniquePromoters( event:ResultEvent ) : void

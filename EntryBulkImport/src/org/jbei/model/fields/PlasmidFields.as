@@ -225,7 +225,11 @@ package org.jbei.model.fields
 						break;
 					
 					case ATTACHMENT_FILENAME:
+                    
 						var attachment:Attachment = plasmid.attachment;
+                        if( attachment == null )
+                            break;
+                        
 						cell.text = attachment.fileName;
 						break;
 					
