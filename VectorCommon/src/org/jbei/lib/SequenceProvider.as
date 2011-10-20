@@ -515,7 +515,7 @@ package org.jbei.lib
                             /* Selection after feature => no action
                             * |-------------------------------------------------------------SSSSSSSSSSSSSSSSSSSSSSSSS------------|
                             *        |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                                              */
-                        else if(startIndex > feature.end) {
+                        else if(startIndex >= feature.end) {
                             if (DEBUG_MODE) trace("case Fn,Sn 2");
                         }
                             /* Selection cover feature => remove feature
@@ -801,7 +801,7 @@ package org.jbei.lib
                 
                 if(start < end) {
                     if(feature.start <= feature.end) {
-                        if(feature.start < end && feature.end >= start) {
+                        if(feature.start < end && feature.end > start) {
                             result.push(feature);
                         }
                     } else {
