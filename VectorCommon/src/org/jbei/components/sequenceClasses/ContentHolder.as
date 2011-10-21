@@ -869,7 +869,6 @@ package org.jbei.components.sequenceClasses
 				rowMapperChanged = false;
 				
 				rowMapper.update();
-				doDeselect();
 				
 				loadFeatureRenderers();
 				loadCutSiteRenderers();
