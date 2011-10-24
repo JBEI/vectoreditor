@@ -214,7 +214,7 @@
 				feature.type = typeComboBox.text;
 				
 				if (singleLocationRadio.selected) {
-					feature.locations.push(new Location(genbankStartNumericStepper.value + 1, endNumericStepper.value));
+					feature.locations.push(new Location(genbankStartNumericStepper.value - 1, endNumericStepper.value));
 				} else {
 					var locationsVector:Vector.<Array> = GenbankFormat.parseGenbankLocation(multiLocationText.text);
 					for (var j:int = 0; j < locationsVector.length; j++) {
@@ -256,7 +256,7 @@
 					feature.type = typeComboBox.text;
 					feature.locations = new Vector.<Location>();
 					if (singleLocationRadio.selected) {
-						feature.locations.push(new Location(genbankStartNumericStepper.value + 1, endNumericStepper.value));
+						feature.locations.push(new Location(genbankStartNumericStepper.value - 1, endNumericStepper.value));
 					} else {
 						var locationsVector:Vector.<Array> = GenbankFormat.parseGenbankLocation(multiLocationText.text);
 						for (var j:int = 0; j < locationsVector.length; j++) {

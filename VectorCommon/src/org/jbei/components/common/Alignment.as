@@ -147,7 +147,8 @@ package org.jbei.components.common
         
         private function doOverlaps(start1:int, end1:int, start2:int, end2:int):Boolean
         {
-            return ((start2 < start1) && (start1 < end2)) || ((start2 >= start1) && (start2 <= end1));
+            return ((start1 >= start2) && (start1 < end2)) || ((start2 >= start1) && (start2 < end1));
+			
         }
     }
 }
