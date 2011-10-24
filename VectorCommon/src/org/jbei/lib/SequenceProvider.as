@@ -1053,10 +1053,22 @@ package org.jbei.lib
                 dnaFeature.strand = genbankFeatures[i].strand;
                 
                 dnaFeature.notes = new ArrayCollection(); /* of DNAFeatureNote */
+				// try different ways label is encoded
                 for (var j:int = 0; j < genbankFeatures[i].featureQualifiers.length; j++) {
-                    if (genbankFeatures[i].featureQualifiers[j].name == "label") {
+					var name:String = genbankFeatures[i].featureQualifiers[j].name;
+                    if (name == "label") {
                         dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
-                    } else {
+                    } else if (dnaFeature.name == "" && name == "ApEinfo_label") {
+						dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
+					} else if (dnaFeature.name == "" && name == "note") {
+						dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
+					} else if (dnaFeature.name == "" && name == "gene") {
+						dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
+					} else if (dnaFeature.name == "" && name == "organism") {
+						dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
+					} else if (dnaFeature.name == "" && name == "name") {
+						dnaFeature.name = genbankFeatures[i].featureQualifiers[j].value;
+					} else {
                         dnaFeature.notes.addItem(new DNAFeatureNote(genbankFeatures[i].featureQualifiers[j].name, genbankFeatures[i].featureQualifiers[j].value, genbankFeatures[i].featureQualifiers[j].quoted));
                     }
                 }
