@@ -29,7 +29,7 @@ package org.jbei.components.common
         * It is sent as {sequenceProvider: sequenceProvider, start:int, end:int};
         */
         public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY:String = "SequenceProviderExternalContext";
-        public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH:int = 20000;
+        public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH:int = 100000;
         
         /**
         * Clipboard key for jbei-sequence-xml format
