@@ -60,7 +60,7 @@ package org.jbei.registry.utils
                 	iceXmlString += "        <seq:location>\n";
 					var location:Location = feature.locations[k];
 					iceXmlString += "            <seq:genbankStart>" + (location.start + 1).toString() + "</seq:genbankStart>\n";
-					iceXmlString += "            <end>" + (location.end).toString() + "</end>\n";
+					iceXmlString += "            <seq:end>" + (location.end).toString() + "</seq:end>\n";
 					iceXmlString += "        </seq:location>\n";
 				}
                 
