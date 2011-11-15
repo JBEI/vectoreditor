@@ -64,10 +64,12 @@ package org.jbei.registry.utils
 					iceXmlString += "        </seq:location>\n";
 				}
                 
-                for (var j:int = 0; j < feature.notes.length; j++) {
-                    var attribute:FeatureNote = feature.notes[j];
-                    iceXmlString += "        <seq:attribute name=\"" + attribute.name + "\" quoted=\"" + attribute.quoted.toString().toLocaleLowerCase() + "\" >" + attribute.value + "</seq:attribute>\n";
-                }
+				if (feature.notes != null) {
+	                for (var j:int = 0; j < feature.notes.length; j++) {
+	                    var attribute:FeatureNote = feature.notes[j];
+	                    iceXmlString += "        <seq:attribute name=\"" + attribute.name + "\" quoted=\"" + attribute.quoted.toString().toLocaleLowerCase() + "\" >" + attribute.value + "</seq:attribute>\n";
+	                }
+				}
                 iceXmlString += "        <seq:seqHash>" + seqHash + "</seq:seqHash>\n"; 
                 iceXmlString += "    </seq:feature>\n"
             }

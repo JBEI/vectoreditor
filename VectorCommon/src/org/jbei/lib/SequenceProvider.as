@@ -41,7 +41,7 @@ package org.jbei.lib
         private var _sequence:SymbolList;
         private var _complementSequence:SymbolList;
         private var _reverseComplementSequence:SymbolList;
-        private var _features:ArrayCollection /* of Feature */;
+        private var _features:ArrayCollection = new ArrayCollection(); /* of Feature */;
         
         private var _manualUpdateStarted:Boolean = false;
         private var needsRecalculateComplementSequence:Boolean = true;
@@ -251,7 +251,6 @@ package org.jbei.lib
         public function subSequenceProvider(start:int, end:int):SequenceProvider
         {
             var featuredSubSequence:SequenceProvider;
-
             if(start < 0 || end < 0 || start > _sequence.length || end > _sequence.length) {
                 return featuredSubSequence;
             }
@@ -266,7 +265,7 @@ package org.jbei.lib
                 if(start < end && feature.start < feature.end) {
                     if(start <= feature.start && end >= feature.end) {
                         var clonedFeature1:Feature = feature.clone();
-                        
+
 						clonedFeature1.shift(-start, sequence.length, circular);
                         
                         subFeatures.addItem(clonedFeature1);
@@ -297,7 +296,6 @@ package org.jbei.lib
             }
 
             featuredSubSequence = new SequenceProvider("Dummy", false, featuredSubSymbolList, subFeatures);
-            
             return featuredSubSequence;
         }
         
