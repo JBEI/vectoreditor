@@ -125,7 +125,9 @@
                 attributesDataGrid.columns = columns;
                 
                 nameTextInput.setFocus();
-                
+                goSingleLocation();
+				makeEmptyLastRow();
+				
 				if(dataObject && dataObject is Feature) {
 					populateControls(dataObject as Feature);
 				}
@@ -141,15 +143,14 @@
             {
                 // make sure there are empty items at the end of the list, so the user can add more
                 var attributes:ArrayCollection = attributesDataGrid.dataProvider as ArrayCollection;
-                
                 var lastItemIndex:int = attributes.length - 1;
-                if (lastItemIndex == -1) {
+				if (lastItemIndex == -1) {
+					attributes.addItem({key : "", value :"", quoted : false});
+				} else if (attributes[0] == null) {
+					attributes.removeAll();
                     attributes.addItem({key : "", value : "", quoted : false});
-                    attributesDataGrid.dataProvider = attributes;
-                    return;
-                } else if ("" != attributes[lastItemIndex].key || "" != attributes[lastItemIndex].value) {
+				} else if ("" != attributes[lastItemIndex].key || "" != attributes[lastItemIndex].value) {
                     attributes.addItem({key : "", value : "", quoted : false});
-                    attributesDataGrid.dataProvider = attributes;
                 } 
             }
 			private function populateControls(feature:Feature):void
