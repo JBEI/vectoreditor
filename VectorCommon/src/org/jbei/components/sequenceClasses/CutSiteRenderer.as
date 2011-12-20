@@ -77,13 +77,19 @@ package org.jbei.components.sequenceClasses
 					
 					if(alignmentRowIndex != -1) { break; }
 				}
-				
+		
 				var startBP:int = 0;
 				var endBP:int = 0;
-
+				
 				if(cutSite.start < cutSite.end) { // non-circular
-					startBP = (cutSite.start < row.rowData.start) ? row.rowData.start : cutSite.start;
-					endBP = (cutSite.end - 1 < row.rowData.end) ? cutSite.end - 1 : row.rowData.end;
+					if (cutSite.start < row.rowData.start && cutSite.end <= row.rowData.start) {
+						continue;
+					} else if (cutSite.start > row.rowData.end && cutSite.end > row.rowData.end) {
+						continue;
+					} else {
+						startBP = (cutSite.start < row.rowData.start) ? row.rowData.start : cutSite.start;
+						endBP = (cutSite.end - 1 < row.rowData.end) ? cutSite.end - 1 : row.rowData.end;
+					}
 				} else { // circular
    					/* |--------------------------------------------------------------------------------------|
 					*  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                             */
@@ -109,23 +115,35 @@ package org.jbei.components.sequenceClasses
 					else {
 						startBP = row.rowData.start;
 					}
-                    
-                    
 				}
 
-				var dsForwardPosition:int = cutSite.start + cutSite.restrictionEnzyme.dsForward;
-				var dsReversePosition:int = cutSite.start + cutSite.restrictionEnzyme.dsReverse;
-
+				var dsForwardPosition:int;
+				var dsReversePosition:int;
+				if (cutSite.strand == 1) {
+					dsForwardPosition = cutSite.start + cutSite.restrictionEnzyme.dsForward;
+					dsReversePosition = cutSite.start + cutSite.restrictionEnzyme.dsReverse;
+				} else {
+					dsForwardPosition = cutSite.end - cutSite.restrictionEnzyme.dsForward;
+					dsReversePosition = cutSite.end - cutSite.restrictionEnzyme.dsReverse;
+				}
+				
 				if (dsForwardPosition >= sequenceContentHolder.sequenceProvider.sequence.length) {
-                    dsForwardPosition -= sequenceContentHolder.sequenceProvider.sequence.length;
-                }
+					dsForwardPosition -= sequenceContentHolder.sequenceProvider.sequence.length;
+				}
 				if (dsReversePosition >= sequenceContentHolder.sequenceProvider.sequence.length) {
-                    dsReversePosition -= sequenceContentHolder.sequenceProvider.sequence.length;
-                }
-                dsForwardPosition = (dsForwardPosition >= row.rowData.start && dsForwardPosition <= row.rowData.end) ? dsForwardPosition : -1;
-
-                dsReversePosition = (dsReversePosition >= row.rowData.start && dsReversePosition <= row.rowData.end) ? dsReversePosition : -1;
-                
+					dsReversePosition -= sequenceContentHolder.sequenceProvider.sequence.length;
+				}
+				
+				if (dsForwardPosition < 0) {
+					dsForwardPosition += sequenceContentHolder.sequenceProvider.sequence.length;
+				}
+				if (dsReversePosition < 0) {
+					dsReversePosition -= sequenceContentHolder.sequenceProvider.sequence.length;
+				}
+				
+				dsForwardPosition = (dsForwardPosition >= row.rowData.start && dsForwardPosition <= row.rowData.end) ? dsForwardPosition : -1;
+				dsReversePosition = (dsReversePosition >= row.rowData.start && dsReversePosition <= row.rowData.end) ? dsReversePosition : -1;
+				
 				var bpStartMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(startBP);
 				var bpEndMetrics:Rectangle = sequenceContentHolder.bpMetricsByIndex(endBP);
 				
@@ -140,7 +158,7 @@ package org.jbei.components.sequenceClasses
 				var matrix:Matrix = new Matrix();
 				matrix.tx += cutSiteX;
 				matrix.ty += cutSiteY;
-		    
+
                 if (startBP <= endBP) {
     				g.beginBitmapFill(cutSiteBitMap, matrix);
     				g.drawRect(cutSiteX, cutSiteY, cutSiteBitMap.width, cutSiteBitMap.height);

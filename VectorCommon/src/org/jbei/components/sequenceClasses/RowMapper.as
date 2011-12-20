@@ -207,45 +207,83 @@ package org.jbei.components.sequenceClasses
 				for(var i:int = 0; i < numberOfItems; i++) {
 					var annotation:Annotation = annotations[i] as Annotation;
 					
-					if(annotation.start > annotation.end) {
-						var rowStartIndex1:int = int(annotation.start / contentHolder.bpPerRow);
-						var rowEndIndex1:int = int((contentHolder.sequenceProvider.sequence.length - 1) / contentHolder.bpPerRow);
+					var itemStart:int = annotation.start;
+					var itemEnd:int = annotation.end;
+					
+					// restriction sites may have cut positions outside their locations, and they should be rendered.
+					if (annotation is RestrictionCutSite) {
+						var cutSite:RestrictionCutSite = annotation as RestrictionCutSite;
 						
-						var rowStartIndex2:int = 0;
-						var rowEndIndex2:int = int(annotation.end / contentHolder.bpPerRow);
-						
-						for(var z1:int = rowStartIndex1; z1 < rowEndIndex1 + 1; z1++) {
-							(rows[z1] as Array).push(annotation);
+						var dsForwardPosition:int;
+						var dsReversePosition:int;
+						if (cutSite.strand == 1) {
+							dsForwardPosition = cutSite.start + cutSite.restrictionEnzyme.dsForward;
+							dsReversePosition = cutSite.start + cutSite.restrictionEnzyme.dsReverse;
+						} else {
+							dsForwardPosition = cutSite.end - cutSite.restrictionEnzyme.dsForward;
+							dsReversePosition = cutSite.end - cutSite.restrictionEnzyme.dsReverse;
 						}
 						
-						for(var z2:int = rowStartIndex2; z2 < rowEndIndex2 + 1; z2++) {
-							(rows[z2] as Array).push(annotation);
+						if (dsForwardPosition >= contentHolder.sequenceProvider.sequence.length) {
+							dsForwardPosition -= contentHolder.sequenceProvider.sequence.length;
+						}
+						if (dsReversePosition >= contentHolder.sequenceProvider.sequence.length) {
+							dsReversePosition -= contentHolder.sequenceProvider.sequence.length;
+						}
+						
+						if (dsForwardPosition < 0) {
+							dsForwardPosition += contentHolder.sequenceProvider.sequence.length;
+						}
+						if (dsReversePosition < 0) {
+							dsReversePosition -= contentHolder.sequenceProvider.sequence.length;
+						}
+
+						pushInRow(dsForwardPosition, dsReversePosition, annotation, rows);
+						
+					}
+					pushInRow(itemStart, itemEnd, annotation, rows);
+					
+				}
+			}
+			
+			return rows;
+		}
+		
+		private function pushInRow(itemStart:int, itemEnd:int, annotation:Annotation, rows:Array):Array {
+			if(itemStart > itemEnd) {
+				var rowStartIndex1:int = int(itemStart / contentHolder.bpPerRow);
+				var rowEndIndex1:int = int((contentHolder.sequenceProvider.sequence.length - 1) / contentHolder.bpPerRow);
+				
+				var rowStartIndex2:int = 0;
+				var rowEndIndex2:int = int(itemEnd / contentHolder.bpPerRow);
+				
+				for(var z1:int = rowStartIndex1; z1 < rowEndIndex1 + 1; z1++) {
+					(rows[z1] as Array).push(annotation);
+				}
+				
+				for(var z2:int = rowStartIndex2; z2 < rowEndIndex2 + 1; z2++) {
+					(rows[z2] as Array).push(annotation);
+				}
+			} else {
+				var rowStartIndex:int = int(itemStart / contentHolder.bpPerRow);
+				var rowEndIndex:int = int(itemEnd / contentHolder.bpPerRow);
+				
+				for(var z:int = rowStartIndex; z < rowEndIndex + 1; z++) {
+					
+					// BEWARE WEIRD BUG HERE
+					
+					if(rows[z] as Array != null) {
+						(rows[z] as Array).push(annotation);
+						if(annotation is RestrictionCutSite) {
+							//Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 						}
 					} else {
-						var rowStartIndex:int = int(annotation.start / contentHolder.bpPerRow);
-						var rowEndIndex:int = int(annotation.end / contentHolder.bpPerRow);
-						
-						
-						
-						for(var z:int = rowStartIndex; z < rowEndIndex + 1; z++) {
-							
-							// BEWARE WEIRD BUG HERE
-							
-							if(rows[z] as Array != null) {
-								(rows[z] as Array).push(annotation);
-								if(annotation is RestrictionCutSite) {
-									//Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
-								}
-							} else {
-								if(annotation is RestrictionCutSite) {
-									//Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
-								}
-							}
+						if(annotation is RestrictionCutSite) {
+							//Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
 						}
 					}
 				}
 			}
-			
 			return rows;
 		}
 	}
