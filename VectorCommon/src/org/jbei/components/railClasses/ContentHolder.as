@@ -1782,7 +1782,7 @@ package org.jbei.components.railClasses
 				var annotation1:Annotation = labelBox1.relatedAnnotation as Annotation;
 				
 				if(annotation1 is Feature) {
-					if((annotation1 as Feature).name == "" || !showFeatures || !showFeatureLabels) { continue; }
+					if(labelBox1.labelText == "" || !showFeatures || !showFeatureLabels) { continue; }
 					
 					var featureRenderer1:FeatureRenderer = featuresToRendererMap[annotation1] as FeatureRenderer;
 					

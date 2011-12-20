@@ -68,6 +68,10 @@ package org.jbei.components.common
 			return _totalHeight;
 		}
 		
+		public function get labelText():String {
+			return label();
+		}
+		
 		// Protected Methods
 		protected function label():String
 		{

@@ -7,6 +7,7 @@ package org.jbei.components.railClasses
 	
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.bio.sequence.dna.Feature;
+	import org.jbei.bio.sequence.dna.FeatureNote;
 	import org.jbei.components.common.LabelBox;
 
     /**
@@ -27,7 +28,7 @@ package org.jbei.components.railClasses
 			
 			_feature = relatedAnnotation as Feature;
 			
-			if(_feature.name == null || _feature.name == "" || StringUtil.trim(_feature.name) == "") {
+			if(label() == null || label() == "" || StringUtil.trim(label()) == "") {
 				visible = false;
 			}
 		}
@@ -41,7 +42,7 @@ package org.jbei.components.railClasses
 		// Protected Methods
 		protected override function tipText():String
 		{
-			return _feature.type + (_feature.name == "" ? "" : (" - " + _feature.name)) + ": " + (_feature.start + 1) + ".." + (_feature.end);
+			return _feature.type + (" - " + label()) + ": " + (_feature.start + 1) + ".." + (_feature.end);
 		}
 		
 		protected override function render():void
@@ -49,7 +50,7 @@ package org.jbei.components.railClasses
 			var g:Graphics = graphics;
 			g.clear();
 			
-			var featureBitMap:BitmapData = contentHolder.featureTextRenderer.textToBitmap(feature.name);
+			var featureBitMap:BitmapData = contentHolder.featureTextRenderer.textToBitmap(label());
 			
 			_totalWidth = featureBitMap.width;
 			_totalHeight = featureBitMap.height;
@@ -61,7 +62,23 @@ package org.jbei.components.railClasses
 		
 		protected override function label():String
 		{
-			return _feature.name;
+			var result:String = null;
+			if(_feature.name == null || _feature.name == "" || StringUtil.trim(_feature.name) == "") {
+				var notes:Vector.<FeatureNote> = _feature.notes;
+				for (var i:int = 0; i < notes.length; i++) {
+					var note:FeatureNote = notes[i];
+					if ("label" == note.name || "apeinfo_label" == note.name || "note" == note.name || "gene" == note.name) {
+						result = note.value;
+						break;
+					}
+				}
+			} else {
+				result = _feature.name;
+			}
+			if (result == null) {
+				result = "";
+			}
+			return result;
 		}
 	}
 }
