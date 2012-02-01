@@ -88,14 +88,14 @@ package org.jbei.components.pieClasses
 					var mismatchAngle1:Number = mismatchAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					var mismatchAngle2:Number = (mismatchAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
-					if(mismatchAnnotation.start == mismatchAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						var mismatchX:Number = center.x + traceAnnotationRadius * Math.sin(mismatchAngle1);
-						var mismatchY:Number = center.y - traceAnnotationRadius * Math.cos(mismatchAngle1);
-						
-						g.drawCircle(mismatchX, mismatchY, 1);
-					} else {
+					var mismatchX:Number = center.x + traceAnnotationRadius * Math.sin(mismatchAngle1);
+					var mismatchY:Number = center.y - traceAnnotationRadius * Math.cos(mismatchAngle1);
+					
+					// Draw at least one point, as sometimes the drawArc draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(mismatchX, mismatchY, 1);
+					
+					if(mismatchAnnotation.start != mismatchAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
 						
 						g.moveTo(center.x + traceAnnotationRadius * Math.sin(mismatchAngle1), center.y - traceAnnotationRadius * Math.cos(mismatchAngle1));
@@ -112,14 +112,13 @@ package org.jbei.components.pieClasses
 					var deletionAngle1:Number = deletionAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					var deletionAngle2:Number = (deletionAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
-					if(deletionAnnotation.start == deletionAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						var deletionX:Number = center.x + traceAnnotationRadius * Math.sin(deletionAngle1);
-						var deletionY:Number = center.y - traceAnnotationRadius * Math.cos(deletionAngle1);
-						
-						g.drawCircle(deletionX, deletionY, 1);
-					} else {
+					var deletionX:Number = center.x + traceAnnotationRadius * Math.sin(deletionAngle1);
+					var deletionY:Number = center.y - traceAnnotationRadius * Math.cos(deletionAngle1);
+					
+					// Draw at least one point, as sometimes the drawArc draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(deletionX, deletionY, 1);
+					if(deletionAnnotation.start != deletionAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
 						
 						g.moveTo(center.x + traceAnnotationRadius * Math.sin(deletionAngle1), center.y - traceAnnotationRadius * Math.cos(deletionAngle1));
@@ -136,14 +135,14 @@ package org.jbei.components.pieClasses
 					var insertionAngle1:Number = insertionAnnotation.start * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					var insertionAngle2:Number = (insertionAnnotation.end) * 2 * Math.PI / contentHolder.sequenceProvider.sequence.length;
 					
-					if(insertionAnnotation.start == insertionAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						var insertionX:Number = center.x + traceAnnotationRadius * Math.sin(insertionAngle1);
-						var insertionY:Number = center.y - traceAnnotationRadius * Math.cos(insertionAngle1);
-						
-						g.drawCircle(insertionX, insertionY, 1);
-					} else {
+					var insertionX:Number = center.x + traceAnnotationRadius * Math.sin(insertionAngle1);
+					var insertionY:Number = center.y - traceAnnotationRadius * Math.cos(insertionAngle1);
+					
+					// Draw at least one point, as sometimes the drawArc draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(insertionX, insertionY, 1);
+					
+					if(insertionAnnotation.start != insertionAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
 						
 						g.moveTo(center.x + traceAnnotationRadius * Math.sin(insertionAngle1), center.y - traceAnnotationRadius * Math.cos(insertionAngle1));

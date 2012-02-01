@@ -87,17 +87,16 @@ package org.jbei.components.railClasses
 			if(mismatches != null && mismatches.length > 0) {
 				for(var i2:int = 0; i2 < mismatches.length; i2++) {
 					var mismatchAnnotation:Annotation = mismatches[i2] as Annotation;
-					
+
 					var mismatchStartPosition:Number = railMetrics.x + bpWidth * mismatchAnnotation.start;
 					var mismatchEndPosition:Number = railMetrics.x + bpWidth * mismatchAnnotation.end;
+
+					// Render at least one point, as lineTo sometimes draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(mismatchStartPosition, yPosition, 1);
 					
-					if(mismatchAnnotation.start == mismatchAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						g.drawCircle(mismatchStartPosition, yPosition, 1);
-					} else {
+					if(mismatchAnnotation.start != mismatchAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
-						
 						g.moveTo(mismatchStartPosition, yPosition);
 						g.lineTo(mismatchEndPosition, yPosition);
 					}
@@ -112,13 +111,12 @@ package org.jbei.components.railClasses
 					var deletionStartPosition:Number = railMetrics.x + bpWidth * deletionAnnotation.start;
 					var deletionEndPosition:Number = railMetrics.x + bpWidth * deletionAnnotation.end;
 					
-					if(deletionAnnotation.start == deletionAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						g.drawCircle(deletionStartPosition, yPosition, 1);
-					} else {
+					// Render at least one point, as lineTo sometimes draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(deletionStartPosition, yPosition, 1);
+					
+					if(deletionAnnotation.start != deletionAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
-						
 						g.moveTo(deletionStartPosition, yPosition);
 						g.lineTo(deletionEndPosition, yPosition);
 					}
@@ -133,13 +131,12 @@ package org.jbei.components.railClasses
 					var insertionStartPosition:Number = railMetrics.x + bpWidth * insertionAnnotation.start;
 					var insertionEndPosition:Number = railMetrics.x + bpWidth * insertionAnnotation.end;
 					
-					if(insertionAnnotation.start == insertionAnnotation.end) {
-						g.lineStyle(2, MISMATCH_COLOR);
-						
-						g.drawCircle(insertionStartPosition, yPosition, 1);
-					} else {
+					// Render at least one point, as lineTo sometimes draws 0 pixels.
+					g.lineStyle(2, MISMATCH_COLOR);
+					g.drawCircle(insertionStartPosition, yPosition, 1);
+
+					if(insertionAnnotation.start != insertionAnnotation.end) {
 						g.lineStyle(4, MISMATCH_COLOR);
-						
 						g.moveTo(insertionStartPosition, yPosition);
 						g.lineTo(insertionEndPosition, yPosition);
 					}
