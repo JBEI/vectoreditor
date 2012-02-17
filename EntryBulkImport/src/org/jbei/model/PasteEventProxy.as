@@ -2,6 +2,7 @@ package org.jbei.model
 {
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.utils.StringUtil;
 	
 	import org.jbei.Notifications;
 	import org.jbei.view.components.GridCell;
@@ -29,9 +30,11 @@ package org.jbei.model
 			var dist:ArrayCollection = new ArrayCollection();
 			
 			// TODO : array of arrays
-			var rows:Array = text.split( '\n' );
+			text = StringUtil.trim(text);
+			var rows:Array = text.split(/\R/);
 			for each( var row:String  in rows )
 			{
+				row = StringUtil.trim(row);
 				// split by tabs
 				var cells:Array = row.split( '\t' );
 				dist.addItem( cells );
