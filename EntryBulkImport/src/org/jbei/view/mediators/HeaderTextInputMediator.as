@@ -2,6 +2,7 @@ package org.jbei.view.mediators
 {
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.events.TextEvent;
 	import flash.ui.Keyboard;
 	
@@ -19,6 +20,8 @@ package org.jbei.view.mediators
 	public class HeaderTextInputMediator extends Mediator
 	{
 		private static const NAME:String = "org.jbei.view.HeaderTextInputMediator";
+		private var clickCounter:int = 0;
+		private var clickTimer:Number = 0;
 		
 		public function HeaderTextInputMediator( viewComponent:TextInput )
 		{
@@ -26,11 +29,30 @@ package org.jbei.view.mediators
 			
 			// add event listeners using functions defined here
 			this.headerInput.addEventListener( TextOperationEvent.CHANGE, textInput );
+			this.headerInput.addEventListener(MouseEvent.MOUSE_UP, tripleClickHandler );
 		}
 		
 		private function textInput( event:Event ) : void
 		{
 			sendNotification( Notifications.HEADER_INPUT_TEXT_CHANGE, this.headerInput.text );
+		}
+		
+		/**
+		 * Handle triple clicks, as clickCounter is not available in flashplayer 
+		 */
+		private function tripleClickHandler(event:Event) :void
+		{
+			var currentTime:Number = new Date().time;
+			if (currentTime - clickTimer > 400) {
+				clickTimer = currentTime;
+				clickCounter = 1;
+			} else {
+				clickCounter++;
+			}
+			
+			if (clickCounter > 2) {
+				this.headerInput.selectAll();
+			}
 		}
 		
 		protected function get headerInput() : HeaderTextInput

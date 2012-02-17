@@ -67,6 +67,7 @@ package org.jbei.view.components
 			this.addEventListener( GridCellMouseEvent.MOUSE_DRAG, mouseDrag );
 			this.addEventListener( MoveCellEvent.ARROW_PRESSED, changeCell );		
 			this.addEventListener( GridCellMouseEvent.CORNER_CLICK, cornerClick );
+			this.addEventListener(GridCellEvent.DELETE, deleteCellsHandler);
 			
 			// clipboard events
 			this.addEventListener( Event.COPY, copyCellsHandler );
@@ -299,6 +300,14 @@ package org.jbei.view.components
 			this._mouseUp = false;
 			
 			dispatchEvent( new GridEvent( GridEvent.CELLS_SELECTED, -1, this._selected ) );
+		}
+		
+		private function deleteCellsHandler(event:Event):void
+		{
+			for each( var cell:GridCell in this._selected )
+			{
+				cell.text = "";
+			}
 		}
 		
 		private function selectAndHighlightCell( cell:GridCell ) : void

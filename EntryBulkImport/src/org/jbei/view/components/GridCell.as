@@ -39,10 +39,12 @@ package org.jbei.view.components
 		private var _highlighted:Boolean = false;
 		private var _control:Boolean = false;
 		private var _error:Boolean = false;
+		private var _clickCounter:Number = 0;
+		private var _clickTimer:Number = 0;
 		
 		protected var _editMode:Boolean = false;
 		protected var _doubleClick:Boolean = false;
-		
+
 		// controls
 		protected var _label:Label;
 		protected var _overlay:TranspOverlay;
@@ -165,6 +167,13 @@ package org.jbei.view.components
 						dispatchEvent( new MoveCellEvent( MoveCellEvent.ARROW_PRESSED, Direction.MOVE_DOWN, this ) );
 						return;
 					
+					case Keyboard.DELETE:
+						// clear current cell and dispatch a cell changed event, then dispatch event to clear other possibly selected cells.
+						this.text = "";
+						dispatchEvent(new GridCellEvent(GridCellEvent.TEXT_CHANGE,this));
+						dispatchEvent(new GridCellEvent(GridCellEvent.DELETE, this));
+						return;
+						
 					case Keyboard.CONTROL:
 						dispatchEvent( new GridCellEvent( GridCellEvent.CTRL_BTN_DOWN, this ) );
 						break;
@@ -220,6 +229,19 @@ package org.jbei.view.components
 		
 		private function mouseUp( event:MouseEvent ) : void
 		{
+			// detect triple click and select all.
+			var currentTime:Number = new Date().time;
+			if (currentTime - _clickTimer > 400) {
+				_clickTimer = currentTime;
+				_clickCounter = 1;
+			} else {
+				_clickCounter++;
+			}
+			
+			if (_clickCounter > 2) {
+				this._textInput.selectAll();
+			}
+			
 			dispatchEvent( new GridCellEvent( GridCellEvent.MOUSE_UP, this ) );
 		}
 		
