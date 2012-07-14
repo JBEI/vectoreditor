@@ -35,21 +35,34 @@
                     mouseWheelSupport.dispatchingObjectDeterminationMethod = ExternalMouseWheelSupport.COPY_MOUSEMOVE_EVENTS;
                 }
                 
-                CONFIG::standalone { // load genbank passed to VE (from DE)
-                    if (this.root != null && this.root.loaderInfo != null && this.root.loaderInfo.parameters != null) {
-                        var paramObj:Object = this.root.loaderInfo.parameters;
-                        
-                        // check if any parameters were passed to VE
-                        var isParametersEmpty:Boolean = true;
-                        for (var name:String in paramObj) {
-                            isParametersEmpty = false;
-                        }
-                        if (isParametersEmpty) {
-                            return;
-                        }
-                        
+                var paramObj:Object = null;
+                if (this.root != null && this.root.loaderInfo != null && this.root.loaderInfo.parameters != null) {
+                    paramObj = this.root.loaderInfo.parameters;
+                }
+                
+                //update paths for SBOL/Genbank conversion XML RPC service
+                if (paramObj != null) {
+                    var convertSBOLServerLocationKey:String = "convertSBOLXMLRPCServerLocation";
+                    var convertSBOLServicePathKey:String = "convertSBOLXMLRPCServicePath";
+                    
+                    if (paramObj[convertSBOLServerLocationKey] != null) {
+                        ApplicationFacade.getInstance().convertSBOLXMLRPCServerLocation = paramObj[convertSBOLServerLocationKey];
+                    }
+                    
+                    if (paramObj[convertSBOLServicePathKey] != null) {
+                        ApplicationFacade.getInstance().convertSBOLXMLRPCServicePath = paramObj[convertSBOLServicePathKey];
+                    }
+                }
+                
+                CONFIG::standalone { // load sequence file passed to VE (from DE)
+                    if (paramObj != null) {
                         var lengthKey:String = "fileLength";
                         var dataKey:String = "fileData";
+                        
+                        // check if any file parameters were passed to VE
+                        if (paramObj[lengthKey] == null && paramObj[dataKey] == null) {
+                            return; //no file data sent
+                        }
                         
                         if (paramObj[lengthKey] != null && paramObj[lengthKey].length > 0 &&
                                 paramObj[dataKey] != null && paramObj[dataKey].length > 0) {

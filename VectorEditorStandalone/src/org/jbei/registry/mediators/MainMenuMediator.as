@@ -29,6 +29,7 @@ package org.jbei.registry.mediators
             mainMenu.addEventListener(MainMenu.SHOW_PROJECT_PROPERTIES_DIALOG, onShowProjectPropertiesDialog);
             mainMenu.addEventListener(MainMenu.IMPORT_SEQUENCE, onImportSequence);
             mainMenu.addEventListener(MainMenu.DOWNLOAD_SEQUENCE, onDownloadSequence);
+            mainMenu.addEventListener(MainMenu.DOWNLOAD_SBOL, onDownloadSBOL);
             mainMenu.addEventListener(MainMenu.SHOW_RAIL, onShowRail);
 			mainMenu.addEventListener(MainMenu.SHOW_PIE, onShowPie);
 			mainMenu.addEventListener(MainMenu.SHOW_FEATURES_STATE_CHANGED, onShowFeaturesStateChanged);
@@ -354,6 +355,11 @@ package org.jbei.registry.mediators
         private function onDownloadSequence(event:MenuItemEvent):void
         {
             sendNotification(Notifications.DOWNLOAD_SEQUENCE);
+        }
+        
+        private function onDownloadSBOL(event:MenuItemEvent):void
+        {
+            sendNotification(Notifications.DOWNLOAD_SBOL);
         }
 	}
 }

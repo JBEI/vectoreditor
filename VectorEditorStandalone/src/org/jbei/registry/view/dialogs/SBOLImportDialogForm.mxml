@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialogs:AbstractDialogForm 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:dialogs="org.jbei.lib.ui.dialogs.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            
+            public static const SBOL_IMPORT_OPTION_CLEAN:String = "SBOLImportOptionClean";
+            public static const SBOL_IMPORT_OPTION_PRESERVE_SBOL:String = "SBOLImportOptionPreserveSBOL";
+            
+            public override function validate():void
+            {
+                super.validate();
+                
+                if (sbolImportOptionsRadioButtonGroup.selection == null) {
+                    Alert.show("Please select an option", "No option selected");
+                    isValid = false;
+                } else {
+                    dataObject = sbolImportOptionsRadioButtonGroup.selectedValue;
+                    isValid = true;
+                }
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:RadioButtonGroup id="sbolImportOptionsRadioButtonGroup"/>
+    
+    <mx:VBox paddingLeft="3" paddingRight="3">
+        <mx:RadioButton id="cleanGenbankOption" groupName="sbolImportOptionsRadioButtonGroup" label="Convert to GenBank (clean)" value="{SBOL_IMPORT_OPTION_CLEAN}"/>
+        <mx:RadioButton id="preserveSBOLOption" groupName="sbolImportOptionsRadioButtonGroup" label="Convert to GenBank (preserve SBOL information)" value="{SBOL_IMPORT_OPTION_PRESERVE_SBOL}"/>
+        <mx:Text condenseWhite="true">
+            <mx:htmlText>
+                <![CDATA[
+                <font color="#0000FF"><u><a href="http://j5.jbei.org/j5manual/pages/106.html" target="_blank">Help</a></u></font>
+                ]]>
+            </mx:htmlText>
+        </mx:Text> 
+    </mx:VBox>
+    
+</dialogs:AbstractDialogForm>

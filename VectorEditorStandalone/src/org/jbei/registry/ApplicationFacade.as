@@ -31,10 +31,10 @@ package org.jbei.registry
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.models.VectorEditorProject;
+	import org.jbei.registry.proxies.ConvertSBOLGenbankProxy;
 	import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
 	import org.jbei.registry.utils.StandaloneUtils;
-    import org.jbei.registry.utils.IceXmlUtils;
 	import org.jbei.registry.view.ui.ApplicationPanel;
 	import org.puremvc.as3.patterns.facade.Facade;
 
@@ -57,6 +57,9 @@ package org.jbei.registry
 		private var _caretPosition:int = -1;
         private var _serviceProxy:RegistryAPIProxy;
         private var _project:VectorEditorProject;
+        
+        private var _convertSBOLXMLRPCServerLocation:String = "http://j5.jbei.org"; // these are default values
+        private var _convertSBOLXMLRPCServicePath:String = "/bin/j5_xml_rpc.pl"; // will be reset if passed in through flashvars 
 		
         private var actionStack:ActionStack;
         private var entryId:String;
@@ -167,6 +170,26 @@ package org.jbei.registry
         public function get isRedoStackEmpty():Boolean
         {
             return actionStack.redoStackIsEmpty;
+        }
+        
+        public function get convertSBOLXMLRPCServerLocation():String
+        {
+            return _convertSBOLXMLRPCServerLocation;
+        }
+        
+        public function set convertSBOLXMLRPCServerLocation(value:String):void
+        {
+            _convertSBOLXMLRPCServerLocation = value;
+        }
+        
+        public function get convertSBOLXMLRPCServicePath():String
+        {
+            return _convertSBOLXMLRPCServicePath;
+        }
+        
+        public function set convertSBOLXMLRPCServicePath(value:String):void
+        {
+            _convertSBOLXMLRPCServicePath = value;
         }
         
 		// System Public Methods
@@ -365,11 +388,27 @@ package org.jbei.registry
         
         public function importSequence(data:String):void
         {
-            var featuredDNASequence:FeaturedDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(data));
-                        
-            if (featuredDNASequence.name == null) {
+            var featuredDNASequence:FeaturedDNASequence;
+            var dataAsXML:XML = new XML(data);
+            
+            if (dataAsXML.name() != null && dataAsXML.name().toString() == "http://jbei.org/sequence::seq") {
+                //try jbei-seq
                 featuredDNASequence = sequenceProvider.fromJbeiSeqXml(data);
+                if (featuredDNASequence == null || featuredDNASequence.name == null) {
+                    Alert.show("Failed to parse sequence file", "Failed to parse");
+                    return;
+                }
+            } else if (dataAsXML.name() != null && dataAsXML.name().toString() == "http://www.w3.org/1999/02/22-rdf-syntax-ns#::RDF") {
+                //try SBOL
+                sendNotification(Notifications.IMPORT_SBOL_XML, data);
+                
+                return; //this case is handled differently from the others
+            } else {
+                //try genbank
+                featuredDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(data));
+                
                 if (featuredDNASequence.name == null) {
+                    //try FASTA
                     featuredDNASequence = sequenceProvider.fromFasta(data);
                     if (featuredDNASequence.name == null) {
                         Alert.show("Failed to parse sequence file", "Failed to parse");
@@ -382,6 +421,7 @@ package org.jbei.registry
             
             sendNotification(Notifications.SEQUENCE_UPDATED, featuredDNASequence);
         }
+        
         public function importSequenceViaServer(data:String):void
         {
             serviceProxy.parseSequenceFile(data);
@@ -467,6 +507,8 @@ package org.jbei.registry
             _serviceProxy = new RegistryAPIProxy();
             
             registerProxy(_serviceProxy);
+            
+            registerProxy(new ConvertSBOLGenbankProxy());
         }
         
         private function initializeStandaloneApplication():void

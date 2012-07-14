@@ -7,6 +7,7 @@ package org.jbei.registry.mediators
 	import mx.controls.Alert;
 	import mx.core.Application;
 	
+	import org.jbei.bio.parsers.GenbankFormat;
 	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.lib.ui.dialogs.ModalDialog;
 	import org.jbei.lib.ui.dialogs.ModalDialogEvent;
@@ -19,6 +20,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.VectorEditorProject;
+	import org.jbei.registry.proxies.ConvertSBOLGenbankProxy;
 	import org.jbei.registry.view.dialogs.AboutDialogForm;
 	import org.jbei.registry.view.dialogs.FeatureDialogForm;
 	import org.jbei.registry.view.dialogs.GelDigestDialogForm;
@@ -27,6 +29,7 @@ package org.jbei.registry.mediators
 	import org.jbei.registry.view.dialogs.ProjectPropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.PropertiesDialogForm;
 	import org.jbei.registry.view.dialogs.RestrictionEnzymeManagerForm;
+	import org.jbei.registry.view.dialogs.SBOLImportDialogForm;
 	import org.jbei.registry.view.dialogs.SelectDialogForm;
 	import org.jbei.registry.view.ui.ApplicationPanel;
 	import org.jbei.registry.view.ui.PropertiesDialog;
@@ -43,6 +46,7 @@ package org.jbei.registry.mediators
         private var applicationPanel:ApplicationPanel;
         private var applicationFacade:ApplicationFacade;
         private var importSequenceFileReference:FileReference;
+        private var importSBOLXMLData:String;
         
 		// Constructor
         public function ApplicationMediator(viewComponent:Object=null)
@@ -77,7 +81,9 @@ package org.jbei.registry.mediators
                 , Notifications.SAVE_PROJECT_AS
                 , Notifications.SHOW_PROJECT_PROPERTIES_DIALOG
                 , Notifications.IMPORT_SEQUENCE
+                , Notifications.IMPORT_SBOL_XML
                 , Notifications.DOWNLOAD_SEQUENCE
+                , Notifications.DOWNLOAD_SBOL
                 , Notifications.SEQUENCE_FILE_GENERATED
                 , Notifications.PROJECT_UPDATED
                 , Notifications.SEQUENCE_UPDATED
@@ -138,6 +144,10 @@ package org.jbei.registry.mediators
                     break;
                 case Notifications.DOWNLOAD_SEQUENCE:
                     generateSequence();
+                    
+                    break;
+                case Notifications.DOWNLOAD_SBOL:
+                    generateSBOL();
                     
                     break;
                 case Notifications.SEQUENCE_FILE_GENERATED:
@@ -218,6 +228,10 @@ package org.jbei.registry.mediators
 					break;
                 case Notifications.IMPORT_SEQUENCE:
                     importSequence();
+                    
+                    break;
+                case Notifications.IMPORT_SBOL_XML:
+                    importSBOLXML(notification.getBody() as String);
                     
                     break;
                 case Notifications.REBASE_SEQUENCE:
@@ -303,6 +317,33 @@ package org.jbei.registry.mediators
         private function onImportSequenceFileReferenceLoadError(event:IOErrorEvent):void
         {
             showFileImportErrorAlert(event.text);
+        }
+        
+        private function onSBOLImportDialogSubmit(event:ModalDialogEvent):void
+        {
+            if (event.data == null || !(event.data is String)) {
+                Alert.show("Oops, something went wrong.  Please try again.", "Error Message");
+                return;
+            }
+            
+            var conversionMethod:String = event.data as String;
+            
+            var convertSBOLGenbankProxy:ConvertSBOLGenbankProxy = applicationFacade.retrieveProxy(ConvertSBOLGenbankProxy.PROXY_NAME) as ConvertSBOLGenbankProxy;
+            
+            if (conversionMethod == SBOLImportDialogForm.SBOL_IMPORT_OPTION_CLEAN) {
+                convertSBOLGenbankProxy.convertSBOLToGenbank(importSBOLXMLData, ConvertSBOLGenbankProxy.CONVERT_SBOL_TO_GENBANK_CLEAN);
+            } else if (conversionMethod == SBOLImportDialogForm.SBOL_IMPORT_OPTION_PRESERVE_SBOL) {
+                convertSBOLGenbankProxy.convertSBOLToGenbank(importSBOLXMLData, ConvertSBOLGenbankProxy.CONVERT_SBOL_TO_GENBANK_PRESERVE_SBOL_INFO);
+            } else {
+                Alert.show("Invalid conversion method.  Please try again", "Error Message"); //should not get here, since there is no other choice in the dialog
+            }
+            
+            importSBOLXMLData = null;
+        }
+        
+        private function onSBOLImportDialogCancel(event:ModalDialogEvent):void
+        {
+            importSBOLXMLData = null;
         }
         
 		// Private Methods
@@ -475,6 +516,17 @@ package org.jbei.registry.mediators
             importSequenceFileReference.browse();
         }
         
+        private function importSBOLXML(fileData:String):void
+        {
+            importSBOLXMLData = fileData;
+            
+            var sbolImportModalDialog:ModalDialog = new ModalDialog(SBOLImportDialogForm, null);
+            sbolImportModalDialog.open();
+            sbolImportModalDialog.title = "Import SBOL";
+            sbolImportModalDialog.addEventListener(ModalDialogEvent.SUBMIT, onSBOLImportDialogSubmit);
+            sbolImportModalDialog.addEventListener(ModalDialogEvent.CANCEL, onSBOLImportDialogCancel);
+        }
+        
         private function showFileImportErrorAlert(message:String):void
         {
             Alert.show("Failed to open file!", message);
@@ -502,6 +554,14 @@ package org.jbei.registry.mediators
             CONFIG::entryEdition {
                 applicationFacade.generateSequenceOnServer();
             }
+        }
+        
+        private function generateSBOL():void
+        {
+            var genbankFile:String = GenbankFormat.generateGenbankFile(applicationFacade.sequenceProvider.toGenbankFileModel());
+            
+            var convertSBOLGenbankProxy:ConvertSBOLGenbankProxy = applicationFacade.retrieveProxy(ConvertSBOLGenbankProxy.PROXY_NAME) as ConvertSBOLGenbankProxy;
+            convertSBOLGenbankProxy.convertGenbankToSBOL(genbankFile);
         }
         
         private function downloadSequence(content:String):void

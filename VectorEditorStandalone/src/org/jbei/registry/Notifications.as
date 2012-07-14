@@ -79,6 +79,8 @@ package org.jbei.registry
         public static const SEQUENCE_UPDATED:String = "SEQUENCE_UPDATED";
         public static const IMPORT_SEQUENCE:String = "IMPORT_SEQUENCE";
         public static const DOWNLOAD_SEQUENCE:String = "DOWNLOAD_SEQUENCE";
+        public static const DOWNLOAD_SBOL:String = "DOWNLOAD_SBOL";
         public static const REBASE_SEQUENCE:String = "REBASE_SEQUENCE";
+        public static const IMPORT_SBOL_XML:String = "IMPORT_SBOL_XML";
 	}
 }
