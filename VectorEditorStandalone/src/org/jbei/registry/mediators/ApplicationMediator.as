@@ -151,7 +151,8 @@ package org.jbei.registry.mediators
                     
                     break;
                 case Notifications.SEQUENCE_FILE_GENERATED:
-                    downloadSequence(notification.getBody() as String);
+                    var notificationBody:Object = notification.getBody();
+                    downloadSequence(notificationBody.fileString, notificationBody.fileExtension);
                     
                     break;
                 case Notifications.SAVE_PROJECT:
@@ -564,9 +565,9 @@ package org.jbei.registry.mediators
             convertSBOLGenbankProxy.convertGenbankToSBOL(genbankFile);
         }
         
-        private function downloadSequence(content:String):void
+        private function downloadSequence(content:String, extension:String):void
         {
-            applicationFacade.downloadSequence(content);
+            applicationFacade.downloadSequence(content, extension);
         }
 	}
 }

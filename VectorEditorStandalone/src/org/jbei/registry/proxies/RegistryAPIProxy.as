@@ -331,7 +331,8 @@ package org.jbei.registry.proxies
             
             sendNotification(Notifications.UNLOCK);
             
-            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, event.result as String);
+            var notificationBody:Object = {fileString:event.result as String, fileExtension:".gb"};
+            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, notificationBody);
         }
         
 		// Private Methods

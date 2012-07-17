@@ -20,10 +20,21 @@
 		<mx:Image source="{ logoImage }" horizontalAlign="center" />
 		<mx:Spacer />
 		<mx:Text width="400" htmlText="Version: { Constants.VERSION }" />
-        <mx:Text width="400">
+        <mx:Text width="400" condenseWhite="true" leading="0">
             <mx:htmlText>
-                <![CDATA[This is an Open Source Software. <br/>Check us out at http://code.google.com/p/vectoreditor]]>
+                <![CDATA[This is an Open Source Software. <br/>Check us out at 
+                <font color="#0000FF"><u><a href="http://code.google.com/p/vectoreditor" target="_blank">
+                http://code.google.com/p/vectoreditor</a></u></font>]]>
             </mx:htmlText>
         </mx:Text> 
+        <mx:Text width="400" condenseWhite="true" leading="0">
+            <mx:htmlText>
+                <![CDATA[
+                Citation: <font color="#0000FF"><u><a href="http://nar.oxfordjournals.org/content/early/2012/06/18/nar.gks531.long" target="_blank">
+                Ham TS, Dmytriv Z, Plahar H, Chen J, Hillson NJ, Keasling JD. "Design, implementation and practice of JBEI-ICE: 
+                an open source biological part registry platform and tools". Nucleic Acides Res. 2012 Jun 19.</a></u></font>
+                ]]>
+            </mx:htmlText>
+        </mx:Text>
 	</mx:VBox>
 </SimpleDialogForm>

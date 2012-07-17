@@ -107,7 +107,8 @@ package org.jbei.registry.proxies
                         }
                     }
                     
-                    sendNotification(Notifications.SEQUENCE_FILE_GENERATED, resultSBOLXML);
+                    var notificationBody:Object = {fileString:resultSBOLXML, fileExtension:".xml"};
+                    sendNotification(Notifications.SEQUENCE_FILE_GENERATED, notificationBody);
                     break;
                 
                 case CONVERT_SBOL_TO_GENBANK_CLEAN:

@@ -65,8 +65,6 @@ package org.jbei.registry
         private var entryId:String;
         private var sessionId:String;
         private var projectId:String;
-        private var saveSequenceContent:String;
-        private var fileReference:FileReference;
         
         private var _applicationInitialized:Boolean = false;
         
@@ -445,8 +443,9 @@ package org.jbei.registry
         
         public function generateSequence():void
         {
-            var result:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
-            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, result);
+            var fileString:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
+            var notificationBody:Object = {fileString:fileString, fileExtension:".gb"};
+            sendNotification(Notifications.SEQUENCE_FILE_GENERATED, notificationBody);
         }
         
         public function generateSequenceOnServer():void
@@ -454,15 +453,17 @@ package org.jbei.registry
             serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }
         
-        public function downloadSequence(content:String):void
+        public function downloadSequence(content:String, extension:String):void
         {
-            saveSequenceContent = content;
-            
-            if(saveSequenceContent == null) {
+            if(content == null) {
+                Alert.show("Could not generate sequence file for download", "Download error");
                 return;
             }
             
-            Alert.show("Sequence was generated successfully. Press OK button to save it", "Save sequence", Alert.OK | Alert.CANCEL, null, onSequenceGeneratedAlertClose);
+            var fileReference:FileReference = new FileReference();
+            fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
+            fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
+            fileReference.save(content, _sequenceProvider.name + extension);
         }
         
         // Event Handlers
@@ -479,16 +480,6 @@ package org.jbei.registry
         private function onSequenceProviderChanged(event:SequenceProviderEvent):void
         {
             sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
-        }
-        
-        private function onSequenceGeneratedAlertClose(event:CloseEvent):void
-        {
-            if(event.detail == Alert.OK) {
-                fileReference = new FileReference();
-                fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
-                fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
-                fileReference.save(saveSequenceContent);
-            }
         }
         
         private function onExportSequenceComplete(event:Event):void
