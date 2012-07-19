@@ -59,12 +59,14 @@ package org.jbei.registry
         private var _project:VectorEditorProject;
         
         private var _convertSBOLXMLRPCServerLocation:String = "http://j5.jbei.org"; // these are default values
-        private var _convertSBOLXMLRPCServicePath:String = "/bin/j5_xml_rpc.pl"; // will be reset if passed in through flashvars 
+        private var _convertSBOLXMLRPCServicePath:String = "/j5bin/j5_xml_rpc.pl"; // will be reset if passed in through flashvars 
 		
         private var actionStack:ActionStack;
         private var entryId:String;
         private var sessionId:String;
         private var projectId:String;
+        private var saveSequenceContent:String;
+        private var saveSequenceExtension:String;
         
         private var _applicationInitialized:Boolean = false;
         
@@ -455,15 +457,18 @@ package org.jbei.registry
         
         public function downloadSequence(content:String, extension:String):void
         {
-            if(content == null) {
+            saveSequenceContent = content;
+            saveSequenceExtension = extension;
+            
+            if (content == null) {
                 Alert.show("Could not generate sequence file for download", "Download error");
+                saveSequenceContent = null;
+                saveSequenceExtension = null;
                 return;
             }
             
-            var fileReference:FileReference = new FileReference();
-            fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
-            fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
-            fileReference.save(content, _sequenceProvider.name + extension);
+            //this is necessary, since the save dialog "may only be invoked upon user interaction"
+            Alert.show("Sequence was generated successfully. Press OK button to save it.", "Save sequence", Alert.OK | Alert.CANCEL, null, onSequenceGeneratedAlertClose);
         }
         
         // Event Handlers
@@ -480,6 +485,19 @@ package org.jbei.registry
         private function onSequenceProviderChanged(event:SequenceProviderEvent):void
         {
             sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
+        }
+        
+        private function onSequenceGeneratedAlertClose(event:CloseEvent):void
+        {
+            if (event.detail == Alert.OK) {
+                var fileReference:FileReference = new FileReference();
+                fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
+                fileReference.addEventListener(Event.COMPLETE, onExportSequenceComplete);
+                fileReference.save(saveSequenceContent, _sequenceProvider.name + saveSequenceExtension);
+            }
+            
+            saveSequenceContent = null;
+            saveSequenceExtension = null;
         }
         
         private function onExportSequenceComplete(event:Event):void

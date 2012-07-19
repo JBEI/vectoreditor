@@ -141,8 +141,8 @@ package org.jbei.registry.proxies
         
         private function onXMLRPCFault(event:FaultEvent):void
         {
-            Alert.show("Failed to parse sequence file.  Below is the error returned by the j5 XML " +
-                "RPC web service:\n\n" + event.fault.faultString, "Failed to parse");
+            Alert.show("Failed to parse sequence file.  Below is the error message:\n\n" 
+                + event.fault.faultString, "Failed to parse");
         }
         
         // Private Methods
