@@ -99,7 +99,7 @@ package org.jbei.registry.proxies
                     var resultSBOLXML:String;
                     
                     for (var j:int = 0; j < outputZipFile.size; j++) { //find the SBOL XML
-                        zipEntry = outputZipFile.entries[i];
+                        zipEntry = outputZipFile.entries[j];
                         regExpResult = sbolExtensionRegExp.exec(zipEntry.name);
                         if (regExpResult != null && regExpResult.length > 0) { //if xml extension
                             resultSBOLXML = outputZipFile.getInput(zipEntry).toString();

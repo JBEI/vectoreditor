@@ -306,12 +306,12 @@ package org.jbei.registry.mediators
                 return;
             }
             
-            CONFIG::standalone {
+//            CONFIG::standalone {
                 ApplicationFacade.getInstance().importSequence(importSequenceFileReference.data.toString());
-            }
-            CONFIG::entryEdition {
-                ApplicationFacade.getInstance().importSequenceViaServer(importSequenceFileReference.data.toString());
-            }
+//            }
+//            CONFIG::entryEdition {
+//                ApplicationFacade.getInstance().importSequenceViaServer(importSequenceFileReference.data.toString());
+//            }
 
         }
         
