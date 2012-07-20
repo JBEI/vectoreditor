@@ -281,8 +281,12 @@ package org.jbei.registry.proxies
 		private function onSaveSequenceResult(event:ResultEvent):void
 		{
 			if(event.result == false) {
-				sendNotification(Notifications.APPLICATION_FAILURE, "Failed to save sequence!");
-				
+				Alert.show("Failed to save sequence.\n\nIf you have any sequence feature attribute values " +
+                    "that contain more than 4095 characters (e.g. SBOL_DS_nucleotides attributes from " +
+                    "importing an SBOL file and preserving SBOL information), those attributes or the features " +
+                    "they apply to need to be removed.", "Save error");
+                sendNotification(Notifications.UNLOCK);
+                
 				return;
 			}
 			
