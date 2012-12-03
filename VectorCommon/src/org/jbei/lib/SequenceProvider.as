@@ -934,7 +934,7 @@ package org.jbei.lib
             var seqLength:int = _sequence.length;
             for(var i:int = 0; i < _features.length; i++) {
                 var reverseFeature:Feature = (_features.getItemAt(i) as Feature);
-				var newStart:int = seqLength - reverseFeature.end - 1;
+				var newStart:int = seqLength - reverseFeature.end;
                 reverseFeature.strand = -reverseFeature.strand;
                 reverseFeature.reverseLocations(newStart, seqLength, circular);
             }
