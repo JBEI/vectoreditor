@@ -16,7 +16,7 @@ package org.jbei.registry
 		public static const SELECTION_CHANGED:String = "SELECTION_CHANGED";
 		public static const CARET_POSITION_CHANGED:String = "CARET_POSITION_CHANGED";
 		public static const SEQUENCE_PROVIDER_CHANGED:String = "SEQUENCE_PROVIDER_CHANGED";
-		public static const SAFE_EDITING_CHANGED:String = "SAFE_EDITING_CHANGED"
+		public static const SAFE_EDITING_CHANGED:String = "SAFE_EDITING_CHANGED";
 		
 		public static const USER_PREFERENCES_CHANGED:String = "USER_PREFERENCES_CHANGED";
 		public static const USER_RESTRICTION_ENZYMES_CHANGED:String = "USER_RESTRICTION_ENZYMES_CHANGED";

@@ -27,7 +27,6 @@ package org.jbei.components.pieClasses
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.common.Annotation;
     import org.jbei.bio.sequence.common.SymbolList;
-    import org.jbei.bio.sequence.dna.DNASequence;
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.components.Pie;
     import org.jbei.components.common.Alignment;
@@ -139,7 +138,6 @@ package org.jbei.components.pieClasses
 		private var orfsAlignmentChanged:Boolean = false;
 		private var tracesAlignmentChanged:Boolean = false;
 		private var needsMeasurement:Boolean = false;
-		private var richSequenceChanged:Boolean = false;
 		private var showFeaturesChanged:Boolean = false;
 		private var showCutSitesChanged:Boolean = false;
 		private var showFeatureLabelsChanged:Boolean = false;
@@ -1217,7 +1215,7 @@ package org.jbei.components.pieClasses
             
             customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
             customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-            customContextMenu.clipboardItems.paste = _readOnly ? false : true;
+            customContextMenu.clipboardItems.paste = !_readOnly;
             customContextMenu.clipboardItems.selectAll = true;
             
             contextMenu = customContextMenu;
@@ -2054,7 +2052,7 @@ package org.jbei.components.pieClasses
 		private function doSelect(start:int, end:int):void
 		{
 			if(start > 0 && end == 0) {
-				end == sequenceProvider.sequence.length - 1;
+				end = sequenceProvider.sequence.length - 1;
 			}
 			
 			startSelectionIndex = start;

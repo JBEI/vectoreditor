@@ -2,8 +2,10 @@ package org.jbei.registry.mediators
 {
     import flash.display.BitmapData;
     import flash.events.Event;
-    
+    import flash.system.System;
+
     import mx.controls.Alert;
+    import mx.core.Application;
     import mx.events.CloseEvent;
     import mx.printing.FlexPrintJob;
     import mx.printing.FlexPrintJobScaleType;
@@ -24,6 +26,7 @@ package org.jbei.registry.mediators
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
     import org.jbei.lib.ui.dialogs.ModalDialog;
     import org.jbei.lib.ui.dialogs.ModalDialogEvent;
+    import org.jbei.lib.utils.Logger;
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.control.RestrictionEnzymeGroupManager;
@@ -172,7 +175,6 @@ package org.jbei.registry.mediators
                     break;
                 case Notifications.SELECTION_CHANGED:
                     var selectionArray:Array = notification.getBody() as Array;
-                    
                     select(selectionArray[0], selectionArray[1]);
                     
                     break;
@@ -502,10 +504,12 @@ package org.jbei.registry.mediators
         
         private function select(start:int, end:int):void
         {
+            if( end == 0 && start != 0)
+                end = ApplicationFacade.getInstance().sequenceProvider.sequence.length;
+
             pie.select(start, end);
             sequenceAnnotator.select(start, end);
             rail.select(start, end);
-            
             applicationFacade.selectionStart = start;
             applicationFacade.selectionEnd = end;
         }
