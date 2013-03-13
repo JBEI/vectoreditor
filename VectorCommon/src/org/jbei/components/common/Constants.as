@@ -10,12 +10,12 @@ package org.jbei.components.common
         /**
         * Clipboard key for sequence provider
         */
-        public static const SEQUENCE_PROVIDER_CLIPBOARD_KEY:String = "SequenceProvider";
+        public static const SEQUENCE_PROVIDER_CLIPBOARD_KEY:String = "SeqP";
         
         /**
          * Clipboard key for digestion sequence
          */
-        public static const DIGESTION_SEQUENCE_CLIPBOARD_KEY:String = "DigestionSequence";
+        public static const DIGESTION_SEQUENCE_CLIPBOARD_KEY:String = "Diges";
         
         /**
         * Clipboard key for SequenceProvider's context. 
@@ -28,12 +28,12 @@ package org.jbei.components.common
         * 
         * It is sent as {sequenceProvider: sequenceProvider, start:int, end:int};
         */
-        public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY:String = "SequenceProviderExternalContext";
+        public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY:String = "SeqPX";
         public static const SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH:int = 100000;
         
         /**
         * Clipboard key for jbei-sequence-xml format
         */
-        public static const JBEI_SEQUENCE_XML_CLIPBOARD_KEY:String = "jbei-sequence-xml";
+        public static const JBEI_SEQUENCE_XML_CLIPBOARD_KEY:String = "jSeq";
     }
 }
