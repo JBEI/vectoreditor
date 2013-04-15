@@ -475,27 +475,37 @@ package org.jbei.registry.mediators
         
         private function find(expression:String, dataType:String, searchType:String):void
         {
-            findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition);
+            var caretPosition:int = sequenceAnnotator.caretPosition;
+            if(pie.visible)
+                caretPosition = pie.caretPosition;
+            else if( rail.visible)
+                caretPosition = rail.caretPosition;
+            findAt(expression, dataType, searchType, caretPosition);
         }
         
         private function findNext(expression:String, dataType:String, searchType:String):void
         {
-            findAt(expression, dataType, searchType, sequenceAnnotator.caretPosition + 1);
+            var caretPosition:int = sequenceAnnotator.caretPosition;
+            if(pie.visible)
+                caretPosition = pie.caretPosition;
+            else if( rail.visible)
+                caretPosition = rail.caretPosition;
+            findAt(expression, dataType, searchType, caretPosition + 1);
         }
         
         private function findAt(expression:String, dataType:String, searchType:String, position:int):void
         {
             var findAnnotation:Annotation = Finder.find(ApplicationFacade.getInstance().sequenceProvider, expression, dataType, searchType, position);
-            
+
             if(!findAnnotation) {
                 findAnnotation = Finder.find(ApplicationFacade.getInstance().sequenceProvider, expression, dataType, searchType, 0);
             }
-            
+
             if(findAnnotation) {
                 sequenceAnnotator.select(findAnnotation.start, findAnnotation.end);
                 pie.select(findAnnotation.start, findAnnotation.end);
                 rail.select(findAnnotation.start, findAnnotation.end);
-                
+
                 sequenceAnnotator.caretPosition = findAnnotation.start;
                 pie.caretPosition = findAnnotation.start;
                 rail.caretPosition = findAnnotation.start;
