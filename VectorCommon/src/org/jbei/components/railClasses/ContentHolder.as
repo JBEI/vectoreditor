@@ -457,7 +457,7 @@ package org.jbei.components.railClasses
 			} else if((selectionLayer.start != startIndex || selectionLayer.end != endIndex) && startIndex != endIndex) {
 				doSelect(startIndex, endIndex);
 				
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+//				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 			}
 		}
 		
@@ -468,7 +468,7 @@ package org.jbei.components.railClasses
 			if(selectionLayer.start != -1 || selectionLayer.end != -1) {
 				doDeselect();
 				
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+//				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 			}
 		}
 		
@@ -1108,7 +1108,7 @@ package org.jbei.components.railClasses
 		{
 			if(event.start >= 0 && event.end >= 0) {
 				customContextMenu.clipboardItems.copy = true;
-				customContextMenu.clipboardItems.cut = _readOnly ? false : true;
+				customContextMenu.clipboardItems.cut = !_readOnly;
 			} else {
 				customContextMenu.clipboardItems.copy = false;
 				customContextMenu.clipboardItems.cut = false;
@@ -1883,7 +1883,7 @@ package org.jbei.components.railClasses
 		private function doSelect(start:int, end:int):void
 		{
 			if(start > 0 && end == 0) {
-				end == sequenceProvider.sequence.length - 1;
+				end = sequenceProvider.sequence.length - 1;
 			}
 			
 			startSelectionIndex = start;

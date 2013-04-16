@@ -153,7 +153,7 @@ package org.jbei.lib.mappers
 			for(var restrictionEnzyme:Object in cutSites) {
 				var cutSitesList:Vector.<RestrictionCutSite> = cutSites[restrictionEnzyme];
 				
-				// emiminating cut sites that are over sequence length
+				// eliminating cut sites that are over sequence length
                 newCutSites[restrictionEnzyme] = new Vector.<RestrictionCutSite>();
 				for(var k1:int = 0; k1 < cutSitesList.length; k1++) {
 					var cutSite1:RestrictionCutSite = cutSitesList[k1] as RestrictionCutSite;

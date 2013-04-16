@@ -2,8 +2,6 @@ package org.jbei.registry.proxies
 {
     import com.ak33m.rpc.xmlrpc.XMLRPCObject;
     
-    import flash.utils.ByteArray;
-    
     import mx.controls.Alert;
     import mx.rpc.AsyncToken;
     import mx.rpc.events.FaultEvent;
@@ -19,7 +17,6 @@ package org.jbei.registry.proxies
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.models.FeaturedDNASequence;
-    import org.jbei.registry.view.dialogs.SBOLImportDialogForm;
     import org.puremvc.as3.patterns.proxy.Proxy;
 
     /**

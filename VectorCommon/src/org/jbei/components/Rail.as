@@ -35,7 +35,7 @@ package org.jbei.components
     /**
      * Triggered on sequence editing.
      */
-    [Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
+    [Event(name="editing", type="org.jbei.components.common.EditingEvent")]
     
     /**
      * Main class for DNA sequence Rail component.

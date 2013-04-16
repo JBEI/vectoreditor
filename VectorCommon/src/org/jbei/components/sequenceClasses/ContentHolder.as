@@ -18,16 +18,13 @@ package org.jbei.components.sequenceClasses
     import flash.ui.Keyboard;
     
     import mx.controls.Alert;
-    import mx.core.Application;
     import mx.core.UIComponent;
     
     import org.jbei.bio.enzymes.RestrictionCutSite;
     import org.jbei.bio.orf.ORF;
     import org.jbei.bio.sequence.DNATools;
-    import org.jbei.bio.sequence.TranslationUtils;
     import org.jbei.bio.sequence.alphabets.DNAAlphabet;
     import org.jbei.bio.sequence.common.SymbolList;
-    import org.jbei.bio.sequence.dna.DNASequence;
     import org.jbei.bio.sequence.dna.Feature;
     import org.jbei.components.SequenceAnnotator;
     import org.jbei.components.common.AnnotationRenderer;
@@ -530,53 +527,53 @@ package org.jbei.components.sequenceClasses
 		public function select(startIndex: int, endIndex: int):void
 		{
 			if(invalidSequence) { return; }
-			
+
 			if(!isValidIndex(startIndex) || !isValidIndex(endIndex)) {
 				deselect();
-				
+
 				return;
 			}
-			
+
 			if((selectionLayer.start != startIndex || selectionLayer.end != endIndex) && startIndex != endIndex) {
 				doSelect(startIndex, endIndex);
-				
+
 				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, startIndex, endIndex));
-				
+
 				tryMoveCaretToPosition(startIndex);
 			}
 		}
-		
+
         public function deselect():void
 		{
 			if(invalidSequence) { return; }
-			
+
 			if(selectionLayer.selected) {
 				doDeselect();
-				
+
 				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 			}
 		}
-		
+
         /**
         * @private
         */
 		public function showCaret():void
 		{
 			if(invalidSequence) { return; }
-			
+
 			caret.show();
 		}
-		
+
         /**
         * @private
         */
 		public function hideCaret():void
 		{
 			if(invalidSequence) { return; }
-			
+
 			caret.hide();
 		}
-		
+
         /**
         * @private
         */
@@ -584,7 +581,7 @@ package org.jbei.components.sequenceClasses
 		{
 			return index >= 0 && index <= sequenceProvider.sequence.length;
 		}
-		
+
         /**
         * @private
         */
@@ -593,29 +590,29 @@ package org.jbei.components.sequenceClasses
 			if(!isValidIndex(index)) {
 				throw new Error("Can't get bp metrics for bp with index " + String(index));
 			}
-			
+
 			var row:Row = rowByBpIndex(index);
-			
+
 			var resultMetrics:Rectangle;
-			
+
 			if(row == null) {
 				throw new Error("Can't get bp point for index: " + String(index));  // => this case should never happen
 			} else {
 				var numberOfCharacters:int = index - row.index * _bpPerRow;
-				
+
 				if(_showSpaceEvery10Bp) {
 					numberOfCharacters += int(numberOfCharacters / 10);
 				}
-				
+
 				var bpX:Number = row.sequenceMetrics.x + numberOfCharacters * _sequenceSymbolRenderer.textWidth;
 				var bpY:Number = row.sequenceMetrics.y;
-				
+
 				resultMetrics = new Rectangle(bpX, bpY, _sequenceSymbolRenderer.textWidth, _sequenceSymbolRenderer.textHeight);
 			}
-			
+
 			return resultMetrics;
 		}
-		
+
         /**
         * @private
         */
@@ -624,7 +621,7 @@ package org.jbei.components.sequenceClasses
 			if(!isValidIndex(index)) {
 				throw new Error("Can't get row for bp with index " + String(index));
 			}
-			
+
 			return rowMapper.rows[int(Math.floor(index / _bpPerRow))];
 		}
 		
@@ -644,14 +641,14 @@ package org.jbei.components.sequenceClasses
 			
 			return position;
 		}
-		
+
         /**
         * @private
         */
 		public function contentBitmapData(page:int, pageWidth:Number, pageHeight:Number):BitmapData
 		{
 			var currentHeight:Number = Math.min(pageHeight, totalHeight - pageHeight * page);
-			
+
 			var bitmapData:BitmapData = new BitmapData(pageWidth, currentHeight);
 			var matrix:Matrix = new Matrix(1, 0, 0, 1, 0, -pageHeight * page);
 			bitmapData.draw(this, matrix, null, null, new Rectangle(0, 0, pageWidth, currentHeight));
@@ -1421,7 +1418,7 @@ package org.jbei.components.sequenceClasses
         {
             if(event.start >= 0 && event.end >= 0) {
                 customContextMenu.clipboardItems.copy = true;
-                customContextMenu.clipboardItems.cut = _readOnly ? false : true;
+                customContextMenu.clipboardItems.cut = !_readOnly;
             } else {
                 customContextMenu.clipboardItems.copy = false;
                 customContextMenu.clipboardItems.cut = false;
@@ -1481,7 +1478,7 @@ package org.jbei.components.sequenceClasses
 			
 			customContextMenu.hideBuiltInItems(); //hide the Flash built-in menu
 			customContextMenu.clipboardMenu = true; // activate Copy, Paste, Cut, Menu items
-			customContextMenu.clipboardItems.paste = _readOnly ? false : true;
+			customContextMenu.clipboardItems.paste = !_readOnly;
 			customContextMenu.clipboardItems.selectAll = true;
 			
 			contextMenu = customContextMenu;
@@ -1933,7 +1930,7 @@ package org.jbei.components.sequenceClasses
 	    private function doSelect(startIndex:int, endIndex:int):void
 	    {
 			if(startIndex > 0 && endIndex == 0) {
-				endIndex == sequenceProvider.sequence.length - 1;
+				endIndex = sequenceProvider.sequence.length - 1;
 			}
 			
 			selectionLayer.deselect();

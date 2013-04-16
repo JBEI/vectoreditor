@@ -35,11 +35,11 @@ package org.jbei.components
     /**
      * Triggered on sequence editing.
      */
-    [Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
+    [Event(name="editing", type="org.jbei.components.common.EditingEvent")]
     
-	[Event(name="featureDoubleClick", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
-	[Event(name="beforeUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
-	[Event(name="afterUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
+//	[Event(name="featureDoubleClick", type="org.jbei.components.common.SequenceAnnotatorEvent")]
+//	[Event(name="beforeUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
+//	[Event(name="afterUpdate", type="org.jbei.components.sequence.sequenceClasses.SequenceAnnotatorEvent")]
 	
     /**
      * Main class for DNA SequenceAnnotator component.

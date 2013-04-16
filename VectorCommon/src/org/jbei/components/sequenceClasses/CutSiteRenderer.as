@@ -8,7 +8,6 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.bio.enzymes.RestrictionCutSite;
 	import org.jbei.components.common.AnnotationRenderer;
 	import org.jbei.components.common.IContentHolder;
-	import org.jbei.lib.mappers.AAMapper;
 
     /**
      * @author Zinovii Dmytriv
@@ -80,7 +79,7 @@ package org.jbei.components.sequenceClasses
 		
 				var startBP:int = 0;
 				var endBP:int = 0;
-				
+
 				if(cutSite.start < cutSite.end) { // non-circular
 					if (cutSite.start < row.rowData.start && cutSite.end <= row.rowData.start) {
 						continue;

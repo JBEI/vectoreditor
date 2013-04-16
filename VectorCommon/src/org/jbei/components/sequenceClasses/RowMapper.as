@@ -9,7 +9,7 @@ package org.jbei.components.sequenceClasses
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.bio.sequence.dna.Feature;
 	import org.jbei.components.common.Alignment;
-	
+
     /**
      * @author Zinovii Dmytriv
      */
@@ -21,7 +21,6 @@ package org.jbei.components.sequenceClasses
 		private var _featureToRowMap:Dictionary; /* of [Feature] = Array(Row, Row, ...) */
 		private var _cutSiteToRowMap:Dictionary; /* of [CutSite] = Array(Row, Row, ...) */
 		private var _orfToRowMap:Dictionary; /* of [ORF] = Array(Row, Row, ...) */
-		private var _showORFs:Boolean = false;
 		private var numRows:int = 0;
 		
 		// Contructor
@@ -93,9 +92,6 @@ package org.jbei.components.sequenceClasses
 			}
 			
 			for(var i:int = 0; i < numRows; i++) {
-				var start:int = i * contentHolder.bpPerRow;
-				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
-				
 				var featuresAlignment:Alignment = new Alignment(rowsFeatures[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.featuresAlignment = featuresAlignment.rows;
@@ -131,9 +127,6 @@ package org.jbei.components.sequenceClasses
 			}
 			
 			for(var i:int = 0; i < numRows; i++) {
-				var start:int = i * contentHolder.bpPerRow;
-				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
-				
 				var cutSitesAlignment:Alignment = new Alignment(rowsCutSites[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.cutSitesAlignment = cutSitesAlignment.rows;
@@ -169,9 +162,6 @@ package org.jbei.components.sequenceClasses
 			}
 			
 			for(var i:int = 0; i < numRows; i++) {
-				var start:int = i * contentHolder.bpPerRow;
-				var end:int = (i + 1) * contentHolder.bpPerRow - 1;
-				
 				var orfsAlignment:Alignment = new Alignment(rowsOrfs[i] as Array, contentHolder.sequenceProvider);
 				
 				(_rows[i] as Row).rowData.orfAlignment = orfsAlignment.rows;
@@ -211,9 +201,9 @@ package org.jbei.components.sequenceClasses
 					var itemEnd:int = annotation.end;
 					
 					// restriction sites may have cut positions outside their locations, and they should be rendered.
-					if (annotation is RestrictionCutSite) {
+					if (itemStart < itemEnd && annotation is RestrictionCutSite) {
 						var cutSite:RestrictionCutSite = annotation as RestrictionCutSite;
-						
+
 						var dsForwardPosition:int;
 						var dsReversePosition:int;
 						if (cutSite.strand == 1) {
@@ -223,14 +213,14 @@ package org.jbei.components.sequenceClasses
 							dsForwardPosition = cutSite.end - cutSite.restrictionEnzyme.dsForward;
 							dsReversePosition = cutSite.end - cutSite.restrictionEnzyme.dsReverse;
 						}
-						
+
 						if (dsForwardPosition >= contentHolder.sequenceProvider.sequence.length) {
 							dsForwardPosition -= contentHolder.sequenceProvider.sequence.length;
 						}
 						if (dsReversePosition >= contentHolder.sequenceProvider.sequence.length) {
 							dsReversePosition -= contentHolder.sequenceProvider.sequence.length;
 						}
-						
+
 						if (dsForwardPosition < 0) {
 							dsForwardPosition += contentHolder.sequenceProvider.sequence.length;
 						}
@@ -239,7 +229,7 @@ package org.jbei.components.sequenceClasses
 						}
 
 						pushInRow(dsForwardPosition, dsReversePosition, annotation, rows);
-						
+
 					}
 					pushInRow(itemStart, itemEnd, annotation, rows);
 					
@@ -274,13 +264,6 @@ package org.jbei.components.sequenceClasses
 					
 					if(rows[z] as Array != null) {
 						(rows[z] as Array).push(annotation);
-						if(annotation is RestrictionCutSite) {
-							//Logger.getInstance().info(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
-						}
-					} else {
-						if(annotation is RestrictionCutSite) {
-							//Logger.getInstance().error(annotation.start + "-" + annotation.end + ": " + (annotation as CutSite).label);
-						}
 					}
 				}
 			}

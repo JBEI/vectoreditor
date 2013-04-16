@@ -26,7 +26,7 @@ package org.jbei.registry.mediators
      */
     public class MainPanelMediator extends Mediator
     {
-        private const NAME:String = "MainPanelMediator"
+        private const NAME:String = "MainPanelMediator";
         
         private var sequenceAnnotator:SequenceAnnotator;
         private var pie:Pie;
@@ -34,8 +34,7 @@ package org.jbei.registry.mediators
         private var mainPanel:MainPanel;
         
         private var controlsInitialized:Boolean = false;
-        private var isSequenceInitialized:Boolean = false;
-        
+
         // Constructor
         public function MainPanelMediator(viewComponent:Object=null)
         {
@@ -313,11 +312,6 @@ package org.jbei.registry.mediators
             pie.select(start, end);
             sequenceAnnotator.select(start, end);
             rail.select(start, end);
-        }
-        
-        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
-        {
-            //sendNotification(Notifications.SEQUENCE_CHANGED, event.data, event.kind);
         }
         
         private function onSelectionChanged(event:SelectionEvent):void

@@ -12,7 +12,7 @@ package org.jbei.registry.mediators
      */
 	public class FindPanelMediator extends Mediator
 	{
-		private const NAME:String = "FindPanelMediator"
+		private const NAME:String = "FindPanelMediator";
 		
 		private var findPanel:FindPanel;
 		

@@ -5,8 +5,7 @@ package org.jbei.registry.mediators
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
-	import mx.core.Application;
-	
+
 	import org.jbei.bio.parsers.GenbankFormat;
 	import org.jbei.lib.data.RestrictionEnzymeGroup;
 	import org.jbei.lib.ui.dialogs.ModalDialog;

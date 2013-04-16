@@ -13,11 +13,11 @@ package org.jbei.registry.utils
 		public static const DATA_TYPE_DNA:String = "DataTypeDNA";
 		public static const DATA_TYPE_AMINO_ACIDS:String = "DataTypeAA";
 		
-		public static const SEARCH_TYPE_LITTERAL:String = "SearchTypeLitteral";
+		public static const SEARCH_TYPE_LITERAL:String = "SearchTypeLiteral";
 		public static const SEARCH_TYPE_AMBIGUOUS:String = "SearchTypeAmbiguous";
 		
 		// Public Methods
-		public static function find(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL, start:int = 0):Annotation
+		public static function find(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITERAL, start:int = 0):Annotation
 		{
 			if(!sequenceProvider || sequenceProvider.sequence.length == 0 || expression.length == 0) { return null; }
 			
@@ -26,14 +26,16 @@ package org.jbei.registry.utils
 			expression = expression.toUpperCase();
 			
 			switch(dataType) {
-				case DATA_TYPE_DNA:
+                case DATA_TYPE_DNA:
 					if(searchType == Finder.SEARCH_TYPE_AMBIGUOUS) {
 						expression = makeAmbiguousDNAExpression(expression);
 					}
-					
+
+                    // find all matches
 					var sequenceAnnotations:Array = FindUtils.findAll(sequenceProvider.sequence.seqString(), expression, sequenceProvider.circular);
 					var reverseComplementAnnotation:Array = FindUtils.findAll(sequenceProvider.getReverseComplementSequence().seqString(), expression, sequenceProvider.circular);
-					
+
+                    // for the regular match, check any matches that are after current
 					for(var i1:int = 0; i1 < sequenceAnnotations.length; i1++) {
 						var annotation1:Annotation = sequenceAnnotations[i1] as Annotation;
 						
@@ -47,7 +49,8 @@ package org.jbei.registry.utils
 							}
 						}
 					}
-					
+
+                    // for reverse do same (after normalizing start and end)
 					var sequenceLength:int = sequenceProvider.sequence.length;
 					
 					for(var i2:int = 0; i2 < reverseComplementAnnotation.length; i2++) {
@@ -190,7 +193,7 @@ package org.jbei.registry.utils
 			return resultAnnotation;
 		}
 		
-		public static function findAll(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITTERAL):Array /* of Annotation */
+		public static function findAll(sequenceProvider:SequenceProvider, expression:String, dataType:String = Finder.DATA_TYPE_DNA, searchType:String = Finder.SEARCH_TYPE_LITERAL):Array /* of Annotation */
 		{
 			var result:Array; 
 			

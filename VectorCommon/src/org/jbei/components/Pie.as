@@ -35,7 +35,7 @@ package org.jbei.components
     /**
      * Triggered on sequence editing.
      */
-	[Event(name="editing", type="org.jbei.components.sequence.sequenceClasses.EditingEvent")]
+	[Event(name="editing", type="org.jbei.components.common.EditingEvent")]
 	
     /**
     * Main class for DNA sequence Pie component.
@@ -114,21 +114,21 @@ package org.jbei.components
 	    	if(value) {
 	    		if(_sequenceProvider != value) {
 		    		_sequenceProvider = value;
-		    		
+
 		    		_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
 	    		}
 	    	} else {
 	    		_sequenceProvider = null;
-	    		
+
 		    	verticalScrollPosition = 0;
 		    	horizontalScrollPosition = 0;
-		    	
+
 		    	contentHolder.x = 0;
 		    	contentHolder.y = 0;
 	    	}
-	    	
+
 	    	sequenceProviderChanged = true;
-	    	
+
 	    	invalidateProperties();
 	    }
 		

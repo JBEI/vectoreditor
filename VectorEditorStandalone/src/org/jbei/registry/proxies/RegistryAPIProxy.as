@@ -1,6 +1,5 @@
 package org.jbei.registry.proxies
 {
-	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
@@ -12,8 +11,6 @@ package org.jbei.registry.proxies
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.models.VectorEditorProject;
-	import org.jbei.registry.utils.StandaloneUtils;
-	import org.puremvc.as3.patterns.observer.Notification;
 
     /**
      * @author Zinovii Dmytriv
