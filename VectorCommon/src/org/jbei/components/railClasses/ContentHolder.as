@@ -456,8 +456,7 @@ package org.jbei.components.railClasses
 				deselect();
 			} else if((selectionLayer.start != startIndex || selectionLayer.end != endIndex) && startIndex != endIndex) {
 				doSelect(startIndex, endIndex);
-				
-//				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 			}
 		}
 		
@@ -467,8 +466,7 @@ package org.jbei.components.railClasses
 			
 			if(selectionLayer.start != -1 || selectionLayer.end != -1) {
 				doDeselect();
-				
-//				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
+				dispatchEvent(new SelectionEvent(SelectionEvent.SELECTION_CHANGED, selectionLayer.start, selectionLayer.end));
 			}
 		}
 		
