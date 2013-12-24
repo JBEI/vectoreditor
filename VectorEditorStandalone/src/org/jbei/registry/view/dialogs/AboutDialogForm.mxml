@@ -23,8 +23,8 @@
         <mx:Text width="400" condenseWhite="true" leading="0">
             <mx:htmlText>
                 <![CDATA[This is an Open Source Software. <br/>Check us out at 
-                <font color="#0000FF"><u><a href="http://code.google.com/p/vectoreditor" target="_blank">
-                http://code.google.com/p/vectoreditor</a></u></font>]]>
+                <font color="#0000FF"><u><a href="https://github.com/JBEI/vectoreditor" target="_blank">
+                https://github.com/JBEI/vectoreditor</a></u></font>]]>
             </mx:htmlText>
         </mx:Text> 
         <mx:Text width="400" condenseWhite="true" leading="0">

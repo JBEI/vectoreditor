@@ -81,6 +81,12 @@ package org.jbei.registry.proxies
         // Event Handlers
         private function onXMLRPCResult(event:ResultEvent):void
         {
+            if (event.result.hasOwnProperty("error_message")) { //j5 errored
+                Alert.show("Failed to convert sequence file.  Below is the j5 error message:\n\n" 
+                    + event.result.error_message, "Failed to convert");
+                return;
+            }
+            
             var base64Decoder:Base64Decoder = new Base64Decoder();
             
             var encodedOutputFile:String = event.result.encoded_output_file;
