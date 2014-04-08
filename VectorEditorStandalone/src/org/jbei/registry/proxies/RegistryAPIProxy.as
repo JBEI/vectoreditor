@@ -5,7 +5,7 @@ package org.jbei.registry.proxies
 	import mx.rpc.events.ResultEvent;
 	
 	import org.jbei.lib.utils.Logger;
-	import org.jbei.registry.ApplicationFacade;
+    import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
@@ -51,7 +51,7 @@ package org.jbei.registry.proxies
 		public function fetchSequence(sessionId:String, entryId:String):void
 		{
             sendNotification(Notifications.LOCK, "Fetching sequence ...");
-            
+
             service.getSequence(sessionId, entryId);
 		}
 		

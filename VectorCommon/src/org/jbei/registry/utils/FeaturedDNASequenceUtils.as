@@ -1,8 +1,9 @@
 package org.jbei.registry.utils
 {
 	import mx.collections.ArrayCollection;
-	
-	import org.jbei.bio.sequence.DNATools;
+    import mx.controls.Alert;
+
+    import org.jbei.bio.sequence.DNATools;
 	import org.jbei.bio.sequence.common.Location;
 	import org.jbei.bio.sequence.dna.DNASequence;
 	import org.jbei.bio.sequence.dna.Feature;
@@ -96,5 +97,49 @@ package org.jbei.registry.utils
 			
 			return sequenceProvider;
 		}
+
+        /**
+         * features []:
+         *          notes []
+         *          locations []
+         *
+         * @param object
+         * @return
+         */
+        public static function fromObject(object:Object ) : FeaturedDNASequence {
+            var features:Array = object.features as Array;
+            var featureCollection:ArrayCollection = new ArrayCollection();
+
+            for(var i:int=0; i<features.length; i += 1) {
+                var featureObj:Object = features[i];
+
+                // convert DNAFeatureLocations
+                var locations:ArrayCollection = new ArrayCollection();
+                var featuresLocationsJSON:Array = featureObj.locations as Array;
+                for(var j:int=0; j<featuresLocationsJSON.length; j+=1) {
+                    var locationObj:Object = featuresLocationsJSON[j];
+                    var featureLocation:DNAFeatureLocation = ObjectTranslator.objectToInstance(locationObj, DNAFeatureLocation);
+                    locations.addItem(featureLocation);
+                }
+
+                // convert DNAFeatureNotes
+                var notes:ArrayCollection = new ArrayCollection();
+                var featuresNotesJSON:Array = featureObj.notes as Array;
+                for (var k:int=0; k<featuresNotesJSON.length; k+=1) {
+                    var noteObj:Object = featuresNotesJSON[k];
+                    var featuresNote:DNAFeatureNote = ObjectTranslator.objectToInstance(noteObj, DNAFeatureNote);
+                    notes.addItem(featuresNote);
+                }
+
+                var feature:DNAFeature = ObjectTranslator.objectToInstance(featureObj, DNAFeature);
+                feature.locations = locations;
+                feature.notes = notes;
+                featureCollection.addItem(feature);
+            }
+
+            var sequence:FeaturedDNASequence = ObjectTranslator.objectToInstance(object, FeaturedDNASequence);
+            sequence.features = featureCollection;
+            return sequence;
+        }
 	}
 }

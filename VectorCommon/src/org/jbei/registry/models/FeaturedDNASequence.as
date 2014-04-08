@@ -86,5 +86,9 @@ package org.jbei.registry.models
 		{
 			_identifier = value;
 		}
+
+        public function toString():String {
+            return sequence;
+        }
 	}
 }
