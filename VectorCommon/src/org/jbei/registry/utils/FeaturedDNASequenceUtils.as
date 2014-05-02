@@ -66,6 +66,8 @@ package org.jbei.registry.utils
 			var dnaSequence:DNASequence = DNATools.createDNASequence("", featuredDNASequence.sequence);
 			
 			var sequenceProvider:SequenceProvider = new SequenceProvider(featuredDNASequence.name, featuredDNASequence.isCircular, dnaSequence);
+            sequenceProvider.icePartId = featuredDNASequence.identifier;
+            sequenceProvider.iceEntryURI = featuredDNASequence.uri;
 			
 			var features:ArrayCollection = new ArrayCollection();
 			if(featuredDNASequence.features != null && featuredDNASequence.features.length > 0) {

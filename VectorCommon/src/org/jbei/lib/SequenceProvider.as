@@ -42,6 +42,8 @@ package org.jbei.lib
         private var _complementSequence:SymbolList;
         private var _reverseComplementSequence:SymbolList;
         private var _features:ArrayCollection = new ArrayCollection(); /* of Feature */;
+        private var _icePartId:String;
+        private var _iceEntryURI:String;
         
         private var _manualUpdateStarted:Boolean = false;
         private var needsRecalculateComplementSequence:Boolean = true;
@@ -121,6 +123,32 @@ package org.jbei.lib
         public function set features(value:ArrayCollection):void
         {
             _features = value;
+        }
+        
+        /**
+         * Part ID of the ICE entry, if applicable
+         */
+        public function get icePartId():String
+        {
+            return _icePartId;
+        }
+        
+        public function set icePartId(value:String):void
+        {
+            _icePartId = value;
+        }
+        
+        /**
+         * URI for the ICE entry, if applicable
+         */
+        public function get iceEntryURI():String
+        {
+            return _iceEntryURI;
+        }
+        
+        public function set iceEntryURI(value:String):void
+        {
+            _iceEntryURI = value;
         }
         
         [Transient]

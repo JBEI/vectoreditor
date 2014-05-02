@@ -14,6 +14,7 @@ package org.jbei.registry.models
 		private var _identifier:String = "";
         private var _isCircular:Boolean = true;
         private var _name:String = "";
+        private var _uri:String;
 		
 		// Constructor
 		public function FeaturedDNASequence(name:String = "", sequence:String = "", isCircular:Boolean = true, features:ArrayCollection /* of DNAFeature */ = null)
@@ -86,5 +87,15 @@ package org.jbei.registry.models
 		{
 			_identifier = value;
 		}
+        
+        public function get uri():String
+        {
+            return _uri;
+        }
+        
+        public function set uri(value:String):void
+        {
+            _uri = value;
+        }
 	}
 }
