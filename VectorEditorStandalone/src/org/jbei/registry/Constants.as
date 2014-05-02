@@ -6,7 +6,7 @@ package org.jbei.registry
 	public final class Constants
 	{
         public static const APPLICATION_NAME:String = "Vector Editor";
-		public static const VERSION:String = "1.7.4";
+		public static const VERSION:String = "1.7.5";
 		public static const REPORT_BUG_URL:String = "https://github.com/JBEI/vectoreditor/issues/new";
 		public static const SUGGEST_FEATURE_URL:String = "https://github.com/JBEI/vectoreditor/issues/new";
 	}
