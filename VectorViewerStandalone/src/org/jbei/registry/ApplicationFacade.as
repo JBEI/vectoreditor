@@ -1,21 +1,14 @@
 package org.jbei.registry
 {
-    import flash.display.BitmapData;
-    import flash.events.Event;
-    
     import mx.collections.ArrayCollection;
-    import mx.printing.FlexPrintJob;
-    import mx.printing.FlexPrintJobScaleType;
-    
+
     import org.jbei.components.common.ISequenceComponent;
-    import org.jbei.components.common.PrintableContent;
     import org.jbei.lib.SequenceProvider;
     import org.jbei.lib.SequenceProviderEvent;
     import org.jbei.lib.data.RestrictionEnzymeGroup;
     import org.jbei.lib.mappers.AAMapper;
     import org.jbei.lib.mappers.ORFMapper;
     import org.jbei.lib.mappers.RestrictionEnzymeMapper;
-    import org.jbei.lib.ui.dialogs.SimpleDialog;
     import org.jbei.registry.control.RestrictionEnzymeGroupManager;
     import org.jbei.registry.mediators.ApplicationMediator;
     import org.jbei.registry.mediators.FindPanelMediator;
@@ -23,13 +16,12 @@ package org.jbei.registry
     import org.jbei.registry.mediators.MainPanelMediator;
     import org.jbei.registry.mediators.StatusBarMediator;
     import org.jbei.registry.models.FeaturedDNASequence;
+    import org.jbei.registry.proxies.RESTClientProxy;
     import org.jbei.registry.proxies.RegistryAPIProxy;
     import org.jbei.registry.utils.FeaturedDNASequenceUtils;
-    import org.jbei.registry.utils.Finder;
     import org.jbei.registry.utils.StandaloneUtils;
-    import org.jbei.registry.view.dialogs.PropertiesDialogForm;
     import org.puremvc.as3.patterns.facade.Facade;
-    
+
     /**
      * @author Zinovii Dmytriv
      */
@@ -54,6 +46,11 @@ package org.jbei.registry
         public function get registryServiceProxy():RegistryAPIProxy
         {
             return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+        }
+
+        public function get restServiceProxy():RESTClientProxy
+        {
+            return ApplicationFacade.getInstance().retrieveProxy(RESTClientProxy.PROXY_NAME) as RESTClientProxy;
         }
         
         public function get entryId():String
@@ -151,7 +148,8 @@ package org.jbei.registry
             _application = application;
             
             // Register Proxy
-            registerProxy(new RegistryAPIProxy());
+//            registerProxy(new RegistryAPIProxy());
+            registerProxy(new RESTClientProxy());
             
             // Register Mediators
             registerMediator(new ApplicationMediator());
@@ -163,7 +161,9 @@ package org.jbei.registry
             RestrictionEnzymeGroupManager.instance.loadRebaseDatabase();
             
             CONFIG::registryEdition {
-                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+//                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+                var entry:int = parseInt(ApplicationFacade.getInstance().entryId);
+                restServiceProxy.retrieveSequence(entry, ApplicationFacade.getInstance().sessionId);
             }
             
             CONFIG::standalone {

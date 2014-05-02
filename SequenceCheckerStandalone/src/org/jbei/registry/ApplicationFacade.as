@@ -134,7 +134,9 @@ package org.jbei.registry
             
             CONFIG::registryEdition {
                 registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
-                registryServiceProxy.fetchTraces(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+
+                // TODO
+//                registryServiceProxy.fetchTraces(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
             }
             
             CONFIG::standalone {
