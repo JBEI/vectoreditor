@@ -10,7 +10,6 @@ package org.jbei.registry
 	import mx.events.CloseEvent;
 
 	import org.jbei.bio.parsers.GenbankFormat;
-	import org.jbei.bio.sequence.DNATools;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.SequenceProviderEvent;
 	import org.jbei.lib.SequenceProviderMemento;
@@ -23,17 +22,12 @@ package org.jbei.registry
 	import org.jbei.registry.control.ActionStackEvent;
 	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
 	import org.jbei.registry.mediators.ApplicationMediator;
-	import org.jbei.registry.mediators.FindPanelMediator;
-	import org.jbei.registry.mediators.MainControlBarMediator;
-	import org.jbei.registry.mediators.MainMenuMediator;
-	import org.jbei.registry.mediators.StatusBarMediator;
 	import org.jbei.registry.models.FeaturedDNASequence;
 	import org.jbei.registry.models.UserPreferences;
 	import org.jbei.registry.models.UserRestrictionEnzymes;
 	import org.jbei.registry.models.VectorEditorProject;
 	import org.jbei.registry.proxies.ConvertSBOLGenbankProxy;
     import org.jbei.registry.proxies.RESTClientProxy;
-    import org.jbei.registry.proxies.RegistryAPIProxy;
 	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
 	import org.jbei.registry.utils.StandaloneUtils;
 	import org.jbei.registry.view.ui.ApplicationPanel;
@@ -56,7 +50,7 @@ package org.jbei.registry
 		private var _selectionStart:int = -1;
 		private var _selectionEnd:int = -1;
 		private var _caretPosition:int = -1;
-        private var _serviceProxy:RegistryAPIProxy;
+        private var _serviceProxy:RESTClientProxy;
         private var _project:VectorEditorProject;
 
         private var _convertSBOLXMLRPCServerLocation:String = "http://j5.jbei.org"; // these are default values
@@ -93,7 +87,7 @@ package org.jbei.registry
 			}
 		}
 
-        public function get serviceProxy():RegistryAPIProxy
+        public function get serviceProxy():RESTClientProxy
         {
             return _serviceProxy;
         }
@@ -272,16 +266,18 @@ package org.jbei.registry
 
         public function saveProject():void
         {
-            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
+            // todo
+//            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
 
-            _serviceProxy.saveVectorEditorProject(sessionId, _project);
+//            _serviceProxy.saveVectorEditorProject(sessionId, _project);
         }
 
         public function createProject():void
         {
-            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
+            // todo
+//            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
 
-            _serviceProxy.createVectorEditorProject(sessionId, _project);
+//            _serviceProxy.createVectorEditorProject(sessionId, _project);
         }
 
         public function updateProject(newProject:VectorEditorProject):void
@@ -295,7 +291,7 @@ package org.jbei.registry
             }
 
             if(! _applicationInitialized) {
-                serviceProxy.fetchUserPreferences(sessionId);
+//                serviceProxy.fetchUserPreferences(sessionId);
             }
         }
 
@@ -322,7 +318,7 @@ package org.jbei.registry
             }
 
             if(! _applicationInitialized) {
-                serviceProxy.fetchUserPreferences(sessionId);
+//                serviceProxy.fetchUserPreferences(sessionId);
             }
         }
 
@@ -342,7 +338,7 @@ package org.jbei.registry
             CONFIG::standalone{
                 return;
             }
-            serviceProxy.saveUserPreferences(sessionId, userPreferences);
+//            serviceProxy.saveUserPreferences(sessionId, userPreferences);
         }
 
         public function updateUserPreferences(userPreferences:UserPreferences):void
@@ -356,13 +352,13 @@ package org.jbei.registry
             }
 
             if(! _applicationInitialized) {
-                serviceProxy.fetchUserRestrictionEnzymes(sessionId);
+//                serviceProxy.fetchUserRestrictionEnzymes(sessionId);
             }
         }
 
         public function saveUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
         {
-            serviceProxy.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
+//            serviceProxy.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
         }
 
         public function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
@@ -373,7 +369,7 @@ package org.jbei.registry
 
             CONFIG::entryEdition {
                 if(! _applicationInitialized && entryId && entryId.length > 0) {
-                    serviceProxy.hasWritablePermissions(sessionId, entryId);
+//                    serviceProxy.hasWritablePermissions(sessionId, entryId);
                 }
             }
 
@@ -425,13 +421,15 @@ package org.jbei.registry
 
         public function importSequenceViaServer(data:String):void
         {
-            serviceProxy.parseSequenceFile(data);
+//            serviceProxy.parseSequenceFile(data);
         }
 
         public function generateAndFetchSequence():void
         {
             CONFIG::entryEdition {
-                serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+                Alert.show("missing");
+                // tOdo
+//                serviceProxy.generateSequence(sessionId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
             }
             CONFIG::standalone {
                 var result:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
@@ -453,7 +451,8 @@ package org.jbei.registry
 
         public function generateSequenceOnServer():void
         {
-            serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+            // todo
+//            serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }
 
         public function downloadSequence(content:String, extension:String):void
@@ -514,12 +513,10 @@ package org.jbei.registry
         // Private Methods
         private function initializeProxy():void
         {
-            _serviceProxy = new RegistryAPIProxy();
+            _serviceProxy = new RESTClientProxy();
 
             registerProxy(_serviceProxy);
-
             registerProxy(new ConvertSBOLGenbankProxy());
-            registerProxy(new RESTClientProxy());
         }
 
         private function initializeStandaloneApplication():void
@@ -531,7 +528,7 @@ package org.jbei.registry
         private function initializeRegistryEditionApplication():void
         {
             if(projectId && projectId.length > 0) {
-                serviceProxy.getVectorEditorProject(sessionId, projectId);
+//                serviceProxy.getVectorEditorProject(sessionId, projectId);
             } else {
                 createNewEmptyProject();
             }
@@ -540,14 +537,13 @@ package org.jbei.registry
         private function initializeEntryEditionApplication():void
         {
             if(entryId && entryId.length > 0) {
-//                serviceProxy.fetchSequence(sessionId, entryId);
-                var entry:int = parseInt(entryId);
                 var proxy:RESTClientProxy = retrieveProxy(RESTClientProxy.PROXY_NAME) as RESTClientProxy;
-                proxy.retrieveSequence(entry, sessionId);
+                proxy.retrieveSequence(entryId, sessionId);
             } else {
                 createEmptySequence();
             }
 
+            // todo
             /*registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
             registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
             registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/

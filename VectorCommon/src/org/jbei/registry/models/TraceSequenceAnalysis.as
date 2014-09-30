@@ -1,21 +1,20 @@
 package org.jbei.registry.models
 {
-	[RemoteClass(alias="org.jbei.ice.lib.models.TraceSequence")]
     /**
      * @author Zinovii Dmytriv
      */
-	public class TraceSequence
+	public class TraceSequenceAnalysis
 	{
 		private var _filename:String;
 		private var _depositor:String;
 		private var _sequence:String;
-		private var _traceSequenceAlignment:TraceSequenceAlignment;
+		private var _traceSequenceAlignment:TraceSequenceAlignmentInfo;
 		
 		// Constructor
-		public function TraceSequence(filename:String = "", depositor:String = "", sequence:String = "", traceSequenceAlignment:TraceSequenceAlignment = null) {
+		public function TraceSequenceAnalysis(filename:String = "", depositor:String = "", sequence:String = "", traceSequenceAlignment:TraceSequenceAlignmentInfo = null) {
 			super();
-			
-			_filename = filename;
+
+            _filename = filename;
 			_depositor = depositor;
 			_sequence = sequence;
 			_traceSequenceAlignment = traceSequenceAlignment;
@@ -29,7 +28,7 @@ package org.jbei.registry.models
 		
 		public function set filename(value:String):void
 		{
-			_filename = value;
+            _filename = value;
 		}
 		
 		public function get depositor():String
@@ -52,12 +51,12 @@ package org.jbei.registry.models
 			_sequence = value;
 		}
 		
-		public function get traceSequenceAlignment():TraceSequenceAlignment
+		public function get traceSequenceAlignment():TraceSequenceAlignmentInfo
 		{
 			return _traceSequenceAlignment;
 		}
 		
-		public function set traceSequenceAlignment(value:TraceSequenceAlignment):void
+		public function set traceSequenceAlignment(value:TraceSequenceAlignmentInfo):void
 		{
 			_traceSequenceAlignment = value;
 		}

@@ -3,14 +3,14 @@ package org.jbei.lib.data
     import mx.collections.ArrayCollection;
     
     import org.jbei.bio.sequence.common.Annotation;
-    import org.jbei.registry.models.TraceSequence;
+    import org.jbei.registry.models.TraceSequenceAnalysis;
 
     /**
      * @author Zinovii Dmytriv
      */
     public class TraceAnnotation extends Annotation
     {
-        private var _traceSequence:TraceSequence;
+        private var _traceSequence:TraceSequenceAnalysis;
         private var _matches:ArrayCollection = new ArrayCollection(); /* of Annotation */
         private var _mismatches:ArrayCollection = new ArrayCollection(); /* of Annotation */
         private var _deletions:ArrayCollection = new ArrayCollection(); /* of Annotation */
@@ -18,7 +18,7 @@ package org.jbei.lib.data
         private var _allMismatches:ArrayCollection = new ArrayCollection(); /* of Annotation */
         
         // Contructor
-        public function TraceAnnotation(start:int, end:int, traceSequence:TraceSequence)
+        public function TraceAnnotation(start:int, end:int, traceSequence:TraceSequenceAnalysis)
         {
             super(start, end);
             
@@ -26,7 +26,7 @@ package org.jbei.lib.data
         }
         
         // Properties
-        public function get traceSequence():TraceSequence
+        public function get traceSequence():TraceSequenceAnalysis
         {
             return _traceSequence;
         }

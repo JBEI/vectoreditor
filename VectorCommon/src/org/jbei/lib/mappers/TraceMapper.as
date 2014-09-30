@@ -7,9 +7,9 @@ package org.jbei.lib.mappers
 	import org.jbei.bio.sequence.common.Annotation;
 	import org.jbei.lib.SequenceProvider;
 	import org.jbei.lib.data.TraceAnnotation;
-	import org.jbei.registry.models.TraceSequence;
-	import org.jbei.registry.models.TraceSequenceAlignment;
-	
+	import org.jbei.registry.models.TraceSequenceAlignmentInfo;
+    import org.jbei.registry.models.TraceSequenceAnalysis;
+
     /**
      * @author Zinovii Dmytriv
      */
@@ -35,7 +35,7 @@ package org.jbei.lib.mappers
 			}
 			
 			for(var i:int = 0; i < traces.length; i++) {
-				var traceSequence:TraceSequence = traces[i] as TraceSequence;
+				var traceSequence:TraceSequenceAnalysis = traces[i] as TraceSequenceAnalysis;
 				
 				if(traceSequence.traceSequenceAlignment == null) {
 					continue;
@@ -78,7 +78,7 @@ package org.jbei.lib.mappers
 			}
 		}
 		
-		private function calculateMatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
+		private function calculateMatches(traceSequenceAlignment:TraceSequenceAlignmentInfo):ArrayCollection /* of Annotation */
 		{
 			var matches:ArrayCollection = new ArrayCollection();
 			
@@ -120,7 +120,7 @@ package org.jbei.lib.mappers
 			return matches;
 		}
 		
-		private function calculateMismatches(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
+		private function calculateMismatches(traceSequenceAlignment:TraceSequenceAlignmentInfo):ArrayCollection /* of Annotation */
 		{
 			var mismatches:ArrayCollection = new ArrayCollection();
 			
@@ -162,7 +162,7 @@ package org.jbei.lib.mappers
 			return mismatches;
 		}
 		
-		private function calculateDeletions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
+		private function calculateDeletions(traceSequenceAlignment:TraceSequenceAlignmentInfo):ArrayCollection /* of Annotation */
 		{
 			var deletions:ArrayCollection = new ArrayCollection();
 			
@@ -204,7 +204,7 @@ package org.jbei.lib.mappers
 			return deletions;
 		}
 		
-		private function calculateInsertions(traceSequenceAlignment:TraceSequenceAlignment):ArrayCollection /* of Annotation */
+		private function calculateInsertions(traceSequenceAlignment:TraceSequenceAlignmentInfo):ArrayCollection /* of Annotation */
 		{
 			var insertions:ArrayCollection = new ArrayCollection();
 			

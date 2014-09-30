@@ -32,7 +32,7 @@ package org.jbei.registry.proxies {
 
         public function retrieveSequence(id:int, sid:String):void {
             // Application.application.url
-            var request:URLRequest = new URLRequest("/rest/part/" + id + "/sequence?sid=" + sid);
+            var request:URLRequest = new URLRequest("/rest/parts/" + id + "/sequence?sid=" + sid);
             request.method = URLRequestMethod.GET;
 
             var loader:URLLoader = new URLLoader();

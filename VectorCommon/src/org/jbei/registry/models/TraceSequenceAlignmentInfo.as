@@ -4,7 +4,7 @@ package org.jbei.registry.models
     /**
      * @author Zinovii Dmytriv
      */
-	public class TraceSequenceAlignment
+	public class TraceSequenceAlignmentInfo
 	{
 		private var _score:int;
 		private var _strand:int;
@@ -16,7 +16,7 @@ package org.jbei.registry.models
 		private var _subjectAlignment:String;
 		
 		// Constructor
-		public function TraceSequenceAlignment(score:int = 0, strand:int = 0, queryStart:int = 0, queryEnd:int = 0, subjectStart:int = 0, subjectEnd:int = 0, queryAlignment:String = "", subjectAlignment:String = "")
+		public function TraceSequenceAlignmentInfo(score:int = 0, strand:int = 0, queryStart:int = 0, queryEnd:int = 0, subjectStart:int = 0, subjectEnd:int = 0, queryAlignment:String = "", subjectAlignment:String = "")
 		{
 			super();
 			

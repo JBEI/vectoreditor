@@ -3,8 +3,8 @@ package org.jbei.registry.mediators
 	import org.jbei.lib.utils.StringFormatter;
 	import org.jbei.lib.utils.SystemUtils;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.models.TraceSequence;
-	import org.jbei.registry.view.ui.AlignmentPanel;
+    import org.jbei.registry.models.TraceSequenceAnalysis;
+    import org.jbei.registry.view.ui.AlignmentPanel;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
@@ -38,14 +38,13 @@ package org.jbei.registry.mediators
 		{
 			switch(notification.getName()) {
 				case Notifications.TRACE_SEQUENCE_SELECTION_CHANGED:
-					updateAlignment(notification.getBody() as TraceSequence)
-					
+					updateAlignment(notification.getBody() as TraceSequenceAnalysis);
 					break;
 			}
 		}
 		
 		// Private Methods
-		private function updateAlignment(traceSequence:TraceSequence):void {
+		private function updateAlignment(traceSequence:TraceSequenceAnalysis):void {
 			alignmentPanel.traceSequenceAlignmentTextArea.htmlText = "";
 			alignmentPanel.traceSequenceAlignmentTextArea.verticalScrollPosition = 0;
 			
