@@ -13,6 +13,7 @@ package org.jbei.registry.models
 		private var _identifier:String = "";
         private var _isCircular:Boolean = true;
         private var _name:String = "";
+        private var _uri:String;
         private var _canEdit:Boolean = false;
 		
 		// Constructor
@@ -93,6 +94,15 @@ package org.jbei.registry.models
 
         public function set canEdit(canEdit:Boolean):void {
             this._canEdit = canEdit;
+        }
+
+        public function get uri():String
+        {
+            return _uri;
+        }
+        public function set uri(value:String):void
+        {
+            _uri = value;
         }
 
         public function toString():String {

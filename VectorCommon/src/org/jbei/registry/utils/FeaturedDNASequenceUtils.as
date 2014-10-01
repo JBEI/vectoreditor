@@ -2,6 +2,7 @@ package org.jbei.registry.utils {
 
 
     import mx.collections.ArrayCollection;
+    import mx.controls.Alert;
 
     import org.jbei.bio.sequence.DNATools;
     import org.jbei.bio.sequence.common.Location;
@@ -93,6 +94,8 @@ package org.jbei.registry.utils {
             }
 
             sequenceProvider.features = features;
+            sequenceProvider.icePartId = featuredDNASequence.identifier;
+            sequenceProvider.iceEntryURI = featuredDNASequence.uri;
             return sequenceProvider;
         }
 
@@ -139,6 +142,10 @@ package org.jbei.registry.utils {
             var sequence:FeaturedDNASequence = ObjectTranslator.objectToInstance(object, FeaturedDNASequence);
             sequence.features = featureCollection;
             sequence.canEdit = object.canEdit;
+            sequence.identifier = object.identifier;
+            sequence.uri = object.uri;
+            sequence.name = object.name;
+
             return sequence;
         }
 

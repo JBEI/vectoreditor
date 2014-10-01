@@ -866,7 +866,7 @@ package org.jbei.components.railClasses
                 }
             }
             
-            var externalContext:Object = null;
+            var externalContext:Object = new Object();
             if(digestionStart >= 0 && digestionEnd >= 0) {
                 var subSequenceProvider:SequenceProvider = _sequenceProvider.subSequenceProvider(digestionStart, digestionEnd);
                 var digestionSequence:DigestionSequence = new DigestionSequence(subSequenceProvider, digestionStartCutSite.restrictionEnzyme, digestionEndCutSite.restrictionEnzyme, 0, digestionEndCutSite.start - digestionStartCutSite.start);
@@ -875,15 +875,19 @@ package org.jbei.components.railClasses
                 Clipboard.generalClipboard.setData(Constants.DIGESTION_SEQUENCE_CLIPBOARD_KEY, digestionSequence, true);
                 Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, subSequenceProvider, true);
                 Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, subSequenceProvider.sequence.seqString(), true);
-                
+
+                externalContext.name = _sequenceProvider.name;
+                externalContext.icePartId = _sequenceProvider.icePartId; //will be null or empty string if not tied to ice registry
+                externalContext.iceEntryURI = _sequenceProvider.iceEntryURI; //will be null or empty string if not tied to ice registry
+                externalContext.start = digestionStart;
+                externalContext.end = digestionEnd;
                 if (_sequenceProvider.sequence.length <= Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH) {
-                    externalContext = {sequence: _sequenceProvider.sequence.seqString(), start:digestionStart, end:digestionEnd, name:_sequenceProvider.name};
-                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                    externalContext.sequence = _sequenceProvider.sequence.seqString();
                 } else {
-                    externalContext = {sequence: _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString(), start:digestionStart, end:digestionEnd, name:_sequenceProvider.name};
-                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                    externalContext.sequence = _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString();
                 }
-                
+                Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+
                 Clipboard.generalClipboard.setData(Constants.JBEI_SEQUENCE_XML_CLIPBOARD_KEY, IceXmlUtils.sequenceProviderToJbeiSeqXml(_sequenceProvider));
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Digestion sequence has been copied to clipboard. Enzymes: [" + digestionStartCutSite.restrictionEnzyme.name + ", " + digestionEndCutSite.restrictionEnzyme.name + "]"));
@@ -891,15 +895,19 @@ package org.jbei.components.railClasses
                 Clipboard.generalClipboard.clear();
                 Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_CLIPBOARD_KEY, _sequenceProvider.subSequenceProvider(selectionLayer.start, selectionLayer.end), true);
                 Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _sequenceProvider.subSequence(selectionLayer.start, selectionLayer.end).seqString(), true);
-                
+
+                externalContext.name = _sequenceProvider.name;
+                externalContext.icePartId = _sequenceProvider.icePartId; //will be null or empty string if not tied to ice registry
+                externalContext.iceEntryURI = _sequenceProvider.iceEntryURI; //will be null or empty string if not tied to ice registry
+                externalContext.start = selectionLayer.start;
+                externalContext.end = selectionLayer.end;
                 if (_sequenceProvider.sequence.length <= Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH) {
-                    externalContext = {sequence: _sequenceProvider.sequence.seqString(), start:selectionLayer.start, end:selectionLayer.end, name:_sequenceProvider.name};
-                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                    externalContext.sequence = _sequenceProvider.sequence.seqString();
                 } else {
-                    externalContext = {sequence: _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString(), start:selectionLayer.start, end:selectionLayer.end, name:_sequenceProvider.name};
-                    Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+                    externalContext.sequence = _sequenceProvider.subSequence(0, Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_MAX_LENGTH).seqString();
                 }
-                
+                Clipboard.generalClipboard.setData(Constants.SEQUENCE_PROVIDER_EXTERNAL_CONTEXT_CLIPBOARD_KEY, externalContext, true);
+
                 Clipboard.generalClipboard.setData(Constants.JBEI_SEQUENCE_XML_CLIPBOARD_KEY, IceXmlUtils.sequenceProviderToJbeiSeqXml(_sequenceProvider));
                 
                 dispatchEvent(new CommonEvent(CommonEvent.ACTION_MESSAGE, true, true, "Sequence has been copied to clipboard"));
