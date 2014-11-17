@@ -28,10 +28,19 @@ package org.jbei.registry.proxies {
             super(PROXY_NAME);
         }
 
-        public function retrieveSequence(id:String, sid:String):void {
+        public function retrieveSequence(id:String, sid:String, url:String):void {
             sendNotification(Notifications.LOCK, "Loading sequence...");
+
             // Application.application.url
-            var request:URLRequest = new URLRequest("/rest/parts/" + id + "/sequence?sid=" + sid);
+            var requestUrl:String;
+            if(url) {
+                requestUrl = "/rest/parts/" + Number(url) + "/sequence?sid=" + sid;
+                Logger.getInstance().info("Url: " + url);
+            }
+            else
+                requestUrl = "/rest/parts/" + id + "/sequence?sid=" + sid;
+
+            var request:URLRequest = new URLRequest(requestUrl);
             request.method = URLRequestMethod.GET;
 
             var loader:URLLoader = new URLLoader();
@@ -75,23 +84,32 @@ package org.jbei.registry.proxies {
             loader.load(request);
         }
 
-        function httpStatusHandler(e:HTTPStatusEvent):void
+        protected function httpStatusHandler(e:HTTPStatusEvent):void
         {
             Logger.getInstance().info("httpStatusHandler:" + e.status);
             // do something if not 200
+            switch (e.status) {
+                case 200:
+                    return;
+
+                case 204:
+                    sendNotification(Notifications.UNLOCK);
+                    sendNotification(Notifications.SEQUENCE_UPDATED);
+                    break;
+            }
         }
 
-        function securityErrorHandler(e:SecurityErrorEvent):void
+        protected function securityErrorHandler(e:SecurityErrorEvent):void
         {
             Alert.show("securityErrorHandler:" + e.text);
         }
 
-        function ioErrorHandler(e:IOErrorEvent):void
+        protected function ioErrorHandler(e:IOErrorEvent):void
         {
             Alert.show("ioErrorHandler: " + e.text);    // 2032
         }
 
-        private function onSaveSequenceResult(event:Event):void
+        protected function onSaveSequenceResult(event:Event):void
         {
             Logger.getInstance().info(event.toString());
             // todo

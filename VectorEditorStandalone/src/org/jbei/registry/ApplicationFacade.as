@@ -1,55 +1,55 @@
-package org.jbei.registry
-{
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.external.ExternalInterface;
-	import flash.net.FileReference;
+package org.jbei.registry {
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.external.ExternalInterface;
+    import flash.net.FileReference;
 
-	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
-	import mx.events.CloseEvent;
+    import mx.collections.ArrayCollection;
+    import mx.controls.Alert;
+    import mx.events.CloseEvent;
 
-	import org.jbei.bio.parsers.GenbankFormat;
-	import org.jbei.lib.SequenceProvider;
-	import org.jbei.lib.SequenceProviderEvent;
-	import org.jbei.lib.SequenceProviderMemento;
-	import org.jbei.lib.data.RestrictionEnzymeGroup;
-	import org.jbei.lib.mappers.AAMapper;
-	import org.jbei.lib.mappers.ORFMapper;
-	import org.jbei.lib.mappers.RestrictionEnzymeMapper;
-	import org.jbei.lib.utils.Logger;
-	import org.jbei.registry.control.ActionStack;
-	import org.jbei.registry.control.ActionStackEvent;
-	import org.jbei.registry.control.RestrictionEnzymeGroupManager;
-	import org.jbei.registry.mediators.ApplicationMediator;
-	import org.jbei.registry.models.FeaturedDNASequence;
-	import org.jbei.registry.models.UserPreferences;
-	import org.jbei.registry.models.UserRestrictionEnzymes;
-	import org.jbei.registry.models.VectorEditorProject;
-	import org.jbei.registry.proxies.ConvertSBOLGenbankProxy;
+    import org.jbei.bio.parsers.GenbankFileModel;
+
+    import org.jbei.bio.parsers.GenbankFormat;
+    import org.jbei.lib.SequenceProvider;
+    import org.jbei.lib.SequenceProviderEvent;
+    import org.jbei.lib.SequenceProviderMemento;
+    import org.jbei.lib.data.RestrictionEnzymeGroup;
+    import org.jbei.lib.mappers.AAMapper;
+    import org.jbei.lib.mappers.ORFMapper;
+    import org.jbei.lib.mappers.RestrictionEnzymeMapper;
+    import org.jbei.lib.utils.Logger;
+    import org.jbei.registry.control.ActionStack;
+    import org.jbei.registry.control.ActionStackEvent;
+    import org.jbei.registry.control.RestrictionEnzymeGroupManager;
+    import org.jbei.registry.mediators.ApplicationMediator;
+    import org.jbei.registry.models.FeaturedDNASequence;
+    import org.jbei.registry.models.UserPreferences;
+    import org.jbei.registry.models.UserRestrictionEnzymes;
+    import org.jbei.registry.models.VectorEditorProject;
+    import org.jbei.registry.proxies.ConvertSBOLGenbankProxy;
     import org.jbei.registry.proxies.RESTClientProxy;
-	import org.jbei.registry.utils.FeaturedDNASequenceUtils;
-	import org.jbei.registry.utils.StandaloneUtils;
-	import org.jbei.registry.view.ui.ApplicationPanel;
-	import org.puremvc.as3.patterns.facade.Facade;
+    import org.jbei.registry.utils.FeaturedDNASequenceUtils;
+    import org.jbei.registry.utils.StandaloneUtils;
+    import org.jbei.registry.view.ui.ApplicationPanel;
+    import org.puremvc.as3.patterns.facade.Facade;
 
     /**
      * @author Zinovii Dmytriv
      */
-	public class ApplicationFacade extends Facade
-	{
-		private const EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION:String = "updateSavedStateTitle";
+    public class ApplicationFacade extends Facade {
+        private const EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION:String = "updateSavedStateTitle";
 
-		private var _sequenceProvider:SequenceProvider;
+        private var _sequenceProvider:SequenceProvider;
         private var _hasWritablePermissions:Boolean = false;
-		private var _sequence:FeaturedDNASequence;
-		private var _orfMapper:ORFMapper;
-		private var _aaMapper:AAMapper;
-		private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
-		private var _userPreferences:UserPreferences;
-		private var _selectionStart:int = -1;
-		private var _selectionEnd:int = -1;
-		private var _caretPosition:int = -1;
+        private var _sequence:FeaturedDNASequence;
+        private var _orfMapper:ORFMapper;
+        private var _aaMapper:AAMapper;
+        private var _restrictionEnzymeMapper:RestrictionEnzymeMapper;
+        private var _userPreferences:UserPreferences;
+        private var _selectionStart:int = -1;
+        private var _selectionEnd:int = -1;
+        private var _caretPosition:int = -1;
         private var _serviceProxy:RESTClientProxy;
         private var _project:VectorEditorProject;
 
@@ -57,7 +57,8 @@ package org.jbei.registry
         private var _convertSBOLXMLRPCServicePath:String = "/j5bin/j5_xml_rpc.pl"; // will be reset if passed in through flashvars 
 
         private var actionStack:ActionStack;
-        private var entryId:String;
+        private var _entryId:String;
+        private var _url:String;
         private var sessionId:String;
         private var projectId:String;
         private var saveSequenceContent:String;
@@ -65,141 +66,116 @@ package org.jbei.registry
 
         private var _applicationInitialized:Boolean = false;
 
-		private var browserSavedState:Boolean = true;
+        private var browserSavedState:Boolean = true;
 
-		// Properties
-        public function get project():VectorEditorProject
-        {
+        // Properties
+        public function get project():VectorEditorProject {
             return _project;
         }
 
-		public function get sequenceProvider():SequenceProvider
-		{
-			return _sequenceProvider;
-		}
+        public function get sequenceProvider():SequenceProvider {
+            return _sequenceProvider;
+        }
 
-		public function set sequenceProvider(value:SequenceProvider):void
-		{
-			if(_sequenceProvider != value) {
-				_sequenceProvider = value;
+        public function set sequenceProvider(value:SequenceProvider):void {
+            if (_sequenceProvider != value) {
+                _sequenceProvider = value;
 
-				_sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGING, onSequenceChanging);
-			}
-		}
+                _sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGING, onSequenceChanging);
+            }
+        }
 
-        public function get serviceProxy():RESTClientProxy
-        {
+        public function get serviceProxy():RESTClientProxy {
             return _serviceProxy;
         }
 
-		public function get sequence():FeaturedDNASequence
-		{
-			return _sequence;
-		}
+        public function get sequence():FeaturedDNASequence {
+            return _sequence;
+        }
 
-		public function get userPreferences():UserPreferences
-		{
-			return _userPreferences;
-		}
+        public function get userPreferences():UserPreferences {
+            return _userPreferences;
+        }
 
-		public function get orfMapper():ORFMapper
-		{
-			return _orfMapper;
-		}
+        public function get orfMapper():ORFMapper {
+            return _orfMapper;
+        }
 
-        public function get applicationInitialized():Boolean
-        {
+        public function get applicationInitialized():Boolean {
             return _applicationInitialized;
         }
 
-        public function get restrictionEnzymeMapper():RestrictionEnzymeMapper
-		{
-			return _restrictionEnzymeMapper;
-		}
+        public function get restrictionEnzymeMapper():RestrictionEnzymeMapper {
+            return _restrictionEnzymeMapper;
+        }
 
-		public function get aaMapper():AAMapper
-		{
-			return _aaMapper;
-		}
+        public function get aaMapper():AAMapper {
+            return _aaMapper;
+        }
 
-		public function get selectionStart():int
-		{
-			return _selectionStart;
-		}
+        public function get selectionStart():int {
+            return _selectionStart;
+        }
 
-		public function set selectionStart(value:int):void
-		{
-			_selectionStart = value;
-		}
+        public function set selectionStart(value:int):void {
+            _selectionStart = value;
+        }
 
-		public function get selectionEnd():int
-		{
-			return _selectionEnd;
-		}
+        public function get selectionEnd():int {
+            return _selectionEnd;
+        }
 
-		public function set selectionEnd(value:int):void
-		{
-			_selectionEnd = value;
-		}
+        public function set selectionEnd(value:int):void {
+            _selectionEnd = value;
+        }
 
-		public function get caretPosition():int
-		{
-			return _caretPosition;
-		}
+        public function get caretPosition():int {
+            return _caretPosition;
+        }
 
-		public function set caretPosition(value:int):void
-		{
-			_caretPosition = value;
-		}
+        public function set caretPosition(value:int):void {
+            _caretPosition = value;
+        }
 
-        public function get hasWritablePermissions():Boolean
-        {
+        public function get hasWritablePermissions():Boolean {
             return _hasWritablePermissions;
         }
 
-        public function get isUndoStackEmpty():Boolean
-        {
+        public function get isUndoStackEmpty():Boolean {
             return actionStack.undoStackIsEmpty;
         }
 
-        public function get isRedoStackEmpty():Boolean
-        {
+        public function get isRedoStackEmpty():Boolean {
             return actionStack.redoStackIsEmpty;
         }
 
-        public function get convertSBOLXMLRPCServerLocation():String
-        {
+        public function get convertSBOLXMLRPCServerLocation():String {
             return _convertSBOLXMLRPCServerLocation;
         }
 
-        public function set convertSBOLXMLRPCServerLocation(value:String):void
-        {
+        public function set convertSBOLXMLRPCServerLocation(value:String):void {
             _convertSBOLXMLRPCServerLocation = value;
         }
 
-        public function get convertSBOLXMLRPCServicePath():String
-        {
+        public function get convertSBOLXMLRPCServicePath():String {
             return _convertSBOLXMLRPCServicePath;
         }
 
-        public function set convertSBOLXMLRPCServicePath(value:String):void
-        {
+        public function set convertSBOLXMLRPCServicePath(value:String):void {
             _convertSBOLXMLRPCServicePath = value;
         }
 
-		// System Public Methods
-		public static function getInstance():ApplicationFacade
-		{
-			if(instance == null) {
-				instance = new ApplicationFacade();
-			}
+        // System Public Methods
+        public static function getInstance():ApplicationFacade {
+            if (instance == null) {
+                instance = new ApplicationFacade();
+            }
 
-			return instance as ApplicationFacade;
-		}
+            return instance as ApplicationFacade;
+        }
 
         // Public Methods
-        public function initializeControls(applicationPanel:ApplicationPanel):void
-        {
+        public function initializeControls(applicationPanel:ApplicationPanel):void {
             registerMediator(new ApplicationMediator(applicationPanel));
 
             initializeProxy();
@@ -211,52 +187,48 @@ package org.jbei.registry
             RestrictionEnzymeGroupManager.instance.loadRebaseDatabase();
         }
 
-        public function initializeParameters(sessionId:String, entryId:String, projectId:String):void
-        {
+        public function initializeParameters(sessionId:String, entryId:String, projectId:String, url:String):void {
             CONFIG::standalone {
                 initializeStandaloneApplication();
                 return;
             }
 
             // check session id
-            if(!sessionId) {
+            if (!sessionId) {
                 sendNotification(Notifications.APPLICATION_FAILURE, "Parameter 'sessionId' is mandatory!");
-
                 return;
             }
 
             this.sessionId = sessionId;
+            Logger.getInstance().info("Session ID: " + sessionId + " url " + url);
 
-            Logger.getInstance().info("Session ID: " + sessionId);
+            this._url = url;
 
-            CONFIG::registryEdition {
-                // if projectId exist then load project else create new empty project
-                if(projectId && projectId.length > 0) {
-                    Logger.getInstance().info("Project ID: " + projectId);
-
-                    this.projectId = projectId;
-                }
-
-                initializeRegistryEditionApplication();
-
-                return;
-            }
+//            CONFIG::registryEdition {
+//                // if projectId exist then load project else create new empty project
+//                if (projectId && projectId.length > 0) {
+//                    Logger.getInstance().info("Project ID: " + projectId);
+//                    this.projectId = projectId;
+//                }
+//
+//                initializeRegistryEditionApplication();
+//
+//                return;
+//            }
 
             CONFIG::entryEdition {
                 // if projectId exist then load project else create new empty project
-                if(entryId && entryId.length > 0) {
+                if (entryId && entryId.length > 0) {
                     Logger.getInstance().info("Entry ID: " + entryId);
-
-                    this.entryId = entryId;
+                    this._entryId = entryId;
                 }
 
                 initializeEntryEditionApplication();
-
                 return;
             }
         }
 
-		public function undo():void {
+        public function undo():void {
             actionStack.undo();
         }
 
@@ -264,24 +236,21 @@ package org.jbei.registry
             actionStack.redo();
         }
 
-        public function saveProject():void
-        {
+        public function saveProject():void {
             // todo
 //            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
 
 //            _serviceProxy.saveVectorEditorProject(sessionId, _project);
         }
 
-        public function createProject():void
-        {
+        public function createProject():void {
             // todo
 //            _project.featuredDNASequence = FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(_sequenceProvider);
 
 //            _serviceProxy.createVectorEditorProject(sessionId, _project);
         }
 
-        public function updateProject(newProject:VectorEditorProject):void
-        {
+        public function updateProject(newProject:VectorEditorProject):void {
             _project = newProject;
 
             sendNotification(Notifications.SEQUENCE_UPDATED, _project.featuredDNASequence);
@@ -290,16 +259,15 @@ package org.jbei.registry
                 return;
             }
 
-            if(! _applicationInitialized) {
+            if (!_applicationInitialized) {
 //                serviceProxy.fetchUserPreferences(sessionId);
             }
         }
 
-        public function updateSequence(featuredDNASequence:FeaturedDNASequence):void
-        {
+        public function updateSequence(featuredDNASequence:FeaturedDNASequence):void {
             _sequence = featuredDNASequence;
 
-            if(featuredDNASequence == null) {
+            if (featuredDNASequence == null) {
                 _sequence = new FeaturedDNASequence("", "", true, new ArrayCollection());
             } else {
                 _sequence = featuredDNASequence;
@@ -307,7 +275,7 @@ package org.jbei.registry
 
             loadSequence();
 
-            if(ApplicationFacade.getInstance().sequenceProvider.circular) {
+            if (ApplicationFacade.getInstance().sequenceProvider.circular) {
                 sendNotification(Notifications.SHOW_PIE);
             } else {
                 sendNotification(Notifications.SHOW_RAIL);
@@ -317,32 +285,29 @@ package org.jbei.registry
                 return;
             }
 
-            if(! _applicationInitialized) {
+            if (!_applicationInitialized) {
 //                serviceProxy.fetchUserPreferences(sessionId);
             }
         }
 
-        public function updateBrowserSaveTitleState(isSaved:Boolean):void
-        {
-            if(isSaved != browserSavedState) {
+        public function updateBrowserSaveTitleState(isSaved:Boolean):void {
+            if (isSaved != browserSavedState) {
                 browserSavedState = isSaved;
 
-                if(ExternalInterface.available) {
+                if (ExternalInterface.available) {
                     ExternalInterface.call(EXTERNAL_JAVASCIPT_UPDATE_SAVED_BROWSER_TITLE_FUNCTION, isSaved ? "true" : "false");
                 }
             }
         }
 
-        public function saveUserPreferences(userPreferences:UserPreferences):void
-        {
+        public function saveUserPreferences(userPreferences:UserPreferences):void {
             CONFIG::standalone{
                 return;
             }
 //            serviceProxy.saveUserPreferences(sessionId, userPreferences);
         }
 
-        public function updateUserPreferences(userPreferences:UserPreferences):void
-        {
+        public function updateUserPreferences(userPreferences:UserPreferences):void {
             _userPreferences = userPreferences;
 
             sendNotification(Notifications.USER_PREFERENCES_CHANGED);
@@ -351,24 +316,22 @@ package org.jbei.registry
                 return;
             }
 
-            if(! _applicationInitialized) {
+            if (!_applicationInitialized) {
 //                serviceProxy.fetchUserRestrictionEnzymes(sessionId);
             }
         }
 
-        public function saveUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
-        {
+        public function saveUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void {
 //            serviceProxy.saveUserRestrictionEnzymes(sessionId, userRestrictionEnzymes);
         }
 
-        public function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void
-        {
+        public function updateUserRestrictionEnzymes(userRestrictionEnzymes:UserRestrictionEnzymes):void {
             RestrictionEnzymeGroupManager.instance.loadUserRestrictionEnzymes(userRestrictionEnzymes);
 
             sendNotification(Notifications.USER_RESTRICTION_ENZYMES_CHANGED);
 
             CONFIG::entryEdition {
-                if(! _applicationInitialized && entryId && entryId.length > 0) {
+                if (!_applicationInitialized && _entryId && _entryId.length > 0) {
 //                    serviceProxy.hasWritablePermissions(sessionId, entryId);
                 }
             }
@@ -376,15 +339,13 @@ package org.jbei.registry
             _applicationInitialized = true;
         }
 
-        public function updateEntryPermissions(hasWritablePermissions:Boolean):void
-        {
+        public function updateEntryPermissions(hasWritablePermissions:Boolean):void {
             _hasWritablePermissions = hasWritablePermissions;
 
             sendNotification(Notifications.PERMISSIONS_FETCHED);
         }
 
-        public function importSequence(data:String):void
-        {
+        public function importSequence(data:String):void {
             var featuredDNASequence:FeaturedDNASequence;
             var dataAsXML:XML = new XML(data);
 
@@ -402,7 +363,8 @@ package org.jbei.registry
                 return; //this case is handled differently from the others
             } else {
                 //try genbank
-                featuredDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(data));
+                var genbank:GenbankFileModel = GenbankFormat.parseGenbankFile(data);
+                featuredDNASequence = SequenceProvider.fromGenbankFileModel(genbank);
 
                 if (featuredDNASequence.name == null) {
                     //try FASTA
@@ -419,13 +381,11 @@ package org.jbei.registry
             sendNotification(Notifications.SEQUENCE_UPDATED, featuredDNASequence);
         }
 
-        public function importSequenceViaServer(data:String):void
-        {
+        public function importSequenceViaServer(data:String):void {
 //            serviceProxy.parseSequenceFile(data);
         }
 
-        public function generateAndFetchSequence():void
-        {
+        public function generateAndFetchSequence():void {
             CONFIG::entryEdition {
                 Alert.show("missing");
                 // tOdo
@@ -437,26 +397,22 @@ package org.jbei.registry
             }
         }
 
-        public function saveSequence():void
-        {
-            serviceProxy.saveSequence(sessionId, entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
+        public function saveSequence():void {
+            serviceProxy.saveSequence(sessionId, _entryId, FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }
 
-        public function generateSequence():void
-        {
+        public function generateSequence():void {
             var fileString:String = GenbankFormat.generateGenbankFile(sequenceProvider.toGenbankFileModel());
             var notificationBody:Object = {fileString:fileString, fileExtension:".gb"};
             sendNotification(Notifications.SEQUENCE_FILE_GENERATED, notificationBody);
         }
 
-        public function generateSequenceOnServer():void
-        {
+        public function generateSequenceOnServer():void {
             // todo
 //            serviceProxy.generateSequenceFile(FeaturedDNASequenceUtils.sequenceProviderToFeaturedDNASequence(sequenceProvider));
         }
 
-        public function downloadSequence(content:String, extension:String):void
-        {
+        public function downloadSequence(content:String, extension:String):void {
             saveSequenceContent = content;
             saveSequenceExtension = extension;
 
@@ -472,23 +428,19 @@ package org.jbei.registry
         }
 
         // Event Handlers
-		private function onActionStackChanged(event:ActionStackEvent):void
-		{
-			sendNotification(Notifications.ACTION_STACK_CHANGED);
-		}
+        private function onActionStackChanged(event:ActionStackEvent):void {
+            sendNotification(Notifications.ACTION_STACK_CHANGED);
+        }
 
-		private function onSequenceChanging(event:SequenceProviderEvent):void
-		{
-			actionStack.add(event.data as SequenceProviderMemento);
-		}
+        private function onSequenceChanging(event:SequenceProviderEvent):void {
+            actionStack.add(event.data as SequenceProviderMemento);
+        }
 
-        private function onSequenceProviderChanged(event:SequenceProviderEvent):void
-        {
+        private function onSequenceProviderChanged(event:SequenceProviderEvent):void {
             sendNotification(Notifications.SEQUENCE_PROVIDER_CHANGED, event.data, event.kind);
         }
 
-        private function onSequenceGeneratedAlertClose(event:CloseEvent):void
-        {
+        private function onSequenceGeneratedAlertClose(event:CloseEvent):void {
             if (event.detail == Alert.OK) {
                 var fileReference:FileReference = new FileReference();
                 fileReference.addEventListener(IOErrorEvent.IO_ERROR, onExportIOSequenceError);
@@ -500,69 +452,60 @@ package org.jbei.registry
             saveSequenceExtension = null;
         }
 
-        private function onExportSequenceComplete(event:Event):void
-        {
+        private function onExportSequenceComplete(event:Event):void {
             sendNotification(Notifications.ACTION_MESSAGE, "File saved successfully");
         }
 
-        private function onExportIOSequenceError(event:Event):void
-        {
+        private function onExportIOSequenceError(event:Event):void {
             Alert.show("Failed to write file!", "Write file error");
         }
 
         // Private Methods
-        private function initializeProxy():void
-        {
+        private function initializeProxy():void {
             _serviceProxy = new RESTClientProxy();
 
             registerProxy(_serviceProxy);
             registerProxy(new ConvertSBOLGenbankProxy());
         }
 
-        private function initializeStandaloneApplication():void
-        {
+        private function initializeStandaloneApplication():void {
             updateSequence(StandaloneUtils.standaloneSequence());
             updateUserPreferences(StandaloneUtils.standaloneUserPreferences());
         }
 
-        private function initializeRegistryEditionApplication():void
-        {
-            if(projectId && projectId.length > 0) {
+        private function initializeRegistryEditionApplication():void {
+            if (projectId && projectId.length > 0) {
 //                serviceProxy.getVectorEditorProject(sessionId, projectId);
             } else {
                 createNewEmptyProject();
             }
         }
 
-        private function initializeEntryEditionApplication():void
-        {
-            if(entryId && entryId.length > 0) {
+        private function initializeEntryEditionApplication():void {
+            if (_entryId && _entryId.length > 0) {
                 var proxy:RESTClientProxy = retrieveProxy(RESTClientProxy.PROXY_NAME) as RESTClientProxy;
-                proxy.retrieveSequence(entryId, sessionId);
+                proxy.retrieveSequence(_entryId, sessionId, _url);
             } else {
                 createEmptySequence();
             }
 
             // todo
             /*registryServiceProxy.fetchUserPreferences(ApplicationFacade.getInstance().sessionId);
-            registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
-            registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/
+             registryServiceProxy.fetchUserRestrictionEnzymes(ApplicationFacade.getInstance().sessionId);
+             registryServiceProxy.hasWritablePermissions(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);*/
         }
 
-        private function createNewEmptyProject():void
-        {
+        private function createNewEmptyProject():void {
             _project = new VectorEditorProject();
 
             sendNotification(Notifications.PROJECT_UPDATED, _project);
         }
 
-        private function createEmptySequence():void
-        {
+        private function createEmptySequence():void {
             sendNotification(Notifications.SEQUENCE_UPDATED);
         }
 
-        private function loadSequence():void
-        {
+        private function loadSequence():void {
             sequenceProvider = FeaturedDNASequenceUtils.featuredDNASequenceToSequenceProvider(_sequence);
 
             sequenceProvider.addEventListener(SequenceProviderEvent.SEQUENCE_CHANGED, onSequenceProviderChanged);
@@ -570,7 +513,7 @@ package org.jbei.registry
             var orfMapper:ORFMapper = new ORFMapper(sequenceProvider);
 
             var restrictionEnzymeGroup:RestrictionEnzymeGroup = new RestrictionEnzymeGroup("active");
-            for(var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
+            for (var i:int = 0; i < RestrictionEnzymeGroupManager.instance.activeGroup.length; i++) {
                 restrictionEnzymeGroup.addRestrictionEnzyme(RestrictionEnzymeGroupManager.instance.activeGroup[i]);
             }
 
@@ -585,5 +528,5 @@ package org.jbei.registry
 
             sequenceProvider.dispatchEvent(new SequenceProviderEvent(SequenceProviderEvent.SEQUENCE_CHANGED, SequenceProviderEvent.KIND_INITIALIZED));
         }
-	}
+    }
 }

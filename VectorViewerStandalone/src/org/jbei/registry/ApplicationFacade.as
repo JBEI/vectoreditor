@@ -30,6 +30,7 @@ package org.jbei.registry
         private var _application:VectorViewer;
         private var _entryId:String;
         private var _sessionId:String;
+        private var _url:String;
         private var _sequenceProvider:SequenceProvider;
         private var _sequence:FeaturedDNASequence;
         private var _orfMapper:ORFMapper;
@@ -71,6 +72,15 @@ package org.jbei.registry
         public function get sessionId():String
         {
             return _sessionId;
+        }
+
+        public function set url(value:String):void {
+            _url = value;
+        }
+
+        public function get url():String
+        {
+            return _url;
         }
         
         public function get sequenceProvider():SequenceProvider
@@ -163,7 +173,7 @@ package org.jbei.registry
             CONFIG::registryEdition {
 //                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
                 var entry:int = parseInt(ApplicationFacade.getInstance().entryId);
-                restServiceProxy.retrieveSequence(entry, ApplicationFacade.getInstance().sessionId);
+                restServiceProxy.retrieveSequence(entry, ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().url);
             }
             
             CONFIG::standalone {

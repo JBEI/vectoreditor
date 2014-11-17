@@ -98,6 +98,10 @@
     					
     					return;
     				}
+
+                    if(Application.application.parameters.url && (Application.application.parameters.url as String).length > 0) {
+                        facade.url = Application.application.parameters.url;
+                    }
     				
     				Logger.getInstance().info("Entry ID: " + facade.entryId);
     				Logger.getInstance().info("Session ID: " + facade.sessionId);

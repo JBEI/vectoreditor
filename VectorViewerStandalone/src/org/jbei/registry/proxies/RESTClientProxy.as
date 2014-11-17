@@ -12,7 +12,8 @@ package org.jbei.registry.proxies {
     import flash.net.URLRequestMethod;
 
     import mx.controls.Alert;
-    import mx.core.Application;
+
+    import org.jbei.lib.utils.Logger;
 
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.models.FeaturedDNASequence;
@@ -30,9 +31,16 @@ package org.jbei.registry.proxies {
             // var proxy:RESTClientProxy = applicationFacade.retrieveProxy(RESTClientProxy.PROXY_NAME) as RESTClientProxy;
         }
 
-        public function retrieveSequence(id:int, sid:String):void {
+        public function retrieveSequence(id:int, sid:String, url:String):void {
             // Application.application.url
-            var request:URLRequest = new URLRequest("/rest/parts/" + id + "/sequence?sid=" + sid);
+            var requestUrl:String;
+            if (url)
+                requestUrl = "/rest/remote/" + url + "/" + id + "/sequence?sid=" + sid;
+            else
+                requestUrl = "/rest/parts/" + id + "/sequence?sid=" + sid;
+
+            var request:URLRequest = new URLRequest(requestUrl);
+
             request.method = URLRequestMethod.GET;
 
             var loader:URLLoader = new URLLoader();
@@ -54,19 +62,16 @@ package org.jbei.registry.proxies {
             ApplicationFacade.getInstance().updateSequence(sequence);
         }
 
-        function httpStatusHandler(e:HTTPStatusEvent):void
-        {
+        function httpStatusHandler(e:HTTPStatusEvent):void {
             trace("httpStatusHandler:" + e.status);
             // do something if not 200
         }
 
-        function securityErrorHandler(e:SecurityErrorEvent):void
-        {
+        function securityErrorHandler(e:SecurityErrorEvent):void {
             Alert.show("securityErrorHandler:" + e.text);
         }
 
-        function ioErrorHandler(e:IOErrorEvent):void
-        {
+        function ioErrorHandler(e:IOErrorEvent):void {
             Alert.show("ioErrorHandler: " + e.text);    // 2032
         }
     }

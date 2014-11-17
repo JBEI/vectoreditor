@@ -4,7 +4,7 @@ package org.jbei.lib
     import flash.events.EventDispatcher;
     
     import mx.collections.ArrayCollection;
-    
+
     import org.jbei.bio.parsers.GenbankFeatureElement;
     import org.jbei.bio.parsers.GenbankFeatureQualifier;
     import org.jbei.bio.parsers.GenbankFileModel;
@@ -1053,16 +1053,14 @@ package org.jbei.lib
             return result;
         }
         
-        public function fromGenbankFileModel(genbankFileModel:GenbankFileModel):FeaturedDNASequence
+        public static function fromGenbankFileModel(genbankFileModel:GenbankFileModel):FeaturedDNASequence
         {
-
             var result:FeaturedDNASequence = new FeaturedDNASequence();
             result.features = new ArrayCollection(); /* of DNAFeatures */
             result.name = genbankFileModel.locus.locusName;
             result.isCircular = !genbankFileModel.locus.linear;
             result.sequence = DNATools.createDNA(genbankFileModel.origin.sequence).toString();
-            
-            
+
             var genbankFeatures:Vector.<GenbankFeatureElement> = genbankFileModel.features.features;
             var dnaFeature:DNAFeature;
             for (var i:int = 0; i < genbankFeatures.length; i++) {

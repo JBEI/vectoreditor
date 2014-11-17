@@ -36,9 +36,16 @@ package org.jbei.registry.proxies {
             // as RESTClientProxy;
         }
 
-        public function retrieveSequence(id:int, sid:String):void {
+        public function retrieveSequence(id:int, sid:String, url:String):void {
             // Application.application.url
-            var request:URLRequest = new URLRequest("rest/parts/" + id + "/sequence?sid=" + sid);
+            var requestUrl:String;
+            if (url)
+                requestUrl = "/rest/remote/" + url + "/" + id + "/sequence?sid=" + sid;
+            else
+                requestUrl = "/rest/parts/" + id + "/sequence?sid=" + sid;
+
+            var request:URLRequest = new URLRequest(requestUrl);
+
             request.method = URLRequestMethod.GET;
 
             var loader:URLLoader = new URLLoader();
@@ -52,9 +59,16 @@ package org.jbei.registry.proxies {
             loader.load(request);
         }
 
-        public function retrieveTraces(id:int, sid:String):void {
+        public function retrieveTraces(id:int, sid:String, url:String):void {
             // Application.application.url
-            var request:URLRequest = new URLRequest("rest/parts/" + id + "/traces?sid=" + sid);
+            var requestUrl:String;
+            if (url)
+                requestUrl = "/rest/remote/" + url + "/parts/" + id + "/traces?sid=" + sid;
+            else
+                requestUrl = "/rest/parts/" + id + "/traces?sid=" + sid;
+
+            var request:URLRequest = new URLRequest(requestUrl);
+
             request.method = URLRequestMethod.GET;
 
             var loader:URLLoader = new URLLoader();
