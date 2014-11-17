@@ -1,15 +1,13 @@
 package org.jbei.registry.proxies
 {
-    import mx.collections.ArrayCollection;
     import mx.rpc.events.FaultEvent;
     import mx.rpc.events.ResultEvent;
-    
+
     import org.jbei.lib.utils.Logger;
     import org.jbei.registry.ApplicationFacade;
     import org.jbei.registry.Notifications;
     import org.jbei.registry.models.FeaturedDNASequence;
-    import org.jbei.registry.utils.StandaloneUtils;
-    
+
     /**
      * @author Zinovii Dmytriv
      */

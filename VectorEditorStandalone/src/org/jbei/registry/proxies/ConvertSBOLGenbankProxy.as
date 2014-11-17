@@ -129,7 +129,7 @@ package org.jbei.registry.proxies
                     }
                     
                     var sequenceProvider:SequenceProvider = (facade as ApplicationFacade).sequenceProvider;
-                    var featuredDNASequence:FeaturedDNASequence = sequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(resultGenbank));
+                    var featuredDNASequence:FeaturedDNASequence = SequenceProvider.fromGenbankFileModel(GenbankFormat.parseGenbankFile(resultGenbank));
                     
                     if (featuredDNASequence == null) {
                         Alert.show("Failed to parse sequence file", "Failed to parse");

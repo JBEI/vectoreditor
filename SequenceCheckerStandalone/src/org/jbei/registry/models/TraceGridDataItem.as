@@ -6,10 +6,10 @@ package org.jbei.registry.models
     public class TraceGridDataItem
     {
         private var _selected:Boolean = true;
-        private var _traceData:TraceSequence;
+        private var _traceData:TraceSequenceAnalysis;
         
         // Constructor
-        public function TraceGridDataItem(traceData:TraceSequence = null, selected:Boolean = true)
+        public function TraceGridDataItem(traceData:TraceSequenceAnalysis = null, selected:Boolean = true)
         {
             _selected = selected;
             _traceData = traceData;
@@ -27,12 +27,12 @@ package org.jbei.registry.models
             _selected = value;
         }
         
-        public function get traceData():TraceSequence
+        public function get traceData():TraceSequenceAnalysis
         {
             return _traceData;
         }
         
-        public function set traceData(value:TraceSequence):void
+        public function set traceData(value:TraceSequenceAnalysis):void
         {
             _traceData = value;
         }

@@ -14,8 +14,8 @@ package org.jbei.registry
     import org.jbei.registry.mediators.TracesListPanelMediator;
     import org.jbei.registry.models.FeaturedDNASequence;
     import org.jbei.registry.models.TraceGridDataItem;
-    import org.jbei.registry.models.TraceSequence;
-    import org.jbei.registry.proxies.RegistryAPIProxy;
+    import org.jbei.registry.models.TraceSequenceAnalysis;
+    import org.jbei.registry.proxies.RESTClientProxy;
     import org.jbei.registry.utils.FeaturedDNASequenceUtils;
     import org.jbei.registry.utils.StandaloneUtils;
     import org.puremvc.as3.patterns.facade.Facade;
@@ -26,6 +26,7 @@ package org.jbei.registry
         private var _entryId:String;
         private var _sequence:FeaturedDNASequence;
         private var _sessionId:String;
+        private var _url:String;
         private var _sequenceProvider:SequenceProvider;
         private var _traces:ArrayCollection;
         private var _visibleTracesCollection:ArrayCollection;
@@ -37,9 +38,9 @@ package org.jbei.registry
             return _application;
         }
         
-        public function get registryServiceProxy():RegistryAPIProxy
+        public function get registryServiceProxy():RESTClientProxy
         {
-            return ApplicationFacade.getInstance().retrieveProxy(RegistryAPIProxy.PROXY_NAME) as RegistryAPIProxy;
+            return ApplicationFacade.getInstance().retrieveProxy(RESTClientProxy.PROXY_NAME) as RESTClientProxy;
         }
         
         public function get entryId():String
@@ -60,6 +61,16 @@ package org.jbei.registry
         public function set sessionId(value:String):void
         {
             _sessionId = value;
+        }
+
+        public function get url():String
+        {
+            return _url;
+        }
+
+        public function set url(value:String):void
+        {
+            _url = value;
         }
         
         public function get sequenceProvider():SequenceProvider
@@ -122,7 +133,7 @@ package org.jbei.registry
             _application = application;
             
             // Register Proxy
-            registerProxy(new RegistryAPIProxy());
+            registerProxy(new RESTClientProxy());
             
             // Register Mediators
             registerMediator(new ApplicationMediator());
@@ -133,8 +144,9 @@ package org.jbei.registry
             registerMediator(new AlignmentPanelMediator(_application.alignmentPanel));
             
             CONFIG::registryEdition {
-                registryServiceProxy.fetchSequence(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
-                registryServiceProxy.fetchTraces(ApplicationFacade.getInstance().sessionId, ApplicationFacade.getInstance().entryId);
+                var entry:int = parseInt(entryId);
+                registryServiceProxy.retrieveSequence(entry, ApplicationFacade.getInstance().sessionId,ApplicationFacade.getInstance().url);
+                registryServiceProxy.retrieveTraces(entry, ApplicationFacade.getInstance().sessionId,ApplicationFacade.getInstance().url);
             }
             
             CONFIG::standalone {
@@ -171,7 +183,7 @@ package org.jbei.registry
             
             if(_traces != null && _traces.length > 0) {
                 for(var i:int = 0; i < _traces.length; i++) {
-                    _visibleTracesCollection.addItem(new TraceGridDataItem(_traces.getItemAt(i) as TraceSequence, true));
+                    _visibleTracesCollection.addItem(new TraceGridDataItem(_traces.getItemAt(i) as TraceSequenceAnalysis, true));
                 }
             }
             

@@ -1,14 +1,13 @@
 package org.jbei.registry.mediators
 {
 	import mx.collections.ArrayCollection;
-	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.models.TraceSequence;
-	import org.jbei.registry.view.ui.TracesListPanel;
+    import org.jbei.registry.models.TraceSequenceAnalysis;
+    import org.jbei.registry.view.ui.TracesListPanel;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
 	
@@ -57,7 +56,7 @@ package org.jbei.registry.mediators
 						var selection:Array = notification.getBody() as Array;
 						
 						for(var i:int = 0; i < traces.length; i++) {
-							var traceSequence:TraceSequence = (traces[i] as TraceSequence);
+							var traceSequence:TraceSequenceAnalysis = (traces[i] as TraceSequenceAnalysis);
 							
 							if(traceSequence.traceSequenceAlignment == null) {
 								continue;
@@ -87,7 +86,7 @@ package org.jbei.registry.mediators
 		}
 		
         private function onTracesDataGridChange(event:ListEvent):void {
-			sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, ((event.itemRenderer.data == null) ? null : (event.itemRenderer.data.traceData as TraceSequence)));
+			sendNotification(Notifications.TRACE_SEQUENCE_SELECTION_CHANGED, ((event.itemRenderer.data == null) ? null : (event.itemRenderer.data.traceData as TraceSequenceAnalysis)));
 		}
 	}
 }

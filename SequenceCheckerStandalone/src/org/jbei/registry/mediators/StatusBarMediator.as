@@ -2,7 +2,7 @@ package org.jbei.registry.mediators
 {
 	import org.jbei.registry.ApplicationFacade;
 	import org.jbei.registry.Notifications;
-	import org.jbei.registry.models.TraceSequence;
+	import org.jbei.registry.models.TraceSequenceAnalysis;
 	import org.jbei.registry.view.ui.StatusBar;
 	import org.puremvc.as3.interfaces.INotification;
 	import org.puremvc.as3.patterns.mediator.Mediator;
@@ -53,7 +53,7 @@ package org.jbei.registry.mediators
 					if(notification.getBody() == null) {
 						statusBar.statusLabel.text = "";
 					} else {
-						statusBar.statusLabel.text = (notification.getBody() as TraceSequence).filename;
+						statusBar.statusLabel.text = (notification.getBody() as TraceSequenceAnalysis).filename;
 					}
 					
 					break;

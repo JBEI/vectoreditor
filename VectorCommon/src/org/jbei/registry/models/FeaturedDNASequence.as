@@ -2,7 +2,6 @@ package org.jbei.registry.models
 {
 	import mx.collections.ArrayCollection;
 
-	[RemoteClass(alias="org.jbei.ice.lib.vo.FeaturedDNASequence")]
     /**
      * @author Zinovii Dmytriv
      */
@@ -15,7 +14,8 @@ package org.jbei.registry.models
         private var _isCircular:Boolean = true;
         private var _name:String = "";
         private var _uri:String;
-		
+        private var _canEdit:Boolean = false;
+
 		// Constructor
 		public function FeaturedDNASequence(name:String = "", sequence:String = "", isCircular:Boolean = true, features:ArrayCollection /* of DNAFeature */ = null)
 		{
@@ -87,15 +87,26 @@ package org.jbei.registry.models
 		{
 			_identifier = value;
 		}
-        
+
+        public function get canEdit():Boolean {
+            return _canEdit;
+        }
+
+        public function set canEdit(canEdit:Boolean):void {
+            this._canEdit = canEdit;
+        }
+
         public function get uri():String
         {
             return _uri;
         }
-        
         public function set uri(value:String):void
         {
             _uri = value;
+        }
+
+        public function toString():String {
+            return sequence;
         }
 	}
 }
