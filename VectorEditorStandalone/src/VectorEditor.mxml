@@ -55,8 +55,8 @@
                 }
                 
                 //if using the j5 server, load the cross-domain policy file that allows access to the xml rpc services
-                if (ApplicationFacade.getInstance().convertSBOLXMLRPCServerLocation == "http://j5.jbei.org") {
-                    Security.loadPolicyFile("http://j5.jbei.org/j5bin/crossdomain.xml");
+                if (ApplicationFacade.getInstance().convertSBOLXMLRPCServerLocation == "https://j5.jbei.org") {
+                    Security.loadPolicyFile("https://j5.jbei.org/j5bin/crossdomain.xml");
                 }
                 
                 CONFIG::standalone { // load sequence file passed to VE (from DE)
