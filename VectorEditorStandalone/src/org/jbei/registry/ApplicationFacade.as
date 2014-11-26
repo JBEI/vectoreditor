@@ -53,7 +53,7 @@ package org.jbei.registry {
         private var _serviceProxy:RESTClientProxy;
         private var _project:VectorEditorProject;
 
-        private var _convertSBOLXMLRPCServerLocation:String = "http://j5.jbei.org"; // these are default values
+        private var _convertSBOLXMLRPCServerLocation:String = "https://j5.jbei.org"; // these are default values
         private var _convertSBOLXMLRPCServicePath:String = "/j5bin/j5_xml_rpc.pl"; // will be reset if passed in through flashvars 
 
         private var actionStack:ActionStack;
