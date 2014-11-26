@@ -3,7 +3,7 @@ vectoreditor
 
 Web based DNA sequence editing and analysis tool
 
-[Online demo version](https://public-registry.jbei.org/static/vesa/VectorEditor.html) with support for genbank import/export
+[Online demo version](https://public-registry.jbei.org/vectoreditor/) with support for genbank import/export
  
 <b>Screenshots</b>
 ----
