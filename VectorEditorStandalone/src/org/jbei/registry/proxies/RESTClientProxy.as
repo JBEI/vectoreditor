@@ -34,11 +34,11 @@ package org.jbei.registry.proxies {
             // Application.application.url
             var requestUrl:String;
             if(url) {
-                requestUrl = "/rest/parts/" + Number(url) + "/sequence?sid=" + sid;
+                requestUrl = "rest/parts/" + Number(url) + "/sequence?sid=" + sid;
                 Logger.getInstance().info("Url: " + url);
             }
             else
-                requestUrl = "/rest/parts/" + id + "/sequence?sid=" + sid;
+                requestUrl = "rest/parts/" + id + "/sequence?sid=" + sid;
 
             var request:URLRequest = new URLRequest(requestUrl);
             request.method = URLRequestMethod.GET;
@@ -69,7 +69,7 @@ package org.jbei.registry.proxies {
         {
             sendNotification(Notifications.LOCK, "Saving sequence ...");
 
-            var request:URLRequest = new URLRequest("/rest/parts/" + entryId + "/sequence?sid=" + sessionId);
+            var request:URLRequest = new URLRequest("rest/parts/" + entryId + "/sequence?sid=" + sessionId);
             request.method = URLRequestMethod.POST;
             request.data = JSON.encode(FeaturedDNASequenceUtils.toObject(featuredDNASequence));
 

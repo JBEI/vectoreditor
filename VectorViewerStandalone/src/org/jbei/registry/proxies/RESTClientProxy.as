@@ -35,9 +35,9 @@ package org.jbei.registry.proxies {
             // Application.application.url
             var requestUrl:String;
             if (url)
-                requestUrl = "/rest/remote/" + url + "/" + id + "/sequence?sid=" + sid;
+                requestUrl = "rest/remote/" + url + "/" + id + "/sequence?sid=" + sid;
             else
-                requestUrl = "/rest/parts/" + id + "/sequence?sid=" + sid;
+                requestUrl = "rest/parts/" + id + "/sequence?sid=" + sid;
 
             var request:URLRequest = new URLRequest(requestUrl);
 
