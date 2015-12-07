@@ -960,7 +960,7 @@ package org.jbei.lib
             _sequence = revComSequence;
             
             var seqLength:int = _sequence.length;
-            for(var i:int = 0; i < _features.length; i++) {
+            for(var i:int = _features.length; i > 0; i--) {
                 var reverseFeature:Feature = (_features.getItemAt(i) as Feature);
 				var newStart:int = seqLength - reverseFeature.end;
                 reverseFeature.strand = -reverseFeature.strand;
