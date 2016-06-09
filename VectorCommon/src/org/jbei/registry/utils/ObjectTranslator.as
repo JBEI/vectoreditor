@@ -13,7 +13,7 @@ package org.jbei.registry.utils {
 
         /**
          * Converts a plain vanilla object to be an instance of the class
-         * passed as the second variable. This is not a recursive funtion
+         * passed as the second variable. This is not a recursive function
          * and will only work for the first level of nesting. When you have
          * deeply nested objects, you first need to convert the nested
          * objects to class instances, and then convert the top level object.

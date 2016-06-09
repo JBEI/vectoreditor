@@ -422,7 +422,7 @@ package org.jbei.lib
         /**
          * Check if sequenceProvider has feature
          * 
-         * @param feature Feature existance to check
+         * @param feature Feature existence to check
          */
         public function hasFeature(feature:Feature):Boolean
         {
@@ -578,7 +578,7 @@ package org.jbei.lib
                         } else {
                             throw new Error("Unhandled editing case!" + " Selection: [" + startIndex + ", " + endIndex + "], Feature: [" + feature.start + ", " + feature.end + "], Sequence: " + sequence.seqString());
                         }
-                    } else { // circular selection, non circular feature. LengthBefore is irrelevent in all these cases.
+                    } else { // circular selection, non circular feature. LengthBefore is irrelevant in all these cases.
                         /* Selection and feature no overlap => shift left
                         * |SSSSSSSSSSS-------------------------------------------------------------------------SSSSSSSSSSSSSS|
                         *                                  |FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF|                                    */

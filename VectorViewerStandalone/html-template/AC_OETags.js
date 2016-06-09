@@ -158,7 +158,7 @@ function AC_AddExtension(src, ext)
   var qIndex = src.indexOf('?');
   if ( qIndex != -1)
   {
-    // Add the extention (if needed) before the query params
+    // Add the extension (if needed) before the query params
     var path = src.substring(0, qIndex);
     if (path.length >= ext.length && path.lastIndexOf(ext) == (path.length - ext.length))
       return src;
